@@ -33,7 +33,7 @@ function Tween.sineEaseOut(t)
 end
 
 function Tween.sineEaseInOut(t)
-	return math.sin(t * math.pi)
+	 return (-math.cos(t * math.pi) + 1) / 2
 end
 
 function Tween.powerEaseIn(t, power)

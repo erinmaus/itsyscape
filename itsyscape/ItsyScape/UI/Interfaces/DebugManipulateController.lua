@@ -9,21 +9,394 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
+local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 
 local DebugManipulateController = Class(Controller)
+
+DebugManipulateController.ACTION_NOT_STARTED = "not-yet-started"
+DebugManipulateController.ACTION_PROCESSING  = "processing"
+DebugManipulateController.ACTION_PENDING     = "pending"
+DebugManipulateController.ACTION_COMPLETE    = "complete"
+
+DebugManipulateController.REPLAYED_ACTIONS = {}
+
+function DebugManipulateController.REPLAYED_ACTIONS:spawnActor(action)
+	return function()
+		local layer, mapScript = self:getLayerFromMapInfo(action.map)
+		if not self:getPeepFromTargetInfo(action.target, layer) then
+			local isComplete = false
+
+			local actor = Utility.spawnActorAtPosition(
+				mapScript,
+				action.event.id,
+				action.event.positionX,
+				action.event.positionY,
+				action.event.positionZ)
+
+			actor:getPeep():listen("finalize", function()
+				self:recordPeep(actor:getPeep(), action.target.peepID)
+				isComplete = true
+			end)
+
+			repeat
+				coroutine.yield(DebugManipulateController.ACTION_PENDING)
+			until isComplete
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:spawnProp(action)
+	return function()
+		local layer, mapScript = self:getLayerFromMapInfo(action.map)
+		if not self:getPeepFromTargetInfo(action.target, layer) then
+			local isComplete = false
+
+			local prop = Utility.spawnPropAtPosition(
+				mapScript,
+				action.event.id,
+				action.event.positionX,
+				action.event.positionY,
+				action.event.positionZ)
+			prop:getPeep():listen("finalize", function()
+				self:recordPeep(prop:getPeep(), action.target.peepID)
+				isComplete = true
+			end)
+
+			repeat
+				coroutine.yield(DebugManipulateController.ACTION_PENDING)
+			until isComplete
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:playAnimation(action)
+	return function()
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		if peep then
+			Utility.Peep.playAnimation(
+				peep,
+				action.event.slot,
+				action.event.priority,
+				action.event.animation,
+				true)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:changeSkin(action)
+	return function()
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		if peep then
+			local namedSlot = Equipment[string.format("PLAYER_SLOT_%s", tostring(action.event.slot):upper())]
+			Utility.Peep.Human.changeSkin(
+				peep,
+				namedSlot or tonumber(action.event.slot) or action.event.sloot,
+				action.event.priority,
+				action.event.filename)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:transform(action)
+	return function(timeInfo)
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		if peep then
+			local currentPosition = Utility.Peep.getPosition(peep)
+			local currentRotation = Utility.Peep.getRotation(peep)
+			local currentScale = Utility.Peep.getScale(peep)
+
+			local targetPosition = action.event.positionX and
+			                       action.event.positionY and
+			                       action.event.positionZ and
+			                       Vector(action.event.positionX, action.event.positionY, action.event.positionZ)
+
+			local targetRotation = action.event.rotationX and
+			                       action.event.rotationY and
+			                       action.event.rotationZ and
+			                       Quaternion.fromEulerXYZ(math.rad(action.event.rotationX), math.rad(action.event.rotationY), math.rad(action.event.rotationZ))
+
+			local targetScale    = action.event.scaleX and
+			                       action.event.scaleY and
+			                       action.event.scaleZ and
+			                       Vector(action.event.scaleX, action.event.scaleY, action.event.scaleZ)
+
+			repeat
+				local delta = timeInfo and timeInfo.delta or 1
+
+				if targetPosition then
+					peep:addBehavior(PositionBehavior)
+					Utility.Peep.setPosition(peep, currentPosition:lerp(targetPosition, delta))
+				end
+
+				if targetRotation then
+					print(">>> targetRotation", targetRotation:get())
+					print(">>> whatevers", currentRotation:slerp(targetRotation, delta):get())
+
+					peep:addBehavior(RotationBehavior)
+					Utility.Peep.setRotation(peep, currentRotation:slerp(targetRotation, delta):getNormal())
+				end
+
+				if targetScale then
+					peep:addBehavior(ScaleBehavior)
+					Utility.Peep.setScale(peep, currentScale:lerp(targetScale, delta))
+				end
+
+				if delta < 1 then
+					coroutine.yield(DebugManipulateController.ACTION_PENDING)
+				else
+					coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+				end
+			until not timeInfo or timeInfo.delta >= 1
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:setLayer(action)
+	return function(timeInfo)
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+
+		local targetLayer = self:getLayerFromMapInfo({
+			resource = action.event.destinationMapResource,
+			localLAyer = action.event.destinationMapLocalLayer,
+		})
+
+		if peep and layer >= 1 and targetLayer >= 1 then
+			local peepAbsolutePosition = Utility.Peep.getAbsolutePosition(peep)
+			local peepRelativePosition = Utility.Map.absolutePositionToRelativePosition(self:getDirector(), targetLayer, peepAbsolutePosition)
+
+			Utility.Peep.teleport(peep, peepRelativePosition, targetLayer)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:orientateCamera(action)
+	return function()
+		local player = Utility.Peep.getPlayerModel(self:getPeep())
+
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+
+		local actor = peep and peep:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		if actor then
+			local delay = action.timing and action.timing.delay
+			local duration = action.timing and action.timing.duration
+			local tween = action.timing and action.timing.tween
+
+			player:pokeCamera("resetTransforms")
+			player:pokeCamera("orientateToActor", actor:getID(), delay or 0, duration or 0, tween or "sineEaseInOut")
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:fireProjectile(action)
+	return function()
+		local sourceLayer = self:getLayerFromMapInfo(action.map)
+		local sourcePeep = self:getPeepFromTargetInfo(action.target, sourceLayer)
+		local destinationLayer = self:getLayerFromMapInfo({
+			resource = action.event.targetMapResource,
+			localLayer = action.event.targetMapLocalLayer,
+		})
+		local destinationPeep = self:getPeepFromTargetInfo({
+			mapObjectName = action.event.targetMapObjectName,
+			peepID = action.event.targetPeepID,
+		}, destinationLayer)
+
+		if sourcePeep and destinationPeep then
+			self:getGame():getStage():fireProjectile(action.event.projectile or "AirStrike", sourcePeep, destinationPeep)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:fireSpell(action)
+	return function()
+		local sourceLayer = self:getLayerFromMapInfo(action.map)
+		local sourcePeep = self:getPeepFromTargetInfo(action.target, sourceLayer)
+		local destinationLayer = self:getLayerFromMapInfo({
+			resource = action.event.targetMapResource,
+			localLayer = action.event.targetMapLocalLayer,
+		})
+		local destinationPeep = self:getPeepFromTargetInfo({
+			mapObjectName = action.event.targetMapObjectName,
+			peepID = action.event.targetPeepID,
+		}, destinationLayer)
+
+		if sourcePeep and destinationPeep then
+			local spellInstance = Utility.Peep.getSpell(action.event.spell or "AirStrike", self:getGame())
+			spellInstance:show(sourcePeep, destinationPeep, true)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:face(action)
+	return function()
+		local sourceLayer = self:getLayerFromMapInfo(action.map)
+		local sourcePeep = self:getPeepFromTargetInfo(action.target, sourceLayer)
+		local destinationLayer = self:getLayerFromMapInfo({
+			resource = action.event.targetMapResource,
+			localLayer = action.event.targetMapLocalLayer,
+		})
+		local destinationPeep = self:getPeepFromTargetInfo({
+			mapObjectName = action.event.targetMapObjectName,
+			peepID = action.event.targetPeepID,
+		}, destinationLayer)
+
+		if sourcePeep and destinationPeep then
+			Utility.Peep.face(sourcePeep, destinationPeep)
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:walk(action)
+	return function(timeInfo)
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		local targetLayer = self:getLayerFromMapInfo({
+			resource = action.event.targetMapResource,
+			localLayer = action.event.targetMapLocalLayer,
+		})
+
+		if peep and targetLayer >= 1 then
+			local callback, id = Utility.Peep.queueWalk(peep, Vector(action.positionX, action.positionY, action.positionZ), targetLayer, math.huge, { asCloseAsPossible = true })
+
+			local isComplete = false
+			local success
+			callback:register(function(s)
+				success = s
+				isComplete = true
+			end)
+
+			repeat
+				coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+			until isComplete
+
+			if success then
+				local isDone = false
+				isDone = not peep:getCommandQueue():push(CallbackCommand(function()
+					isDone = true
+				end))
+
+				while not isDone do
+					coroutine.yield(DebugManipulateController.ACTION_PENDING)
+				end
+			end
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:performAction(action)
+	return function()
+		local brochure = self:getGame():getGameDB():getBrochure()
+		local playerLayer = self:getLayerFromMapInfo(action.map)
+		local playerPeep = self:getPeepFromTargetInfo(action.target, sourceLayer)
+		local targetLayer = self:getLayerFromMapInfo({
+			resource = action.event.targetMapResource,
+			localLayer = action.event.targetMapLocalLayer,
+		})
+		local targetPeep = self:getLayerFromMapInfo({
+			mapObjectName = action.event.targetMapObjectName,
+			peepID = action.event.targetPeepID,
+		}, targetLayer)
+
+		if playerPeep and targetPeep then
+			local resource
+			if event.action.targetResourceType == "MapObject" then
+				resource = Utility.Peep.getMapObject(targetPeep)
+			else
+				resource = Utility.Peep.getResource(targetPeep)
+			end
+
+			local resourceType = resource and brochure:getResourceTypeFromResource(resource)
+			local targetAction
+
+			if resourceType and resourceType.name == event.action.targetResourceType then
+				local currentActionIndex = 0
+
+				for action in brochure:findActionsByResource(resource) do
+					local actionDefinition = brochure:getActionDefinitionFromAction(action)
+					if actionDefinition.name == event.action.actionDefinition then
+						currentActionIndex = currentActionIndex + 1
+
+						if currentActionIndex == event.action.actionIndex then
+							targetActor = action
+							break
+						end
+					end
+				end
+			end
+
+			if targetAction then
+				local playerModel = Utility.Peep.getPlayerModel(playerPeep)
+				local actor = targetPeep:hasBehavior(ActorReferenceBehavior) and targetPeep:getBehavior(ActorReferenceBehavior).actor
+				local prop = targetPeep:hasBehavior(PropReferenceBehavior) and targetPeep:getBehavior(PropReferenceBehavior).prop
+				local object = actor or prop
+
+				if playerModel and playerModel:getActor() and playerModel:getActor():getPeep() == playerPeep and object then
+					playerModel:poke(targetAction.id.value, object, "world")
+					coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+				end
+			end
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
 
 function DebugManipulateController:new(peep, director)
 	Controller.new(self, peep, director)
@@ -238,6 +611,10 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:startRecording(e)
 	elseif actionID == "stopRecording" then
 		self:stopRecording(e)
+	elseif actionID == "startReplay" then
+		self:startReplay(e)
+	elseif actionID == "stopReplay" then
+		self:stopReplay(e)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
 	end
@@ -250,6 +627,10 @@ function DebugManipulateController:close()
 end
 
 function DebugManipulateController:startRecording(e)
+	if self.replay then
+		self:stopReplay()
+	end
+
 	self.isRecording = true
 	self.recordingMapResource = e.resource or self.layers[1]
 	self.recordingID = e.id or 0
@@ -288,7 +669,7 @@ end
 function DebugManipulateController:stopRecording()
 	self.isRecording = false
 
-	local presetStorage = self:getPresetStorage(self.recordingMapResource, self.recordingID)
+	local presetStorage, index = self:getPresetStorage(self.recordingMapResource, self.recordingID)
 	if not presetStorage then
 		return
 	end
@@ -296,6 +677,39 @@ function DebugManipulateController:stopRecording()
 	for i = 1, #self.recordingQueue do
 		presetStorage:set(presetStorage:length() + 1, self.recordingQueue[i])
 	end
+
+	self:send("finishRecording", { resource = self.recordingMapResource, index = index, id = self.recordingID })
+end
+
+function DebugManipulateController:startReplay(e)
+	if self.isRecording then
+		self:stopRecording()
+	end
+
+	self.replayMapResource = e.resource or self.layers[1]
+	self.replayID = e.id or 0
+
+	local storage = self:getPresetStorage(self.replayMapResource, self.replayID)
+	if not storage then
+		return
+	end
+
+	local preset = storage:get()
+	self.replay = coroutine.wrap(self:generateReplay(preset))
+
+	local player = Utility.Peep.getPlayerModel(self:getPeep())
+	player:pushCamera("DebugManipulate")
+	player:pokeCamera("copyTransforms")
+end
+
+function DebugManipulateController:stopReplay()
+	self.replay = nil
+
+	local _, index = self:getPresetStorage(self.recordingMapResource, self.recordingID)
+	self:send("finishReplay", { resource = self.replayMapResource, index = index, id = self.replayID })
+
+	local player = Utility.Peep.getPlayerModel(self:getPeep())
+	player:popCamera()
 end
 
 function DebugManipulateController:newPreset(e)
@@ -385,6 +799,41 @@ end
 
 function DebugManipulateController:getRecordedPeep(id)
 	return self.idToPeep[id]
+end
+
+function DebugManipulateController:getLayerFromMapInfo(mapInfo)
+	local instance = Utility.Peep.getInstance(self:getPeep())
+
+	for group, layers in instance:iterateMapGroups() do
+		local baseMapScript = instance:getMapScriptByLayer(instance:getGlobalLayerFromLocalLayer(group, 1))
+		local mapResource = baseMapScript and Utility.Peep.getResource(baseMapScript)
+		if mapResource.name == mapInfo.resource and layers[mapInfo.localLayer] then
+			return layers[mapInfo.localLayer], instance:getMapScriptByLayer(layers[mapInfo.localLayer])
+		end
+	end
+
+	return -1
+end
+
+function DebugManipulateController:getPeepFromTargetInfo(targetInfo, layer)
+	if layer <= 0 then
+		return nil
+	end
+
+	if targetInfo.mapObjectName then
+		local hits = self:getDirector():probe(
+			self:getPeep():getLayerName(),
+			Probe.layer(layer),
+			Probe.namedMapObject(targetInfo.mapObjectName))
+
+		return hits[1]
+	end
+
+	if targetInfo.peepID then
+		return self:getRecordedPeep(targetInfo.peepID)
+	end
+
+	return nil
 end
 
 function DebugManipulateController:getMapInfo(layer)
@@ -520,8 +969,8 @@ function DebugManipulateController:spawnActor(e)
 	if not mapScript then
 		return
 	end
-	
-	local x, y, z = unpack(e.position)
+
+	local x, y, z = e.positionX, e.positionY, e.positionZ
 	local actor = Utility.spawnActorAtPosition(mapScript, e.id, x, y, z)
 
 	if e.id == "CameraDolly" then
@@ -546,7 +995,7 @@ function DebugManipulateController:spawnProp(e)
 		return
 	end
 	
-	local x, y, z = unpack(e.position)
+	local x, y, z = e.positionX, e.positionY, e.positionZ
 	local prop = Utility.spawnPropAtPosition(mapScript, e.id, x, y, z)
 
 	if self.isRecording then
@@ -601,7 +1050,7 @@ function DebugManipulateController:changeSkin(e)
 	end
 
 	local slotIndex = Equipment[string.format("PLAYER_SLOT_%s", tostring(e.slot):upper())]
-	local success = Utility.Peep.Human.applySkin(actor:getPeep(), slotIndex or e.slot, e.priority, e.filename)
+	local success = Utility.Peep.Human.applySkin(actor:getPeep(), slotIndex or tonumber(e.slot) or e.slot, e.priority, e.filename)
 	if not success then
 		return
 	end
@@ -955,6 +1404,33 @@ function DebugManipulateController:simulateAttack(e)
 	end
 end
 
+function DebugManipulateController:walk(e)
+	local actor = e.peepID and self:getGame():getStage():getActorByID(e.peepID)
+	local peep = actor and actor:getPeep()
+
+	local instance = Utility.Peep.getInstance(peep)
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+
+	if instance ~= selfInstance then
+		return
+	end
+
+	local targetMapInfo = self:getMapInfo(e.layer)
+	if not targetMapInfo then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "walk", {
+			targetMapResource = targetMapInfo.resource,
+			targetMapLocalLayer = targetMapInfo.localLayer,
+			positionX = e.positionX,
+			positionY = e.positionY,
+			positionZ = e.positionZ
+		})
+	end
+end
+
 function DebugManipulateController:editAction(e)
 	local presetStorage = self:getPresetStorage(e.resource, e.id)
 	if not presetStorage then
@@ -1018,11 +1494,111 @@ function DebugManipulateController:deleteAction(e)
 	end
 end
 
+function DebugManipulateController:generateReplay(preset)
+	return function()
+		local currentIndex, currentLength = 1, 0
+
+		while currentIndex <= #preset do
+			local pendingActionGroup = {}
+
+			local startAction = preset[currentIndex]
+			local pendingActionGroup = {
+				{ action = startAction }
+			}
+
+			currentLength = 1
+			for i = currentIndex + 1, #preset do
+				local action = preset[i]
+				if not action.timing or action.timing.mode == "parallel" or action.timing.mode == "wait" then
+					table.insert(pendingActionGroup, { action = action })
+					currentLength = currentLength + 1
+				else
+					break
+				end
+			end
+
+
+			for _, pendingAction in ipairs(pendingActionGroup) do
+				local action = pendingAction.action
+
+				pendingAction.timeInfo = {
+					elapsed = 0,
+					delta = (not action.timing or action.timing.duration <= 0) and 1 or action.timing.duration,
+					status = DebugManipulateController.ACTION_NOT_STARTED
+				}
+
+				pendingAction.callback = self.REPLAYED_ACTIONS[action.type] and coroutine.wrap(self.REPLAYED_ACTIONS[action.type](self, action))
+			end
+
+			local complete = false
+			local previousTime = love.timer.getTime()
+			repeat
+				local currentTime = love.timer.getTime()
+				local elapsed = currentTime - previousTime
+				previousTime = currentTime
+
+				local numCompleteActions = 0
+				for _, pending in ipairs(pendingActionGroup) do
+					local action = pending.action
+					local duration = action.timing and action.timing.duration or 0
+					local delay = action.timing and action.timing.delay or 0
+					local tween = action.timing and action.timing.tween or "sineEaseInOut"
+
+					pending.timeInfo.elapsed = pending.timeInfo.elapsed + elapsed
+					if duration > 0 then
+						local tweenFunc = Tween[tween] or Tween.linear
+						pending.timeInfo.delta = tweenFunc(math.clamp(math.max(pending.timeInfo.elapsed - delay, 0) / duration))
+					else
+						pending.timeInfo.delta = 1
+					end
+
+					if pending.timeInfo.status ~= DebugManipulateController.ACTION_COMPLETE then
+						if pending.timeInfo.elapsed >= delay then
+							local status = pending.callback and pending.callback(pending.timeInfo)
+							if not status or status == DebugManipulateController.ACTION_COMPLETE then
+								status = DebugManipulateController.ACTION_COMPLETE
+							elseif status == DebugManipulateController.ACTION_PENDING then
+								if not action.timing or action.timing.mode == "off" then
+									status = DebugManipulateController.ACTION_COMPLETE
+								end
+							end 
+
+							pending.timeInfo.status = status
+						end
+					elseif pending.timeInfo.elapsed - delay >= duration then
+						numCompleteActions = numCompleteActions + 1
+					end
+				end
+
+				complete = numCompleteActions == #pendingActionGroup
+				coroutine.yield(DebugManipulateController.ACTION_PENDING)
+			until complete
+
+			currentIndex = currentIndex + currentLength
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
 function DebugManipulateController:pull()
 	return {
+		isRecording = self.isRecording,
+		isReplaying = self.replay ~= nil,
 		layers = self.layers,
 		presets = self.presets
 	}
+end
+
+function DebugManipulateController:update(delta)
+	Controller.update(self, delta)
+
+	if self.replay then
+		local status = self.replay()
+		if status == DebugManipulateController.ACTION_COMPLETE then
+			self:stopReplay()
+		end
+	end
 end
 
 return DebugManipulateController

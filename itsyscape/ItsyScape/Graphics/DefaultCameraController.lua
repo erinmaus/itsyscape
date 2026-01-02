@@ -777,7 +777,7 @@ function DefaultCameraController:update(delta)
 	end
 	self.isFocusDown = isFocusDown
 
-	if self.isTargetting and self.isFirstPerson <= 0 then
+ 	if self.isTargetting and self.isFirstPerson <= 0 then
 		self:updateTargetDistance()
 	end
 

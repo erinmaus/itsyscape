@@ -56,10 +56,12 @@ end
 
 function DebugManipulateCameraController:onCopyTransforms()
 	self.translationOffset = self:getCamera():getEye():keep()
-
-	local z = self:getCamera():getForward()
-	--self.rotationOffset = Quaternion.fromVectors(z, -Vector.UNIT_Z)
 	self.rotationOffset = self:getCamera():getCombinedRotation()
+end
+
+function DebugManipulateCameraController:onResetTransforms()
+	self.translationOffset = Vector.ZERO
+	self.rotationOffset = Quaternion.IDENTITY
 end
 
 function DebugManipulateCameraController:onReset()
@@ -109,16 +111,16 @@ function DebugManipulateCameraController:orientateToActor(nextActor, delay, dura
 		self.currentRotation = rotation:keep()
 	end
 
-	self.currentDelay = 0
+	self.currentDelay = delay
 	self.currentDuration = duration
 	self.currentElapsed = 0
 	self.currentTween = tween
 end
 
-function DebugManipulateCameraController:onOrientateToActor(actorID, duration, tween)
+function DebugManipulateCameraController:onOrientateToActor(actorID, delay, duration, tween)
 	local nextActor = self:getGameView():getActorByID(actorID)
 	if nextActor then
-		self:orientateToActor(nextActor, duration, tween)
+		self:orientateToActor(nextActor, delay, duration, tween)
 	end
 end
 
@@ -235,7 +237,16 @@ function DebugManipulateCameraController:draw()
 	camera:setVerticalRotation(-math.pi / 2)
 	camera:setHorizontalRotation(math.pi)
 
-	local delta = math.max(self.currentElapsed - self.currentDelay, 0) / self.currentDuration
+	local delta
+	do
+		local numerator = math.max(self.currentElapsed - self.currentDelay, 0)
+		if self.currentDuration > 0 then
+			delta = numerator / self.currentDuration
+		else
+			delta = 1
+		end
+	end
+
 	local mu = (Tween[self.currentTween] or Tween.linear)(math.clamp(delta))
 
 	local rotation = self.previousRotation:slerp(self.currentRotation, mu)

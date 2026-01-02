@@ -188,12 +188,15 @@ function DebugManipulate.SpawnPropAction:_spawn(_, value, suggestion)
 	local id = suggestion and suggestion:getID() or value
 
 	local _, _, layer = self:getObject():getTile()
+	local x, y, z = self:getObject():getPosition():get()
 	self:getInterface():sendPoke(
 		"spawnProp",
 		nil, {
 			id = id,
 			layer = layer,
-			position = { self:getObject():getPosition():get() }
+			positionX = x,
+			positionY = y,
+			positionZ = z,
 		})
 
 	self:getInterface():stopAction()
@@ -221,12 +224,15 @@ function DebugManipulate.SpawnActorAction:_spawn(_, value, suggestion)
 	local id = suggestion and suggestion:getID() or value
 
 	local _, _, layer = self:getObject():getTile()
+	local x, y, z = self:getObject():getPosition():get()
 	self:getInterface():sendPoke(
 		"spawnActor",
 		nil, {
 			id = id,
 			layer = layer,
-			position = { self:getObject():getPosition():get() }
+			positionX = x,
+			positionY = y,
+			positionZ = z,
 		})
 
 	self:getInterface():stopAction()
@@ -573,6 +579,55 @@ function DebugManipulate.SimulateAttackAction:start()
 end
 
 function DebugManipulate.SimulateAttackAction:done()
+	DebugManipulate.Action.done(self)
+
+	if self.interactFacade then
+		self:getInterface():removeFacade(self.interactFacade)
+	end
+end
+
+DebugManipulate.WalkAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.WalkAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.WalkAction:start()
+	DebugManipulate.Action.start(self)
+
+	local root = self:getUIView():getRoot()
+	self.interactFacade = DebugManipulate.InteractFacade(self:getInterface())
+	self.interactFacade:setActionGenerator(function(interface, probe, actions)
+		for _, hit in probe:hits() do
+			local object = hit:getObject()
+
+			if Class.isCompatibleType(object, Probe.Tile) then
+				interface:buildTileAction(actions, object, {
+					verb = "Walk-To",
+					callback = function()
+						self:getInterface():walk(self:getObject(), object)
+						self:getInterface():stopAction()
+					end
+				})
+			end
+		end
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Cancel",
+			objectID = -1,
+			objectType = "action",
+			object = "walk",
+			callback = function()
+				self:close()
+			end
+		})
+	end)
+
+	self:getInterface():addFacade(self.interactFacade)
+end
+
+function DebugManipulate.WalkAction:done()
 	DebugManipulate.Action.done(self)
 
 	if self.interactFacade then
@@ -1016,6 +1071,7 @@ function DebugManipulate:_reveal(_, index)
 		return
 	end
 
+	self:stopRecordOrReplay()
 	self:show()
 end
 
@@ -1147,6 +1203,7 @@ function DebugManipulate:populatePresets(presets)
 		label:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
 		label:setText(string.format("%s@%d", presetInfo.resource, presetInfo.id))
 		button:addChild(label)
+		button:setData("preset", presets)
 
 		button.onClick:register(self.selectPreset, self, presetInfo)
 
@@ -1164,7 +1221,7 @@ function DebugManipulate:populatePresets(presets)
 
 		local label = Label()
 		label:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
-		label:setText(string.format("@%s", resource))
+		label:setText(string.format("New %s", resource))
 		newButton:addChild(label)
 
 		newButton.onClick:register(self.newPreset, self, resource)
@@ -1175,8 +1232,8 @@ function DebugManipulate:populatePresets(presets)
 	Theme.layoutScrollablePanelWithGridLayout(self.presetListGrid, gridWidth - Theme.DEFAULT_INNER_PADDING * 2, Theme.DEFAULT_BUTTON_SIZE)
 end
 
-function DebugManipulate:probePreset(preset, button)
-	local object = string.format("%s@%d", preset.resource, preset.id)
+function DebugManipulate:probePreset(presetInfo, button)
+	local object = string.format("%s@%d", presetInfo.resource, presetInfo.id)
 
 	local actions = {
 		{
@@ -1184,7 +1241,7 @@ function DebugManipulate:probePreset(preset, button)
 			verb = "Select",
 			object = object,
 			callback = function()
-				self:selectPreset(preset, button, 1)
+				self:selectPreset(presetInfo, button, 1)
 			end
 		},
 		{
@@ -1192,7 +1249,15 @@ function DebugManipulate:probePreset(preset, button)
 			verb = "Delete",
 			object = object,
 			callback = function()
-				self:deletePreset(preset)
+				self:deletePreset(presetInfo)
+			end
+		},
+		{
+			id = 3,
+			verb = "Replay",
+			object = object,
+			callback = function()
+				self:replay(presetInfo)
 			end
 		}
 	}
@@ -1208,12 +1273,14 @@ function DebugManipulate:newPreset(resource)
 	self.selectedPresetID = nil
 end
 
-function DebugManipulate:deletePreset(preset)
-	self:sendPoke("delete", nil, { resource = preset.resource, id = preset.id })
+function DebugManipulate:deletePreset(presetInfo)
+	self:sendPoke("delete", nil, { resource = presetInfo.resource, id = presetInfo.id })
 
-	if self.selectedPresetResource == preset.resource and self.selectedPresetID == preset.id then
+	if self.selectedPresetResource == presetInfo.resource and self.selectedPresetID == presetInfo.id then
 		self.selectedPresetResource = nil
 		self.selectedPresetID = nil
+
+		self:showPreset(nil, nil)
 	end
 end
 
@@ -1243,15 +1310,30 @@ end
 function DebugManipulate:show()
 	self:addChild(self.windowRoot)
 
+	local root = self:getView():getRoot()
 	if self.revealButton and self.revealButton:getParent() == root then
 		root:removeChild(self.revealButton)
 		self.revealButton = nil
 	end
 end
 
-function DebugManipulate:selectPreset(preset, button, index)
+function DebugManipulate:_updateActivePresetListButton(presetInfo)
+	for _, button in self.presetListGrid:getInnerPanel():iterate() do
+		local otherPresetInfo = button:getData("preset")
+		if otherPresetInfo and otherPresetInfo.resource == presetInfo.resource and otherPresetInfo.id == presetInfo.id then
+			if self.activeButton then
+				self.activeButton:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
+			end
+
+			self.activeButton = button
+			button:setStyle(Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)	
+		end
+	end
+end
+
+function DebugManipulate:selectPreset(presetInfo, button, index)
 	if index == 2 then
-		self:probePreset(preset, button)
+		self:probePreset(presetInfo, button)
 		return
 	end
 
@@ -1259,22 +1341,22 @@ function DebugManipulate:selectPreset(preset, button, index)
 		return
 	end
 
-	if self.activeButton then
-		self.activeButton:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
-	end
-
-	self.selectedPresetResource = preset.resource
-	self.selectedPresetID = preset.id
-
-	self.activeButton = button
-	button:setStyle(Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)
-
-	self:sendPoke("select", nil, { resource = preset.resource, id = preset.id })
+	self:_updateActivePresetListButton(presetInfo)
+	self:sendPoke("select", nil, { resource = presetInfo.resource, id = presetInfo.id })
 end
 
 function DebugManipulate:showPreset(presetInfo, preset)
 	self.presetGrid:clearChildren()
 	self.presetGrid:getInnerPanel():setEdgePadding(true, false)
+
+	if not presetInfo then
+		Theme.layoutScrollablePanelWithGridLayout(self.presetGrid, gridWidth - Theme.DEFAULT_INNER_PADDING * 2, Theme.DEFAULT_BUTTON_SIZE)
+		return
+	end
+
+	self.selectedPresetID = presetInfo.id
+	self.selectedPresetResource = presetInfo.resource
+	self:_updateActivePresetListButton(presetInfo)
 
 	do
 		local recordButton = Button()
@@ -1331,7 +1413,7 @@ function DebugManipulate:setTiming(presetInfo, preset, actionIndex)
 	local properties = {
 		PropertiesPrompt.Property("duration", "Delay (ms)", "number", (action.timing and action.timing.delay or 0) * 1000),
 		PropertiesPrompt.Property("delay", "Duration (ms)", "number", (action.timing and action.timing.duration or 0) * 1000),
-		PropertiesPrompt.Property("mode", "Mode (sync/parallel/off)", "string", action.timing and action.timing.mode or "sync"),
+		PropertiesPrompt.Property("mode", "Mode (sync/parallel/wait/off)", "string", action.timing and action.timing.mode or "sync"),
 		PropertiesPrompt.Property("tween", "Tween", "string", action.timing and action.timing.tween or "sineEaseInOut")
 	}
 
@@ -1347,6 +1429,7 @@ end
 local VALID_MODES = {
 	sync = true,
 	parallel = true,
+	wait = true,
 	off = true,
 }
 
@@ -1355,7 +1438,7 @@ function DebugManipulate:_onEditPresetActionTiming(presetInfo, preset, actionInd
 
 	local delay = form["Delay (ms)"] / 1000
 	local duration = form["Duration (ms)"] / 1000
-	local mode = form["Mode (sync/parallel/off)"]
+	local mode = form["Mode (sync/parallel/wait/off)"]
 	local tween = form["Tween"]
 
 	if not VALID_MODES[mode] then
@@ -1432,8 +1515,12 @@ function DebugManipulate:_onEditPresetAction(presetInfo, preset, actionIndex, po
 	}
 
 	local event = {}
+	for k, v in pairs(preset[actionIndex].event) do
+		event[k] = v
+	end
+
 	for _, property in ipairs(properties) do
-		if not property:getID():match("^x-") then
+		if not property:getID():match("^(x%-)") then
 			event[property:getID()] = property:getValue()
 		end
 	end
@@ -1446,6 +1533,7 @@ function DebugManipulate:_onEditPresetAction(presetInfo, preset, actionIndex, po
 			target = target,
 			map = map,
 			type = preset[actionIndex].type,
+			timing = preset[actionIndex].timing,
 			event = event
 		}
 	})
@@ -1559,6 +1647,20 @@ function DebugManipulate:simulateAttack(sourceObject, destinationObject)
 	self:sendPoke("simulateAttack", nil, {
 		peepID = peepID,
 		targetPeepID = targetPeepID
+	})
+end
+
+function DebugManipulate:walk(object, destinationObject)
+	local peepID = Class.isCompatibleType(sourceObject, Actor) and sourceObject:getID()
+	local _, _, layer = destinationObject:getTile()
+	local position = destinationObject:getPosition()
+
+	self:sendPoke("walk", nil, {
+		actorID = peepID,
+		layer = layer,
+		positionX = position.x,
+		positionY = position.y,
+		positionZ = position.z,
 	})
 end
 
@@ -1682,6 +1784,13 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 			self:beginAction(DebugManipulate.SimulateAttackAction, object, hit)
 		end
 	})
+
+	self:buildActorAction(actions, object, {
+		verb = "Walk",
+		callback = function()
+			self:beginAction(DebugManipulate.WalkAction, object, hit)
+		end
+	})
 end
 
 function DebugManipulate:buildPropAction(actions, object, t)
@@ -1783,6 +1892,35 @@ function DebugManipulate:record(preset, _, index)
 
 	self:hide()
 	self:sendPoke("startRecording", nil, { resource = preset.resource, id = preset.id })
+end
+
+function DebugManipulate:stopRecordOrReplay()
+	local state = self:getState()
+
+	if state.isRecording then
+		self:sendPoke("stopRecording", nil, {})
+	end
+
+	if state.isReplaying then
+		self:sendPoke("stopReplay", nil, {})
+	end
+
+	return state.isRecording or state.isReplaying
+end
+
+function DebugManipulate:replay(presetInfo)
+	self:hide()
+	self:sendPoke("startReplay", nil, { resource = presetInfo.resource, id = presetInfo.id })
+end
+
+function DebugManipulate:finishReplay(presetInfo)
+	self:show()
+	self:sendPoke("select", nil, { resource = presetInfo.resource, id = presetInfo.id })
+end
+
+function DebugManipulate:finishRecording(presetInfo)
+	self:show()
+	self:sendPoke("select", nil, { resource = presetInfo.resource, id = presetInfo.id })
 end
 
 function DebugManipulate:update(delta)
