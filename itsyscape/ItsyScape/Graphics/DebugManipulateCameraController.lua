@@ -56,7 +56,7 @@ end
 
 function DebugManipulateCameraController:onCopyTransforms()
 	self.translationOffset = self:getCamera():getEye():keep()
-	self.rotationOffset = self:getCamera():getCombinedRotation()
+	self.rotationOffset = (self:getCamera():getCombinedRotation() * -self.CONSTANT_ROTATION):getNormal()
 end
 
 function DebugManipulateCameraController:onResetTransforms()
@@ -94,7 +94,6 @@ function DebugManipulateCameraController:orientateToActor(nextActor, delay, dura
 	elseif currentActor then
 		local nextActorView = self:getGameView():getView(currentActor)
 		local translation, rotation = MathCommon.decomposeTransform(transform)
-		rotation = rotation * self.CONSTANT_ROTATION
 
 		self.currentTranslation = translation:keep()
 		self.currentRotation = rotation:keep()
@@ -102,7 +101,6 @@ function DebugManipulateCameraController:orientateToActor(nextActor, delay, dura
 		local nextActorView = self:getGameView():getView(nextActor)
 		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local translation, rotation = MathCommon.decomposeTransform(transform)
-		rotation = rotation * self.CONSTANT_ROTATION
 
 		self.previousTranslation = translation:keep()
 		self.currentTranslation = translation:keep()
@@ -121,6 +119,30 @@ function DebugManipulateCameraController:onOrientateToActor(actorID, delay, dura
 	local nextActor = self:getGameView():getActorByID(actorID)
 	if nextActor then
 		self:orientateToActor(nextActor, delay, duration, tween)
+	end
+end
+
+function DebugManipulateCameraController:copyActorTransforms(actor)
+	local actorView = self:getGameView():getView(actor)
+	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1)
+	local translation = MathCommon.decomposeTransform(transform)
+
+	local globalRotation = Quaternion.IDENTITY
+	local parentSceneNode = actorView:getSceneNode()
+	while parentSceneNode do
+		local parentRotation = parentSceneNode:getTransform():getLocalRotation()
+		globalRotation = parentRotation * globalRotation
+		parentSceneNode = parentSceneNode:getParent()
+	end
+
+	self.translationOffset = translation:keep()
+	self.rotationOffset = globalRotation:getNormal():keep()
+end
+
+function DebugManipulateCameraController:onCopyActorTransforms(actorID)
+	local actor = self:getGameView():getActorByID(actorID)
+	if actor then
+		self:copyActorTransforms(actor)
 	end
 end
 
@@ -252,7 +274,7 @@ function DebugManipulateCameraController:draw()
 	local rotation = self.previousRotation:slerp(self.currentRotation, mu)
 	local translation = self.previousTranslation:lerp(self.currentTranslation, mu)
 
-	camera:setRotation((rotation * self.rotationOffset):getNormal())
+	camera:setRotation((rotation * self.rotationOffset * self.CONSTANT_ROTATION):getNormal())
 	camera:setPosition(translation + self.translationOffset)
 end
 

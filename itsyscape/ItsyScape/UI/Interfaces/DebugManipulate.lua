@@ -372,7 +372,14 @@ function DebugManipulate.PreviewOrientateAction:updateCameraTranslation(translat
 		return
 	end
 
-	self.targetTranslation = (self.previousTranslation or Vector.ZERO) + translation
+	local parentSceneNode = sceneNode:getTransform()
+	if parentSceneNode then
+		local parentTransform = parentSceneNode:getGlobalDeltaTransform(1)
+		self.targetTranslation = translation:inverseTransform(transform)
+	else
+		self.targetTranslation = translation
+	end
+
 	sceneNode:getTransform():setLocalTranslation(self.targetTranslation)
 end
 
@@ -384,7 +391,16 @@ function DebugManipulate.PreviewOrientateAction:updateCameraRotation(rotation)
 		return
 	end
 
-	self.targetRotation = -rotation * (self.previousRotation or Quaternion.IDENTITY)
+	local globalRotation = Quaternion.IDENTITY
+	local parentSceneNode = sceneNode:getParent()
+	while parentSceneNode do
+		local parentRotation = parentSceneNode:getTransform():getLocalRotation()
+		globalRotation = parentRotation * globalRotation
+
+		parentSceneNode = parentSceneNode:getParent()
+	end
+
+	self.targetRotation = -globalRotation * rotation
 	sceneNode:getTransform():setLocalRotation(self.targetRotation)
 end
 
@@ -394,7 +410,7 @@ function DebugManipulate.PreviewOrientateAction:start()
 	local player = self:getGame():getPlayer()
 	player:onPushCamera("DebugManipulate")
 	player:onPokeCamera("enableInteraction")
-	player:onPokeCamera("orientateToActor", self:getObject():getID(), 0, self.currentDuration, "sineEaseInOut")
+	player:onPokeCamera("copyActorTransforms", self:getObject():getID())
 end
 
 function DebugManipulate.PreviewOrientateAction:update(delta)

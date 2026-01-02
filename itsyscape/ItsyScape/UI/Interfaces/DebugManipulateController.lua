@@ -50,6 +50,10 @@ function DebugManipulateController.REPLAYED_ACTIONS:spawnActor(action)
 				action.event.positionZ)
 
 			actor:getPeep():listen("finalize", function()
+				if action.event.id == "CameraDolly" then
+					actor:getPeep():poke("visible")
+				end
+
 				self:recordPeep(actor:getPeep(), action.target.peepID)
 				isComplete = true
 			end)
@@ -160,9 +164,6 @@ function DebugManipulateController.REPLAYED_ACTIONS:transform(action)
 				end
 
 				if targetRotation then
-					print(">>> targetRotation", targetRotation:get())
-					print(">>> whatevers", currentRotation:slerp(targetRotation, delta):get())
-
 					peep:addBehavior(RotationBehavior)
 					Utility.Peep.setRotation(peep, currentRotation:slerp(targetRotation, delta):getNormal())
 				end
