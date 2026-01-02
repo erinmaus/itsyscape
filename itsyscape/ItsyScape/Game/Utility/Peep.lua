@@ -2454,7 +2454,8 @@ function Peep.makeHuman(peep)
 		movement.stoppingForce = 3
 	end
 
-	peep:addPoke('trip')
+	peep:addPoke("trip")
+	peep:addPoke("walk")
 
 	peep:addBehavior(HumanoidBehavior)
 
@@ -2463,12 +2464,12 @@ function Peep.makeHuman(peep)
 		Peep.Human.addAnimation(peep, name, filename)
 	end
 
-	peep:listen('finalize', Utility.Peep.Human.onFinalize)
+	peep:listen("finalize", Utility.Peep.Human.onFinalize)
 end
 
 function Peep.makeCharacter(peep)
 	peep:addBehavior(TeamBehavior)
-	peep:listen('finalize', Utility.Peep.Character.onFinalize)
+	peep:listen("finalize", Utility.Peep.Character.onFinalize)
 end
 
 return Peep

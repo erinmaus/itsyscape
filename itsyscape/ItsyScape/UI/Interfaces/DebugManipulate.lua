@@ -683,29 +683,63 @@ end
 function DebugManipulate.GizmoFacade:mousePress(x, y, button)
 	Drawable.mousePress(self, x, y, button)
 
-	if button ~= 1 then
-		return
+	if button == 1 then
+		local gameView = self.interface:getView():getGameView()
+		local sceneNode = self:getProxySceneNode()
+
+		local x, y = love.mouse.getPosition()
+		self.isGizmoGrabbed = self.gizmo:hover(x, y, gameView:getCamera(), sceneNode)
+		if self.isGizmoGrabbed then
+			self.gizmoGrabX = x
+			self.gizmoGrabY = y
+		end
+
+		sceneNode:setParent()
+	elseif button == 2 then
+		_APP:probe(x, y, false, function(probe)
+			local actions = {}
+
+			for _, hit in probe:hits() do
+				local object = hit:getObject()
+				if Class.isCompatibleType(object, Probe.Tile) then
+					self.interface:buildTileAction(actions, object, {
+						verb = "Set-Layer",
+						callback = function()
+							self.interface:setLayer(self.object, object)
+						end
+					})
+				end
+			end
+
+			table.insert(actions, {
+				id = #actions + 1,
+				verb = "Finish-Transform",
+				objectID = self.object:getID(),
+				objectType = (Class.isCompatibleType(self.object, Actor) and "actor") or (Class.isCompatibleType(self.object, Actor) and "prop"),
+				object = self.object:getName(),
+				callback = function()
+					self.interface:stopAction()
+				end
+			})
+
+			local ui = self:getUIView()
+			ui:probe(actions, x, y)
+		end)
 	end
 
-	local gameView = self.interface:getView():getGameView()
-	local sceneNode = self:getProxySceneNode()
-
-	local x, y = love.mouse.getPosition()
-	self.isGizmoGrabbed = self.gizmo:hover(x, y, gameView:getCamera(), sceneNode)
-	if self.isGizmoGrabbed then
-		self.gizmoGrabX = x
-		self.gizmoGrabY = y
-	end
-
-	sceneNode:setParent()
+	_APP.cameraController:mousePress(self.isGizmoGrabbed, _x, _y, button)
 end
 
 function DebugManipulate.GizmoFacade:mouseRelease(x, y, button)
 	Drawable.mouseRelease(self, x, y, button)
 
+	local wasGizmoGrabbed = self.isGizmoGrabbed
+
 	if button == 1 then
 		self.isGizmoGrabbed = false
 	end
+
+	_APP.cameraController:mouseRelease(self.isGizmoGrabbed, _x, _y, button)
 end
 
 function DebugManipulate.GizmoFacade:mouseMove(rx, ry, dx, dy, ...)
@@ -743,12 +777,14 @@ function DebugManipulate.GizmoFacade:mouseMove(rx, ry, dx, dy, ...)
 	end
 
 	sceneNode:setParent()
+
+	_APP.cameraController:mouseMove(self.isGizmoGrabbed, rx, ry, dx, dy, ...)
 end
 
 function DebugManipulate.GizmoFacade:mouseScroll(...)
-	Widget.mouseScroll(self, ...)
+	Drawable.mouseScroll(self, ...)
 
-	_APP.cameraController:mouseScroll(false, ...)
+	_APP.cameraController:mouseScroll(self.isGizmoGrabbed, ...)
 end
 
 function DebugManipulate.GizmoFacade:_draw()
@@ -811,6 +847,10 @@ function DebugManipulate.InteractFacade._generateDefaultActions(interface, probe
 		elseif Class.isCompatibleType(object, Probe.Tile) then
 			interface:buildTileActions(object, hit, actions)
 		end
+	end
+
+	for _, action in probe:iterate() do
+		table.insert(actions, action)
 	end
 end
 
@@ -1471,6 +1511,18 @@ function DebugManipulate:scaleObject(object, scale)
 		scaleX = scale.x,
 		scaleY = scale.y,
 		scaleZ = scale.z,
+	})
+end
+
+function DebugManipulate:setLayer(object, tileObject)
+	local propID = Class.isCompatibleType(object, Prop) and object:getID()
+	local actorID = Class.isCompatibleType(object, Actor) and object:getID()
+
+	local _, _, layer = tileObject:getTile()
+	self:sendPoke("setLayer", nil, {
+		actorID = actorID,
+		propID = propID,
+		layer = layer
 	})
 end
 

@@ -387,6 +387,8 @@ function LocalPlayer:poke(id, obj, scope)
 	self.lastPokeTime = love.timer.getTime()
 
 	self.actor:getPeep():poke("actionTried", {
+		pending = true,
+		object = self.nextObject,
 		actionID = self.nextActionID
 	})
 end
@@ -436,7 +438,7 @@ function LocalPlayer:move(x, z)
 			local i, j, k = Utility.Peep.getTile(peep)
 
 			self.direction = direction
-			peep:poke('walk', { i = i, j = j, k = k })
+			peep:poke('walk', { i = i, j = j, layer = k })
 		end
 	end
 end
@@ -474,12 +476,18 @@ function LocalPlayer:tryPerformPoke()
 			if obj and id and scope then
 				if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
 					local layer = Utility.Peep.getLayer(obj:getPeep())
-					if not self.instance:hasLayer(layer) then
+					if not self.instance:hasLayer(layer, self) then
 						Log.warn(
 							"Player '%s' (%d) is not in instance with layer %d! Cannot poke actor or peep %s '%s' (%d).",
 							self:getActor():getName(), self:getID(), layer, obj:getPeepID(), obj:getName(), obj:getID())
 					else
 						obj:poke(id, scope, self.actor:getPeep())
+
+						self.actor:getPeep():poke("actionTried", {
+							pending = false,
+							object = self.nextObject,
+							actionID = self.nextActionID
+						})
 					end
 				elseif Class.isClass(obj) then
 					Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
@@ -563,6 +571,14 @@ function LocalPlayer:walk(i, j, k)
 
 	local peep = self.actor:getPeep()
 	local callback, id = Utility.Peep.queueWalk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
+
+	local map = Utility.Peep.getMap(peep)
+	if map then
+		peep:poke("walk", {
+			position = map:getTileCenter(i, j),
+			layer = k
+		})
+	end
 
 	self.pendingWalkID = id
 	callback:register(self._finishWalk, self)

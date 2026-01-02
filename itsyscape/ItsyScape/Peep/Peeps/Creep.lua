@@ -63,6 +63,7 @@ function Creep:new(resource, ...)
 	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 4
 
+	self:addPoke("walk")
 	self:addPoke("fall")
 	self:addPoke("movedOutOfBounds")
 

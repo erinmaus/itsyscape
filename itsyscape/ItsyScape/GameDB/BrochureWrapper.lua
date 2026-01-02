@@ -259,7 +259,7 @@ function BrochureWrapper:tryGetResourceType(id, resourceType)
 			return true
 		end
 	else
-		return self.brochure:tryGetActionDefinition(id, resourceType)
+		return self.brochure:tryGetResourceType(id, resourceType)
 	end
 end
 

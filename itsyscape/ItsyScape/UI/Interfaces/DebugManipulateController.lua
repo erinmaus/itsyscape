@@ -13,6 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Mapp = require "ItsyScape.GameDB.Mapp"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
@@ -33,9 +34,99 @@ function DebugManipulateController:new(peep, director)
 
 	self.isReplaying = false
 
+	self:getPeep():listen("actionTried", self._onPeepTryAction, self)
+	self:getPeep():listen("walk", self._onPeepWalk, self)
+
 	self:recordPeep(self:getPeep(), -1)
 	self:pullExistingPeeps()
 	self:populate()
+end
+
+function DebugManipulateController:_onPeepTryAction(_, poke)
+	if poke.pending then
+		return
+	end
+
+	if not self.isRecording then
+		return
+	end
+
+	local brochure = self:getGame():getGameDB():getBrochure()
+
+	local actionID = Mapp.ID(poke.actionID)
+	local _, action = brochure:tryGetAction(actionID)
+	if not action then
+		return
+	end
+
+	local actionDefinition = brochure:getActionDefinitionFromAction(action)
+
+	local object = poke.object
+	local objectPeep = object and object:getPeep()
+
+	local resource = Utility.Peep.getResource(objectPeep)
+	local mapObject = Utility.Peep.getMapObject(objectPeep)
+
+	local targetResource, targetResourceActionIndex
+	for otherResource in brochure:findResourcesByAction(action) do
+		if (otherResource and otherResource.id.value == resource.id.value) or (mapObject and otherResource.id.value == mapObject.id.value) then
+			local otherActionIndex = 0
+			for otherAction in brochure:findActionsByResource(otherResource) do
+				local otherActionDefinition = brochure:getActionDefinitionFromAction(otherAction)
+				if otherActionDefinition.name == actionDefinition.name then
+					otherActionIndex = otherActionIndex + 1
+				end
+
+				if otherAction.id.value == action.id.value then
+					targetResource = otherResource
+					targetResourceActionIndex = otherActionIndex
+					break
+				end
+			end
+		end
+
+		if targetResource and targetResourceActionIndex then
+			break
+		end
+	end
+
+	if not (targetResource and targetResourceActionIndex) then
+		return
+	end
+
+	local objectTargetInfo = self:getTargetInfo(objectPeep)
+	local objectMapInfo = self:getMapInfo(Utility.Peep.getLayer(objectPeep))
+
+	local targetResourceType = brochure:getResourceTypeFromResource(targetResource)
+
+	self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "performAction", {
+		targetMapObjectName = objectTargetInfo.mapObjectName,
+		targetPeepID = objectTargetInfo.peepID,
+		targetMapResource = objectMapInfo.resource,
+		targetMapLocalLayer = objectMapInfo.localLayer,
+		targetResourceType = targetResourceType.name,
+		actionDefinition = actionDefinition.name,
+		actionIndex = targetResourceActionIndex
+	})
+end
+
+function DebugManipulateController:_onPeepWalk(_, poke)
+	if not (poke.position and poke.layer) then
+		return
+	end
+
+	if not self.isRecording then
+		return
+	end
+
+	local targetMapInfo = self:getMapInfo(poke.layer)
+	self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "walk", {
+		targetMapResource = targetMapInfo.resource,
+		targetMapLocalLayer = targetMapInfo.localLayer,
+		positionX = poke.position.x,
+		positionY = poke.position.y,
+		positionZ = poke.position.z
+	})
 end
 
 function DebugManipulateController:pullExistingPeeps()
@@ -123,6 +214,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:changeSkin(e)
 	elseif actionID == "transform" then
 		self:transform(e)
+	elseif actionID == "setLayer" then
+		self:setLayer(e)
 	elseif actionID == "orientateCamera" then
 		self:orientateCamera(e)
 	elseif actionID == "fireProjectile" then
@@ -161,6 +254,35 @@ function DebugManipulateController:startRecording(e)
 	self.recordingMapResource = e.resource or self.layers[1]
 	self.recordingID = e.id or 0
 	self.recordingQueue = {}
+
+	local layerInfo = self:getMapInfo(Utility.Peep.getLayer(self:getPeep()))
+	if layerInfo then
+		self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "setLayer", {
+			destinationMapResource = layerInfo.resource,
+			destinationMapLocalLayer = layerInfo.localLayer,
+		})
+	end
+
+	local position = Utility.Peep.getPosition(self:getPeep())
+	local rotation = self:getPeep():hasBehavior(RotationBehavior) and Utility.Peep.getRotation(self:getPeep())
+	local rotationX, rotationY, rotationZ
+	if rotation then
+		rotationX, rotationY, rotationZ = rotation:getEulerXYZ()
+		rotationX, rotationY, rotationZ = math.deg(rotationX), math.deg(rotationY), math.deg(rotationZ)
+	end
+	local scale = self:getPeep():hasBehavior(ScaleBehavior) and Utility.Peep.getScale(self:getPeep())
+
+	self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "transform", {
+		positionX = position.x,
+		positionY = position.y,
+		positionZ = position.z,
+		rotationX = rotationX,
+		rotationY = rotationY,
+		rotationZ = rotationZ,
+		scaleX = scale and scale.x or nil,
+		scaleY = scale and scale.y or nil,
+		scaleZ = scale and scale.z or nil,
+	})
 end
 
 function DebugManipulateController:stopRecording()
@@ -269,17 +391,19 @@ function DebugManipulateController:getMapInfo(layer)
 	local mapInfo
 	do
 		local instance = Utility.Peep.getInstance(self:getPeep())
-		local mapGroup = instance:getMapGroup(layer)
-		local baseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
-		local baseMapScript = instance:getMapScriptByLayer(baseLayer)
-		local baseMapResource = baseMapScript and Utility.Peep.getResource(baseMapScript)
-		local localLayer = instance:getLocalLayerFromGlobalLayer(mapGroup, layer)
+		if instance:hasLayer(layer, Utility.Peep.getPlayerModel(self:getPeep())) then
+			local mapGroup = instance:getMapGroup(layer)
+			local baseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
+			local baseMapScript = instance:getMapScriptByLayer(baseLayer)
+			local baseMapResource = baseMapScript and Utility.Peep.getResource(baseMapScript)
+			local localLayer = instance:getLocalLayerFromGlobalLayer(mapGroup, layer)
 
-		if baseMapResource then
-			mapInfo = {
-				resource = baseMapResource.name,
-				localLayer = localLayer
-			}
+			if baseMapResource then
+				mapInfo = {
+					resource = baseMapResource.name,
+					localLayer = localLayer
+				}
+			end
 		end
 	end
 
@@ -470,9 +594,9 @@ function DebugManipulateController:changeSkin(e)
 	end
 
 	local selfInstance = Utility.Peep.getInstance(self:getPeep())
-	local actorInstance = Utility.Peep.getInstance(actor:getPeep())
+	local otherInstance = Utility.Peep.getInstance(actor:getPeep())
 
-	if selfInstance ~= actorInstance then
+	if selfInstance ~= otherInstance then
 		return
 	end
 
@@ -538,6 +662,41 @@ function DebugManipulateController:transform(e)
 	if self.isRecording then
 		self:mergeOrRecord(Utility.Peep.getLayer(peep), peep, "transform", event)
 	end
+end
+
+function DebugManipulateController:setLayer(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	local prop = self:getGame():getStage():getPropByID(e.propID)
+	if not (actor or prop) then
+		return
+	end
+
+	local peep = (actor and actor:getPeep()) or (prop and prop:getPeep())
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local otherInstance = Utility.Peep.getInstance(peep)
+
+	if selfInstance ~= otherInstance then
+		return
+	end
+
+	local otherMapInfo = self:getMapInfo(e.layer)
+	if not otherMapInfo then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(peep), peep, "setLayer", {
+			destinationMapResource = destinationMapInfo.resource,
+			destinationMapLocalLayer = destinationMapInfo.localLayer,
+		})
+	end
+
+	local peepLayer = Utility.Peep.getLayer(peep)
+	local peepAbsolutePosition = Utility.Peep.getAbsolutePosition(peep)
+	local peepRelativePosition = Utility.Map.absolutePositionToRelativePosition(self:getDirector(), e.layer, peepAbsolutePosition)
+
+	Utility.Peep.teleport(peep, peepRelativePosition, e.layer)
 end
 
 function DebugManipulateController:orientateCamera(e)
