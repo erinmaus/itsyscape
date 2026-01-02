@@ -56,12 +56,12 @@ const glm::vec3& nbunny::SceneNodeTransform::get_previous_translation() const
 
 void nbunny::SceneNodeTransform::set_current_rotation(const glm::quat& value)
 {
-	current_rotation = value;
+	current_rotation = glm::normalize(value);
 }
 
 void nbunny::SceneNodeTransform::set_previous_rotation(const glm::quat& value)
 {
-	previous_rotation = value;
+	previous_rotation = glm::normalize(value);
 }
 
 const glm::quat& nbunny::SceneNodeTransform::get_current_rotation() const
