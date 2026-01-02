@@ -531,6 +531,55 @@ function DebugManipulate.FireProjectileAction:done()
 	end
 end
 
+DebugManipulate.SimulateAttackAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.SimulateAttackAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.SimulateAttackAction:start()
+	DebugManipulate.Action.start(self)
+
+	local root = self:getUIView():getRoot()
+	self.interactFacade = DebugManipulate.InteractFacade(self:getInterface())
+	self.interactFacade:setActionGenerator(function(interface, probe, actions)
+		for _, hit in probe:hits() do
+			local object = hit:getObject()
+
+			if Class.isCompatibleType(object, Actor) then
+				interface:buildActorAction(actions, object, {
+					verb = "Simulate-Attack-Vs",
+					callback = function()
+						self:getInterface():simulateAttack(self:getObject(), object)
+						self:getInterface():stopAction()
+					end
+				})
+			end
+		end
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Cancel",
+			objectID = -1,
+			objectType = "action",
+			object = "Simulate attack action",
+			callback = function()
+				self:close()
+			end
+		})
+	end)
+
+	self:getInterface():addFacade(self.interactFacade)
+end
+
+function DebugManipulate.SimulateAttackAction:done()
+	DebugManipulate.Action.done(self)
+
+	if self.interactFacade then
+		self:getInterface():removeFacade(self.interactFacade)
+	end
+end
+
 DebugManipulate.WIDTH  = 800
 DebugManipulate.HEIGHT = 600
 DebugManipulate.TITLE_HEIGHT = 48
@@ -1440,6 +1489,27 @@ function DebugManipulate:fireProjectileAt(sourceObject, destinationObject, proje
 	})
 end
 
+function DebugManipulate:fireSpell(sourceObject, destinationObject, projectile)
+	local sourcePeepID = Class.isCompatibleType(sourceObject, Actor) and sourceObject:getID()
+	local destinationPeepID = Class.isCompatibleType(destinationObject, Actor) and destinationObject:getID()
+
+	self:sendPoke("fireProjectile", nil, {
+		peepID = sourcePeepID,
+		targetPeepID = destinationPeepID,
+		projectile = projectile
+	})
+end
+
+function DebugManipulate:simulateAttack(sourceObject, destinationObject)
+	local peepID = Class.isCompatibleType(sourceObject, Actor) and sourceObject:getID()
+	local targetPeepID = Class.isCompatibleType(destinationObject, Actor) and destinationObject:getID()
+
+	self:sendPoke("simulateAttack", nil, {
+		peepID = peepID,
+		targetPeepID = targetPeepID
+	})
+end
+
 function DebugManipulate:orientateCamera(object)
 	self:sendPoke("orientateCamera", nil, {
 		actorID = object:getID()
@@ -1551,6 +1621,13 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 		verb = "Fire-Projectile",
 		callback = function()
 			self:beginAction(DebugManipulate.FireProjectileAction, object, hit)
+		end
+	})
+
+	self:buildActorAction(actions, object, {
+		verb = "Simulate-Attack",
+		callback = function()
+			self:beginAction(DebugManipulate.SimulateAttackAction, object, hit)
 		end
 	})
 end

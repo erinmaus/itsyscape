@@ -1163,6 +1163,31 @@ function Peep.equipXShield(peep, id)
 	end
 end
 
+function Peep.getSpellType(resource, gameDB)
+	if type(resource) == 'string' then
+		resource = gameDB:getResource(resource, "Spell")
+	end
+
+	if not resource then
+		return nil
+	end
+
+	local TypeName = string.format("Resources.Game.Spells.%s.Spell", resource.name)
+	local s, r = pcall(require, TypeName)
+	if s then
+		return r, resource
+	else
+		Log.error("Couldn't load spell '%s': %s", Utility.getName(resource, gameDB), r)
+	end
+
+	return nil
+end
+
+function Peep.getSpell(resource, game)
+	local Type, r = Peep.getSpellType(resource, game:getGameDB())
+	return Type and Type(r.name, game)
+end
+
 function Peep.getEffectType(resource, gameDB)
 	if type(resource) == 'string' then
 		resource = gameDB:getResource(resource, "Effect")

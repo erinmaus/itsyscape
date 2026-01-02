@@ -16,9 +16,7 @@ local MiasmaEffect = require "Resources.Game.Effects.Miasma.Effect"
 
 local Miasma = Class(CombatSpell)
 
-function Miasma:cast(peep, target)
-	CombatSpell.cast(self, peep, target)
-
+function Miasma:show(peep, target, visualOnly)
 	local position = Utility.Peep.getPosition(peep)
 	local size = Utility.Peep.getSize(peep)
 	local x = love.math.random() * (size.x * 2 + 4) - (size.x + 2)
@@ -34,12 +32,26 @@ function Miasma:cast(peep, target)
 				t.actor = a
 			end
 
+			if visualOnly then
+				Utility.Peep.applyEffect(p, "Tutorial_NoDamage", true)
+			end
+
 			local game = p:getDirector():getGameInstance()
 			local stage = game:getStage()
 
 			stage:fireProjectile("Miasma", peep, p)
 		end)
+
+		return skeleton
 	end
+
+	return nil
+end
+
+function Miasma:cast(peep, target)
+	CombatSpell.cast(self, peep, target)
+
+	self:show(peep, target)
 
 	local effect = target:getEffect(MiasmaEffect)
 	if not effect then

@@ -16,6 +16,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local Mite = require "Resources.Game.Peeps.Arachnid.Mite"
@@ -103,6 +104,7 @@ function ShadowMite:update(director, game)
 	end
 
 	self:removeBehavior(TargetTileBehavior)
+	self:removeBehavior(TargetPositionBehavior)
 end
 
 return ShadowMite

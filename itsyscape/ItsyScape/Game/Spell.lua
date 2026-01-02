@@ -125,6 +125,10 @@ function Spell:canCast(peep)
 	return result
 end
 
+function Spell:show(peep, target, visualOnly)
+	-- Nothing.
+end
+
 function Spell:cast(...)
 	-- Nothing.
 end

@@ -14,10 +14,12 @@ local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
+local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local Controller = require "ItsyScape.UI.Controller"
 
 local DebugManipulateController = Class(Controller)
@@ -125,6 +127,12 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:orientateCamera(e)
 	elseif actionID == "fireProjectile" then
 		self:fireProjectile(e)
+	elseif actionID == "fireSpell" then
+		self:fireSpell(e)
+	elseif actionID == "simulateAttack" then
+		self:simulateAttack(e)
+	elseif actionID == "face" then
+		self:face(e)
 	elseif actionID == "editAction" then
 		self:editAction(e)
 	elseif actionID == "shiftAction" then
@@ -579,7 +587,7 @@ function DebugManipulateController:fireProjectile(e)
 		return
 	end
 
-	local destinationMapInfo = self:getMapInfo(Utility.Peep.getLayer(sourcePeep))
+	local destinationMapInfo = self:getMapInfo(Utility.Peep.getLayer(destinationPeep))
 	if not destinationMapInfo then
 		return
 	end
@@ -595,6 +603,197 @@ function DebugManipulateController:fireProjectile(e)
 	end
 
 	self:getGame():getStage():fireProjectile(e.projectile or "AirStrike", sourcePeep, destinationPeep)
+end
+
+function DebugManipulateController:fireSpell(e)
+	local actor = e.peepID and self:getGame():getStage():getActorByID(e.peepID)
+	local targetActor = e.targetPeepID and self:getGame():getStage():getActorByID(e.targetPeepID)
+
+	local peep = actor and peep:getPeep()
+	local targetPeep = targetActor and targetActor:getPeep()
+	if not (sourcePeep and targetPeep) then
+		return
+	end
+
+	local instance = Utility.Peep.getInstance(sourcePeep)
+	local targetInstance = Utility.Peep.getInstance(targetPeep)
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+
+	if instance ~= selfInstance or targetInstance ~= selfInstance then
+		return
+	end
+
+	local otherTargetInfo = self:getTargetInfo(targetPeep)
+	if not otherTargetInfo then
+		return
+	end
+
+	local otherMapInfo = self:getMapInfo(Utility.Peep.getLayer(targetPeep))
+	if not otherMapInfo then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(sourcePeep), sourcePeep, "fireSpell", {
+			targetMapObjectName = otherTargetInfo.mapObjectName,
+			targetPeepID = otherTargetInfo.peepID,
+			targetMapResource = otherMapInfo.resource,
+			targetMapLocalLayer = otherMapInfo.localLayer,
+			spell = e.spell or "AirStrike"
+		})
+	end
+
+	if spell then
+		local spellInstance = Utility.Peep.getSpell(e.spell or "AirStrike", self:getGame())
+		spellInstance:show(sourcePeep, targetPeep, true)
+	end
+end
+
+function DebugManipulateController:face(e)
+	local actor = e.peepID and self:getGame():getStage():getActorByID(e.peepID)
+	local targetActor = e.targetPeepID and self:getGame():getStage():getActorByID(e.targetPeepID)
+
+	local peep = actor and peep:getPeep()
+	local targetPeep = target and target:getPeep()
+	if not (sourcePeep and destinationPeep) then
+		return
+	end
+
+	local instance = Utility.Peep.getInstance(peep)
+	local targetInstance = Utility.Peep.getInstance(targetPeep)
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+
+	if instance ~= selfInstance or targetInstance ~= selfInstance then
+		return
+	end
+
+	local otherTargetInfo = self:getTargetInfo(targetPeep)
+	if not otherTargetInfo then
+		return
+	end
+
+	local otherMapInfo = self:getMapInfo(Utility.Peep.getLayer(targetPeep))
+	if not otherMapInfo then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(peep), peep, "face", {
+			targetMapObjectName = otherTargetInfo.mapObjectName,
+			targetPeepID = otherTargetInfo.peepID,
+			targetMapResource = otherMapInfo.resource,
+			targetMapLocalLayer = otherMapInfo.localLayer
+		})
+	end
+
+	Utility.Peep.face(peep, targetPeep)
+end
+
+function DebugManipulateController:simulateAttack(e)
+	local actor = e.peepID and self:getGame():getStage():getActorByID(e.peepID)
+	local targetActor = e.targetPeepID and self:getGame():getStage():getActorByID(e.targetPeepID)
+
+	local peep = actor and actor:getPeep()
+	local targetPeep = targetActor and targetActor:getPeep()
+	if not (peep and targetPeep) then
+		return
+	end
+
+	local instance = Utility.Peep.getInstance(peep)
+	local targetInstance = Utility.Peep.getInstance(targetPeep)
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+
+	if instance ~= selfInstance or targetInstance ~= selfInstance then
+		return
+	end
+
+	local otherTargetInfo = self:getTargetInfo(targetPeep)
+	if not otherTargetInfo then
+		return
+	end
+
+	local otherMapInfo = self:getMapInfo(Utility.Peep.getLayer(targetPeep))
+	if not otherMapInfo then
+		return
+	end
+
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+	local animation, projectile, spell
+	if weapon then
+		local animations = {
+			string.format("animation-attack-%s-%s", weapon:getBonusForStance(peep):lower(), weapon:getWeaponType()),
+			string.format("animation-attack-%s", weapon:getBonusForStance(peep):lower()),
+			string.format("animation-attack-%s", weapon:getWeaponType()),
+			"animation-attack"
+		}
+
+		for _, a in ipairs(animations) do
+			local resource = peep:getResource(a, "ItsyScape.Graphics.AnimationResource")
+			if resource then
+				animation = resource
+				break
+			end
+		end
+
+		local activeSpell = peep:getBehavior(ActiveSpellBehavior)
+		local stance = peep:getBehavior(StanceBehavior)
+
+		spell = stance and stance.useSpell and activeSpell and activeSpell.spell and activeSpell.spell
+		projectile = not spell and weapon:getProjectile(peep) or (spell and spell:getProjectile())
+	else
+		animation = peep:getResource("animation-attack", "ItsyScape.Graphics.AnimationResource")
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(peep), peep, "face", {
+			targetMapObjectName = otherTargetInfo.mapObjectName,
+			targetPeepID = otherTargetInfo.peepID,
+			targetMapResource = otherMapInfo.resource,
+			targetMapLocalLayer = otherMapInfo.localLayer
+		})
+
+		if animation then
+			self:record(Utility.Peep.getLayer(peep), peep, "playAnimation", {
+				slot = "combat-attack",
+				priority = 5000,
+				animation = animation:getFilename()
+			})
+		end
+
+		if spell then
+			self:record(Utility.Peep.getLayer(peep), peep, "fireSpell", {
+				targetMapObjectName = otherTargetInfo.mapObjectName,
+				targetPeepID = otherTargetInfo.peepID,
+				targetMapResource = otherMapInfo.resource,
+				targetMapLocalLayer = otherMapInfo.localLayer,
+				spell = spell:getID()
+			})
+		end
+
+		if projectile then
+			self:record(Utility.Peep.getLayer(peep), peep, "fireProjectile", {
+				targetMapObjectName = otherTargetInfo.mapObjectName,
+				targetPeepID = otherTargetInfo.peepID,
+				targetMapResource = otherMapInfo.resource,
+				targetMapLocalLayer = otherMapInfo.localLayer,
+				projectile = projectile
+			})
+		end
+	end
+
+	Utility.Peep.face(peep, targetPeep)
+
+	if animation then
+		Utility.Peep.playAnimation(peep, "combat-attack", 5000, animation:getFilename())
+	end
+
+	if spell then
+		spell:show(peep, targetPeep, true)
+	end
+
+	if projectile then
+		self:getGame():getStage():fireProjectile(projectile, peep, targetPeep)
+	end
 end
 
 function DebugManipulateController:editAction(e)
