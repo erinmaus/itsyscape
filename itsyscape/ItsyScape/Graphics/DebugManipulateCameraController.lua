@@ -14,7 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
-local MapCurve = require "ItsyScape.MapCurve.MapCurve"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local DebugManipulateCameraController = Class(CameraController)
 DebugManipulateCameraController.CAMERA_VERTICAL_ROTATION = math.pi / 2
@@ -40,21 +40,14 @@ function DebugManipulateCameraController:new(...)
 end
 
 function DebugManipulateCameraController:reset()
-	self.previousRotation = Quaternion.IDENTITY
-	self.currentRotation = Quaternion.IDENTITY
-
-	self.previousTranslation = Vector.ZERO
-	self.currentTranslation = Vector.ZERO
-
-	self.currentActor = false
-	self.previousActor = false
-
 	self.currentDelay = 0
-	self.currentDuration = 1
-	self.currentElapsed = 1
-	self.currentTween = "linear"
+	self.currentDuration = 0
+	self.currentElapsed = 0
+	self.currentExcessDelta = 0
+	self.currentCurve = nil
 
 	self.pending = {}
+	self.currentIndex = 1
 end
 
 function DebugManipulateCameraController:onCopyTransforms()
@@ -81,66 +74,53 @@ function DebugManipulateCameraController:onDisableInteraction()
 	self.isInteractive = self.interactiveLock <= 0
 end
 
-function DebugManipulateCameraController:orientateToActor(nextActor, delay, duration, tween)
-	local previousActor = self.previousActor
-	local currentActor = self.currentActor
-
-	self.previousActor = self.currentActor
-	self.currentActor = nextActor
-
-	if previousActor and currentActor then
-		local delta = self:getDelta()
-
-		self.previousRotation = self.previousRotation:slerp(self.currentRotation, delta):keep()
-		self.previousTranslation = self.previousTranslation:lerp(self.currentTranslation, delta):keep()
-
-		local nextActorView = self:getGameView():getView(nextActor)
-		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
-		local translation, rotation = MathCommon.decomposeTransform(transform)
-
-		self.currentTranslation = translation:keep()
-		self.currentRotation = rotation:keep()
-	elseif currentActor then
-		local nextActorView = self:getGameView():getView(nextActor)
-		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
-		local translation, rotation = MathCommon.decomposeTransform(transform)
-
-		self.currentTranslation = translation:keep()
-		self.currentRotation = rotation:keep()
-	else
-		local nextActorView = self:getGameView():getView(nextActor)
-		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
-		local translation, rotation = MathCommon.decomposeTransform(transform)
-
-		self.previousTranslation = translation:keep()
-		self.currentTranslation = translation:keep()
-
-		self.previousRotation = rotation:keep()
-		self.currentRotation = rotation:keep()
-	end
-
-	self.currentDelay = delay
-	self.currentDuration = duration
-	self.currentElapsed = 0
-	self.currentTween = tween
-end
-
 function DebugManipulateCameraController:onOrientateToActor(actorID, delay, duration, tween)
 	local nextActor = self:getGameView():getActorByID(actorID)
 	if not nextActor then
 		return
 	end
 
-	if self.currentElapsed < self.currentDelay + self.currentDuration or #self.pending > 0 then
-		table.insert(self.pending, {
-			actor = nextActor,
-			delay = delay,
-			duration = duration,
-			tween = tween
-		})
-	else
-		self:orientateToActor(nextActor, delay, duration, tween)
+	if self.currentElapsed >= self.currentDuration and self.currentDuration > 0 then
+		print(">>> reset")
+		self:reset()
 	end
+
+	print(">>> add pending", nextActor:getID())
+	table.insert(self.pending, {
+		actor = nextActor,
+		delay = delay or 0,
+		duration = duration or 0,
+		tween = tween
+	})
+
+	self:rebuildMapCurve()
+end
+
+function DebugManipulateCameraController:rebuildMapCurve()
+	local totalDuration = 0
+
+	local positions = {}
+	local rotations = {}
+	for _, p in ipairs(self.pending) do
+		totalDuration = totalDuration + (p.duration or 1)
+
+		local actorView = self:getGameView():getView(p.actor)
+		local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1)
+		local translation, rotation = MathCommon.decomposeTransform(transform)
+
+		table.insert(positions, { translation:get() })
+		table.insert(rotations, { rotation:get() })
+	end
+
+	self.currentDuration = totalDuration
+	self.currentCurve = MapCurve(nil, {
+		linear = false,
+		width = 1,
+		height = 1,
+		unit = 1,
+		positions = positions,
+		rotations = rotations
+	})
 end
 
 function DebugManipulateCameraController:copyActorTransforms(actor)
@@ -170,10 +150,34 @@ end
 function DebugManipulateCameraController:update(delta)
 	CameraController.update(self, delta)
 
-	self.currentElapsed = math.min(self.currentElapsed + delta, self.currentDuration + self.currentDelay)
-	if self.currentElapsed >= self.currentDuration + self.currentDelay and #self.pending > 0 then
-		local p = table.remove(self.pending, 1)
-		self:orientateToActor(p.actor, p.delay, p.duration, p.tween)
+	if self.currentIndex <= #self.pending then
+		local p = self.pending[self.currentIndex]
+
+		if self.currentDelay < p.delay then
+			local nextDelay = self.currentDelay + delta + self.currentExcessDelta
+			local remainingDelta = math.max(nextDelay - p.delay, 0)
+
+			self.currentDelay = math.min(nextDelay, p.delay)
+			self.currentExcessDelta = remainingDelta
+		elseif self.currentElapsed <= self.currentDuration then
+			local nextElapsed = self.currentElapsed + delta + self.currentExcessDelta
+
+			local pendingDuration = 0
+			for i = 1, self.currentIndex do
+				pendingDuration = pendingDuration + self.pending[i].duration
+			end
+
+			local nextDuration = pendingDuration + (self.pending[self.currentIndex + 1] and self.pending[self.currentIndex + 1].duration or 0)
+
+			local remainingDelta = math.max(nextElapsed - pendingDuration, 0)
+			self.currentExcessDelta = remainingDelta
+
+			self.currentElapsed = math.min(nextElapsed, nextDuration)
+			if self.currentElapsed >= pendingDuration then
+				self.currentDelay = 0
+				self.currentIndex = self.currentIndex + 1
+			end
+		end
 	end
 end
 
@@ -276,17 +280,11 @@ function DebugManipulateCameraController:pokeInterface(action, ...)
 end
 
 function DebugManipulateCameraController:getDelta()
-	local delta
-	do
-		local numerator = math.max(self.currentElapsed - self.currentDelay, 0)
-		if self.currentDuration > 0 then
-			delta = numerator / self.currentDuration
-		else
-			delta = 1
-		end
+	if self.currentDuration == 0 then
+		return 1
 	end
 
-	return (Tween[self.currentTween] or Tween.linear)(math.clamp(delta))
+	return Tween.sineEaseInOut(math.clamp(self.currentElapsed / self.currentDuration))
 end
 
 function DebugManipulateCameraController:draw()
@@ -298,9 +296,14 @@ function DebugManipulateCameraController:draw()
 	camera:setVerticalRotation(-math.pi / 2)
 	camera:setHorizontalRotation(math.pi)
 
-	local delta = self:getDelta()
-	local rotation = self.previousRotation:slerp(self.currentRotation, delta):getNormal()
-	local translation = self.previousTranslation:lerp(self.currentTranslation, delta)
+	local translation, rotation
+	if self.currentCurve then
+		local delta = self:getDelta()
+		print(">>> delta", delta, "index", self.currentIndex)
+		translation, rotation = self.currentCurve:evaluate(delta)
+	else
+		translation, rotation = Vector.ZERO, Quaternion.IDENTITY
+	end
 
 	camera:setRotation((rotation * self.rotationOffset * self.CONSTANT_ROTATION):getNormal())
 	camera:setPosition(translation + self.translationOffset)

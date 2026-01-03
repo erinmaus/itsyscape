@@ -556,6 +556,15 @@ function MapCurve:render(depth, result)
 	return self.positionCurve:render(depth, result)
 end
 
+function MapCurve:evaluate(t)
+	local curvePosition = self:evaluatePosition(t)
+	local curveRotation = self:evaluateRotation(t):getNormal()
+	local curveNormal = self:evaluateNormal(t):getNormal()
+	local curveScale = self:evaluateScale(t)
+
+	return curvePosition, curveRotation, curveNormal, curveScale
+end
+
 function MapCurve:transform(point, rotation)
 	if self.positionCurve:length() <= 1 then
 		return point, rotation
