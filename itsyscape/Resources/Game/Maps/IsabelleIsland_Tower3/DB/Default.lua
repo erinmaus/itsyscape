@@ -295,7 +295,7 @@ end
 M["Brazier_Isabelle7"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 65.000000,
+		PositionX = 68.500000,
 		PositionY = 12.000000,
 		PositionZ = 83.000000,
 		RotationX = 0.000000,
@@ -319,7 +319,7 @@ end
 M["Brazier_Isabelle8"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 53.000000,
+		PositionX = 48.750000,
 		PositionY = 12.000000,
 		PositionZ = 83.000000,
 		RotationX = 0.000000,
