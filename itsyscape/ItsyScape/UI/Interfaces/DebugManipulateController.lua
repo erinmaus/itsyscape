@@ -62,7 +62,7 @@ function DebugManipulateController.REPLAYED_ACTIONS:spawnActor(action)
 			end)
 
 			repeat
-				coroutine.yield(DebugManipulateController.ACTION_PENDING)
+				coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
 			until isComplete
 		end
 
@@ -88,7 +88,7 @@ function DebugManipulateController.REPLAYED_ACTIONS:spawnProp(action)
 			end)
 
 			repeat
-				coroutine.yield(DebugManipulateController.ACTION_PENDING)
+				coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
 			until isComplete
 		end
 
@@ -706,10 +706,7 @@ function DebugManipulateController:stopRecording()
 			table.insert(preset, self.recordingIndex, self.recordingQueue[i])
 		end
 
-		print(">>> D", Log.dump(preset))
-
 		presetStorage:set(preset)
-		print(">>> D2", Log.dump(presetStorage:get()))
 	else
 		for i = 1, #self.recordingQueue do
 			presetStorage:set(presetStorage:length() + 1, self.recordingQueue[i])

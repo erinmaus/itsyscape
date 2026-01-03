@@ -81,11 +81,9 @@ function DebugManipulateCameraController:onOrientateToActor(actorID, delay, dura
 	end
 
 	if self.currentElapsed >= self.currentDuration and self.currentDuration > 0 then
-		print(">>> reset")
 		self:reset()
 	end
 
-	print(">>> add pending", nextActor:getID())
 	table.insert(self.pending, {
 		actor = nextActor,
 		delay = delay or 0,
@@ -299,7 +297,6 @@ function DebugManipulateCameraController:draw()
 	local translation, rotation
 	if self.currentCurve then
 		local delta = self:getDelta()
-		print(">>> delta", delta, "index", self.currentIndex)
 		translation, rotation = self.currentCurve:evaluate(delta)
 	else
 		translation, rotation = Vector.ZERO, Quaternion.IDENTITY
