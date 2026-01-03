@@ -86,13 +86,20 @@ function DebugManipulateCameraController:orientateToActor(nextActor, delay, dura
 	self.currentActor = nextActor
 
 	if previousActor and currentActor then
-		local delta = math.max(self.currentElapsed - self.currentDelay, 0) / self.currentDuration
-		local mu = (Tween[self.currentTween] or Tween.linear)(delta)
+		local delta = self:getDelta()
 
-		self.previousRotation = self.previousRotation:slerp(self.currentRotation, mu):keep()
-		self.previousTranslation = self.previousTranslation:lerp(self.currentTranslation, mu):keep()
+		self.previousRotation = self.previousRotation:slerp(self.currentRotation, delta):keep()
+		self.previousTranslation = self.previousTranslation:lerp(self.currentTranslation, delta):keep()
+
+		local nextActorView = self:getGameView():getView(nextActor)
+		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		local translation, rotation = MathCommon.decomposeTransform(transform)
+
+		self.currentTranslation = translation:keep()
+		self.currentRotation = rotation:keep()
 	elseif currentActor then
-		local nextActorView = self:getGameView():getView(currentActor)
+		local nextActorView = self:getGameView():getView(nextActor)
+		local transform = nextActorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local translation, rotation = MathCommon.decomposeTransform(transform)
 
 		self.currentTranslation = translation:keep()
@@ -250,15 +257,7 @@ function DebugManipulateCameraController:pokeInterface(action, ...)
 	end
 end
 
-function DebugManipulateCameraController:draw()
-	CameraController.draw(self)
-
-	local camera = self:getCamera()
-
-	camera:setDistance(0)
-	camera:setVerticalRotation(-math.pi / 2)
-	camera:setHorizontalRotation(math.pi)
-
+function DebugManipulateCameraController:getDelta()
 	local delta
 	do
 		local numerator = math.max(self.currentElapsed - self.currentDelay, 0)
@@ -269,10 +268,21 @@ function DebugManipulateCameraController:draw()
 		end
 	end
 
-	local mu = (Tween[self.currentTween] or Tween.linear)(math.clamp(delta))
+	return (Tween[self.currentTween] or Tween.linear)(math.clamp(delta))
+end
 
-	local rotation = self.previousRotation:slerp(self.currentRotation, mu)
-	local translation = self.previousTranslation:lerp(self.currentTranslation, mu)
+function DebugManipulateCameraController:draw()
+	CameraController.draw(self)
+
+	local camera = self:getCamera()
+
+	camera:setDistance(0)
+	camera:setVerticalRotation(-math.pi / 2)
+	camera:setHorizontalRotation(math.pi)
+
+	local delta = self:getDelta()
+	local rotation = self.previousRotation:slerp(self.currentRotation, delta):getNormal()
+	local translation = self.previousTranslation:lerp(self.currentTranslation, delta)
 
 	camera:setRotation((rotation * self.rotationOffset * self.CONSTANT_ROTATION):getNormal())
 	camera:setPosition(translation + self.translationOffset)

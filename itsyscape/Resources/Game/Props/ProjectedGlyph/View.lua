@@ -62,10 +62,12 @@ function ProjectedGlyph:generate()
 	local w = halfWidth * 2 + 1
 	local h = halfHeight * 2 + 1
 
+	local state = self:getProp():getState()
+
 	local mapMesh = MapMeshSceneNode()
 	mapMesh:fromMap(map, self.tileSet, x, y, w, h, MapMeshMask(), MapMeshIslandProcessor(map, self.tileSet))
 	mapMesh:setParent(gameView:getMapSceneNode(self.currentLayer))
-	mapMesh:getTransform():setLocalTranslation(Vector(0, 0.25, 0))
+	mapMesh:getTransform():setLocalTranslation(Vector(0, 0.25 + (state.elevation or 0), 0))
 
 	local canvasWidth = w * self.RESOLUTION
 	local canvasHeight = h * self.RESOLUTION
@@ -134,7 +136,7 @@ function ProjectedGlyph:tick()
 			self.glyphInstance = OldOneGlyphInstance(g, glyphManager)
 		end
 
-		self.currentglyph = glyph
+		self.currentGlyph = glyph
 	end
 
 	self.light:setColor(Color(unpack(state.glyphColor)))
@@ -146,14 +148,13 @@ function ProjectedGlyph:tick()
 	self.currentTime = nextTime
 end
 
-function ProjectedGlyph:_drawRite(glyph, projections, offset, color, alpha)
+function ProjectedGlyph:_drawRite(glyph, projections, offset, color)
 	local glyphManager = self:getGameView():getGlyphManager()
 	local width, height = self.texture:getWidth(), self.texture:getHeight()
 
 	love.graphics.push("all")
 
-	local r, g, b = color:get()
-	love.graphics.setColor(r, g, b, alpha)
+	love.graphics.setColor(color:get())
 
 	glyphManager:draw(
 		glyph,
@@ -168,6 +169,8 @@ end
 
 function ProjectedGlyph:update()
 	local state = self:getProp():getState()
+
+	self.mapMesh:getMaterial():setAlpha(state.alpha or 1)
 
 	local time = math.lerp(self.previousTime or 0, self.currentTime or 0, _APP:getFrameDelta())
 

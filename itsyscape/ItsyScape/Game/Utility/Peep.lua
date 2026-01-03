@@ -1077,16 +1077,15 @@ function Peep.getEquippedWeapon(peep, includeXWeapon)
 end
 
 function Peep.getEquippedShield(peep, includeXShield)
-	local rightHandItem = Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
-	if rightHandItem then
-		local shieldLogic = peep:getDirector():getItemManager():getLogic(rightHandItem:getID())
+	local leftHandItem = Peep.getEquippedItem(peep, Equipment.PLAYER_SLOT_LEFT_HAND)
+	if leftHandItem then
+		local shieldLogic = peep:getDirector():getItemManager():getLogic(leftHandItem:getID())
 		if shieldLogic:isCompatibleType(Shield) then
-			return shieldLogic, rightHandItem
+			return shieldLogic, leftHandItem
 		end
 	end
 
 	if includeXShield then
-		
 		local xShield = peep:getBehavior(ShieldBehavior)
 		if xShield and xShield.shield and xShield.shield:isCompatibleType(Shield) then
 			return xShield.shield

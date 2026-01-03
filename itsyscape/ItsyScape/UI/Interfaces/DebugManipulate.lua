@@ -202,6 +202,53 @@ function DebugManipulate.SpawnPropAction:_spawn(_, value, suggestion)
 	self:getInterface():stopAction()
 end
 
+DebugManipulate.SpawnGlyphCircleAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.SpawnGlyphCircleAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.SpawnGlyphCircleAction:start()
+	DebugManipulate.Action.start(self)
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._spawn, self)
+	propertiesPrompt.onCancel:register(self.close, self)
+	propertiesPrompt:setText("Spawn Glyph Circle")
+	propertiesPrompt:setProperties({
+		PropertiesPrompt.Property("fadeDelay", "Fade Delay", "number", 1000),
+		PropertiesPrompt.Property("fadeDuration", "Fade Duration", "number", 5000),
+		PropertiesPrompt.Property("glyphDescription", "Glyph Description", "string", "Lorem ipsum."),
+		PropertiesPrompt.Property("glyphHeight", "Glyph Height", "number", 8),
+		PropertiesPrompt.Property("glyphWidth", "Glyph Width", "number", 8),
+	})
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate.SpawnGlyphCircleAction:_spawn(_, properties, form)
+	local id = suggestion and suggestion:getID() or value
+
+	local _, _, layer = self:getObject():getTile()
+	local x, y, z = self:getObject():getPosition():get()
+	self:getInterface():sendPoke(
+		"spawnGlyphCircle",
+		nil, {
+			id = id,
+			layer = layer,
+			positionX = x,
+			positionY = y,
+			positionZ = z,
+			fadeDuration = form["Fade Duration"],
+			fadeDelay = form["Fade Delay"],
+			glyphDescription = form["Glyph Description"],
+			glyphHeight = form["Glyph Height"],
+			glyphWidth = form["Glyph Width"],
+		})
+
+	self:getInterface():stopAction()
+end
+
 DebugManipulate.SpawnActorAction = Class(DebugManipulate.Action)
 
 function DebugManipulate.SpawnActorAction:new(...)
@@ -1262,14 +1309,6 @@ function DebugManipulate:probePreset(presetInfo, button)
 		},
 		{
 			id = 2,
-			verb = "Delete",
-			object = object,
-			callback = function()
-				self:deletePreset(presetInfo)
-			end
-		},
-		{
-			id = 3,
 			verb = "Replay",
 			object = object,
 			callback = function()
@@ -1277,6 +1316,37 @@ function DebugManipulate:probePreset(presetInfo, button)
 			end
 		}
 	}
+
+	if self.pendingDeleteResource == presetInfo.resource and self.pendingDeleteID == presetInfo.id then
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Cancel-Delete",
+			object = object,
+			callback = function()
+				self.pendingDeleteResource = nil
+				self.pendingDeleteID = nil
+			end
+		})
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Confirm-Delete",
+			object = object,
+			callback = function()
+				self:deletePreset(presetInfo)
+			end
+		})
+	else
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Delete",
+			object = object,
+			callback = function()
+				self.pendingDeleteResource = presetInfo.resource
+				self.pendingDeleteID = presetInfo.id
+			end
+		})
+	end
 
 	local ui = self:getUIView()
 	ui:probe(actions, button:getAbsoluteCenter())
@@ -1429,7 +1499,7 @@ function DebugManipulate:setTiming(presetInfo, preset, actionIndex)
 	local properties = {
 		PropertiesPrompt.Property("duration", "Delay (ms)", "number", (action.timing and action.timing.delay or 0) * 1000),
 		PropertiesPrompt.Property("delay", "Duration (ms)", "number", (action.timing and action.timing.duration or 0) * 1000),
-		PropertiesPrompt.Property("mode", "Mode (sync/parallel/wait/off)", "string", action.timing and action.timing.mode or "sync"),
+		PropertiesPrompt.Property("mode", "Mode (sync/parallel/off)", "string", action.timing and action.timing.mode or "sync"),
 		PropertiesPrompt.Property("tween", "Tween", "string", action.timing and action.timing.tween or "sineEaseInOut")
 	}
 
@@ -1445,7 +1515,6 @@ end
 local VALID_MODES = {
 	sync = true,
 	parallel = true,
-	wait = true,
 	off = true,
 }
 
@@ -1454,7 +1523,7 @@ function DebugManipulate:_onEditPresetActionTiming(presetInfo, preset, actionInd
 
 	local delay = form["Delay (ms)"] / 1000
 	local duration = form["Duration (ms)"] / 1000
-	local mode = form["Mode (sync/parallel/wait/off)"]
+	local mode = form["Mode (sync/parallel/off)"]
 	local tween = form["Tween"]
 
 	if not VALID_MODES[mode] then
@@ -1561,6 +1630,14 @@ function DebugManipulate:_onCancelEditPresetAction(presetInfo, preset, actionInd
 	self:removePopup(popup)
 end
 
+function DebugManipulate:mergePresetAction(presetInfo, preset, actionIndex)
+	self:sendPoke("mergePrevious", nil, {
+		resource = presetInfo.resource,
+		id = presetInfo.id,
+		index = actionIndex
+	})
+end
+
 function DebugManipulate:shiftPresetAction(presetInfo, preset, actionIndex, nextActionIndex)
 	self:sendPoke("shiftAction", nil, {
 		resource = presetInfo.resource,
@@ -1578,16 +1655,16 @@ function DebugManipulate:deletePresetAction(presetInfo, preset, actionIndex)
 	})
 end
 
-function DebugManipulate:translateObject(object, translation)
+function DebugManipulate:translateObject(object, position)
 	local propID = Class.isCompatibleType(object, Prop) and object:getID()
 	local actorID = Class.isCompatibleType(object, Actor) and object:getID()
 
 	self:sendPoke("transform", nil, {
 		propID = propID,
 		actorID = actorID,
-		translationX = translation.x,
-		translationY = translation.y,
-		translationZ = translation.z,
+		positionX = position.x,
+		positionY = position.y,
+		positionZ = position.z,
 	})
 end
 
@@ -1710,22 +1787,30 @@ function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button,
 			},
 			{
 				id = 3,
-				verb = "Shift Up",
+				verb = "Merge-Previous",
+				object = name,
+				callback = function()
+					self:mergePresetAction(presetInfo, preset, actionIndex)
+				end
+			},
+			{
+				id = 4,
+				verb = "Shift-Up",
 				object = name,
 				callback = function()
 					self:shiftPresetAction(presetInfo, preset, actionIndex, math.max(actionIndex - 1, 1))
 				end
 			},
 			{
-				id = 4,
-				verb = "Shift Down",
+				id = 5,
+				verb = "Shift-Down",
 				object = name,
 				callback = function()
 					self:shiftPresetAction(presetInfo, preset, actionIndex, math.min(actionIndex + 1, #preset))
 				end
 			},
 			{
-				id = 5,
+				id = 6,
 				verb = "Delete",
 				object = name,
 				callback = function()
@@ -1868,6 +1953,13 @@ function DebugManipulate:buildTileActions(object, hit, actions)
 		verb = "Spawn-Prop",
 		callback = function()
 			self:beginAction(DebugManipulate.SpawnPropAction, object, hit)
+		end
+	})
+
+	self:buildTileAction(actions, object, {
+		verb = "Spawn-Glyph-Circle",
+		callback = function()
+			self:beginAction(DebugManipulate.SpawnGlyphCircleAction, object, hit)
 		end
 	})
 end

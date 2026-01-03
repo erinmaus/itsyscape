@@ -18,7 +18,8 @@ local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescri
 
 local ProjectedGlyph = Class(Prop)
 
-ProjectedGlyph.DEFAULT_FADE_COOLDOWN = 1
+ProjectedGlyph.DEFAULT_FADE_COOLDOWN  = 1
+ProjectedGlyph.DEFAULT_DELAY_COOLDOWN = 1
 
 function ProjectedGlyph:new(...)
 	Prop.new(self, ...)
@@ -29,22 +30,21 @@ function ProjectedGlyph:new(...)
 	local static = self:getBehavior(StaticBehavior)
 	static.type = StaticBehavior.PASSABLE
 
+	self.currentFadeCooldown = self.DEFAULT_FADE_COOLDOWN + self.DEFAULT_DELAY_COOLDOWN
+	self.fadeCooldownDuration = self.DEFAULT_FADE_COOLDOWN
+	self.fadeCooldownDelay = self.DEFAULT_DELAY_COOLDOWN
+	self.isFadingOut = false
+
 	self:addPoke("fade")
 	self:addPoke("faded")
 end
 
-function ProjectedGlyph:ready(...)
-	Prop.ready(self, ...)
-
-	self.currentFadeCooldown = self.DEFAULT_FADE_COOLDOWN
-	self.fadeCooldownDuration = self.DEFAULT_FADE_COOLDOWN
-	self.isFadingOut = false
-end
-
-function ProjectedGlyph:onFade(duration)
+function ProjectedGlyph:onFade(duration, delay)
 	duration = duration or self.DEFAULT_FADE_COOLDOWN
+	delay = delay or self.DEFAULT_DELAY_COOLDOWN
 
-	self.currentFadeCooldown = duration
+	self.currentFadeCooldown = 0
+	self.fadeCooldownDelay = delay
 	self.fadeCooldownDuration = duration
 	self.isFadingOut = true
 end
@@ -78,6 +78,11 @@ function ProjectedGlyph:getPropState()
 	width = math.floor(width / map:getCellSize())
 	height = math.floor(height / map:getCellSize())
 
+	local i, j = Utility.Peep.getTile(self)
+	local center = map:getTileCenter(i, j)
+	local position = Utility.Peep.getPosition(self)
+	local elevation = math.max(position.y - center.y, 0)
+
 	local currentTime
 	do
 		local player = Utility.Peep.getPlayer(self)
@@ -89,8 +94,8 @@ function ProjectedGlyph:getPropState()
 		currentTime = currentTime or 0
 	end
 
-	local alpha = math.clamp((self.currentFadeCooldown or 0) / (self.fadeCooldownDuration or 1))
-	if not self.isFadingOut then
+	local alpha = math.clamp(math.max(self.currentFadeCooldown - self.fadeCooldownDelay, 0) / (self.fadeCooldownDuration or 1))
+	if self.isFadingOut then
 		alpha = 1 - alpha
 	end
 
@@ -103,6 +108,7 @@ function ProjectedGlyph:getPropState()
 		glyphColor = { Color.fromHexString("463779"):get() },
 		glowColor = { Color.fromHexString("f26722"):get() },
 		outlineColor = { Color.fromHexString("000000"):get() },
+		elevation = elevation
 	}
 end
 
@@ -110,9 +116,9 @@ function ProjectedGlyph:update(director, game)
 	Prop.update(self, director, game)
 
 	local delta = game:getDelta()
-	self.currentFadeCooldown = math.max(self.currentFadeCooldown - delta, 0)
+	self.currentFadeCooldown = math.min(self.currentFadeCooldown + delta, self.fadeCooldownDelay + self.fadeCooldownDuration)
 
-	if self.isFadingOut and self.currentFadeCooldown <= 0 then
+	if self.isFadingOut and self.currentFadeCooldown >= self.fadeCooldownDelay + self.fadeCooldownDuration then
 		self:pushPoke("faded")
 	end
 end

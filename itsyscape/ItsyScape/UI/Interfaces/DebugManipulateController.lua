@@ -19,7 +19,10 @@ local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
@@ -80,6 +83,44 @@ function DebugManipulateController.REPLAYED_ACTIONS:spawnProp(action)
 				action.event.positionY,
 				action.event.positionZ)
 			prop:getPeep():listen("finalize", function()
+				self:recordPeep(prop:getPeep(), action.target.peepID)
+				isComplete = true
+			end)
+
+			repeat
+				coroutine.yield(DebugManipulateController.ACTION_PENDING)
+			until isComplete
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:spawnGlyphCircle(action)
+	return function()
+		local layer, mapScript = self:getLayerFromMapInfo(action.map)
+		local map = self:getDirector():getMap(layer)
+
+		if not self:getPeepFromTargetInfo(action.target, layer) and map then
+			local isComplete = false
+
+			local prop = Utility.spawnPropAtPosition(
+				mapScript,
+				"ProjectedGlyph",
+				action.event.positionX,
+				action.event.positionY,
+				action.event.positionZ)
+
+			local _, description = prop:getPeep():addBehavior(OldOneDescriptionBehavior)
+			description.description = action.event.glyphDescription
+
+			Utility.Peep.setSize(prop:getPeep(), Vector((action.event.glyphWidth or 4) * map:getCellSize(), 1, (action.event.glyphHeight or 4) * map:getCellSize()))
+
+			prop:getPeep():listen("finalize", function()
+				if action.event.fadeDuration > 0 then
+					prop:getPeep():pushPoke("fade", action.event.fadeDuration / 1000, action.event.fadeDelay / 1000)
+				end
+
 				self:recordPeep(prop:getPeep(), action.target.peepID)
 				isComplete = true
 			end)
@@ -582,6 +623,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:spawnActor(e)
 	elseif actionID == "spawnProp" then
 		self:spawnProp(e)
+	elseif actionID == "spawnGlyphCircle" then
+		self:spawnGlyphCircle(e)
 	elseif actionID == "playAnimation" then
 		self:playAnimation(e)
 	elseif actionID == "changeSkin" then
@@ -602,6 +645,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:face(e)
 	elseif actionID == "editAction" then
 		self:editAction(e)
+	elseif actionID == "mergePrevious" then
+		self:mergePrevious(e)
 	elseif actionID == "shiftAction" then
 		self:shiftAction(e)
 	elseif actionID == "deleteAction" then
@@ -698,6 +743,13 @@ function DebugManipulateController:startReplay(e)
 	local preset = storage:get()
 	self.replay = coroutine.wrap(self:generateReplay(preset))
 
+	for peep in pairs(self.peepToID) do
+		local resource = Utility.Peep.getResource(peep)
+		if resource.name == "CameraDolly" then
+			resource:poke("hidden")
+		end
+	end
+
 	local player = Utility.Peep.getPlayerModel(self:getPeep())
 	player:pushCamera("DebugManipulate")
 	player:pokeCamera("copyTransforms")
@@ -711,6 +763,13 @@ function DebugManipulateController:stopReplay()
 
 	local player = Utility.Peep.getPlayerModel(self:getPeep())
 	player:popCamera()
+
+	for peep in pairs(self.peepToID) do
+		local resource = Utility.Peep.getResource(peep)
+		if resource.name == "CameraDolly" then
+			resource:poke("hidden")
+		end
+	end
 end
 
 function DebugManipulateController:newPreset(e)
@@ -795,10 +854,22 @@ function DebugManipulateController:recordPeep(target, peepID)
 end
 
 function DebugManipulateController:getRecordedPeepID(target)
+	local id = self.peepToID[target]
+	if target and target:wasPoofed() then
+		self.peepToID[target] = nil
+		self.idToPeep[id] = nil
+	end
+
 	return self.peepToID[target]
 end
 
 function DebugManipulateController:getRecordedPeep(id)
+	local target = self.idToPeep[id]
+	if target and target:wasPoofed() then
+		self.peepToID[target] = nil
+		self.idToPeep[id] = nil
+	end
+
 	return self.idToPeep[id]
 end
 
@@ -952,7 +1023,7 @@ function DebugManipulateController:mergeOrRecord(layer, targetPeep, actionType, 
 	if previousAction and previousAction.type == action.type and
 	   previousAction.map.resource == action.map.resource and
 	   previousAction.map.localLayer == action.map.localLayer and
-	   (previousAction.target.mapObjectName == action.target.mapObjectName or previousAction.target.peepID == action.target.peepID)
+	   ((previousAction.target.mapObjectName and previousAction.target.mapObjectName == action.target.mapObjectName) or (previousAction.target.peepID and previousAction.target.peepID == action.target.peepID))
 	then
 		for k, v in pairs(action.event) do
 			previousAction.event[k] = v
@@ -1006,6 +1077,40 @@ function DebugManipulateController:spawnProp(e)
 			positionX = x,
 			positionY = y,
 			positionZ = z,
+		})
+	end
+end
+
+function DebugManipulateController:spawnGlyphCircle(e)
+	local instance = Utility.Peep.getInstance(self:getPeep())
+	local mapScript = instance:getMapScriptByLayer(e.layer)
+	local map = self:getDirector():getMap(e.layer)
+	if not (mapScript and map) then
+		return
+	end
+	
+	local x, y, z = e.positionX, e.positionY, e.positionZ
+	local prop = Utility.spawnPropAtPosition(mapScript, "ProjectedGlyph", x, y, z)
+	Utility.Peep.setSize(prop:getPeep(), Vector((e.glyphWidth or 4) * map:getCellSize(), 1, (e.glyphHeight or 4) * map:getCellSize()))
+
+	local _, description = prop:getPeep():addBehavior(OldOneDescriptionBehavior)
+	description.description = e.glyphDescription or 1
+
+	if e.fadeDuration and e.fadeDuration > 0 then
+		prop:getPeep():pushPoke("fade", e.fadeDuration / 1000, e.fadeDelay / 1000)
+	end
+
+	if self.isRecording then
+		self:recordPeep(prop:getPeep(), e.peepID)
+		self:record(e.layer, prop:getPeep(), "spawnGlyphCircle", {
+			positionX = x,
+			positionY = y,
+			positionZ = z,
+			glyphDescription = e.glyphDescription or 1,
+			glyphWidth = e.glyphWidth or 4,
+			glyphHeight = e.glyphHeight or 4,
+			fadeDuration = e.fadeDuration or 0,
+			fadeDelay = e.fadeDelay or 0,
 		})
 	end
 end
@@ -1082,13 +1187,13 @@ function DebugManipulateController:transform(e)
 	end
 
 	local event = {}
-	if type(e.translationX) == "number" and type(e.translationY) == "number" and type(e.translationZ) == "number" then
+	if type(e.positionX) == "number" and type(e.positionY) == "number" and type(e.positionZ) == "number" then
 		peep:addBehavior(PositionBehavior)
-		Utility.Peep.setPosition(peep, Vector(e.translationX, e.translationY, e.translationZ))
+		Utility.Peep.setPosition(peep, Vector(e.positionX, e.positionY, e.positionZ))
 
-		event.translationX = e.translationX
-		event.translationY = e.translationY
-		event.translationZ = e.translationZ
+		event.positionX = e.positionX
+		event.positionY = e.positionY
+		event.positionZ = e.positionZ
 	end
 
 	if type(e.rotationX) == "number" and type(e.rotationY) == "number" and type(e.rotationZ) == "number" then
@@ -1353,6 +1458,28 @@ function DebugManipulateController:simulateAttack(e)
 		animation = peep:getResource("animation-attack", "ItsyScape.Graphics.AnimationResource")
 	end
 
+	local defendAnimation
+	do
+		local direction = targetPeep:hasBehavior(MovementBehavior) and targetPeep:getBehavior(MovementBehavior).facing
+
+		local shield = Utility.Peep.getEquippedShield(targetPeep)
+		if shield and direction and targetPeep:hasBehavior(HumanoidBehavior) then
+			if direction == MovementBehavior.FACING_LEFT then
+				defendAnimation = targetPeep:getResource(
+					"animation-defend-shield-left",
+					"ItsyScape.Graphics.AnimationResource")
+			elseif direction == MovementBehavior.FACING_RIGHT then
+				defendAnimation = targetPeep:getResource(
+					"animation-defend-shield-right",
+					"ItsyScape.Graphics.AnimationResource")
+			end
+		end
+
+		if not defendAnimation then
+			resource = targetPeep:getResource("animation-defend", "ItsyScape.Graphics.AnimationResource")
+		end
+	end
+
 	if self.isRecording then
 		self:record(Utility.Peep.getLayer(peep), peep, "face", {
 			targetMapObjectName = otherTargetInfo.mapObjectName,
@@ -1366,6 +1493,14 @@ function DebugManipulateController:simulateAttack(e)
 				slot = "combat-attack",
 				priority = 5000,
 				animation = animation:getFilename()
+			})
+		end
+
+		if defendAnimation then
+			self:record(Utility.Peep.getLayer(targetPeep), targetPeep, "playAnimation", {
+				slot = "combat-attack",
+				priority = 50,
+				animation = defendAnimation:getFilename()
 			})
 		end
 
@@ -1451,6 +1586,38 @@ function DebugManipulateController:editAction(e)
 	end
 end
 
+function DebugManipulateController:mergePrevious(e)
+	local presetStorage = self:getPresetStorage(e.resource, e.id)
+	if not presetStorage then
+		return
+	end
+
+	local action = presetStorage:getSection(e.index):get()
+	for i = e.index - 1, 1, -1 do
+		local otherAction = presetStorage:getSection(i):get()
+		if otherAction and otherAction.type == action.type and
+		   otherAction.map.resource == action.map.resource and
+		   otherAction.map.localLayer == action.map.localLayer and
+		   ((otherAction.target.mapObjectName and otherAction.target.mapObjectName == action.target.mapObjectName) or (otherAction.target.peepID and otherAction.target.peepID == action.target.peepID))
+		then
+			for k, v in pairs(action.event) do
+				otherAction.event[k] = v
+			end
+
+			local actionStorage = presetStorage:getSection(i)
+			actionStorage:clear()
+			actionStorage:set(otherAction)
+
+			presetStorage:removeSection(e.index)
+
+			self:selectPreset({
+				resource = e.resource,
+				id = e.id
+			})
+		end
+	end
+end
+
 function DebugManipulateController:shiftAction(e)
 	local presetStorage = self:getPresetStorage(e.resource, e.id)
 	if not presetStorage then
@@ -1510,14 +1677,13 @@ function DebugManipulateController:generateReplay(preset)
 			currentLength = 1
 			for i = currentIndex + 1, #preset do
 				local action = preset[i]
-				if not action.timing or action.timing.mode == "parallel" or action.timing.mode == "wait" then
+				if not action.timing or action.timing.mode == "parallel" or action.timing.mode == "off" then
 					table.insert(pendingActionGroup, { action = action })
 					currentLength = currentLength + 1
 				else
 					break
 				end
 			end
-
 
 			for _, pendingAction in ipairs(pendingActionGroup) do
 				local action = pendingAction.action
@@ -1541,8 +1707,8 @@ function DebugManipulateController:generateReplay(preset)
 				local numCompleteActions = 0
 				for _, pending in ipairs(pendingActionGroup) do
 					local action = pending.action
-					local duration = action.timing and action.timing.duration or 0
-					local delay = action.timing and action.timing.delay or 0
+					local duration = action.timing and action.timing.mode ~= "off" and action.timing.duration or 0
+					local delay = action.timing and action.timing.mode ~= "off" and action.timing.delay or 0
 					local tween = action.timing and action.timing.tween or "sineEaseInOut"
 
 					pending.timeInfo.elapsed = pending.timeInfo.elapsed + elapsed
@@ -1562,7 +1728,7 @@ function DebugManipulateController:generateReplay(preset)
 								if not action.timing or action.timing.mode == "off" then
 									status = DebugManipulateController.ACTION_COMPLETE
 								end
-							end 
+							end
 
 							pending.timeInfo.status = status
 						end

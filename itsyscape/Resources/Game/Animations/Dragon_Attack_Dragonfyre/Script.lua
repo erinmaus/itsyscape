@@ -5,7 +5,7 @@ Animation "Dragon Attack (Dragonfyre)" {
 
 	Channel {
 		Particles {
-			duration = 2.5,
+			duration = 4,
 			attach = "head.bottom",
 			direction = { 0, 0, -1 },
 
@@ -17,14 +17,14 @@ Animation "Dragon Attack (Dragonfyre)" {
 				emitters = {
 					{
 						type = "RadialEmitter",
-						radius = { 0, 0.5 },
-						lifetime = { 0.5, 0.1 },
-						position = { 0, 0, 0 },
+						radius = { 0, 1.5 },
+						lifetime = { 1.5, 1 },
+						position = { 0, 0, 2 },
 					},
 					{
 						type = "DirectionalEmitter",
 						direction = { 0, 0, -1 },
-						speed = { 10, 10 },
+						speed = { 20, 20 },
 					},
 					{
 						type = "RandomColorEmitter",
@@ -37,7 +37,7 @@ Animation "Dragon Attack (Dragonfyre)" {
 					},
 					{
 						type = "RandomScaleEmitter",
-						scale = { 0.5, 1 }
+						scale = { 1, 1.5 }
 					},
 					{
 						type = "RandomRotationEmitter",
@@ -62,7 +62,7 @@ Animation "Dragon Attack (Dragonfyre)" {
 					type = "RandomDelayEmissionStrategy",
 					count = { 15, 25 },
 					delay = { 1 / 30 },
-					duration = { 1 }
+					duration = { 2.5 }
 				}
 			}
 

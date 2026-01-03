@@ -154,7 +154,7 @@ function GlyphManager:tokenize(message)
 			end
 		end
 
-		local thetaRadians = glyph:byte() / 256 * math.pi / 16
+		local thetaRadians = ((glyph:byte() / 256) - 0.5) * 2 * math.pi / 16
 
 		local instance = OldOneGlyphInstance(self:get(glyphIndex), self)
 		instance:setTheta(thetaRadians)
@@ -254,10 +254,10 @@ local function _stencil()
 end
 
 function GlyphManager:getStandardPlane(time)
-	local planeD = -(math.sin(time / math.pi / 8) * 1 - 0.5)
+	local planeD = math.sin(time / math.pi / 8) * 0.5
 	local planeAxis = Vector(
 		math.cos(time / math.pi / 8),
-		1,
+		4,
 		math.sin(time / math.pi / 8)):getNormal()
 	local planeRotation = Quaternion.fromAxisAngle(planeAxis, math.sin(time / math.pi / 8) * math.pi / 8)
 	local planeNormal = planeRotation:getNormal():transformVector(Vector.UNIT_Y)
