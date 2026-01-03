@@ -1,6 +1,8 @@
 Animation "Dragon Attack (Dragonfyre)" {
 	Channel {
 		PlaySound "Resources/Game/Animations/Dragon_Attack_Dragonfyre/Roar.wav",
+		Wait(0.5),
+		PlaySound "Resources/Game/Animations/Dragon_Attack_Dragonfyre/Fire.wav"
 	},
 
 	Channel {
