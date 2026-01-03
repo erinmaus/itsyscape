@@ -745,8 +745,9 @@ function DebugManipulateController:startReplay(e)
 
 	for peep in pairs(self.peepToID) do
 		local resource = Utility.Peep.getResource(peep)
-		if resource.name == "CameraDolly" then
-			resource:poke("hidden")
+		if resource and resource.name == "CameraDolly" then
+			print(">>> hiding dolly...")
+			peep:poke("hidden")
 		end
 	end
 
@@ -766,8 +767,8 @@ function DebugManipulateController:stopReplay()
 
 	for peep in pairs(self.peepToID) do
 		local resource = Utility.Peep.getResource(peep)
-		if resource.name == "CameraDolly" then
-			resource:poke("hidden")
+		if resource and resource.name == "CameraDolly" then
+			peep:poke("visible")
 		end
 	end
 end

@@ -29,6 +29,9 @@ function CameraDolly:new(resource, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.noClip = true
 
+	Utility.Peep.setResource(self, resource)
+	print(">>> resource", resource and resource.name)
+
 	self:addPoke("visible")
 	self:addPoke("hidden")
 end
