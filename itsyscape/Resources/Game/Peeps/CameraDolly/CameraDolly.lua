@@ -30,7 +30,6 @@ function CameraDolly:new(resource, ...)
 	movement.noClip = true
 
 	Utility.Peep.setResource(self, resource)
-	print(">>> resource", resource and resource.name)
 
 	self:addPoke("visible")
 	self:addPoke("hidden")
@@ -38,6 +37,8 @@ end
 
 function CameraDolly:ready(...)
 	Peep.ready(self, ...)
+
+	Utility.Peep.setNameMagically(self)
 
 	Utility.Peep.Creep.setBody(self, "CameraDolly")
 	Utility.Peep.playAnimation(self, "main", 1000, "CameraDolly_Idle")

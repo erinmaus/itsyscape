@@ -72,6 +72,16 @@ Theme.DEFAULT_ALTERNATE_BUTTON_STYLE = {
 	padding = 4
 }
 
+Theme.DEFAULT_DANGEROUS_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/CloseButton-Default.png",
+	pressed = "Resources/Game/UI/Buttons/CloseButton-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/CloseButton-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
 Theme.WINDOW_TITLE_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/WindowTitle.png"
 }

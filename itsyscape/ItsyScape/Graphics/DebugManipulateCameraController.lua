@@ -14,6 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local MapCurve = require "ItsyScape.MapCurve.MapCurve"
 
 local DebugManipulateCameraController = Class(CameraController)
 DebugManipulateCameraController.CAMERA_VERTICAL_ROTATION = math.pi / 2
@@ -52,6 +53,8 @@ function DebugManipulateCameraController:reset()
 	self.currentDuration = 1
 	self.currentElapsed = 1
 	self.currentTween = "linear"
+
+	self.pending = {}
 end
 
 function DebugManipulateCameraController:onCopyTransforms()
@@ -124,7 +127,18 @@ end
 
 function DebugManipulateCameraController:onOrientateToActor(actorID, delay, duration, tween)
 	local nextActor = self:getGameView():getActorByID(actorID)
-	if nextActor then
+	if not nextActor then
+		return
+	end
+
+	if self.currentElapsed < self.currentDelay + self.currentDuration or #self.pending > 0 then
+		table.insert(self.pending, {
+			actor = nextActor,
+			delay = delay,
+			duration = duration,
+			tween = tween
+		})
+	else
 		self:orientateToActor(nextActor, delay, duration, tween)
 	end
 end
@@ -157,6 +171,10 @@ function DebugManipulateCameraController:update(delta)
 	CameraController.update(self, delta)
 
 	self.currentElapsed = math.min(self.currentElapsed + delta, self.currentDuration + self.currentDelay)
+	if self.currentElapsed >= self.currentDuration + self.currentDelay and #self.pending > 0 then
+		local p = table.remove(self.pending, 1)
+		self:orientateToActor(p.actor, p.delay, p.duration, p.tween)
+	end
 end
 
 function DebugManipulateCameraController:mousePress(uiActive, x, y, button)

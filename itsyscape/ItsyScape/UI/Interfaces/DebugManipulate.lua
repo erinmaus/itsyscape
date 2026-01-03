@@ -1266,7 +1266,7 @@ function DebugManipulate:populatePresets(presets)
 		label:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
 		label:setText(string.format("%s@%d", presetInfo.resource, presetInfo.id))
 		button:addChild(label)
-		button:setData("preset", presets)
+		button:setData("preset", presetInfo)
 
 		button.onClick:register(self.selectPreset, self, presetInfo)
 
@@ -1323,6 +1323,11 @@ function DebugManipulate:probePreset(presetInfo, button)
 			verb = "Cancel-Delete",
 			object = object,
 			callback = function()
+				self:_updatePresetListButtonStyle({
+					resource = self.pendingDeleteResource,
+					id = self.pendingDeleteID,
+				}, Theme.DEFAULT_INACTIVE_BUTTON_STYLE, Theme.DEFAULT_ACTIVE_BUTTON_STYLE)
+
 				self.pendingDeleteResource = nil
 				self.pendingDeleteID = nil
 			end
@@ -1333,6 +1338,11 @@ function DebugManipulate:probePreset(presetInfo, button)
 			verb = "Confirm-Delete",
 			object = object,
 			callback = function()
+				self:_updatePresetListButtonStyle({
+					resource = self.pendingDeleteResource,
+					id = self.pendingDeleteID,
+				}, Theme.DEFAULT_INACTIVE_BUTTON_STYLE, Theme.DEFAULT_ACTIVE_BUTTON_STYLE)
+
 				self:deletePreset(presetInfo)
 			end
 		})
@@ -1344,6 +1354,8 @@ function DebugManipulate:probePreset(presetInfo, button)
 			callback = function()
 				self.pendingDeleteResource = presetInfo.resource
 				self.pendingDeleteID = presetInfo.id
+
+				self:_updatePresetListButtonStyle(presetInfo, Theme.DEFAULT_DANGEROUS_BUTTON_STYLE, Theme.DEFAULT_DANGEROUS_BUTTON_STYLE)
 			end
 		})
 	end
@@ -1408,11 +1420,33 @@ function DebugManipulate:_updateActivePresetListButton(presetInfo)
 		local otherPresetInfo = button:getData("preset")
 		if otherPresetInfo and otherPresetInfo.resource == presetInfo.resource and otherPresetInfo.id == presetInfo.id then
 			if self.activeButton then
-				self.activeButton:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
+				local activePresetInfo = self.activeButton:getData("preset")
+				if not (activePresetInfo.resource == self.pendingDeleteResource and activePresetInfo.id == self.pendingDeleteID) then
+					self.activeButton:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
+				end
 			end
 
 			self.activeButton = button
-			button:setStyle(Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)	
+			if not (presetInfo.resource == self.pendingDeleteResource and presetInfo.id == self.pendingDeleteID) then
+				button:setStyle(Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)
+			end
+		end
+	end
+end
+
+function DebugManipulate:_updatePresetListButtonStyle(presetInfo, inactiveTheme, activeTheme)
+	for _, button in self.presetListGrid:getInnerPanel():iterate() do
+		local otherPresetInfo = button:getData("preset")
+		print("???", Log.dump(otherPresetInfo), Log.dump(presetInfo))
+		if otherPresetInfo and otherPresetInfo.resource == presetInfo.resource and otherPresetInfo.id == presetInfo.id then
+			print("MATCH!")
+			if self.activeButton == button then
+				print(">>> is active")
+				button:setStyle(activeTheme or inactiveTheme or Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)
+			else
+				print(">>> is inactive")
+				button:setStyle(inactiveTheme or Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
+			end
 		end
 	end
 end
@@ -1481,10 +1515,10 @@ function DebugManipulate:showPreset(presetInfo, preset)
 
 		local delayLabel = Label()
 		delayLabel:setStyle(Theme.override(Theme.BUTTON_LABEL_STYLE, { fontSize = 16 }), LabelStyle)
-		if action.timing and action.timing.mode ~= "off" then
-			delayLabel:setText(string.format("@ %d ms / dur. %d ms (%s)", action.timing.delay * 1000, action.timing.duration * 1000, action.timing.mode == "sync" and "S" or "P"))
+		if action.timing then
+			delayLabel:setText(string.format("@ %d ms / %d ms (%s)", action.timing.delay * 1000, action.timing.duration * 1000, action.timing.mode:sub(1, 1):upper()))
 		else
-			delayLabel:setText("@ -- ms / dur. -- ms (X)")
+			delayLabel:setText("@ -- ms / -- ms (X)")
 		end
 		row:addChild(delayLabel)
 	end
@@ -1786,6 +1820,14 @@ function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button,
 				end
 			},
 			{
+				id = 4,
+				verb = "Insert-Recording-Before",
+				object = name,
+				callback = function()
+					self:startRecording(presetInfo, actionIndex)
+				end
+			},
+			{
 				id = 3,
 				verb = "Merge-Previous",
 				object = name,
@@ -1892,6 +1934,15 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 			self:beginAction(DebugManipulate.WalkAction, object, hit)
 		end
 	})
+
+	if object == self:getView():getGame():getPlayer() then
+		self:buildActorAction(actions, object, {
+			verb = "Save-Location",
+			callback = function()
+				self:sendPoke("savePosition", nil, { id = object:getID() })
+			end
+		})
+	end
 end
 
 function DebugManipulate:buildPropAction(actions, object, t)
@@ -1991,15 +2042,24 @@ function DebugManipulate:stopAction()
 	end
 end
 
-function DebugManipulate:record(preset, _, index)
+function DebugManipulate:record(presetInfo, _, index)
 	if index ~= 1 then
 		return
 	end
 
-	self:addFacade(DebugManipulate.InteractFacade(self))
+	self:startRecording(presetInfo)
+end
+
+function DebugManipulate:startRecording(presetInfo, index)
+	if self.interactFacade then
+		self:removeFacade(self.interactFacade)
+	end
+
+	self.interactFacade = DebugManipulate.InteractFacade(self)
+	self:addFacade(self.interactFacade)
 
 	self:hide()
-	self:sendPoke("startRecording", nil, { resource = preset.resource, id = preset.id })
+	self:sendPoke("startRecording", nil, { resource = presetInfo.resource, id = presetInfo.id, index = index })
 end
 
 function DebugManipulate:stopRecordOrReplay()
@@ -2011,6 +2071,11 @@ function DebugManipulate:stopRecordOrReplay()
 
 	if state.isReplaying then
 		self:sendPoke("stopReplay", nil, {})
+	end
+
+	if self.interactFacade then
+		self:removeFacade(self.interactFacade)
+		self.interactFacade = nil
 	end
 
 	return state.isRecording or state.isReplaying

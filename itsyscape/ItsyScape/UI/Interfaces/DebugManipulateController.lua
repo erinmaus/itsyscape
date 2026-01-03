@@ -631,6 +631,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:changeSkin(e)
 	elseif actionID == "transform" then
 		self:transform(e)
+	elseif actionID == "saveLocation" then
+		self:saveLocation(e)
 	elseif actionID == "setLayer" then
 		self:setLayer(e)
 	elseif actionID == "orientateCamera" then
@@ -677,39 +679,15 @@ function DebugManipulateController:startRecording(e)
 		self:stopReplay()
 	end
 
+	if self.isRecording then
+		self:stopRecording()
+	end
+
 	self.isRecording = true
 	self.recordingMapResource = e.resource or self.layers[1]
 	self.recordingID = e.id or 0
+	self.recordingIndex = e.index or -1
 	self.recordingQueue = {}
-
-	local layerInfo = self:getMapInfo(Utility.Peep.getLayer(self:getPeep()))
-	if layerInfo then
-		self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "setLayer", {
-			destinationMapResource = layerInfo.resource,
-			destinationMapLocalLayer = layerInfo.localLayer,
-		})
-	end
-
-	local position = Utility.Peep.getPosition(self:getPeep())
-	local rotation = self:getPeep():hasBehavior(RotationBehavior) and Utility.Peep.getRotation(self:getPeep())
-	local rotationX, rotationY, rotationZ
-	if rotation then
-		rotationX, rotationY, rotationZ = rotation:getEulerXYZ()
-		rotationX, rotationY, rotationZ = math.deg(rotationX), math.deg(rotationY), math.deg(rotationZ)
-	end
-	local scale = self:getPeep():hasBehavior(ScaleBehavior) and Utility.Peep.getScale(self:getPeep())
-
-	self:record(Utility.Peep.getLayer(self:getPeep()), self:getPeep(), "transform", {
-		positionX = position.x,
-		positionY = position.y,
-		positionZ = position.z,
-		rotationX = rotationX,
-		rotationY = rotationY,
-		rotationZ = rotationZ,
-		scaleX = scale and scale.x or nil,
-		scaleY = scale and scale.y or nil,
-		scaleZ = scale and scale.z or nil,
-	})
 end
 
 function DebugManipulateController:stopRecording()
@@ -720,8 +698,22 @@ function DebugManipulateController:stopRecording()
 		return
 	end
 
-	for i = 1, #self.recordingQueue do
-		presetStorage:set(presetStorage:length() + 1, self.recordingQueue[i])
+	if self.recordingIndex >= 1 and self.recordingIndex <= presetStorage:length() then
+		local preset = presetStorage:get()
+		presetStorage:clear()
+
+		for i = #self.recordingQueue, 1, -1 do
+			table.insert(preset, self.recordingIndex, self.recordingQueue[i])
+		end
+
+		print(">>> D", Log.dump(preset))
+
+		presetStorage:set(preset)
+		print(">>> D2", Log.dump(presetStorage:get()))
+	else
+		for i = 1, #self.recordingQueue do
+			presetStorage:set(presetStorage:length() + 1, self.recordingQueue[i])
+		end
 	end
 
 	self:send("finishRecording", { resource = self.recordingMapResource, index = index, id = self.recordingID })
@@ -730,6 +722,10 @@ end
 function DebugManipulateController:startReplay(e)
 	if self.isRecording then
 		self:stopRecording()
+	end
+
+	if self.replay then
+		self:stopReplay()
 	end
 
 	self.replayMapResource = e.resource or self.layers[1]
@@ -746,7 +742,6 @@ function DebugManipulateController:startReplay(e)
 	for peep in pairs(self.peepToID) do
 		local resource = Utility.Peep.getResource(peep)
 		if resource and resource.name == "CameraDolly" then
-			print(">>> hiding dolly...")
 			peep:poke("hidden")
 		end
 	end
@@ -1169,6 +1164,50 @@ function DebugManipulateController:changeSkin(e)
 			filename = e.filename
 		})
 	end
+end
+
+function DebugManipulateController:saveLocation(e)
+	local actor = self:getGame():getStage():getActorByID(e.id)
+	local peep = actor and actor:getPeep()
+	if not peep then
+		return
+	end
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local peepInstance = Utility.Peep.getInstance(peep)
+
+	if selfInstance ~= peepInstance then
+		return
+	end
+
+	local layerInfo = self:getMapInfo(Utility.Peep.getLayer(peep))
+	if layerInfo then
+		self:mergeOrRecord(Utility.Peep.getLayer(peep), peep, "setLayer", {
+			destinationMapResource = layerInfo.resource,
+			destinationMapLocalLayer = layerInfo.localLayer,
+		})
+	end
+
+	local position = Utility.Peep.getPosition(peep)
+	local rotation = peep:hasBehavior(RotationBehavior) and Utility.Peep.getRotation(peep)
+	local rotationX, rotationY, rotationZ
+	if rotation then
+		rotationX, rotationY, rotationZ = rotation:getEulerXYZ()
+		rotationX, rotationY, rotationZ = math.deg(rotationX), math.deg(rotationY), math.deg(rotationZ)
+	end
+	local scale = peep:hasBehavior(ScaleBehavior) and Utility.Peep.getScale(peep)
+
+	self:mergeOrRecord(Utility.Peep.getLayer(peep), peep, "transform", {
+		positionX = position.x,
+		positionY = position.y,
+		positionZ = position.z,
+		rotationX = rotationX,
+		rotationY = rotationY,
+		rotationZ = rotationZ,
+		scaleX = scale and scale.x or nil,
+		scaleY = scale and scale.y or nil,
+		scaleZ = scale and scale.z or nil,
+	})
 end
 
 function DebugManipulateController:transform(e)

@@ -9,8 +9,8 @@ cp -r ./staging/ext/devi ./staging/itsyrealm/devi
 cp -r ./staging/ext/nomicon ./staging/itsyrealm/nomicon
 cp -r ./staging/ext/slick ./staging/itsyrealm/slick
 
-LOVE_BINARY="$(pwd)/itsyrealm/ItsyRealm.app/Contents/MacOS/ItsyRealm"
-"$LOVE_BINARY" --fused --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
+#LOVE_BINARY="$(pwd)/itsyrealm/ItsyRealm.app/Contents/MacOS/ItsyRealm"
+#"$LOVE_BINARY" --fused --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
 
 cp -vr "$HOME/Library/Application Support/ItsyRealm/Resources/"* ./staging/itsyrealm/Resources
 

@@ -282,7 +282,7 @@ function ParadoxGate:update(delta)
 		self.crystalsNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_Time", love.timer.getTime())
 	end
 
-	self:drawGlyph()
+	--self:drawGlyph()
 end
 
 function ParadoxGate:drawGlyph()
