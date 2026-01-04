@@ -82,6 +82,21 @@ function itsyrealm.graphics.setUIScale(value)
 	end
 end
 
+function itsyrealm.graphics.getCoordinatesFromMouse(xFrom ,xTo, yTo, yFrom)
+	xFrom = xFrom or -math.pi * 2
+	xTo = xTo or math.pi * 2
+	yFrom = yFrom or -math.pi * 2
+	yTo = yTo or math.pi * 2
+
+	local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+	local mouseX, mouseY = love.mouse.getPosition()
+
+	local verticalValue = math.lerp(xFrom, xTo, mouseX / width)
+	local horizontalValue = math.lerp(yFrom, yTo, mouseY / height)
+
+	return verticalValue, horizontalValue
+end
+
 local _mode
 function itsyrealm.graphics.getScaledMode()
 	local currentWidth, currentHeight = love.window.getMode(_mode)
