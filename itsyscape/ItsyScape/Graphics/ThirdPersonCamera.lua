@@ -167,7 +167,7 @@ function ThirdPersonCamera:getTransforms(projection, view)
 		                           0, 0, 0, 0,
 		                           0, 0, 0, 0
 
-		m11 = f / aspect
+		m11 = -(f / aspect)
 		m22 = f
 		m33 = (self.far + self.near) / (self.near - self.far)
 		m34 = (2 * self.far * self.near) / (self.near - self.far)

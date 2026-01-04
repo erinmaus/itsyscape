@@ -144,9 +144,9 @@ end
 function Common.makeScaleTransform(scale, transform)
 	transform = transform or love.math.newTransform()
 
-	local m11, m12, m13, m14 = 1, 0, 0, scale.x
-	local m21, m22, m23, m24 = 0, 1, 0, scale.y
-	local m31, m32, m33, m34 = 0, 0, 1, scale.z
+	local m11, m12, m13, m14 = scale.x, 0, 0, 0
+	local m21, m22, m23, m24 = 0, scale.y, 0, 0
+	local m31, m32, m33, m34 = 0, 0, scale.z, 0
 	local m41, m42, m43, m44 = 0, 0, 0, 1
 
 	transform:setMatrix(
