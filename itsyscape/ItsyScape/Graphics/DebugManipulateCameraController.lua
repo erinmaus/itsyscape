@@ -23,7 +23,7 @@ DebugManipulateCameraController.SCROLL_SPEED_MULTIPLIER = 10
 DebugManipulateCameraController.ROTATE_SPEED            = math.pi / 4
 DebugManipulateCameraController.PAN_SPEED_MULTIPLIER    = 1 / 64
 
-DebugManipulateCameraController.CONSTANT_ROTATION = Quaternion.IDENTITY--Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi)
+DebugManipulateCameraController.CONSTANT_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi)
 
 function DebugManipulateCameraController:new(...)
 	CameraController.new(self, ...)
@@ -52,7 +52,7 @@ end
 
 function DebugManipulateCameraController:onCopyTransforms()
 	self.translationOffset = self:getCamera():getEye():keep()
-	self.rotationOffset = (self:getCamera():getCombinedRotation() * -self.CONSTANT_ROTATION):getNormal()
+	self.rotationOffset = (-self.CONSTANT_ROTATION * self:getCamera():getCombinedRotation()):getNormal()
 end
 
 function DebugManipulateCameraController:onResetTransforms()
@@ -107,7 +107,7 @@ function DebugManipulateCameraController:rebuildMapCurve()
 		local translation, rotation = MathCommon.decomposeTransform(transform)
 
 		table.insert(positions, { translation:get() })
-		table.insert(rotations, { rotation:get() })
+		table.insert(rotations, { -rotation.x, -rotation.y, -rotation.z, rotation.w })
 	end
 
 	self.currentDuration = totalDuration
@@ -125,6 +125,8 @@ function DebugManipulateCameraController:copyActorTransforms(actor)
 	local actorView = self:getGameView():getView(actor)
 	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1)
 	local translation, rotation = MathCommon.decomposeTransform(transform)
+
+	rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
 
 	self.translationOffset = translation:keep()
 	self.rotationOffset = rotation:getNormal()
@@ -287,7 +289,8 @@ function DebugManipulateCameraController:mouseRelease(uiActive, x, y, button)
 
 	if button == 1 then
 		if self.isRotating and self.isInteractive then
-			self:pokeInterface("updateCameraRotation", self.rotationOffset)
+			local rotation = Quaternion(-self.rotationOffset.x, -self.rotationOffset.y, -self.rotationOffset.z, self.rotationOffset.w)
+			self:pokeInterface("updateCameraRotation", rotation)
 			self:pokeInterface("stopCameraInteraction")
 		end
 
@@ -343,7 +346,7 @@ function DebugManipulateCameraController:draw()
 		translation, rotation = Vector.ZERO, Quaternion.IDENTITY
 	end
 
-	camera:setRotation((rotation * self.rotationOffset * self.CONSTANT_ROTATION):getNormal())
+	camera:setRotation((self.CONSTANT_ROTATION * rotation * self.rotationOffset):getNormal())
 	camera:setPosition(translation + self.translationOffset + shake)
 end
 
