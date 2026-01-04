@@ -1209,7 +1209,7 @@ function Application:_draw()
 
 	local delta = self:getFrameDelta()
 	do
-		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) and not love.keyboard.isDown("i") then
+		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) then
 			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
 
