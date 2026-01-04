@@ -195,6 +195,7 @@ function Renderer:draw(scene, delta, width, height, postProcessPasses)
 	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 
 	love.graphics.push("all")
+	love.graphics.setFrontFaceWinding("cw")
 	self._renderer:draw(scene:getHandle(), delta, width, height)
 	love.graphics.pop()
 

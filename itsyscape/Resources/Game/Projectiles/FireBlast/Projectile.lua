@@ -21,6 +21,8 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local FireBlast = Class(Projectile)
 
+FireBlast.CLAMP_BOTTOM = true
+
 FireBlast.FIRE_PARTICLE_SYSTEM = {
 	numParticles = 150,
 	texture = "Resources/Game/Projectiles/FireBlast/Fire.png",
@@ -29,7 +31,10 @@ FireBlast.FIRE_PARTICLE_SYSTEM = {
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0.25 },
+			radius = { 0, 0.5 },
+			yRange = { 0, 0 },
+			zRange = { 1, 0.5 },
+			lifetime = { 1.5, 0.25 },
 			speed = { 2.5, 3.5 }
 		},
 		{
@@ -40,10 +45,6 @@ FireBlast.FIRE_PARTICLE_SYSTEM = {
 				{ 1, 0.5, 0.0, 0.0 },
 				{ 0.9, 0.5, 0.0, 0.0 }
 			}
-		},
-		{
-			type = "RandomLifetimeEmitter",
-			lifetime = { 1.0, 1.5 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -73,57 +74,62 @@ FireBlast.FIRE_PARTICLE_SYSTEM = {
 }
 
 FireBlast.SMOKE_PARTICLE_SYSTEM = {
-	numParticles = 60,
+	numParticles = 25,
 	texture = "Resources/Game/Projectiles/FireBlast/Smoke.png",
-	columns = 1,
+	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0.125 },
-			speed = { 2, 3 },
-			acceleration = { -1, -2 }
+			radius = { 0, 0.125 },
+			position = { 0, 2, 0 },
+			yRange = { 0, 0 },
+			lifetime = { 0.5, 3 },
+			normal = { true }
 		},
 		{
 			type = "DirectionalEmitter",
 			direction = { 0, 1, 0 },
-			speed = { 0.5, 1.5 },
+			speed = { 0.75, 1 },
 		},
 		{
 			type = "RandomColorEmitter",
 			colors = {
-				{ 0.5, 0.4, 0.4 }
+				{ 0.2, 0.2, 0.2, 0.0 },
+				{ 0.2, 0.2, 0.2, 0.0 },
+				{ 0.2, 0.2, 0.2, 0.0 },
+				{ 0.3, 0.3, 0.3, 0.0 },
+				{ 0.1, 0.1, 0.1, 0.0 },
 			}
 		},
 		{
-			type = "RandomLifetimeEmitter",
-			lifetime = { 1.0, 1.5 }
-		},
-		{
 			type = "RandomScaleEmitter",
-			scale = { 0.2, 0.5 }
+			scale = { 0.4, 0.5 }
 		},
 		{
 			type = "RandomRotationEmitter",
 			rotation = { 0, 360 },
-			velocity = { 30, 60 },
-			acceleration = { -40, -20 }
+			velocity = { 60, 120 }
 		}
 	},
 
 	paths = {
 		{
 			type = "FadeInOutPath",
-			fadeInPercent = { 0.1 },
+			fadeInPercent = { 0.2 },
 			fadeOutPercent = { 0.8 },
 			tween = { 'sineEaseOut' }
+		},
+		{
+			type = "TextureIndexPath",
+			textures = { 1, 4 }
 		}
 	},
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 4, 6 },
-		delay = { 1 / 30 },
+		count = { 2, 5 },
+		delay = { 1 / 10 },
 		duration = { 2 }
 	}
 }

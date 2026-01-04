@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Gizmo = require "ItsyScape.Editor.Map.Gizmo"
@@ -378,6 +379,91 @@ function DebugManipulate.TransformAction:done()
 	self:getInterface():removeFacade(self.gizmoFacade)
 end
 
+DebugManipulate.LookAtAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.LookAtAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.LookAtAction:start()
+	DebugManipulate.Action.start(self)
+
+	local root = self:getUIView():getRoot()
+	self.interactFacade = DebugManipulate.InteractFacade(self:getInterface())
+	self.interactFacade:setActionGenerator(function(interface, probe, actions)
+		for _, hit in probe:hits() do
+			local object = hit:getObject()
+
+			if Class.isCompatibleType(object, Actor) then
+				interface:buildActorAction(actions, object, {
+					verb = "Look-At",
+					callback = function()
+						interface:pokeAction("lookAt", object)
+					end
+				})
+			elseif Class.isCompatibleType(object, Prop) then
+				interface:buildPropAction(actions, object, {
+					verb = "Look-At",
+					callback = function()
+						interface:pokeAction("lookAt", object)
+					end
+				})
+			end
+		end
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Cancel",
+			objectID = -1,
+			objectType = "action",
+			object = "Look at action",
+			callback = function()
+				self:close()
+			end
+		})
+	end)
+
+	self:getInterface():addFacade(self.interactFacade)
+end
+
+function DebugManipulate.LookAtAction:lookAt(otherObject)
+	local objectView = self:getGameView():getView(self:getObject())
+	local otherView = self:getGameView():getView(otherObject)
+
+	local objectSceneNode
+	if Class.isCompatibleType(self:getObject(), Actor) then
+		objectSceneNode = objectView:getSceneNode()
+	elseif Class.isCompatibleType(self:getObject(), Prop) then
+		objectSceneNode = objectView:getRoot()
+	end
+
+	local otherSceneNode
+	if Class.isCompatibleType(otherObject, Actor) then
+		otherSceneNode = otherView:getSceneNode()
+	elseif Class.isCompatibleType(otherObject, Prop) then
+		otherSceneNode = otherView:getRoot()
+	end
+
+	if not (objectSceneNode and otherSceneNode) then
+		return
+	end
+
+	local objectTransform = objectSceneNode:getTransform():getGlobalDeltaTransform(1)
+	local objectTranslation = MathCommon.decomposeTransform(objectTransform)
+
+	local otherTransform = otherSceneNode:getTransform():getGlobalDeltaTransform(1)
+	local otherTranslation = MathCommon.decomposeTransform(otherTransform)
+
+	local rotation = Quaternion.lookAt(objectTranslation, otherTranslation, Vector.UNIT_Y)
+	self:getInterface():rotateObject(self:getObject(), rotation)
+	self:getInterface():stopAction()
+end
+
+function DebugManipulate.LookAtAction:done()
+	DebugManipulate.Action.done(self)
+	self:getInterface():removeFacade(self.interactFacade)
+end
+
 DebugManipulate.PreviewOrientateAction = Class(DebugManipulate.Action)
 
 function DebugManipulate.PreviewOrientateAction:new(...)
@@ -438,14 +524,13 @@ function DebugManipulate.PreviewOrientateAction:updateCameraRotation(rotation)
 		return
 	end
 
-	local globalRotation = Quaternion.IDENTITY
 	local parentSceneNode = sceneNode:getParent()
-	while parentSceneNode do
-		local parentRotation = parentSceneNode:getTransform():getLocalRotation()
-		globalRotation = parentRotation * globalRotation
-
-		parentSceneNode = parentSceneNode:getParent()
+	if not parentSceneNode then
+		return
 	end
+
+	local parentTransform = parentSceneNode:getTransform():getGlobalDeltaTransform(1)
+	local _, globalRotation = MathCommon.decomposeTransform(parentTransform)
 
 	self.targetRotation = -globalRotation * rotation
 	sceneNode:getTransform():setLocalRotation(self.targetRotation)
@@ -696,6 +781,41 @@ function DebugManipulate.WalkAction:done()
 	if self.interactFacade then
 		self:getInterface():removeFacade(self.interactFacade)
 	end
+end
+
+DebugManipulate.TalkAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.TalkAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.TalkAction:start()
+	DebugManipulate.Action.start(self)
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._playAnimation, self)
+	propertiesPrompt.onCancel:register(self.close, self)
+	propertiesPrompt:setText("Play Animation")
+	propertiesPrompt:setProperties({
+		PropertiesPrompt.Property("message", "Message", "string", ""),
+		PropertiesPrompt.Property("color", "Color", "number", "ffff00"),
+	})
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate.TalkAction:_playAnimation(_, _, form)
+	local id = self:getObject():getID()
+
+	self:getInterface():sendPoke(
+		"talk",
+		nil, {
+			actorID = id,
+			message = form.Message,
+			color = form.Color
+		})
+
+	self:getInterface():stopAction()
 end
 
 DebugManipulate.WIDTH  = 800
@@ -1908,6 +2028,13 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 	})
 
 	self:buildActorAction(actions, object, {
+		verb = "Look-At",
+		callback = function()
+			self:beginAction(DebugManipulate.LookAtAction, object, hit)
+		end
+	})
+
+	self:buildActorAction(actions, object, {
 		verb = "Orientate-Camera",
 		callback = function()
 			self:orientateCamera(object)
@@ -1935,11 +2062,18 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 		end
 	})
 
-	if object == self:getView():getGame():getPlayer() then
+	if object == self:getView():getGame():getPlayer():getActor() then
 		self:buildActorAction(actions, object, {
 			verb = "Save-Location",
 			callback = function()
-				self:sendPoke("savePosition", nil, { id = object:getID() })
+				self:sendPoke("saveLocation", nil, { id = object:getID() })
+			end
+		})
+
+		self:buildActorAction(actions, object, {
+			verb = "Talk",
+			callback = function()
+				self:beginAction(DebugManipulate.TalkAction, object, hit)
 			end
 		})
 	end

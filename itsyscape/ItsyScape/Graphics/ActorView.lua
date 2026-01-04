@@ -222,6 +222,10 @@ function ActorView.Animatable:update()
 	end
 end
 
+function ActorView.Animatable:pokeCamera(event, ...)
+	self.actor:getGameView():getGame():getPlayer():onPokeCamera(event, ...)
+end
+
 ActorView.CombinedTexture = Class()
 ActorView.CombinedTexture.GRID_SIZE = 128
 ActorView.CombinedTexture.MAX_EXPONENT = 4

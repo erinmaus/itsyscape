@@ -23,7 +23,7 @@ DebugManipulateCameraController.SCROLL_SPEED_MULTIPLIER = 10
 DebugManipulateCameraController.ROTATE_SPEED            = math.pi / 4
 DebugManipulateCameraController.PAN_SPEED_MULTIPLIER    = 1 / 64
 
-DebugManipulateCameraController.CONSTANT_ROTATION = Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi)
+DebugManipulateCameraController.CONSTANT_ROTATION = Quaternion.IDENTITY--Quaternion.fromAxisAngle(Vector.UNIT_Z, -math.pi)
 
 function DebugManipulateCameraController:new(...)
 	CameraController.new(self, ...)
@@ -124,18 +124,10 @@ end
 function DebugManipulateCameraController:copyActorTransforms(actor)
 	local actorView = self:getGameView():getView(actor)
 	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1)
-	local translation = MathCommon.decomposeTransform(transform)
-
-	local globalRotation = Quaternion.IDENTITY
-	local parentSceneNode = actorView:getSceneNode()
-	while parentSceneNode do
-		local parentRotation = parentSceneNode:getTransform():getLocalRotation()
-		globalRotation = parentRotation * globalRotation
-		parentSceneNode = parentSceneNode:getParent()
-	end
+	local translation, rotation = MathCommon.decomposeTransform(transform)
 
 	self.translationOffset = translation:keep()
-	self.rotationOffset = globalRotation:getNormal():keep()
+	self.rotationOffset = rotation:getNormal()
 end
 
 function DebugManipulateCameraController:onCopyActorTransforms(actorID)
@@ -145,9 +137,19 @@ function DebugManipulateCameraController:onCopyActorTransforms(actorID)
 	end
 end
 
-function DebugManipulateCameraController:update(delta)
-	CameraController.update(self, delta)
+function DebugManipulateCameraController:onShake(duration, interval, min, max)
+	self.isShaking = true
+	self.shakingDuration = duration or 1.5
+	self.shakingInterval = interval or 1 / 15
+	self.currentShakingInterval = 0
+	self.currentShakingDuration = self.shakingDuration
+	self.minShakingOffset = min or 0
+	self.maxShakingOffset = max or 1
+	self.previousShakingOffset = Vector(0):keep()
+	self.currentShakingOffset = Vector(0):keep()
+end
 
+function DebugManipulateCameraController:updateCurve(delta)
 	if self.currentIndex <= #self.pending then
 		local p = self.pending[self.currentIndex]
 
@@ -177,6 +179,38 @@ function DebugManipulateCameraController:update(delta)
 			end
 		end
 	end
+end
+
+function DebugManipulateCameraController:updateShake(delta)
+	if not self.isShaking then
+		return
+	end
+
+	self.currentShakingInterval = self.currentShakingInterval - delta
+	if self.currentShakingInterval <= 0 then
+		self.currentShakingInterval = self.shakingInterval
+
+		local x = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+		local y = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+		local z = love.math.random() * (self.maxShakingOffset - self.minShakingOffset) + self.minShakingOffset
+
+		self.previousShakingOffset = self.currentShakingOffset
+		self.currentShakingOffset = Vector(x, y, z):keep()
+	end
+
+	self.currentShakingDuration = self.currentShakingDuration - delta
+	if self.currentShakingDuration <= 0 then
+		self.isShaking = false
+		self.previousShakingOffset = Vector(0):keep()
+		self.currentShakingOffset = Vector(0):keep()
+	end
+end
+
+function DebugManipulateCameraController:update(delta)
+	CameraController.update(self, delta)
+
+	self:updateCurve(delta)
+	self:updateShake(delta)
 end
 
 function DebugManipulateCameraController:mousePress(uiActive, x, y, button)
@@ -288,6 +322,13 @@ end
 function DebugManipulateCameraController:draw()
 	CameraController.draw(self)
 
+	local shake
+	if self.currentShakingOffset and self.previousShakingOffset then
+		shake = self.previousShakingOffset:lerp(self.currentShakingOffset, 1 - (self.currentShakingInterval / self.shakingInterval))
+	else
+		shake = Vector.ZERO
+	end
+
 	local camera = self:getCamera()
 
 	camera:setDistance(0)
@@ -303,7 +344,7 @@ function DebugManipulateCameraController:draw()
 	end
 
 	camera:setRotation((rotation * self.rotationOffset * self.CONSTANT_ROTATION):getNormal())
-	camera:setPosition(translation + self.translationOffset)
+	camera:setPosition(translation + self.translationOffset + shake)
 end
 
 return DebugManipulateCameraController

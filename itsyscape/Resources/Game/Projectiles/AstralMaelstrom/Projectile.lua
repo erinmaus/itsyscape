@@ -40,7 +40,7 @@ AstralMaelstrom.PARTICLE_SYSTEM_FIRE = {
 		{
 			type = "RadialEmitter",
 			radius = { 0 },
-			speed = { 8, 12 },
+			speed = { 6, 8 },
 			acceleration = { 0, 0 }
 		},
 		{
@@ -88,15 +88,18 @@ AstralMaelstrom.PARTICLE_SYSTEM_FIRE = {
 }
 
 AstralMaelstrom.PARTICLE_SYSTEM_SMOKE = {
+	numParticles = 25,
 	texture = "Resources/Game/Projectiles/AstralMaelstrom/Smoke.png",
-	columns = 1,
+	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
 			radius = { 0, 8 },
+			position = { 0, 8, 0 },
 			yRange = { 0, 0 },
-			position = { 0, 8, 0 }
+			lifetime = { 0.5, 3 },
+			normal = { true }
 		},
 		{
 			type = "DirectionalEmitter",
@@ -106,18 +109,12 @@ AstralMaelstrom.PARTICLE_SYSTEM_SMOKE = {
 		{
 			type = "RandomColorEmitter",
 			colors = {
-				{ 0.4, 0.4, 0.4, 0.0 },
-				{ 0.4, 0.4, 0.4, 0.0 },
-				{ 0.4, 0.4, 0.4, 0.0 },
-				{ 0.4, 0.4, 0.4, 0.0 },
-				{ 0.4, 0.4, 0.4, 0.0 },
-				{ 1, 0.4, 0.0, 0.0 },
-				{ 0.9, 0.4, 0.0, 0.0 }
+				{ 0.2, 0.2, 0.2, 0.0 },
+				{ 0.2, 0.2, 0.2, 0.0 },
+				{ 0.2, 0.2, 0.2, 0.0 },
+				{ 0.3, 0.3, 0.3, 0.0 },
+				{ 0.1, 0.1, 0.1, 0.0 },
 			}
-		},
-		{
-			type = "RandomLifetimeEmitter",
-			lifetime = { 0.75, 1.0 }
 		},
 		{
 			type = "RandomScaleEmitter",
@@ -126,17 +123,20 @@ AstralMaelstrom.PARTICLE_SYSTEM_SMOKE = {
 		{
 			type = "RandomRotationEmitter",
 			rotation = { 0, 360 },
-			velocity = { 30, 60 },
-			acceleration = { -40, -20 }
+			velocity = { 60, 120 }
 		}
 	},
 
 	paths = {
 		{
 			type = "FadeInOutPath",
-			fadeInPercent = { 0.1 },
+			fadeInPercent = { 0.2 },
 			fadeOutPercent = { 0.8 },
 			tween = { 'sineEaseOut' }
+		},
+		{
+			type = "TextureIndexPath",
+			textures = { 1, 4 }
 		}
 	},
 

@@ -15,7 +15,7 @@ function Common.decomposeTransform(transform)
 	local m11, m21, m31, m41,
 	      m12, m22, m32, m42,
 	      m13, m23, m33, m43,
-	      m14, m24, m34, m44 = transform:getMatrix()
+	      m14, m24, m34, m44 = transform:getMatrix("column")
 
 	local t, q
 	if m33 < 0 then
@@ -83,6 +83,79 @@ function Common.side(a, b, c, bias)
 	end
 
 	return sign, result
+end
+
+function Common.makeTranslationTransform(translation, transform)
+	transform = transform or love.math.newTransform()
+
+	local m11, m12, m13, m14 = 1, 0, 0, translation.x
+	local m21, m22, m23, m24 = 0, 1, 0, translation.y
+	local m31, m32, m33, m34 = 0, 0, 1, translation.z
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return transform
+end
+
+function Common.makeRotationTransform(rotation, transform)
+	transform = transform or love.math.newTransform()
+
+	local m11, m12, m13, m14 = 1, 0, 0, 0
+	local m21, m22, m23, m24 = 0, 1, 0, 0
+	local m31, m32, m33, m34 = 0, 0, 1, 0
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	local qxx = rotation.x * rotation.x
+	local qyy = rotation.y * rotation.y
+	local qzz = rotation.z * rotation.z
+	local qxz = rotation.x * rotation.z
+	local qxy = rotation.x * rotation.y
+	local qyz = rotation.y * rotation.z
+	local qwx = rotation.w * rotation.x
+	local qwy = rotation.w * rotation.y
+	local qwz = rotation.w * rotation.z
+
+	m11 = 1 - 2 * (qyy + qzz)
+	m12 = 2 * (qxy + qwz)
+	m13 = 2 * (qxz - qwy)
+
+	m21 = 2 * (qxy - qwz)
+	m22 = 1 - 2 * (qxx + qzz)
+	m23 = 2 * (qyz + qwx)
+
+	m31 = 2 * (qxz + qwy)
+	m32 = 2 * (qyz - qwx)
+	m33 = 1 - 2 * (qxx + qyy)
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return transform
+end
+
+function Common.makeScaleTransform(scale, transform)
+	transform = transform or love.math.newTransform()
+
+	local m11, m12, m13, m14 = 1, 0, 0, scale.x
+	local m21, m22, m23, m24 = 0, 1, 0, scale.y
+	local m31, m32, m33, m34 = 0, 0, 1, scale.z
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return transform
 end
 
 function Common.makeTransform(position, rotation, scale, offset)

@@ -35,14 +35,34 @@ function BaseQuaternion.lookAt(source, target, up)
 	source:compatible(up)
 	target:compatible(up)
 
-	up = up or -Vector.UNIT_Z
+	up = up or Vector.UNIT_Y
 
-	local forward = (target - source):getNormal()
+	-- From https://stackoverflow.com/a/52551983
 
-	local dot = forward:dot(up)
-	local angle = math.acos(dot)
-	local axis = up:cross(forward):getNormal()
-	return BaseQuaternion.fromAxisAngle(axis, angle):getNormal()
+	local F = source:direction(target)
+	local R = up:cross(F):getNormal()
+	local U = F:cross(R):getNormal()
+
+	local trace = R.x + U.y + F.z
+	if trace > 0 then
+		local s = 0.5 / math.sqrt(trace + 1)
+		return Quaternion((U.z - F.y) * s, (F.x - R.z) * s, (R.y - U.x) * s, 0.25 / s)
+	end
+
+	if R.x > U.y and R.x > F.z then
+		local s = 2 * math.sqrt(1 + R.x - U.y - F.z)
+		return Quaternion(0.25 * s, (U.x + R.y) / s, (F.x + R.z) / s, (U.z - F.y) / s)
+	end
+
+	if U.y > F.z then
+		local s = 2 * math.sqrt(1 + U.y - R.x - F.z)
+		return Quaternion((U.x + R.y) / s, 0.25 * s, (F.y + U.z) / s, (F.x - R.z) / s)
+	end
+	
+	do
+		local s = 2 * math.sqrt(1 + F.z - R.x - U.y)
+		return Quaternion((F.x + R.z) / s, (F.y + U.z) / s, 0.25 * s, (R.y - U.x) / s)
+	end
 end
 
 function BaseQuaternion.fromVectors(source, target)
@@ -191,7 +211,6 @@ function BaseQuaternion:transformVector(vector)
 	local normal = self:getNormal()
 	local conjugate = -normal
 	local result = Vector((normal * v * conjugate):get())
-	local a = collectgarbage("count")
 
 	return result
 end

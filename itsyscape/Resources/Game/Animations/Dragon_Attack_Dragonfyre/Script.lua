@@ -6,6 +6,17 @@ Animation "Dragon Attack (Dragonfyre)" {
 	},
 
 	Channel {
+		Wait(0.5),
+
+		Shake {
+			duration = 1.5,
+			interval = 0.05,
+			minOffset = 0.25,
+			maxOffset = 0.5
+		}
+	},
+
+	Channel {
 		Particles {
 			duration = 4,
 			attach = "head.bottom",

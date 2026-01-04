@@ -172,7 +172,7 @@ function Application:new(multiThreaded)
 		self.camera = ThirdPersonCamera()
 		do
 			self.camera:setDistance(30)
-			self.camera:setUp(Vector(0, -1, 0))
+			self.camera:setUp(Vector(0, 1, 0))
 			self.camera:setHorizontalRotation(-math.pi / 8)
 			self.camera:setVerticalRotation(-math.pi / 2)
 		end

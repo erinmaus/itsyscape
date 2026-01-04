@@ -58,6 +58,7 @@ function Animation:loadFromFile(filename)
 		G.Wait = require "ItsyScape.Game.Animation.Commands.Wait"
 		G.ApplySkin = require "ItsyScape.Game.Animation.Commands.ApplySkin"
 		G.Particles = require "ItsyScape.Game.Animation.Commands.Particles"
+		G.Shake = require "ItsyScape.Game.Animation.Commands.Shake"
 		G.Blend = Blend
 		G.INFINITY = math.huge
 

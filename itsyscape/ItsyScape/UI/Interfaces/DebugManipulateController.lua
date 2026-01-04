@@ -14,6 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -161,9 +162,27 @@ function DebugManipulateController.REPLAYED_ACTIONS:changeSkin(action)
 			local namedSlot = Equipment[string.format("PLAYER_SLOT_%s", tostring(action.event.slot):upper())]
 			Utility.Peep.Human.changeSkin(
 				peep,
-				namedSlot or tonumber(action.event.slot) or action.event.sloot,
+				namedSlot or tonumber(action.event.slot) or action.event.slot,
 				action.event.priority,
 				action.event.filename)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:talk(action)
+	return function()
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		if peep then
+			Utility.Peep.talk(
+				peep,
+				action.event.message,
+				Color.fromHexString(action.event.color),
+				action.timing and action.timing.duration)
 
 			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
 		end
@@ -629,6 +648,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:playAnimation(e)
 	elseif actionID == "changeSkin" then
 		self:changeSkin(e)
+	elseif actionID == "talk" then
+		self:talk(e)
 	elseif actionID == "transform" then
 		self:transform(e)
 	elseif actionID == "saveLocation" then
@@ -1161,6 +1182,29 @@ function DebugManipulateController:changeSkin(e)
 			filename = e.filename
 		})
 	end
+end
+
+function DebugManipulateController:talk(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	if not actor then
+		return
+	end
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local otherInstance = Utility.Peep.getInstance(actor:getPeep())
+
+	if selfInstance ~= otherInstance then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(actor:getPeep()), actor:getPeep(), "talk", {
+			message = e.message or "'Ey!",
+			color = e.color or "ffff00"
+		})
+	end
+
+	Utility.Peep.talk(actor:getPeep(), e.message or "'Ey!", Color.fromHexString(e.color or "ffff00"))
 end
 
 function DebugManipulateController:saveLocation(e)

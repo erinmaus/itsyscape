@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Camera = require "ItsyScape.Graphics.Camera"
@@ -145,32 +146,51 @@ function ThirdPersonCamera:getTransforms(projection, view)
 	do
 		projection:reset()
 
-		local halfTan = math.tan(self.fieldOfView / 2)
+		local f = 1 / math.tan(self.fieldOfView / 2)
 		local aspect = self.width / self.height
 
-		local m = { projection:getMatrix() }
-		m[1] = 1 / (halfTan * aspect)
-		m[6] = 1 / halfTan
-		m[11] = (self.far + self.near) / (self.far - self.near)
-		m[12] = 1
-		m[15] = -(2 * self.far * self.near) / (self.far - self.near)
-		m[16] = 0
+		-- local m = { projection:getMatrix() }
+		-- m[1] = 1 / (halfTan * aspect)
+		-- m[6] = 1 / halfTan
+		-- m[11] = (self.far + self.near) / (self.far - self.near)
+		-- m[12] = 1
+		-- m[15] = -(2 * self.far * self.near) / (self.far - self.near)
+		-- m[16] = 0
 
-		projection:setMatrix("column", unpack(m))
+		-- projection:setMatrix("column", unpack(m))
+
+		local m11, m12, m13, m14,
+		      m21, m22, m23, m24,
+		      m31, m32, m33, m34,
+		      m41, m42, m43, m44 = 0, 0, 0, 0,
+		                           0, 0, 0, 0,
+		                           0, 0, 0, 0,
+		                           0, 0, 0, 0
+
+		m11 = f / aspect
+		m22 = f
+		m33 = (self.far + self.near) / (self.near - self.far)
+		m34 = (2 * self.far * self.near) / (self.near - self.far)
+		--m33 = self.far / (self.near - self.far)
+		--m43 = self.near * (self.far / (self.near - self.far))
+		m43 = -1
+
+		projection:setMatrix(
+			m11, m12, m13, m14,
+			m21, m22, m23, m24,
+			m31, m32, m33, m34,
+			m41, m42, m43, m44)
 	end
 
 	view = view or love.math.newTransform()
 	do
 		view:reset()
 
-		local mirrorMatrix = self:_getMirrorMatrix()
-		local rotation = self:getCombinedRotation()
+		local translationBefore = MathCommon.makeTranslationTransform(self:getPosition())
+		local rotation = MathCommon.makeRotationTransform(self:getCombinedRotation())
+		local translationAfter = MathCommon.makeTranslationTransform(Vector(0, 0, self.distance))
 
-		view:scale(self.scale:get())
-		view:translate(0, 0, self.distance)
-		view:applyQuaternion(rotation:get())
-		view:translate((-self.position):get())
-		view:apply(mirrorMatrix)
+		view:setMatrix((translationBefore * rotation * translationAfter):inverse():getMatrix())
 	end
 
 	return projection, view
@@ -282,7 +302,7 @@ end
 
 function ThirdPersonCamera:getForward()
 	local rotation = -(self:getCombinedRotation())
-	return rotation:transformVector(-Vector.UNIT_Z):getNormal()
+	return -rotation:transformVector(-Vector.UNIT_Z):getNormal()
 end
 
 function ThirdPersonCamera:getStrafeForward()
