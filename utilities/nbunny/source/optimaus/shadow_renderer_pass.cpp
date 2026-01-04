@@ -82,7 +82,9 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 void nbunny::ShadowRendererPass::calculate_viewing_frustum_corners(float near, float far, std::vector<glm::vec3>& result) const
 {
 	auto& camera = get_renderer()->get_camera();
-	auto projection = glm::perspectiveLH(camera.get_field_of_view(), width / (float)height, near, far);
+	auto projection = glm::perspectiveRH_NO(camera.get_field_of_view(), width / (float)height, near, far);
+	projection[0][0] *= -1;
+
 	auto inverse_projection_view = glm::inverse(projection * camera.get_view());
 
 	result.clear();
