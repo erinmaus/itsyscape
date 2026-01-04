@@ -49,7 +49,7 @@ void SCAPE_SKINNED_MODEL_TRANSFORM_FUNC_NAME(
 
 	frag_Direction = vec2(
 		VertexDirection,
-		(scape_ViewMatrix * scape_WorldMatrix * vec4(1.0, 0.0, 0.0, 0.0)).x
+		(scape_ViewMatrix * scape_WorldMatrix * vec4(-1.0, 0.0, 0.0, 0.0)).x
 	);
 
 	frag_Normal = normalize(mat3(scape_NormalMatrix) * normalize(skinnedNormal));
