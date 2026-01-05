@@ -422,19 +422,19 @@ function DebugManipulateController.REPLAYED_ACTIONS:performAction(action)
 	return function()
 		local brochure = self:getGame():getGameDB():getBrochure()
 		local playerLayer = self:getLayerFromMapInfo(action.map)
-		local playerPeep = self:getPeepFromTargetInfo(action.target, sourceLayer)
+		local playerPeep = self:getPeepFromTargetInfo(action.target, playerLayer)
 		local targetLayer = self:getLayerFromMapInfo({
 			resource = action.event.targetMapResource,
 			localLayer = action.event.targetMapLocalLayer,
 		})
-		local targetPeep = self:getLayerFromMapInfo({
+		local targetPeep = self:getPeepFromTargetInfo({
 			mapObjectName = action.event.targetMapObjectName,
 			peepID = action.event.targetPeepID,
 		}, targetLayer)
 
 		if playerPeep and targetPeep then
 			local resource
-			if event.action.targetResourceType == "MapObject" then
+			if action.event.targetResourceType == "MapObject" then
 				resource = Utility.Peep.getMapObject(targetPeep)
 			else
 				resource = Utility.Peep.getResource(targetPeep)
@@ -443,16 +443,16 @@ function DebugManipulateController.REPLAYED_ACTIONS:performAction(action)
 			local resourceType = resource and brochure:getResourceTypeFromResource(resource)
 			local targetAction
 
-			if resourceType and resourceType.name == event.action.targetResourceType then
+			if resourceType and resourceType.name == action.event.targetResourceType then
 				local currentActionIndex = 0
 
-				for action in brochure:findActionsByResource(resource) do
-					local actionDefinition = brochure:getActionDefinitionFromAction(action)
-					if actionDefinition.name == event.action.actionDefinition then
+				for a in brochure:findActionsByResource(resource) do
+					local actionDefinition = brochure:getActionDefinitionFromAction(a)
+					if actionDefinition.name == action.event.actionDefinition then
 						currentActionIndex = currentActionIndex + 1
 
-						if currentActionIndex == event.action.actionIndex then
-							targetActor = action
+						if currentActionIndex == action.event.actionIndex then
+							targetAction = a
 							break
 						end
 					end
@@ -547,6 +547,10 @@ function DebugManipulateController:_onPeepTryAction(_, poke)
 
 	local objectTargetInfo = self:getTargetInfo(objectPeep)
 	local objectMapInfo = self:getMapInfo(Utility.Peep.getLayer(objectPeep))
+
+	if not (objectTargetInfo and objectMapInfo) then
+		return
+	end
 
 	local targetResourceType = brochure:getResourceTypeFromResource(targetResource)
 
