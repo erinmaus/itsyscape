@@ -1943,7 +1943,7 @@ function Peep.lookAt(self, target, delta)
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-		local r = Quaternion.lookAt(xzPeepPosition, xzSelfPosition):getNormal()
+		local r = Quaternion.lookAt(xzSelfPosition, xzPeepPosition, Vector.UNIT_Z):getNormal()
 		r = (r * -mapRotation):getNormal()
 
 		if delta then
@@ -2012,7 +2012,7 @@ function Peep.face3D(self)
 
 				local delta = math.min((love.timer.getTime() - face3D.time) / face3D.duration, 1)
 
-				local targetRotation = Quaternion.lookAt(xzTargetPosition, xzSelfPosition)
+				local targetRotation = Quaternion.lookAt(xzSelfPosition, xzTargetPosition, Vector.UNIT_Z)
 				rotation.rotation = face3D.rotation:slerp(targetRotation, delta):getNormal()
 
 				return true
