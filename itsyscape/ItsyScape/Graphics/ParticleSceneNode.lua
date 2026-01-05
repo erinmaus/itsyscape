@@ -67,6 +67,12 @@ function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 
 				self.isReady = true
 			end)
+
+			if def.soft then
+				resources:queue(ShaderResource, "Resources/Shaders/SoftParticles", function(shader)
+					self:getMaterial():setShader(shader)
+				end)
+			end
 		else
 			self:getHandle():initParticleSystemFromDef(def)
 		end

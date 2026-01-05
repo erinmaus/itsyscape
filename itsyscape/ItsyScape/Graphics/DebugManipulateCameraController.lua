@@ -94,22 +94,75 @@ function DebugManipulateCameraController:onOrientateToActor(actorID, delay, dura
 	self:rebuildMapCurve()
 end
 
+function DebugManipulateCameraController:onOrientateFromActorToActor(actorID, otherActorID, delay, duration, tween)
+	local nextActor = self:getGameView():getActorByID(actorID)
+	if not nextActor then
+		return
+	end
+
+	local otherActor = self:getGameView():getActorByID(otherActorID)
+	if not otherActor then
+		return
+	end
+
+	if self.currentElapsed >= self.currentDuration and self.currentDuration > 0 then
+		self:reset()
+	end
+
+	table.insert(self.pending, {
+		actor = nextActor,
+		otherActor = otherActor,
+		delay = delay or 0,
+		duration = duration or 0,
+		tween = tween
+	})
+
+	self:rebuildMapCurve()
+end
+
 function DebugManipulateCameraController:rebuildMapCurve()
 	local totalDuration = 0
 
 	local positions = {}
 	local rotations = {}
+	local previousRotation, previousPosition
 	for _, p in ipairs(self.pending) do
 		totalDuration = totalDuration + (p.duration or 1)
 
-		local actorView = self:getGameView():getView(p.actor)
-		local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1)
-		local translation, rotation = MathCommon.decomposeTransform(transform)
+		local translation, rotation = self:getActorTransforms(p.actor)
+
+		if previousRotation then
+			local distance = previousPosition:distance(translation)
+			local steps = math.max(math.ceil(distance / 4), 1)
+
+			for i = 1, steps do
+				local delta = i / (steps + 1)
+				local r = previousRotation:slerp(rotation, delta)
+				table.insert(rotations, { r:get() })
+			end
+		end
+
+		if previousPosition then
+			local distance = previousPosition:distance(translation)
+			local steps = math.max(math.ceil(distance / 4), 1)
+
+			for i = 1, steps do
+				local delta = i / (steps + 1)
+				local p = previousPosition:lerp(translation, delta)
+				table.insert(positions, { p:get() })
+			end
+		end
 
 		table.insert(positions, { translation:get() })
-		table.insert(rotations, { -rotation.x, -rotation.y, -rotation.z, rotation.w })
+		table.insert(rotations, { rotation:get() })
+
+
+		previousPosition = translation
+		previousRotation = rotation
 	end
 
+	print ("#positions", #positions)
+	print ("#rotations", #rotations)
 	self.currentDuration = totalDuration
 	self.currentCurve = MapCurve(nil, {
 		linear = false,
@@ -121,13 +174,17 @@ function DebugManipulateCameraController:rebuildMapCurve()
 	})
 end
 
-function DebugManipulateCameraController:copyActorTransforms(actor)
+function DebugManipulateCameraController:getActorTransforms(actor)
 	local actorView = self:getGameView():getView(actor)
-	local transform = actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1)
+	local transform = actorView and actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1) or love.math.newTransform()
 	local translation, rotation = MathCommon.decomposeTransform(transform)
-
 	rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
 
+	return translation, rotation
+end
+
+function DebugManipulateCameraController:copyActorTransforms(actor)
+	local translation, rotation = self:getActorTransforms(actor)
 	self.translationOffset = translation:keep()
 	self.rotationOffset = rotation:getNormal()
 end
@@ -344,6 +401,14 @@ function DebugManipulateCameraController:draw()
 		translation, rotation = self.currentCurve:evaluate(delta)
 	else
 		translation, rotation = Vector.ZERO, Quaternion.IDENTITY
+	end
+
+	local p = self.pending[math.min(self.currentIndex, #self.pending)]
+	if p and p.otherActor then
+		local currentTranslation = self:getActorTransforms(p.actor)
+		local otherTranslation = self:getActorTransforms(p.otherActor)
+		rotation = Quaternion.lookAt(translation, otherTranslation, Vector.UNIT_Y)
+		rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
 	end
 
 	camera:setRotation((self.CONSTANT_ROTATION * rotation * self.rotationOffset):getNormal())

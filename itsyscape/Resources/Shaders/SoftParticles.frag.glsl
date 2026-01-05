@@ -5,8 +5,6 @@ uniform float scape_SoftDepth;
 uniform Image scape_DiffuseTexture;
 uniform Image scape_DepthTexture;
 
-uniform vec2 scape_MapSize;
-
 varying vec3 frag_ParticlePosition;
 varying vec3 frag_LocalPosition;
 varying vec2 frag_ScreenPosition;
@@ -21,7 +19,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	vec4 textureSample = Texel(scape_DiffuseTexture, textureCoordinate);
 
 	color *= textureSample;
-	color.a *= smoothstep(0.25, 1.0, d);
+	color.a *= smoothstep(0.5, 2, d);
 
 	position = frag_ParticlePosition;
 }

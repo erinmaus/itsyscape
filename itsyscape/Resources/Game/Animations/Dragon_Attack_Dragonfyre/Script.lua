@@ -23,6 +23,7 @@ Animation "Dragon Attack (Dragonfyre)" {
 			direction = { 0, 0, -1 },
 
 			system = {
+				soft = true,
 				numParticles = 500,
 				texture = "Resources/Game/Animations/Dragon_Attack_Dragonfyre/Particle.png",
 				columns = 4,

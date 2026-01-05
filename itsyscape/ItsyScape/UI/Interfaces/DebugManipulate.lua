@@ -379,6 +379,62 @@ function DebugManipulate.TransformAction:done()
 	self:getInterface():removeFacade(self.gizmoFacade)
 end
 
+DebugManipulate.OrientateAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.OrientateAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.OrientateAction:start()
+	DebugManipulate.Action.start(self)
+
+	local root = self:getUIView():getRoot()
+	self.interactFacade = DebugManipulate.InteractFacade(self:getInterface())
+	self.interactFacade:setActionGenerator(function(interface, probe, actions)
+		for _, hit in probe:hits() do
+			local object = hit:getObject()
+
+			if Class.isCompatibleType(object, Actor) then
+				interface:buildActorAction(actions, object, {
+					verb = "Orientate-At",
+					callback = function()
+						self:orientateCamera(self:getObject(), object)
+					end
+				})
+			end
+		end
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Orientate-At",
+			objectID = -1,
+			objectType = "action",
+			object = "Self",
+			callback = function()
+				self:orientateCamera(self:getObject())
+			end
+		})
+
+		table.insert(actions, {
+			id = #actions + 1,
+			verb = "Cancel",
+			objectID = -1,
+			objectType = "action",
+			object = "Orientation",
+			callback = function()
+				self:close()
+			end
+		})
+	end)
+
+	self:getInterface():addFacade(self.interactFacade)
+end
+
+function DebugManipulate.OrientateAction:done()
+	DebugManipulate.Action.done(self)
+	self:getInterface():removeFacade(self.interactFacade)
+end
+
 DebugManipulate.LookAtAction = Class(DebugManipulate.Action)
 
 function DebugManipulate.LookAtAction:new(...)
@@ -543,6 +599,9 @@ function DebugManipulate.PreviewOrientateAction:start()
 	player:onPushCamera("DebugManipulate")
 	player:onPokeCamera("enableInteraction")
 	player:onPokeCamera("copyActorTransforms", self:getObject():getID())
+
+	self.facade = DebugManipulate.ThirdsFacade()
+	self:getInterface():addFacade(self.facade)
 end
 
 function DebugManipulate.PreviewOrientateAction:update(delta)
@@ -578,6 +637,10 @@ function DebugManipulate.PreviewOrientateAction:done()
 		if self.previousTranslation then
 			sceneNode:getTransform():setLocalTranslation(self.previousTranslation)
 		end
+	end
+
+	if self.facade then
+		self:getInterface():removeFacade(self.facade)
 	end
 end
 
@@ -826,6 +889,47 @@ DebugManipulate.Root = Class(Widget)
 
 function DebugManipulate.Root:getOverflow()
 	return true
+end
+
+DebugManipulate.ThirdsFacade = Class(Drawable)
+
+function DebugManipulate.ThirdsFacade:new()
+	Drawable.new(self)
+
+	self:setIsSelfClickThrough(true)
+end
+
+function DebugManipulate.ThirdsFacade:draw()
+	local width, height = self:getSize()
+
+	love.graphics.setLineWidth(2)
+	love.graphics.setColor(1, 1, 1, 1)
+	for i = 1, 2 do
+		local x = width * (i / 3)
+		itsyrealm.graphics.line(x, 0, x, height)
+	end
+
+	for i = 1, 2 do
+		local y = height * (i / 3)
+		itsyrealm.graphics.line(0, y, width, y)
+	end
+
+	love.graphics.setLineWidth(1)
+	love.graphics.setColor(1, 1, 1, 0.5)
+	itsyrealm.graphics.line(0.5 * width, 0, 0.5 * width, height)
+	itsyrealm.graphics.line(0, 0.5 * height, width, 0.5 * height)
+
+	love.graphics.setLineWidth(1)
+	love.graphics.setColor(1, 1, 1, 1)
+end
+
+function DebugManipulate.ThirdsFacade:performLayout()
+	Drawable.performLayout(self)
+
+	local w, h = itsyrealm.graphics.getScaledMode()
+	self:setSize(w, h)
+	self:setPosition(0, 0)
+	self:setZDepth(-1000)
 end
 
 DebugManipulate.GizmoFacade = Class(Drawable)
@@ -1225,6 +1329,10 @@ function DebugManipulate:attach()
 end
 
 function DebugManipulate:detach()
+	if self.currentAction then
+		self:cancelAction()
+	end
+
 	local root = self:getView():getRoot()
 	if self.revealButton and self.revealButton:getParent() == root then
 		root:removeChild(self.revealButton)
@@ -1429,10 +1537,18 @@ function DebugManipulate:probePreset(presetInfo, button)
 		},
 		{
 			id = 2,
+			verb = "Replay-For-Editing",
+			object = object,
+			callback = function()
+				self:replay(presetInfo, true)
+			end
+		},
+		{
+			id = 2,
 			verb = "Replay",
 			object = object,
 			callback = function()
-				self:replay(presetInfo)
+				self:replay(presetInfo, false)
 			end
 		}
 	}
@@ -2215,14 +2331,24 @@ function DebugManipulate:stopRecordOrReplay()
 	return state.isRecording or state.isReplaying
 end
 
-function DebugManipulate:replay(presetInfo)
+function DebugManipulate:replay(presetInfo, isEditing)
 	self:hide()
 	self:sendPoke("startReplay", nil, { resource = presetInfo.resource, id = presetInfo.id })
+
+	if isEditing then
+		self.replayFacade = DebugManipulate.ThirdsFacade()
+		self:addFacade(self.replayFacade)
+	end
 end
 
 function DebugManipulate:finishReplay(presetInfo)
 	self:show()
 	self:sendPoke("select", nil, { resource = presetInfo.resource, id = presetInfo.id })
+
+	if self.replayFacade then
+		self:removeFacade(self.replayFacade)
+		self.replayFacade = nil
+	end
 end
 
 function DebugManipulate:finishRecording(presetInfo)

@@ -275,8 +275,20 @@ function DebugManipulateController.REPLAYED_ACTIONS:orientateCamera(action)
 		local layer = self:getLayerFromMapInfo(action.map)
 		local peep = self:getPeepFromTargetInfo(action.target, layer)
 
+		local otherLayer = self:getLayerFromMapInfo({
+			resource = action.event.targetMapResource,
+			localLayer = action.event.targetMapLocalLayer,
+		})
+		local otherPeep = self:getPeepFromTargetInfo({
+			mapObjectName = action.event.targetMapObjectName,
+			peepID = action.event.targetPeepID,
+		}, otherLayer)
+
 		local actor = peep and peep:getBehavior(ActorReferenceBehavior)
 		actor = actor and actor.actor
+
+		local otherActor = otherPeep and otherPeep:getBehavior(ActorReferenceBehavior)
+		otherActor = otherActor and otherActor.actor
 
 		if actor then
 			local delay = action.timing and action.timing.delay
@@ -284,7 +296,12 @@ function DebugManipulateController.REPLAYED_ACTIONS:orientateCamera(action)
 			local tween = action.timing and action.timing.tween
 
 			player:pokeCamera("resetTransforms")
-			player:pokeCamera("orientateToActor", actor:getID(), delay or 0, duration or 0, tween or "sineEaseInOut")
+
+			if otherPeep then
+				player:pokeCamera("orientateFromActorToActor", actor:getID(), otherActor:getID(), delay or 0, duration or 0, tween or "sineEaseInOut")
+			else
+				player:pokeCamera("orientateToActor", actor:getID(), delay or 0, duration or 0, tween or "sineEaseInOut")
+			end
 
 			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
 		end
@@ -1342,15 +1359,31 @@ function DebugManipulateController:orientateCamera(e)
 		return
 	end
 
-	local peepInstance = Utility.Peep.getInstance(peep)
-	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local otherActor = self:getGame():getStage():getActorByID(e.otherActorID)
+	local otherPeep = otherActor and otherActor:getPeep()
 
-	if peepInstance ~= selfInstance then
+	if e.otherActorID and not otherPeep then
+		return
+	end
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local peepInstance = Utility.Peep.getInstance(peep)
+	local otherInstance = otherPeep Utility.Peep.getInstance(otherPeep)
+
+	if peepInstance ~= selfInstance or (otherPeep and otherInstance ~= selfInstance) then
 		return
 	end
 
 	if self.isRecording then
-		self:record(Utility.Peep.getLayer(peep), peep, "orientateCamera", {})
+		local otherMapInfo = otherPeep and self:getMapInfo(Utility.Peep.getLayer(otherPeep))
+		local otherTargetInfo = otherMapInfo and self:getTargetInfo(otherPeep)
+
+		self:record(Utility.Peep.getLayer(peep), peep, "orientateCamera", {
+			targetMapObjectName = otherTargetInfo.mapObjectName,
+			targetPeepID = otherTargetInfo.peepID,
+			targetMapResource = otherMapInfo.resource,
+			targetMapLocalLayer = otherMapInfo.localLayer,
+		})
 	end
 end
 
