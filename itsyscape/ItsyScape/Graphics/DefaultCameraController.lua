@@ -1224,6 +1224,8 @@ function DefaultCameraController:draw()
 	if self.isFirstPerson <= 0 then
 		self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
 	end
+
+	self:getCamera():setIsWallHackEnabled(true)
 end
 
 return DefaultCameraController

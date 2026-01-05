@@ -255,6 +255,7 @@ function StandardCutsceneCameraController:draw()
 	self:getCamera():setHorizontalRotation(self.currentHorizontalRotation + StandardCutsceneCameraController.CAMERA_HORIZONTAL_ROTATION_OFFSET)
 	self:getCamera():setVerticalRotation(self.currentVerticalRotation + StandardCutsceneCameraController.CAMERA_VERTICAL_ROTATION_OFFSET)
 	self:getCamera():setPosition(self:getTargetPosition() + self.currentTranslation + shake)
+	self:getCamera():setIsWallHackEnabled(true)
 
 	if self.mapRotationSticky and self.mapRotationSticky > 0 then
 		self:getCamera():setRotation(-self:getActorMapRotation())

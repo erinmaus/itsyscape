@@ -22,7 +22,7 @@ function ThirdPersonCamera:new()
 	self.height = 1
 	self.fieldOfView = math.rad(30)
 	self.near = 0.1
-	self.far = 200
+	self.far = 250
 	self.verticalRotation = 0
 	self.horizontalRotation = 0
 	self.distance = 1
@@ -30,6 +30,8 @@ function ThirdPersonCamera:new()
 	self.position = Vector(0, 0, 0):keep()
 	self.rotation = Quaternion():keep()
 	self.scale = Vector(1):keep()
+
+	self.isWallHackEnabled = true
 
 	self.hasReflection = false
 	self.reflectionPoint = Vector.ZERO
@@ -41,6 +43,14 @@ function ThirdPersonCamera:new()
 	
 	self.boundingSpherePosition = Vector(0):keep()
 	self.boundingSphereRadius = math.huge
+end
+
+function ThirdPersonCamera:setIsWallHackEnabled(value)
+	self.isWallHackEnabled = value
+end
+
+function ThirdPersonCamera:getIsWallHackEnabled(value)
+	return self.isWallHackEnabled
 end
 
 function ThirdPersonCamera:setBoundingSphere(position, radius)
@@ -356,6 +366,7 @@ function ThirdPersonCamera:copy(parentCamera)
 	self:setHorizontalRotation(parentCamera:getHorizontalRotation())
 	self:setRotation(parentCamera:getRotation())
 	self:setScale(parentCamera:getScale())
+	self:setIsWallHackEnabled(parentCamera:getIsWallHackEnabled())
 
 	if parentCamera:getMirrorPlane() then
 		local _, normal, point = parentCamera:getMirrorPlane()

@@ -394,6 +394,7 @@ function DebugManipulateCameraController:draw()
 	camera:setDistance(0)
 	camera:setVerticalRotation(math.pi / 2)
 	camera:setHorizontalRotation(-math.pi)
+	camera:setIsWallHackEnabled(false)
 
 	local translation, rotation
 	if self.currentCurve then

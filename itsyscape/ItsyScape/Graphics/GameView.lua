@@ -1514,6 +1514,7 @@ end
 function GameView:_updateMapNodeWallHack(m, delta)
 	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
 	wallHackEnabled = wallHackEnabled and self:_isPlayerInBuilding()
+	wallHackEnabled = wallHackEnabled and self:getCamera():getIsWallHackEnabled()
 
 	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 4, 4, 4, 2, 0
 	local isMapWallhackEnabled = false
