@@ -96,7 +96,7 @@ function CameraController:poke(event, ...)
 	if func then
 		func(self, ...)
 	else
-		Log.warn("Poke '%s' (transformed to '%s') not recognized.", event, name)
+		Log.warnOnce("Poke '%s' (transformed to '%s') not recognized.", event, name)
 	end
 end
 
