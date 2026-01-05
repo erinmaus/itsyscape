@@ -41,6 +41,8 @@ function Tween.powerEaseIn(t, power)
 end
 
 function Tween.powerEaseOut(t, power)
+	power = power or 2
+
 	local sign
 	if power % 2 == 0 then
 		sign = -1
@@ -48,7 +50,7 @@ function Tween.powerEaseOut(t, power)
 		sign = 1
 	end
 
-	return sign * ((t - 1) ^ (power or 2) + sign)
+	return sign * ((t - 1) ^ (power + sign))
 end
 
 function Tween.powerEaseInOut(t, power)
