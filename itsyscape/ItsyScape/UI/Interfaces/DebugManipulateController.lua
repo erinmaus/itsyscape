@@ -1368,7 +1368,7 @@ function DebugManipulateController:orientateCamera(e)
 
 	local selfInstance = Utility.Peep.getInstance(self:getPeep())
 	local peepInstance = Utility.Peep.getInstance(peep)
-	local otherInstance = otherPeep Utility.Peep.getInstance(otherPeep)
+	local otherInstance = otherPeep and Utility.Peep.getInstance(otherPeep)
 
 	if peepInstance ~= selfInstance or (otherPeep and otherInstance ~= selfInstance) then
 		return
@@ -1379,10 +1379,10 @@ function DebugManipulateController:orientateCamera(e)
 		local otherTargetInfo = otherMapInfo and self:getTargetInfo(otherPeep)
 
 		self:record(Utility.Peep.getLayer(peep), peep, "orientateCamera", {
-			targetMapObjectName = otherTargetInfo.mapObjectName,
-			targetPeepID = otherTargetInfo.peepID,
-			targetMapResource = otherMapInfo.resource,
-			targetMapLocalLayer = otherMapInfo.localLayer,
+			targetMapObjectName = otherTargetInfo and otherTargetInfo.mapObjectName,
+			targetPeepID = otherTargetInfo and otherTargetInfo.peepID,
+			targetMapResource = otherMapInfo and otherMapInfo.resource,
+			targetMapLocalLayer = otherMapInfo and otherMapInfo.localLayer,
 		})
 	end
 end

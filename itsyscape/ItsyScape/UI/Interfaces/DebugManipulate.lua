@@ -398,7 +398,8 @@ function DebugManipulate.OrientateAction:start()
 				interface:buildActorAction(actions, object, {
 					verb = "Orientate-At",
 					callback = function()
-						self:orientateCamera(self:getObject(), object)
+						self:getInterface():orientateCamera(self:getObject(), object)
+						self:getInterface():stopAction()
 					end
 				})
 			end
@@ -407,11 +408,12 @@ function DebugManipulate.OrientateAction:start()
 		table.insert(actions, {
 			id = #actions + 1,
 			verb = "Orientate-At",
-			objectID = -1,
-			objectType = "action",
+			objectID = self:getObject():getID(),
+			objectType = "actor",
 			object = "Self",
 			callback = function()
-				self:orientateCamera(self:getObject())
+				self:getInterface():orientateCamera(self:getObject())
+				self:getInterface():stopAction()
 			end
 		})
 
@@ -2027,9 +2029,10 @@ function DebugManipulate:walk(object, destinationObject)
 	})
 end
 
-function DebugManipulate:orientateCamera(object)
+function DebugManipulate:orientateCamera(object, otherObject)
 	self:sendPoke("orientateCamera", nil, {
-		actorID = object:getID()
+		actorID = object:getID(),
+		otherActorID = otherObject and otherObject:getID()
 	})
 end
 
@@ -2153,7 +2156,7 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 	self:buildActorAction(actions, object, {
 		verb = "Orientate-Camera",
 		callback = function()
-			self:orientateCamera(object)
+			self:beginAction(DebugManipulate.OrientateAction, object, hit)
 		end
 	})
 
