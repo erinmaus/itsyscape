@@ -33,8 +33,8 @@ EndlessWater.CELL_SIZE = 2
 
 -- Width and height of the water in the negative and positive dimensions.
 -- Basically goes from -W .. +W, and -H .. +H.
-EndlessWater.WIDTH  = 1
-EndlessWater.HEIGHT = 1
+EndlessWater.WIDTH  = 2
+EndlessWater.HEIGHT = 2
 
 EndlessWater.CANVAS_CELL_SIZE = 8
 EndlessWater.CANVAS_WIDTH = 128
@@ -348,10 +348,10 @@ function EndlessWater:update(delta)
 
 	local i = math.floor(position.x / (EndlessWater.SIZE * EndlessWater.CELL_SIZE))
 	local j = math.floor(position.z / (EndlessWater.SIZE * EndlessWater.CELL_SIZE))
-	local x = (i + 0.5) * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
-	local z = (j + 0.5) * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
+	local x = i * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
+	local z = j * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
 
-	self.waterParent:getTransform():setLocalTranslation(Vector(position.x, 0, position.z))
+	self.waterParent:getTransform():setLocalTranslation(Vector(x, 0, z))
 
 	self:updateShips(delta)
 end
