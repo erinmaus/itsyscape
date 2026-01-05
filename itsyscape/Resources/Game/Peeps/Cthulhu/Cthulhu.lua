@@ -24,7 +24,7 @@ function Cthulhu:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Cthulhu', ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(12, 32, 4)
+	size.size = Vector(12, 16, 4)
 	size.zoom = 0.75
 	size.pan = Vector(0, 12, 0)
 

@@ -95,22 +95,22 @@ do
 	}
 end
 
-M["Water"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 0,
-		PositionY = 0,
-		PositionZ = 0,
-		Name = "Water",
-		Map = M._MAP,
-		Resource = M["Water"]
-	}
+-- M["Water"] = ItsyScape.Resource.MapObject.Unique()
+-- do
+-- 	ItsyScape.Meta.MapObjectLocation {
+-- 		PositionX = 0,
+-- 		PositionY = 0,
+-- 		PositionZ = 0,
+-- 		Name = "Water",
+-- 		Map = M._MAP,
+-- 		Resource = M["Water"]
+-- 	}
 
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "EndlessWater",
-		MapObject = M["Water"]
-	}
-end
+-- 	ItsyScape.Meta.PropMapObject {
+-- 		Prop = ItsyScape.Resource.Prop "EndlessWater",
+-- 		MapObject = M["Water"]
+-- 	}
+-- end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
@@ -140,11 +140,11 @@ do
 		MapObject = M["Cthulhu"]
 	}
 
-	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
-		Resource = M["Cthulhu"]
-	}
+	-- ItsyScape.Meta.PeepMashinaState {
+	-- 	State = "attack",
+	-- 	Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
+	-- 	Resource = M["Cthulhu"]
+	-- }
 
 	M["Cthulhu"] {
 		ItsyScape.Action.InvisibleAttack()
@@ -154,9 +154,9 @@ end
 M["Island1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16,
+		PositionX = -32,
 		PositionY = 0,
-		PositionZ = -96,
+		PositionZ = -128,
 		Map = M._MAP,
 		Name = "Island1",
 		Resource = M["Island1"]

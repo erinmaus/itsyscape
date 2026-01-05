@@ -835,7 +835,7 @@ function DefaultCameraController:onLeaveFirstPerson()
 	self.isFirstPerson = (self.isFirstPerson or 1) - 1
 
 	if self.isFirstPerson <= 0 then
-		self.targetDistance = self.preFirstPersonTargetDistance
+		self.targetDistance = self.preFirstPersonTargetDistance or self.targetDistance
 		self.preFirstPersonTargetDistance = nil
 	end
 end

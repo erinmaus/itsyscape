@@ -221,7 +221,7 @@ function DebugManipulate.SpawnGlyphCircleAction:start()
 		PropertiesPrompt.Property("fadeDuration", "Fade Duration", "number", 5000),
 		PropertiesPrompt.Property("glyphDescription", "Glyph Description", "string", "Lorem ipsum."),
 		PropertiesPrompt.Property("glyphHeight", "Glyph Height", "number", 8),
-		PropertiesPrompt.Property("glyphWidth", "Glyph Width", "number", 8),
+		PropertiesPrompt.Property("glyphWidth", "Glyph Width", "number", 8)
 	})
 
 	self:addPopup(propertiesPrompt)

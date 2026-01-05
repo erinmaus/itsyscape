@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
 local GBuffer = require "ItsyScape.Graphics.GBuffer"
@@ -24,20 +25,27 @@ do
 end
 
 DecayingBolt.PARTICLE_SYSTEM = {
+	numParticles = 500,
 	texture = "Resources/Game/Projectiles/DecayingBolt/Particle.png",
 	columns = 4,
+	soft = true,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 0, 0 },
-			speed = { 4, 6 }
+			radius = { 0, 1 },
+			speed = { 2, 4 },
+			lifeTime = { 3, 0.25 }
+		},
+		{
+			type = "DirectionalEmitter",
+			direction = { 0, 0, 1 }
 		},
 		{
 			type = "RandomColorEmitter",
 			colors = {
-				{ 0.25, 0.25, 0.25, 0 },
-				{ 0.25, 0.25, 0.25, 0 },
+				{ 0.5, 0.5, 0.5, 0 },
+				{ 0.5, 0.5, 0.5, 0 },
 				{ Color.fromHexString("ff9f29", 0):get() }
 			}
 		},
@@ -70,14 +78,15 @@ DecayingBolt.PARTICLE_SYSTEM = {
 
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
-		count = { 40, 50 },
-		delay = { 1 / 60 },
+		count = { 10, 15 },
+		delay = { 1 / 30 },
 		duration = { 2 }
 	}
 }
 
 DecayingBolt.BOLT_DELTA = 0.5
-DecayingBolt.DURATION   = 4
+DecayingBolt.DURATION   = 2
+DecayingBolt.CLAMP_BOTTOM = true
 
 function DecayingBolt:load()
 	Projectile.load(self)
@@ -96,6 +105,21 @@ function DecayingBolt:load()
 			shader:send("scape_ScreenTexture", renderer:getDeferredPass():getGBuffer():getCanvas(GBuffer.COLOR_INDEX))
 		end
 	end)
+
+	self:updateParticles()
+end
+
+function DecayingBolt:updateParticles()
+	local spawnPosition = self:getTargetPosition(self:getSource())
+	local sourceMin, sourceMax = self:getSource():getBounds()
+	local size = (sourceMax - sourceMin) * (1 / 4)
+	spawnPosition = spawnPosition + Vector(0, size.y, 0)
+
+	local hitPosition = self:getTargetPosition(self:getDestination())
+	local length = (spawnPosition - hitPosition):getLength()
+	local delta = Tween.sineEaseOut(self:getDelta())
+	self.particles:updateLocalPosition(((-spawnPosition:direction(hitPosition) * 4) + spawnPosition):lerp(hitPosition + spawnPosition:direction(hitPosition) * 2, delta))
+	self.particles:updateLocalDirection(-spawnPosition:direction(hitPosition))
 end
 
 function DecayingBolt:getDuration()
@@ -105,11 +129,7 @@ end
 function DecayingBolt:update(...)
 	Projectile.update(self, ...)
 
-	local spawnPosition = self:getTargetPosition(self:getSource())
-	local hitPosition = self:getTargetPosition(self:getDestination())
-	local length = (spawnPosition - hitPosition):getLength()
-	local currentPositionDelta = math.abs(math.sin(math.pi * 2 * length * self:getDelta()))
-	self.particles:updateLocalPosition(spawnPosition:lerp(hitPosition, currentPositionDelta))
+	self:updateParticles()
 end
 
 return DecayingBolt

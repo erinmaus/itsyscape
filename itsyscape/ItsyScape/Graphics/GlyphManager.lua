@@ -347,7 +347,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 
 	love.graphics.push("all")
 	love.graphics.setDepthMode("always", false)
-	love.graphics.stencil(_stencil, "replace", 1, false)
+	love.graphics.stencil(_stencil, "replace", 1, true)
 	love.graphics.pop()
 
 	love.graphics.setStencilTest("notequal", 1)

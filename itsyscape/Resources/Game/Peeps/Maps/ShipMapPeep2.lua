@@ -91,8 +91,11 @@ function ShipMapScript:onCustomize(sailingDetails)
 						propResource,
 						mapObjectLocation:get("Name"))
 
+
 					if prop then
 						local peep = prop:getPeep()
+						Utility.Peep.setMapObject(peep, mapObject)
+
 						local _, sailingResource = peep:addBehavior(SailingResourceBehavior)
 						sailingResource.resource = gameDB:getResource(sailingItem.sailingItemID, "SailingItem")
 

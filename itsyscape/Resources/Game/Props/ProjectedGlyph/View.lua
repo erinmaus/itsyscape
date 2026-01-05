@@ -37,12 +37,9 @@ function ProjectedGlyph:load()
 		ShaderResource,
 		"Resources/Shaders/MapGroundProjection")
 
-	resources:queueEvent(
-		function()
-			self.tileSet = TileSet.loadFromFile(
-				"Resources/Game/TileSets/Draft/Layout.lua",
-				false)
-		end)
+	self.tileSet = TileSet.loadFromFile(
+		"Resources/Game/TileSets/Draft/Layout.lua",
+		false)
 
 	self.light = PointLightSceneNode()
 end
@@ -62,12 +59,13 @@ function ProjectedGlyph:generate()
 	local w = halfWidth * 2 + 1
 	local h = halfHeight * 2 + 1
 
-	local state = self:getProp():getState()
+	local center = map:getTileCenter(self.currentI, self.currentJ)
+	center.y = 0
 
 	local mapMesh = MapMeshSceneNode()
 	mapMesh:fromMap(map, self.tileSet, x, y, w, h, MapMeshMask(), MapMeshIslandProcessor(map, self.tileSet))
 	mapMesh:setParent(gameView:getMapSceneNode(self.currentLayer))
-	mapMesh:getTransform():setLocalTranslation(Vector(0, 0.25 + (state.elevation or 0), 0))
+	mapMesh:getTransform():setLocalOffset(center)
 
 	local canvasWidth = w * self.RESOLUTION
 	local canvasHeight = h * self.RESOLUTION
@@ -98,6 +96,7 @@ function ProjectedGlyph:generate()
 	material:setIsShadowCaster(false)
 
 	self.mapMesh = mapMesh
+	self.mapMeshCenter = center
 end
 
 function ProjectedGlyph:remove()
@@ -123,6 +122,19 @@ function ProjectedGlyph:tick()
 		self.currentI, self.currentJ, self.currentLayer = i, j, layer
 		self.currentWidth, self.currentHeight = width, height
 		self:generate()
+
+		self.mapMesh:onWillRender(function()
+			love.graphics.setMeshCullMode("none")
+		end)
+	end
+
+	if self.mapMesh then
+		local rotation = self:getRoot():getTransform():getLocalRotation()
+		local translation = self:getRoot():getTransform():getLocalTranslation()
+		local yOffset = Vector(0, state.elevation or 0, 0)
+
+		self.mapMesh:getTransform():setLocalRotation(rotation)
+		self.mapMesh:getTransform():setLocalTranslation(-Vector(translation.x, 0, translation.y) + self.mapMeshCenter + yOffset)
 	end
 
 	local glyph = state.glyph or 0
@@ -153,8 +165,8 @@ function ProjectedGlyph:_drawRite(glyph, projections, offset, color)
 	local width, height = self.texture:getWidth(), self.texture:getHeight()
 
 	love.graphics.push("all")
-
 	love.graphics.setColor(color:get())
+	love.graphics.setBlendMode("alpha")
 
 	glyphManager:draw(
 		glyph,
@@ -170,7 +182,9 @@ end
 function ProjectedGlyph:update()
 	local state = self:getProp():getState()
 
-	self.mapMesh:getMaterial():setAlpha(state.alpha or 1)
+	if self.mapMesh then
+		self.mapMesh:getMaterial():setAlpha(state.alpha or 1)
+	end
 
 	local time = math.lerp(self.previousTime or 0, self.currentTime or 0, _APP:getFrameDelta())
 
@@ -183,7 +197,7 @@ function ProjectedGlyph:update()
 	local projections = glyphManager:asyncProjectAll(self, self.glyphInstance, planeNormal, planeD, time)
 
 	love.graphics.push("all")
-	love.graphics.setCanvas({ self.canvas, depthstencil = true })
+	love.graphics.setCanvas({ self.canvas, stencil = true })
 	love.graphics.clear(0, 0, 0, 0)
 
 	self:_drawRite(
