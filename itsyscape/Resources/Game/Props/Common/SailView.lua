@@ -59,7 +59,7 @@ function SailView:getCommonResourcePath(filename)
 end
 
 function SailView:getTextureResourcePath(filename)
-	local state = self:getShipState()
+	local state = self:getProp():getState()
 
 	local resource = state and state.resource
 	resource = resource or "Sail_Common"
@@ -108,6 +108,8 @@ function SailView:load()
 				self.sailNode:setModel(self.sailModel)
 				self.sailNode:setParent(root)
 				self.sailNode:setTransforms(self.transforms)
+
+				self.sailNode:getMaterial():setOutlineThreshold(-0.01)
 
 				local state = self:getShipState()
 				if state and state.sailsHoisted then
@@ -164,6 +166,8 @@ function SailView:updateTextures()
 
 	if state.colors then
 		local material = self.sailNode:getMaterial()
+
+		print(">>> state", Log.dump(state))
 
 		if state.colors[1] then
 			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
