@@ -112,7 +112,7 @@ end
 function DecayingBolt:updateParticles()
 	local spawnPosition = self:getTargetPosition(self:getSource())
 	local sourceMin, sourceMax = self:getSource():getBounds()
-	local size = (sourceMax - sourceMin) * (1 / 4)
+	local size = (sourceMax - sourceMin) * (2 / 4)
 	spawnPosition = spawnPosition + Vector(0, size.y, 0)
 
 	local hitPosition = self:getTargetPosition(self:getDestination())
