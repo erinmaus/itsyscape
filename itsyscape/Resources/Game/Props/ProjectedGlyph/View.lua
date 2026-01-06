@@ -129,12 +129,17 @@ function ProjectedGlyph:tick()
 	end
 
 	if self.mapMesh then
-		local rotation = self:getRoot():getTransform():getLocalRotation()
-		local translation = self:getRoot():getTransform():getLocalTranslation()
 		local yOffset = Vector(0, state.elevation or 0, 0)
+		local translation = self:getRoot():getTransform():getLocalTranslation()
+		translation = -Vector(translation.x, 0, translation.y) + self.mapMeshCenter + yOffset
 
+		local rotation = self:getRoot():getTransform():getLocalRotation()
+		local scale = self:getRoot():getTransform():getLocalScale()
+
+		self.mapMesh:getTransform():setLocalTranslation(translation)
 		self.mapMesh:getTransform():setLocalRotation(rotation)
-		self.mapMesh:getTransform():setLocalTranslation(-Vector(translation.x, 0, translation.y) + self.mapMeshCenter + yOffset)
+		self.mapMesh:getTransform():setLocalScale(scale)
+		self.mapMesh:getTransform():tick(1)
 	end
 
 	local glyph = state.glyph or 0
@@ -171,8 +176,8 @@ function ProjectedGlyph:_drawRite(glyph, projections, offset, color)
 	glyphManager:draw(
 		glyph,
 		projections,
-		0, 0,
-		width, height,
+		1, 1,
+		width - 2, height - 2,
 		math.max(width, height) / 4,
 		offset)
 
@@ -203,7 +208,7 @@ function ProjectedGlyph:update()
 	self:_drawRite(
 		self.glyphInstance,
 		projections,
-		math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 0.6,
+		math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 1,
 		glowColor,
 		0.5)
 
