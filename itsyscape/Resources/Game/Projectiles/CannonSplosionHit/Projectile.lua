@@ -21,15 +21,15 @@ local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 local Splosion = Class(Projectile)
 
 Splosion.PARTICLE_SYSTEM_FIRE = {
-	numParticles = 200,
+	numParticles = 400,
 	texture = "Resources/Game/Projectiles/CannonSplosionHit/Fire.png",
 	columns = 4,
 
 	emitters = {
 		{
 			type = "RadialEmitter",
-			radius = { 2.5, 2.5 },
-			speed = { 2, 3 },
+			radius = { 3, 4 },
+			speed = { 4, 6 },
 			acceleration = { 0, 0 }
 		},
 		{
@@ -71,7 +71,7 @@ Splosion.PARTICLE_SYSTEM_FIRE = {
 	emissionStrategy = {
 		type = "RandomDelayEmissionStrategy",
 		count = { 30, 60 },
-		delay = { 0.125 },
+		delay = { 1 / 30 },
 		duration = { 1 }
 	}
 }
@@ -140,8 +140,8 @@ Splosion.PARTICLE_SYSTEM_SMOKE = {
 
 Splosion.DURATION = 2
 
-Splosion.FROM_SCALE = Vector(0)
-Splosion.TO_SCALE   = Vector(8)
+Splosion.FROM_SCALE = Vector(2)
+Splosion.TO_SCALE   = Vector(16)
 
 Splosion.SPLOSION_MATERIAL = DecorationMaterial({
 	shader = "Resources/Shaders/WarpedAlphaCutoff",
