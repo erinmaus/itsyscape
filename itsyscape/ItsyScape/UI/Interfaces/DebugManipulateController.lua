@@ -215,6 +215,11 @@ function DebugManipulateController.REPLAYED_ACTIONS:transform(action)
 			                       action.event.scaleZ and
 			                       Vector(action.event.scaleX, action.event.scaleY, action.event.scaleZ)
 
+			local movement = peep:getBehavior(MovementBehavior)
+			if movement then
+				movement.noClip = action.event.noClip or movement.noClip
+			end
+
 			repeat
 				local delta = timeInfo and timeInfo.delta or 1
 
@@ -238,7 +243,7 @@ function DebugManipulateController.REPLAYED_ACTIONS:transform(action)
 				else
 					coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
 				end
-			until not timeInfo or timeInfo.delta >= 1
+			until not timeInfo or not (action.timing and timeInfo.elapsed < action.timing.duration + action.timing.delay)
 		end
 
 		return DebugManipulateController.ACTION_COMPLETE
@@ -1291,6 +1296,18 @@ function DebugManipulateController:transform(e)
 	local event = {}
 	if type(e.positionX) == "number" and type(e.positionY) == "number" and type(e.positionZ) == "number" then
 		peep:addBehavior(PositionBehavior)
+
+		if event.noClip == nil then
+			local movement = peep:getBehavior(MovementBehavior)
+			local y = Utility.Peep.getPosition(peep).y
+			if e.positionY > y and event.noClip == nil and movement then
+				movement.noClip = true
+				event.noClip = true
+			else
+				event.noClip = movement and movement.noClip or false
+			end
+		end
+
 		Utility.Peep.setPosition(peep, Vector(e.positionX, e.positionY, e.positionZ))
 
 		event.positionX = e.positionX

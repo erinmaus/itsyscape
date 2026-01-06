@@ -161,8 +161,6 @@ function DebugManipulateCameraController:rebuildMapCurve()
 		previousRotation = rotation
 	end
 
-	print ("#positions", #positions)
-	print ("#rotations", #rotations)
 	self.currentDuration = totalDuration
 	self.currentCurve = MapCurve(nil, {
 		linear = false,

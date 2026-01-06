@@ -1689,14 +1689,10 @@ end
 function DebugManipulate:_updatePresetListButtonStyle(presetInfo, inactiveTheme, activeTheme)
 	for _, button in self.presetListGrid:getInnerPanel():iterate() do
 		local otherPresetInfo = button:getData("preset")
-		print("???", Log.dump(otherPresetInfo), Log.dump(presetInfo))
 		if otherPresetInfo and otherPresetInfo.resource == presetInfo.resource and otherPresetInfo.id == presetInfo.id then
-			print("MATCH!")
 			if self.activeButton == button then
-				print(">>> is active")
 				button:setStyle(activeTheme or inactiveTheme or Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)
 			else
-				print(">>> is inactive")
 				button:setStyle(inactiveTheme or Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
 			end
 		end

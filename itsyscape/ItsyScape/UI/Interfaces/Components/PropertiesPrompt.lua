@@ -142,6 +142,12 @@ end
 function PropertiesPrompt:_onPropertyValueChanged(property, _, value)
 	if property:getType() == "number" or property:getType() == "integer" then
 		property:setValue(tonumber(value) or property:getValue())
+	elseif property:getType() == "boolean" then
+		if value == "true" then
+			property:setValue(true)
+		elseif value == "false" then
+			property:setValue(false)
+		end
 	else
 		property:setValue(value)
 	end
