@@ -621,16 +621,30 @@ function DebugManipulate.PreviewOrientateAction:done()
 	local player = self:getGame():getPlayer()
 	player:onPopCamera()
 
+	local view = self:getGameView():getView(self:getObject())
+	local sceneNode = view and view:getSceneNode()
+	local parentSceneNode = sceneNode and sceneNode:getParent()
+	local parentTransform = parentSceneNode and parentSceneNode:getTransform():getGlobalDeltaTransform(1)
+
 	if self.targetTranslation then
-		self:getInterface():translateObject(self:getObject(), self.targetTranslation)
+		local translation = self.targetTranslation
+		if parentTransform then
+			translation = translation:inverseTransform(parentTransform)
+		end
+
+		self:getInterface():translateObject(self:getObject(), translation)
 	end
 
 	if self.targetRotation then
-		self:getInterface():rotateObject(self:getObject(), self.targetRotation)
+		local rotation = self.targetRotation
+		if parentTransform then
+			local _, parentRotation = MathCommon.decomposeTransform(parentTransform)
+			rotation = -parentRotation * rotation
+		end
+
+		self:getInterface():rotateObject(self:getObject(), rotation)
 	end
 
-	local view = self:getGameView():getView(self:getObject())
-	local sceneNode = view and view:getSceneNode()
 	if sceneNode then
 		if self.previousRotation then
 			sceneNode:getTransform():setLocalRotation(self.previousRotation)
