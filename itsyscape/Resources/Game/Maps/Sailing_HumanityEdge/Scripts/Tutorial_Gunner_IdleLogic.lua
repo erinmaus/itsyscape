@@ -23,7 +23,7 @@ local FireCannon = Mashina.Step {
 	Mashina.Peep.FindNearbyCombatTarget {
 		include_npcs = true,
 		same_layer = false,
-		distance = 50,
+		distance = 100,
 
 		filter = function(peep)
 			return not (peep:hasBehavior(PlayerBehavior) or peep:hasBehavior(FollowerBehavior))

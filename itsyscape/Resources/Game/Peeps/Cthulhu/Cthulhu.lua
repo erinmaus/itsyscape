@@ -114,6 +114,11 @@ function Cthulhu:ready(director, game)
 
 	Utility.Peep.Creep.addAnimation(
 		self,
+		"animation-defend",
+		"Cthulhu_Defend")
+
+	Utility.Peep.Creep.addAnimation(
+		self,
 		"animation-walk",
 		"Cthulhu_Swim")
 

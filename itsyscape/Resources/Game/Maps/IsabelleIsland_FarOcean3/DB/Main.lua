@@ -95,22 +95,22 @@ do
 	}
 end
 
--- M["Water"] = ItsyScape.Resource.MapObject.Unique()
--- do
--- 	ItsyScape.Meta.MapObjectLocation {
--- 		PositionX = 0,
--- 		PositionY = 0,
--- 		PositionZ = 0,
--- 		Name = "Water",
--- 		Map = M._MAP,
--- 		Resource = M["Water"]
--- 	}
+M["Water"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Water",
+		Map = M._MAP,
+		Resource = M["Water"]
+	}
 
--- 	ItsyScape.Meta.PropMapObject {
--- 		Prop = ItsyScape.Resource.Prop "EndlessWater",
--- 		MapObject = M["Water"]
--- 	}
--- end
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "EndlessWater",
+		MapObject = M["Water"]
+	}
+end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do

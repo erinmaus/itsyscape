@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Color = require "ItsyScape.Graphics.Color"
@@ -16,6 +17,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local WhirlpoolBehavior = require "ItsyScape.Peep.Behaviors.WhirlpoolBehavior"
@@ -33,12 +35,7 @@ function Ocean:new(resource, name, ...)
 	--self:silence("playerEnter", Map.showPlayerMapInfo)
 end
 
-function Ocean:onLoad(...)
-	Map.onLoad(self, ...)
-
-	Utility.Map.spawnMap(self, "Test123_Storm", Vector.ZERO, { isLayer = true })
-	Utility.spawnMapAtAnchor(self, "Sailing_ParadoxGatesArchipelago_Island1", "Island1")
-
+function Ocean:loadExquisitor()
 	local layer, ship = Utility.Map.spawnMap(self, "Test_Ship", Vector(32, 8, 32))
 	Utility.Peep.setLayer(ship, self:getLayer())
 
@@ -48,6 +45,52 @@ function Ocean:onLoad(...)
 		self:getDirector():getGameInstance(),
 		"NPC_Isabelle_Exquisitor")
 	self.exquisitor:pushPoke("customize", exquisitorCustomizations)
+end
+
+function Ocean:loadDeadPrincess()
+	local layer, ship = Utility.Map.spawnMap(self, "Test_Ship", Vector(72, 8, -32))
+	Utility.Peep.setLayer(ship, self:getLayer())
+
+	local _, offset = ship:addBehavior(MapOffsetBehavior)
+	offset.rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi / 4)
+
+	self.deadPrincess = ship
+
+	local deadPrincessCustomizations = Sailing.Ship.getNPCCustomizations(
+		self:getDirector():getGameInstance(),
+		"NPC_BlackTentacles_DeadPrincess")
+	self.deadPrincess:pushPoke("customize", deadPrincessCustomizations)
+
+	self.deadPrincess:listen("finalize", function()
+		local PIRATES = {
+			"Battle_ShipPirate1",
+			"Battle_ShipPirate2"
+		}
+
+		local ANCHORS = {
+			"Anchor_Port_Cannon1",
+			"Anchor_Port_Cannon2"
+		}
+
+		for index, pirateMapObjectName in ipairs(PIRATES) do
+			local mapObject = self:getDirector():getGameDB():getRecord("MapObjectReference", {
+				Name = "Battle_ShipPirate1",
+				Map = self:getDirector():getGameDB():getResource("Sailing_HumanityEdge", "Map")
+			})
+
+			Utility.spawnMapObjectAtAnchor(self.deadPrincess, mapObject:get("Resource"), ANCHORS[index])
+		end
+	end)
+end
+
+function Ocean:onLoad(...)
+	Map.onLoad(self, ...)
+
+	Utility.Map.spawnMap(self, "Test123_Storm", Vector.ZERO, { isLayer = true })
+	Utility.spawnMapAtAnchor(self, "Sailing_ParadoxGatesArchipelago_Island1", "Island1")
+
+	self:loadExquisitor()
+	self:loadDeadPrincess()
 
 	-- local exquisitor = gameDB:getResource("NPC_Isabelle_Exquisitor", "SailingShip")
 	-- local _, ship = Utility.Map.spawnMap(
