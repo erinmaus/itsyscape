@@ -972,7 +972,7 @@ function DebugManipulateController:getTargetInfo(targetPeep)
 		local mapObject = Utility.Peep.getMapObject(targetPeep)
 		local mapObjectRecord = mapObject and (self:getGame():getGameDB():getRecord("MapObjectLocation", {
 			Resource = mapObject
-		}) or gameDB:getRecord("MapObjectReference", {
+		}) or self:getGame():getGameDB():getRecord("MapObjectReference", {
 			Resource = mapObject
 		}))
 
