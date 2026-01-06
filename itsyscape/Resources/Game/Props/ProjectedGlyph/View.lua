@@ -38,7 +38,7 @@ function ProjectedGlyph:load()
 		"Resources/Shaders/MapGroundProjection")
 
 	self.tileSet = TileSet.loadFromFile(
-		"Resources/Game/TileSets/Draft/Layout.lua",
+		"Resources/Game/TileSets/Invisible/Layout.lua",
 		false)
 
 	self.light = PointLightSceneNode()
