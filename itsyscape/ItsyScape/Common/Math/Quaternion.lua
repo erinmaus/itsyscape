@@ -16,7 +16,7 @@ local BaseQuaternion, Metatable = Class()
 local Quaternion = Pool.wrap(BaseQuaternion)
 
 -- Creates a quaternion from an axis and angle.
-function BaseQuaternion.fromAxisAngle(axis, angle)
+function BaseQuaternion.fromAxisAngle(axis, angle, result)
 	axis:compatible()
 
 	local halfAngle = angle * 0.5
@@ -26,42 +26,65 @@ function BaseQuaternion.fromAxisAngle(axis, angle)
 	local xyz = axis:getNormal() * halfAngleSine
 	local w = halfAngleCosine
 
-	return Quaternion(xyz.x, xyz.y, xyz.z, w)
+	result = result or Quaternion()
+	return result:from(xyz.x, xyz.y, xyz.z, w)
 end
 
 local E = 0.00001
-function BaseQuaternion.lookAt(source, target, up)
-	source:compatible(target)
-	source:compatible(up)
-	target:compatible(up)
+do
+	local F = Vector()
+	local R = Vector()
+	local U = Vector()
 
-	up = up or Vector.UNIT_Y
+	function BaseQuaternion.lookAt(source, target, up, result)
+		source:compatible(target)
+		source:compatible(up)
+		target:compatible(up)
 
-	-- From https://stackoverflow.com/a/52551983
+		result = result or Quaternion()
 
-	local F = source:direction(target)
-	local R = up:cross(F):getNormal()
-	local U = F:cross(R):getNormal()
+		up = up or Vector.UNIT_Y
 
-	local trace = R.x + U.y + F.z
-	if trace > 0 then
-		local s = 0.5 / math.sqrt(trace + 1)
-		return Quaternion((U.z - F.y) * s, (F.x - R.z) * s, (R.y - U.x) * s, 0.25 / s)
-	end
+		-- From https://stackoverflow.com/a/52551983
 
-	if R.x > U.y and R.x > F.z then
-		local s = 2 * math.sqrt(1 + R.x - U.y - F.z)
-		return Quaternion(0.25 * s, (U.x + R.y) / s, (F.x + R.z) / s, (U.z - F.y) / s)
-	end
+		source:direction(target, F)
+		up:cross(F, R):normalize(R)
+		F:cross(R, U):normalize(U)
 
-	if U.y > F.z then
-		local s = 2 * math.sqrt(1 + U.y - R.x - F.z)
-		return Quaternion((U.x + R.y) / s, 0.25 * s, (F.y + U.z) / s, (F.x - R.z) / s)
-	end
-	
-	do
-		local s = 2 * math.sqrt(1 + F.z - R.x - U.y)
-		return Quaternion((F.x + R.z) / s, (F.y + U.z) / s, 0.25 * s, (R.y - U.x) / s)
+		local trace = R.x + U.y + F.z
+		if trace > 0 then
+			local s = 0.5 / math.sqrt(trace + 1)
+			result.x = (U.z - F.y) * s
+			result.y = (F.x - R.z) * s
+			result.z = (R.y - U.x) * s
+			result.w = 0.25 / s
+		end
+
+		if R.x > U.y and R.x > F.z then
+			local s = 2 * math.sqrt(1 + R.x - U.y - F.z)
+			result.x = 0.25 * s
+			result.y = (U.x + R.y) / s
+			result.z = (F.x + R.z) / s
+			result.w = (U.z - F.y) / s
+		end
+
+		if U.y > F.z then
+			local s = 2 * math.sqrt(1 + U.y - R.x - F.z)
+			result.x = (U.x + R.y) / s
+			result.y = 0.25 * s
+			result.z = (F.y + U.z) / s
+			result.w = (F.x - R.z) / s
+		end
+		
+		do
+			local s = 2 * math.sqrt(1 + F.z - R.x - U.y)
+			result.x = (F.x + R.z) / s
+			result.y = (F.y + U.z) / s
+			result.z = 0.25 * s
+			result.w = (R.y - U.x) / s
+		end
+
+		return result
 	end
 end
 
@@ -85,6 +108,15 @@ function BaseQuaternion:new(x, y, z, w)
 	self.y = y or x or 0
 	self.z = z or x or 0
 	self.w = w or 1
+end
+
+function BaseQuaternion:from(x, y, z, w)
+	self.x = x or 0
+	self.y = y or 0
+	self.z = z or 0
+	self.w = w or 1
+
+	return self
 end
 
 function BaseQuaternion:keep()
@@ -121,7 +153,7 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Implementation borrowed from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/index.htm
-function BaseQuaternion:slerp(other, delta)
+function BaseQuaternion:slerp(other, delta, result)
 	self:compatible(other)
 
 	-- Clamp delta.
@@ -141,7 +173,7 @@ function BaseQuaternion:slerp(other, delta)
 		c2 = delta
 	end
 
-	local result = Quaternion()
+	local result = result or Quaternion()
 
 	if dot < 0 then
 		result.x = self.x * c1 - other.x * c2
@@ -170,9 +202,31 @@ function BaseQuaternion:getLength()
 	return math.sqrt(self:getLengthSquared())
 end
 
-function BaseQuaternion:distance(other)
-	local q = -self * other
-	return 2 * math.atan2(Vector(q.x, q.y, q.z):getLength(), q.w)
+do
+	local q = Quaternion()
+	local v = Vector()
+
+	function BaseQuaternion:distance(other)
+		self:conjugate(q):product(other, q)
+		v:from(q.x, q.y, q.z)
+		return 2 * math.atan2(v:getLength(), q.w)
+	end
+end
+
+function BaseQuaternion:normalize(result)
+	result = result or Quaternion()
+
+	local length = self:getLength()
+	if length == 0 then
+		return result:from(0, 0, 0, 0)
+	else
+		local inverseLength = 1 / length
+		return result:from(
+			self.x * inverseLength,
+			self.y * inverseLength,
+			self.z * inverseLength,
+			self.w * inverseLength)
+	end
 end
 
 -- Returns a normal of the quaternion.
@@ -190,37 +244,53 @@ function BaseQuaternion:getNormal()
 	end
 end
 
-function BaseQuaternion:inverse()
+function BaseQuaternion:inverse(result)
 	local lengthSquared = self:getLengthSquared()
 	if length == 0 then
 		return self
 	end
 
+	result = result or Quaternion()
+
 	local inverseLengthSquared = 1 / lengthSquared
-	return Quaternion(
+	return result:from(
 		-self.x * inverseLengthSquared,
 		-self.y * inverseLengthSquared,
 		-self.z * inverseLengthSquared,
 		self.w * inverseLengthSquared)
 end
 
-function BaseQuaternion:transformVector(vector)
-	self:compatible(vector)
+do
+	local normal = Quaternion()
+	local v = Quaternion()
+	local conjugate = Quaternion()
+	local q = Quaternion()
 
-	local v = Quaternion(vector.x, vector.y, vector.z, 0)
-	local normal = self:getNormal()
-	local conjugate = -normal
-	local result = Vector((normal * v * conjugate):get())
+	function BaseQuaternion:transformVector(vector, result)
+		self:compatible(vector)
 
-	return result
+		result = result or Vector()
+
+		v:from(vector.x, vector.y, vector.z, 0)
+		self:normalize(normal)
+		normal:conjugate(conjugate)
+
+		normal:product(v, q):product(conjugate, q)
+		return result:from(q.x, q.y, q.z)
+	end
 end
 
-function BaseQuaternion.fromEulerXYZ(x, y, z)
-	x = Quaternion.fromAxisAngle(Vector.UNIT_X, x)
-	y = Quaternion.fromAxisAngle(Vector.UNIT_Y, y)
-	z = Quaternion.fromAxisAngle(Vector.UNIT_Z, z)
+do
+	local rx, ry, rz = Quaternion(), Quaternion(), Quaternion()
+	function BaseQuaternion.fromEulerXYZ(x, y, z, result)
+		result = result or Quaternion()
 
-	return (z * y * x):getNormal()
+		Quaternion.fromAxisAngle(Vector.UNIT_X, x, rx)
+		Quaternion.fromAxisAngle(Vector.UNIT_Y, y, ry)
+		Quaternion.fromAxisAngle(Vector.UNIT_Z, z, rz)
+
+		return rz:product(ry, result):product(rx, result):normalize(result)
+	end
 end
 
 function BaseQuaternion:getDebugEulerXYZ()
@@ -238,18 +308,33 @@ function BaseQuaternion:getEulerXYZ()
 	return x, y, z
 end
 
-function BaseQuaternion:decomposeAxis(axis)
-	self:compatible(direction)
+do
+	local rotationAxis = Vector()
+	local projection = Vector()
+	local d = 0
+	local twistConjugate = Quaternion()
 
-	local rotationAxis = Vector(self.x, self.y, self.z)
-	local projection, d = rotationAxis:project(axis)
+	function BaseQuaternion:decomposeAxis(axis, twist, swing)
+		self:compatible(direction)
 
-	local sign = math.sign(d)
+		local rotationAxis = Vector(self.x, self.y, self.z)
+		local projection, d = rotationAxis:project(axis)
 
-	local twist = Quaternion(sign * projection.x, sign * projection.y, sign * projection.z, sign * self.w):getNormal()
-	local swing = self * -twist
+		local sign = math.sign(d)
 
-	return swing, twist
+		twist = twist or Quaternion()
+		twist:from(
+			sign * projection.x,
+			sign * projection.y,
+			sign * projection.z,
+			sign * self.w)
+		twist:conjugate(twistConjugate)
+
+		swing = swing or Quaternion()
+		swing:product(twistConjugate, swing)
+
+		return swing, twist
+	end
 end
 
 -- Adds two quaternions.
@@ -265,17 +350,36 @@ function Metatable.__add(a, b)
 	return result
 end
 
+function BaseQuaternion:add(other, result)
+	result = result or Quaternion()
+	result:from(
+		a.x + b.x,
+		a.y + b.y,
+		a.z + b.z,
+		a.w + b.w)
+
+	return result
+end
+
+function BaseQuaternion:product(other, result)
+	local a = self
+	local b = other
+
+	result = result or Quaternion()
+	result:from(
+		a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x,
+		-a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y,
+		a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z,
+		-a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w)
+	return result
+end
+
 -- Multiplies two quaternions.
 function Metatable.__mul(a, b)
 	a:compatible(b)
 
 	local result = Quaternion()
-	result.x =  a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x
-	result.y = -a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y
-	result.z =  a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z
-	result.w = -a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w
-
-	return result
+	return a:product(b, result)
 end
 
 -- Creates the conjugate of a quaternion.
@@ -284,6 +388,11 @@ end
 function Metatable.__unm(a)
 	a:compatible()
 	return Quaternion(-a.x, -a.y, -a.z, a.w)
+end
+
+function BaseQuaternion:conjugate(result)
+	result = result or Quaternion()
+	return result:from(-self.x, -self.y, -self.z, self.w)
 end
 
 function Metatable.__eq(a, b)

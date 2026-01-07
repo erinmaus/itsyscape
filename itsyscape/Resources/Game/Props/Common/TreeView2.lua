@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -222,6 +223,21 @@ function TreeView:tick()
 		end
 
 		if r.depleted ~= self.isDepleted then
+			if r.depleted then
+				local globalTransform = self:getRoot():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+				local _, globalRotation = MathCommon.decomposeTransform(globalRotation)
+				local inverseGlobalRotation = -globalRotation
+
+				if r.felledPosition then
+					local xzSelfPosition = self:getProp():getPosition() * Vector.PLANE_XZ
+					local xzFelledPosition = Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ
+					self.targetRotation = (Quaternion.lookAt(xzSelfPosition, xzFelledPosition, Vector.UNIT_Y) * -inverseGlobalRotation):getNormal()
+				else
+					self.targetRotation = Quaternion.Y_180
+				end
+
+			end
+
 			self.wasDepleted = self.isDepleted
 			self.isDepleted = r.depleted
 			self.time = 0
@@ -249,47 +265,22 @@ function TreeView:update(delta)
 
 		self.poseAnimation:getResource():computeFilteredTransforms(0, self.transforms)
 
-		local globalRotation
-		do
-			local currentRotation = Quaternion.IDENTITY
-			local previousRotation = Quaternion.IDENTITY
-
-			local currentNode = self:getRoot()
-			while currentNode do
-				currentRotation = currentRotation * currentNode:getTransform():getLocalRotation()
-
-				local _, r = currentNode:getTransform():getPreviousTransform()
-				previousRotation = previousRotation * r
-
-				currentNode = currentNode:getParent()
-			end
-
-			globalRotation = previousRotation:slerp(currentRotation, _APP and _APP:getFrameDelta() or 1)
-		end
-
 		local r = self:getProp():getState().resource
 		if self.isDepleted and r and r.felledPosition then
-			local targetRotation = Quaternion.lookAt(Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ, self:getProp():getPosition() * Vector.PLANE_XZ, Vector.UNIT_Y)
-			local currentRotation = globalRotation:slerp(targetRotation, Tween.sineEaseOut(delta))
+			local currentRotation = Quaternion.IDENTITY:slerp(self.targetRotation, Tween.powerEaseOut(delta, 3))
 
-			local transform = self._transform
-			transform:reset()
-
-			transform:applyQuaternion(currentRotation:get())
+			MathCommon.makeRotationTransform(self._transform)
 
 			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
-				transform)
-		else
-			local transform = self._transform
-			transform:reset()
-
+				self._transform)
+		elseif delta < 1 then
 			local scale = Tween.sineEaseOut(delta)
-			transform:scale(scale, scale, scale)
+			MathCommon.makeScaleTransform(Vector(scale), self._transform)
 
 			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
-				transform)
+				self._transform)
 		end
 
 		self.skeleton:getResource():applyTransforms(self.transforms)

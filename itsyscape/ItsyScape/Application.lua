@@ -517,6 +517,15 @@ function Application:processAdminEvents()
 	until not event
 end
 
+function Application:_collect()
+	local step = (_CONF.clientGCStepMS or 2) / 1000
+
+	local startTime = love.timer.getTime()
+	while love.timer.getTime() < startTime + step do
+		collectgarbage("step", 50)
+	end
+end
+
 function Application:update(delta)
 	Resource.update()
 
@@ -556,12 +565,7 @@ function Application:update(delta)
 	self:updateMemoryUsage()
 
 	if _DEBUG ~= "plus" then
-		local step = (_CONF.clientGCStepMS or 2) / 1000
-
-		local startTime = love.timer.getTime()
-		while love.timer.getTime() < startTime + step do
-			collectgarbage("step", 50)
-		end
+		self:measure("gc", self._collect, self)
 	end
 end
 

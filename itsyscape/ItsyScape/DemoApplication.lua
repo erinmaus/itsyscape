@@ -2462,8 +2462,8 @@ function DemoApplication:updatePlayerMovement()
 		end
 	end
 
-	x = math.clamp(x, -1, 1)
-	z = math.clamp(z, -1, 1)
+	x = -math.clamp(x, -1, 1)
+	z = -math.clamp(z, -1, 1)
 
 	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
 	if isMoving then
@@ -2589,9 +2589,7 @@ function DemoApplication:updatePatchNotes()
 	end
 end
 
-function DemoApplication:update(delta)
-	Application.update(self, delta)
-
+function DemoApplication:_updateDemo(delta)
 	self.stationaryDuration = self.stationaryDuration + delta
 
 	--Pool.getCurrent():update()
@@ -2642,6 +2640,12 @@ function DemoApplication:update(delta)
 	self.cameraController:update(delta)
 
 	self:updatePatchNotes()
+end
+
+function DemoApplication:update(delta)
+	Application.update(self, delta)
+
+	self:measure("DemoApplication.update", self._updateDemo, self, delta)
 end
 
 function DemoApplication:draw(delta)

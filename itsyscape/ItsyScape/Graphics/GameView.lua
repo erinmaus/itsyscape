@@ -654,6 +654,7 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 
 	self.mapMeshes[layer] = m
 
+	self:_updateWindMeta(m)
 	if meta and meta.curve then
 		self:bendMap(m.layer, meta.curve)
 	end
@@ -1419,6 +1420,15 @@ function GameView:_updatePolygonMask(m)
 	self:_setPolygonMask(m, canvas)
 end
 
+function GameView:_updateWindMeta(m)
+	local w = m.meta and m.meta.wind
+	m.wind = {
+		direction = w and w.direction and Vector(unpack(w.direction)):getNormal() or Vector(-1, 0, -1):getNormal(),
+		pattern = w and w.pattern and Vector(unpack(w.direction)) or Vector(5, 10, 15),
+		speed = 4
+	}
+end
+
 function GameView:updateMeta(layer, meta)
 	local m = self.mapMeshes[layer]
 	if not m then
@@ -1427,6 +1437,7 @@ function GameView:updateMeta(layer, meta)
 
 	m.meta = meta
 	self:_updatePolygonMask(m)
+	self:_updateWindMeta()
 
 	if meta and meta.curve then
 		self:bendMap(m.layer, meta.curve)
@@ -1882,16 +1893,17 @@ function GameView:getMapBumpCanvas(layer)
 	end
 end
 
+local DEFAULT_WIND_DIRECTION = Vector(-1, 0, -1):getNormal()
+local DEFAULT_WIND_PATTERN = Vector(5, 10, 15)
+local DEFAULT_WIND_SPEED = 4
+
 function GameView:getWind(layer)
 	local m = self.mapMeshes[layer]
-	if m then
-		return (m.meta.windDirection and Vector(unpack(m.meta.windDirection)) or Vector(-1, 0, -1)):getNormal(),
-		       m.meta.windSpeed or 4,
-		       m.meta.windPattern and Vector(unpack(m.meta.windPattern)) or Vector(5, 10, 15),
-		       m.bumpCanvas
+	if m and m.wind then
+		return m.wind.direction, m.wind.speed, m.wind.pattern, m.wind.bumpCanvas
 	end
 
-	return Vector(-1, 0, -1):getNormal(), 4, Vector(5, 10, 15), self.whiteTexture:getResource()
+	return DEFAULT_WIND_DIRECTION, DEFAULT_WIND_SPEED, DEFAULT_WIND_PATTERN, self.whiteTexture:getResource()
 end
 
 function GameView:getSkyProperties(layer)

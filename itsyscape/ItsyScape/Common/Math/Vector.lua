@@ -26,6 +26,28 @@ function BaseVector:new(x, y, z)
 	self.z = z or x or 0
 end
 
+function BaseVector:from(x, y, z)
+	if x and y and z then
+		self.x = x
+		self.y = y
+		self.z = z
+	elseif x and y and not z then
+		self.x = x
+		self.y = y
+		self.z = 0
+	elseif x then
+		self.x = x
+		self.y = x
+		self.z = x
+	else
+		self.x = 0
+		self.y = 0
+		self.z = 0
+	end
+
+	return self
+end
+
 function BaseVector:keep()
 	-- Nothing
 end
@@ -41,19 +63,31 @@ function BaseVector:get()
 	return self.x, self.y, self.z
 end
 
-function BaseVector:abs()
+function BaseVector:abs(result)
 	self:compatible()
-	return Vector(math.abs(self.x), math.abs(self.y), math.abs(self.z))
+	result = result or Vector()
+	return result:from(
+		math.abs(self.x),
+		math.abs(self.y),
+		math.abs(self.z))
 end
 
-function BaseVector:floor()
+function BaseVector:floor(result)
 	self:compatible()
-	return Vector(math.floor(self.x), math.floor(self.y), math.floor(self.z))
+	result = result or Vector()
+	return result:from(
+		math.floor(self.x),
+		math.floor(self.y),
+		math.floor(self.z))
 end
 
-function BaseVector:ceil()
+function BaseVector:ceil(result)
 	self:compatible()
-	return Vector(math.ceil(self.x), math.ceil(self.y), math.ceil(self.z))
+	result = result or Vector()
+	return result:from(
+		math.ceil(self.x),
+		math.ceil(self.y),
+		math.ceil(self.z))
 end
 
 -- Calculates and returns the dot product of two vectors.
@@ -62,61 +96,89 @@ function BaseVector:dot(other)
 	return self.x * other.x + self.y * other.y + self.z * other.z
 end
 
-function BaseVector:reflect(normal)
-	self:compatible(normal)
-	local dot = self:dot(normal)
-	return self - 2.0 * normal * dot
+do
+	local dot = Vector()
+	local TWO = Vector(2)
+
+	function BaseVector:reflect(normal, result)
+		self:compatible(normal)
+
+		result = result or Vector()
+
+		dot:from(self:dot(normal))
+		return self:subtract(TWO:product(normal, result):product(dot, result), result)
+	end
 end
 
-function BaseVector:project(other)
-	self:compatible(other)
-	local d = self:dot(other)
-	return d / other:dot(other) * other, d
+do
+	local v1 = Vector()
+	local v2 = Vector()
+
+	function BaseVector:project(other, result)
+		self:compatible(other)
+
+		result = result or Vector()
+
+		local d = self:dot(other)
+		v2:from(other:getLengthSquared())
+		v1:from(1 / d):product(v2, result):product(other, result)
+
+		return result, d
+	end
 end
 
 -- Returns a vector with the minimum components of both vectors.
-function BaseVector:min(other)
+function BaseVector:min(other, result)
 	self:compatible(other)
-	return Vector(
+	result = result or Vector()
+	return result:from(
 		math.min(self.x, other.x),
 		math.min(self.y, other.y),
 		math.min(self.z, other.z))
 end
 
 -- Returns a vector with the maximum components of both vectors.
-function BaseVector:max(other)
+function BaseVector:max(other, result)
 	self:compatible(other)
-	return Vector(
+	result = result or Vector()
+	return result:from(
 		math.max(self.x, other.x),
 		math.max(self.y, other.y),
 		math.max(self.z, other.z))
 end
 
-function BaseVector:clamp(min, max)
+function BaseVector:clamp(min, max, result)
 	self:compatible(min)
 	self:compatible(max)
 	min:compatible(max)
 
-	return self:min(max):max(min)
+	result = result or Vector()
+	return self:min(max, result):max(min, result)
 end
 
-function Vector:transform(transform)
+function Vector:transform(transform, result)
+	result = result or Vector()
+
 	if not transform then
-		return self
+		return result:from(self.x, self.y, self.z)
 	end
 
-	return Vector(transform:transformPoint(self.x, self.y, self.z))
+	result:from(transform:transformPoint(self.x, self.y, self.z))
+	return result
 end
 
-function Vector:inverseTransform(transform)
+function Vector:inverseTransform(transform, result)
+	result = result or Vector()
+
 	if not transform then
-		return self
+		return result:from(self.x, self.y, self.z)
 	end
 
-	return Vector(transform:inverseTransformPoint(self.x, self.y, self.z))
+	result:from(transform:inverseTransformPoint(self.x, self.y, self.z))
+	return result
 end
 
-function Vector.transformBounds(min, max, transform)
+function Vector.transformBounds(min, max, transform, resultMin, resultMax)
 	min:compatible(max)
 
 	if not transform then
@@ -150,7 +212,13 @@ function Vector.transformBounds(min, max, transform)
 		maxZ = math.max(tZ, maxZ)
 	end
 
-	return Vector(minX, minY, minZ), Vector(maxX, maxY, maxZ)
+	resultMin = resultMin or Vector()
+	resultMin:from(minX, minY, minZ)
+
+	resultMax = resultMax or Vector()
+	resultMax:from(maxX, maxY, maxZ)
+
+	return resultMin, resultMax
 end
 
 -- Linearly interpolates this vector with other.
@@ -158,31 +226,34 @@ end
 -- delta is clamped to 0 .. 1 inclusive.
 --
 -- Returns the interpolated vector.
-function BaseVector:lerp(other, delta)
+function BaseVector:lerp(other, delta, result)
 	self:compatible(other)
 
 	delta = math.min(math.max(delta, 0.0), 1.0)
-	local result = Vector()
-	result.x = other.x * delta + self.x * (1 - delta)
-	result.y = other.y * delta + self.y * (1 - delta)
-	result.z = other.z * delta + self.z * (1 - delta)
-	return result
+	local result = result or Vector()
+	return result:from(
+		other.x * delta + self.x * (1 - delta),
+		other.y * delta + self.y * (1 - delta),
+		other.z * delta + self.z * (1 - delta))
 end
 
 -- Calculates the cross product of two vectors.
-function BaseVector:cross(other)
+function BaseVector:cross(other, result)
 	self:compatible(other)
 
-	local s = self.y * other.z - self.z * other.y
-	local t = self.z * other.x - self.x * other.z
-	local r = self.x * other.y - self.y * other.x
-
-	return Vector(s, t, r)
+	local result = result or Vector()
+	return result:from(
+		self.y * other.z - self.z * other.y,
+		self.z * other.x - self.x * other.z,
+		self.x * other.y - self.y * other.x)
 end
 
-function Vector:distance(other)
-	local difference = self - other
-	return difference:getLength()
+do
+	local difference = Vector()
+
+	function Vector:distance(other)
+		return self:subtract(other, difference):getLength()
+	end
 end
 
 -- Gets the length (i.e., magnitude) of the vector, squared.
@@ -199,6 +270,24 @@ function BaseVector:getLength()
 		return 0
 	else
 		return math.sqrt(self:getLengthSquared())
+	end
+end
+
+
+do
+	local length = Vector()
+	function BaseVector:normalize(result)
+		result = result or Vector()
+
+		local length = length:from(self:getLength())
+		if length:get() == 0 then
+			result:from(0)
+		else
+			length:from(1 / length:get())
+			self:product(length, result)
+		end
+
+		return result
 	end
 end
 
@@ -219,12 +308,16 @@ function BaseVector:difference(other)
 	return other - self
 end
 
+function BaseVector:direction(other, result)
+	result = result or Vector()
 
-function BaseVector:direction(other)
 	self:compatible()
 	other:compatible()
 
-	return (other - self):getNormal()
+	local result = other - self --other:subtract(self, result)
+	result:normalize(result)
+
+	return result
 end
 
 -- Adds two vectors or a vector and a scalar.
@@ -254,7 +347,15 @@ function Metatable.__add(a, b)
 	return result
 end
 
--- Subtructs a vector or a vector and a scalar.
+function Vector:add(other, result)
+	result = result or Vector()
+	result.x = self.x + other.x
+	result.y = self.y + other.y
+	result.z = self.z + other.z
+	return result
+end
+
+-- Subtracts a vector or a vector and a scalar.
 --
 -- If 'a' is a scalar, the returned vector is { a, a, a } - { b.x, b.y, b.z }
 -- and vice versa for 'b'.
@@ -278,6 +379,14 @@ function Metatable.__sub(a, b)
 		result.z = a.z - b.z
 	end
 
+	return result
+end
+
+function Vector:subtract(other, result)
+	result = result or Vector()
+	result.x = self.x - other.x
+	result.y = self.y - other.y
+	result.z = self.z - other.z
 	return result
 end
 
@@ -308,6 +417,13 @@ function Metatable.__mul(a, b)
 	return result
 end
 
+function Vector:product(other, result)
+	result = result or Vector()
+	result.x = self.x * other.x
+	result.y = self.y * other.y
+	result.z = self.z * other.z
+	return result
+end
 
 -- Divides a vector or a vector and a scalar.
 --
@@ -336,12 +452,28 @@ function Metatable.__div(a, b)
 	return result
 end
 
+function Vector:divide(other, result)
+	result = result or Vector()
+	result.x = self.x / other.x
+	result.y = self.y / other.y
+	result.z = self.z / other.z
+	return result
+end
+
 -- Negates a vector.
 --
 -- Returns { -x, -y, -z }.
 function Metatable.__unm(a)
 	a:compatible()
 	return Vector(-a.x, -a.y, -a.z)
+end
+
+function Vector:negate(result)
+	result = result or Vector()
+	result.x = -self.x
+	result.y = -self.y
+	result.z = -self.z
+	return result
 end
 
 function Metatable.__pow(a, b)
@@ -364,6 +496,14 @@ function Metatable.__pow(a, b)
 		result.z = a.z ^ b.z
 	end
 
+	return result
+end
+
+function Vector:power(other, result)
+	result = result or Vector()
+	result.x = self.x ^ other.x
+	result.y = self.y ^ other.y
+	result.z = self.z ^ other.z
 	return result
 end
 
