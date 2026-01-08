@@ -18,6 +18,7 @@
 struct FuncTime
 {
     double time = 0.0;
+    double memory = 0.0;
     int num_calls = 0;
 };
 
@@ -28,6 +29,7 @@ struct Call
     nbunny::GameManagerVariant return_value;
     std::vector<std::string> stack;
     double time = 0.0;
+    double memory = 0.0;
 };
 
 thread_local std::unordered_map<std::string, FuncTime> luax_wrapper_func_times;
@@ -43,21 +45,26 @@ static int nbunny_lua_runtime_get_func_times(lua_State* L)
 {
     lua_createtable(L, 0, luax_wrapper_func_times.size());
     double total_time = 0.0;
+    double total_memory = 0.0;
     for (auto& time: luax_wrapper_func_times)
     {
         lua_pushlstring(L, time.first.c_str(), time.first.size());
         lua_newtable(L);
         lua_pushnumber(L, time.second.time * 1000.0f);
         lua_setfield(L, -2, "time");
+        lua_pushnumber(L, time.second.memory);
+        lua_setfield(L, -2, "memory");
         lua_pushinteger(L, time.second.num_calls);
         lua_setfield(L, -2, "calls");
         lua_settable(L, -3);
 
         total_time += time.second.time;
+        total_memory += time.second.memory;
     }
 
     lua_pushnumber(L, total_time);
-    return 2;
+    lua_pushnumber(L, total_memory);
+    return 3;
 }
 
 static int nbunny_lua_runtime_get_calls(lua_State* L)
@@ -114,6 +121,9 @@ static int nbunny_lua_runtime_get_calls(lua_State* L)
 
         lua_pushnumber(L, call.time);
         lua_setfield(L, -2, "time");
+
+        lua_pushnumber(L, call.memory);
+        lua_setfield(L, -2, "memory");
 
         lua_pushinteger(L, index);
         lua_setfield(L, -2, "id");
@@ -188,30 +198,44 @@ NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
     return 1;
 }
 
-void nbunny::lua::push_sub(const std::string& function_name)
+void nbunny::lua::push_sub(lua_State* L, const std::string& function_name)
 {
     if (luax_wrapper_func_debug)
     {
+        auto& t = luax_wrapper_func_times[function_name];
+        ++t.num_calls;
+        ++luax_wrapper_func_num_calls;
+
         auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
 
         Call call;
         call.func = function_name;
         call.time = timer_instance->getTime();
+        call.memory = (double)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0;
 
         luax_wrapper_pending_debug_calls.push_back(call);
     }
 }
 
-void nbunny::lua::pop_sub()
+void nbunny::lua::pop_sub(lua_State* L)
 {
     if (luax_wrapper_func_debug && !luax_wrapper_debug_calls.empty())
     {
         auto call = luax_wrapper_pending_debug_calls.back();
         luax_wrapper_pending_debug_calls.pop_back();
 
+        auto& t = luax_wrapper_func_times[call.func];
+
         auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
         call.time = (timer_instance->getTime() - call.time) * 1000.0;
+
+        auto after_memory = call.memory = (double)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0;
+        call.memory = after_memory - call.memory;
+
         luax_wrapper_debug_calls.push_back(call);
+
+        t.time += call.time;
+        t.memory += call.memory;
     }
 }
 
@@ -235,13 +259,18 @@ static int luax_wrapper_func(lua_State* L)
 
         auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
         auto before = timer_instance->getTime();
+        auto memory_before = (double)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0;
+
         love::luax_catchexcept(L, [&]() { result = func(L); });
+
         auto after = timer_instance->getTime();
+        auto memory_after = (double)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0;
 
         if (luax_wrapper_func_debug)
         {
             call.return_value.from_lua(L, call.arguments.length() + 1, lua_gettop(L), true);
             call.time = (after - before) * 1000.0;
+            call.memory = memory_after - memory_before;
 
             int level = 1;
             lua_Debug debug;
@@ -263,6 +292,13 @@ static int luax_wrapper_func(lua_State* L)
     }
 
     return result;
+}
+
+void nbunny::lua::push_function(lua_State* L, lua_CFunction function, const std::string& name)
+{
+    lua_pushcfunction(L, function);
+    lua_pushlstring(L, name.c_str(), name.size());
+    lua_pushcclosure(L, &luax_wrapper_func, 2);
 }
 
 void nbunny::lua::impl::luax_register(lua_State* L, const char* tname, const luaL_Reg* l)

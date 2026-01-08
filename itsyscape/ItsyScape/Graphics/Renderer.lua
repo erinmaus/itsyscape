@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
@@ -165,44 +166,53 @@ function Renderer:getPassByID(passID)
 	return self.passesByID[passID]
 end
 
-function Renderer:draw(scene, delta, width, height, postProcessPasses)
-	if not width or not height then
-		width, height = love.window.getMode()
-	end
+do
+	local projection = love.math.newTransform()
+	local view = love.math.newTransform()
+	local eye = Vector()
+	local forward = Vector()
+	local rotation = Quaternion()
 
-	local projection, view = self.camera:getTransforms()
-	local eye, target = self.camera:getEye(), self.camera:getPosition()
-	local rotation = self.camera:getCombinedRotation()
-	local boundingSpherePosition, boundingSphereRadius = self.camera:getBoundingSphere()
-	local isClipPlaneEnabled, clipPlaneNormal, clipPlanePosition = self.camera:getClipPlane()
-	if isClipPlaneEnabled then
-		local normal = clipPlaneNormal:getNormal()
-		local d = -normal:dot(clipPlanePosition)
+	function Renderer:draw(scene, delta, width, height, postProcessPasses)
+		if not width or not height then
+			width, height = love.window.getMode()
+		end
 
-		self._renderer:getCamera():setClipPlane(normal.x, normal.y, normal.z, d)
-	else
-		self._renderer:getCamera():unsetClipPlane()
-	end
+		self.camera:getTransforms(projection, view)
+		local eye, target = self.camera:getEye(eye), self.camera:getPosition()
+		local forward = self.camera:getForward(forward)
+		self.camera:getCombinedRotation(rotation)
+		local boundingSpherePosition, boundingSphereRadius = self.camera:getBoundingSphere()
+		local isClipPlaneEnabled, clipPlaneNormal, clipPlanePosition = self.camera:getClipPlane()
+		if isClipPlaneEnabled then
+			local normal = clipPlaneNormal:getNormal()
+			local d = -normal:dot(clipPlanePosition)
 
-	self._renderer:getCamera():update(view, projection)
-	self._renderer:getCamera():setFieldOfView(self.camera:getFieldOfView())
-	self._renderer:getCamera():setNear(self.camera:getNear())
-	self._renderer:getCamera():setFar(self.camera:getFar())
-	self._renderer:getCamera():moveEye(eye:get())
-	self._renderer:getCamera():moveTarget(target:get())
-	self._renderer:getCamera():direction(self.camera:getForward():get())
-	self._renderer:getCamera():rotate(rotation:get())
-	self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
+			self._renderer:getCamera():setClipPlane(normal.x, normal.y, normal.z, d)
+		else
+			self._renderer:getCamera():unsetClipPlane()
+		end
 
-	love.graphics.push("all")
-	self._renderer:draw(scene:getHandle(), delta, width, height)
-	love.graphics.pop()
+		self._renderer:getCamera():update(view, projection)
+		self._renderer:getCamera():setFieldOfView(self.camera:getFieldOfView())
+		self._renderer:getCamera():setNear(self.camera:getNear())
+		self._renderer:getCamera():setFar(self.camera:getFar())
+		self._renderer:getCamera():moveEye(eye:get())
+		self._renderer:getCamera():moveTarget(target:get())
+		self._renderer:getCamera():direction(forward:get())
+		self._renderer:getCamera():rotate(rotation:get())
+		self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 
-	if postProcessPasses then
-		for _, postProcessPass in ipairs(postProcessPasses) do
-			love.graphics.push("all")
-			postProcessPass:draw(width, height)
-			love.graphics.pop()
+		love.graphics.push("all")
+		self._renderer:draw(scene:getHandle(), delta, width, height)
+		love.graphics.pop()
+
+		if postProcessPasses then
+			for _, postProcessPass in ipairs(postProcessPasses) do
+				love.graphics.push("all")
+				postProcessPass:draw(width, height)
+				love.graphics.pop()
+			end
 		end
 	end
 end
@@ -239,7 +249,9 @@ function Renderer:presentCurrent()
 end
 
 function Renderer:renderNode(node, delta)
-	self.nodeDebugStats:measure(node, self, delta)
+	node:beforeDraw(self, delta)
+	node:draw(self, delta)
+	node:afterDraw(self, delta)
 end
 
 function Renderer:getTime()

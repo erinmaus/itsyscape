@@ -35,6 +35,137 @@ do
 		_ITSYREALM_VERSION)
 end
 
+do
+	--local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+	local Vector = require "ItsyScape.Common.Math.Vector"
+	local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+	local e1 = {
+		a = 123,
+		b = {
+			1, 2, 3,
+			n = 3,
+			[10] = 10
+		},
+		c = "foo",
+		d = true,
+		v = Vector(1)
+	}
+
+	local e2 = {
+		a = 123,
+		b = {
+			1, 2, 3,
+			n = 3,
+			[10] = 10
+		},
+		c = "foo",
+		d = true,
+		v = Vector(1)
+	}
+
+	local NPooledBuffer = require "nbunny.pooledbuffer"
+	local buffer = require "string.buffer"
+
+	local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+	local storage = PlayerStorage()
+	storage:deserialize(love.filesystem.read("Player/Default.dat"))
+
+	local m = { __index = {} }
+	local a = setmetatable({ [NPooledBuffer.ID] = "abc123", bloop = 1, bleep = 1 }, m)
+	e1 = storage:serialize()
+
+	local p = NPooledBuffer.new(table.clear)
+
+	local encodeConfig = {
+		metatable = {
+			Vector._METATABLE,
+			Quaternion._METATABLE
+		},
+		proxy = {
+			[m] = "ItsyScape.Game.Model.Actor"
+		}
+	}
+
+	local buffer = buffer.new({
+		metatable = {
+			Vector._METATABLE,
+			Quaternion._METATABLE
+		}
+	})
+
+	local t = 0
+	local N = 10
+	for i = 1, N do
+		local b = love.timer.getTime()
+		NPooledBuffer.perform(NPooledBuffer.encode, p, encodeConfig, e1)
+		local a = love.timer.getTime()
+		t = t + (a - b) * 1000
+	end
+	t = t / N
+	print("encode time (nbunny)", t)
+
+	local t = 0
+	for i = 1, N do
+		local b = love.timer.getTime()
+		buffer:encode({ n = 1, e1 })
+		local a = love.timer.getTime()
+		t = t + (a - b) * 1000
+	end
+	t = t / N
+	print("encode time (buffer)", t)
+
+	local decodeConfig = {
+		metatable = {
+			Vector._METATABLE,
+			Quaternion._METATABLE,
+		},
+
+		proxy = {
+			[m] = "ItsyScape.Game.Model.Actor",
+		},
+
+		proxyInstances = {
+			["ItsyScape.Game.Model.Actor"] = {
+				["abc123"] = a
+			}
+		},
+
+		inputTablePool = {},
+		outputTablePool = {}
+	}
+
+	NPooledBuffer.restart(p)
+	collectgarbage("stop")
+	local t = 0
+	local bm = collectgarbage("count")
+	local t1, t2
+	for i = 1, N do
+		local b = love.timer.getTime()
+		t1 = NPooledBuffer.perform(NPooledBuffer.decode, p, decodeConfig)
+		decodeConfig.inputTablePool, decodeConfig.outputTablePool = decodeConfig.outputTablePool, decodeConfig.inputTablePool
+		local a = love.timer.getTime()
+		t = t + (a - b) * 1000
+	end
+	local am = collectgarbage("count")
+	print("decode time (nbunny)", t / N, "memory", am - bm)
+
+	collectgarbage("stop")
+	local t = 0
+	local bm = collectgarbage("count")
+	local t1, t2
+	for i = 1, N do
+		local b = love.timer.getTime()
+		local q = buffer:decode()
+		t1 = unpack(q, 1, q.n)
+		local a = love.timer.getTime()
+		t = t + (a - b) * 1000
+	end
+	local am = collectgarbage("count")
+	print("decode time (nbunny)", t / N, "memory", am - bm)
+
+	os.exit(0)
+end
+
 itsyrealm = {
 	graphics = {
 		impl = {}
@@ -574,19 +705,19 @@ function love.run()
 				NLuaRuntime.stopDebug()
 
 				do
-					local calls, totalTime = NLuaRuntime.getMeasurements()
+					local calls, totalTime, totalMemory = NLuaRuntime.getMeasurements()
 					local totalNumCalls = NLuaRuntime.getNumCalls()
 
 					local csv = {}
 					for method, stats in pairs(calls) do
-						table.insert(csv, string.format("%s, %d, %f", method, stats.calls, stats.time))
+						table.insert(csv, string.format("%s, %d, %f, %f", method, stats.calls, stats.time, stats.memory))
 					end
 
 					table.sort(csv, function(a, b)
 						return a < b
 					end)
 
-					Log.info("Nbunny function calls (%d total, %.2f ms):\n%s", totalNumCalls, totalTime * 1000, table.concat(csv, "\n"))
+					Log.info("Nbunny function calls (%d total, %.2f ms, %.2f kb):\n%s", totalNumCalls, totalTime * 1000, totalMemory, table.concat(csv, "\n"))
 				end
 
 				do

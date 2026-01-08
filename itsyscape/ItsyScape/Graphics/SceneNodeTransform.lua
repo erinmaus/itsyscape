@@ -18,14 +18,14 @@ local SceneNodeTransform = Class()
 -- Constructs an identity scene transform.
 function SceneNodeTransform:new(node)
 	self._handle = node:getHandle():getTransform()
-	self.translation = Vector(0):keep()
-	self.scale = Vector(1):keep()
-	self.rotation = Quaternion():keep()
-	self.offset = Vector():keep()
-	self.previousTranslation = false
-	self.previousScale = false
-	self.previousRotation = false
-	self.previousOffset = Vector.ZERO
+	self.translation = Vector()
+	self.rotation = Quaternion()
+	self.scale = Vector()
+	self.offset = Vector()
+	self.previousTranslation = Vector()
+	self.previousScale = Vector()
+	self.previousRotation = Quaternion()
+	self.previousOffset = Vector()
 	self.localTransform = love.math.newTransform()
 	self.localDeltaTransform = love.math.newTransform()
 	self.globalTransform = love.math.newTransform()
@@ -62,7 +62,11 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalTranslation(value)
-	self.translation = (value and value:keep(self.translation)) or self.translation
+	if not value then
+		return
+	end
+
+	self.translation:from(value:get())
 	self._handle:setCurrentTranslation(
 		self.translation.x,
 		self.translation.y,
@@ -80,7 +84,11 @@ end
 --
 -- value is expected to be a Quaternion. If nil, rotation remains unchanged.
 function SceneNodeTransform:setLocalRotation(value)
-	self.rotation = (value and value:keep(self.rotation)) or self.rotation
+	if not value then
+		return
+	end
+
+	self.rotation:from(value:get())
 	self._handle:setCurrentRotation(
 		self.rotation.x,
 		self.rotation.y,
@@ -99,7 +107,11 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalScale(value)
-	self.scale = (value and value:keep(self.scale)) or self.scale
+	if not value then
+		return
+	end
+
+	self.scale:from(value:get())
 	self._handle:setCurrentScale(
 		self.scale.x,
 		self.scale.y,
@@ -117,7 +129,11 @@ end
 --
 -- Does nothing if value is nil.
 function SceneNodeTransform:setLocalOffset(value)
-	self.offset = (value and value:keep(self.offset)) or self.offset
+	if not value then
+		return
+	end
+
+	self.offset:from(value:get())
 	self._handle:setCurrentOffset(
 		self.offset.x,
 		self.offset.y,
@@ -139,39 +155,30 @@ end
 -- Generally this is only called when an instantaneous event occurs, like
 -- teleporting.
 function SceneNodeTransform:setPreviousTransform(translation, rotation, scale, offset)
-	local t, r, s, o = self:getPreviousTransform()
-
-	self.previousTranslation = translation or t
-	self.previousRotation = rotation or r
-	self.previousScale = scale or s
-	self.previousOffset = offset or o
-
 	if translation then
-		self.previousTranslation:keep()
-		self._handle:setPreviousTranslation(self.previousTranslation.x, self.previousTranslation.y, self.previousTranslation.z)
+		self._handle:setPreviousTranslation(translation.x, translation.y, translation.z)
 	end
 
 	if rotation then
-		self.previousRotation:keep()
-		self._handle:setPreviousRotation(self.previousRotation.x, self.previousRotation.y, self.previousRotation.z, self.previousRotation.w)
+		self._handle:setPreviousRotation(rotation.x, rotation.y, rotation.z, rotation.w)
 	end
 
 	if scale then
-		self.previousScale:keep()
-		self._handle:setPreviousScale(self.previousScale.x, self.previousScale.y, self.previousScale.z)
+		self._handle:setPreviousScale(scale.x, scale.y, scale.z)
 	end
 
 	if offset then
-		self.previousOffset:keep()
-		self._handle:setPreviousOffset(self.previousOffset.x, self.previousOffset.y, self.previousOffset.z)
+		self._handle:setPreviousOffset(offset.x, offset.y, offset.z)
 	end
 end
 
 function SceneNodeTransform:getPreviousTransform()
-	return Vector(self._handle:getPreviousTranslation()),
-	       Quaternion(self._handle:getPreviousRotation()),
-	       Vector(self._handle:getPreviousScale()),
-	       Vector(self._handle:getPreviousOffset())
+	self.previousTranslation:from(self._handle:getPreviousTranslation())
+	self.previousRotation:from(self._handle:getPreviousRotation())
+	self.previousScale:from(self._handle:getPreviousScale())
+	self.previousOffset:from(self._handle:getPreviousOffset())
+
+	return self.previousTranslation, self.previousRotation, self.previousScale, self.previousOffset
 end
 
 -- Rotates the transform by the axis angle.

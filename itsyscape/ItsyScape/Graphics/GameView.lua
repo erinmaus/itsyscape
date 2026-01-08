@@ -156,6 +156,8 @@ function GameView:new(game, camera)
 	self.pendingMusic = {}
 
 	self.glyphManager = GlyphManager(nil, self)
+
+	self.oldBumpStates = {}
 end
 
 function GameView:getGame()
@@ -230,6 +232,16 @@ function GameView:initRenderer(conf)
 	self.shaderCache = PostProcessPass(self.renderer, 0)
 	self.shaderCache:load(self.resourceManager)
 	self.bumpCanvasShader = self.shaderCache:loadPostProcessShader("BumpCanvas")
+
+	self.skyboxPostProcessPasses = {
+		self.skyboxOutlinePostProcessPass
+	}
+
+	self.scenePostProcessPasses = {
+		self.ssrPostProcessPass,
+		self.toneMapPostProcessPass,
+		self.sceneOutlinePostProcessPass
+	}
 end
 
 function GameView:attach(game)
@@ -2951,27 +2963,60 @@ function GameView:_drawActorOnActorCanvas(canvas, circle, position, scale, alpha
 	love.graphics.draw(circle, position.x * canvas:getWidth(), position.z * canvas:getHeight(), 0, scale, scale, self.actorCanvasCircle:getWidth() / 2, self.actorCanvasCircle:getHeight() / 2)
 end
 
-function GameView:_getActorCanvasRelativePositionScale(delta, circle, actor, m)
-	local actorView = self:getActor(actor)
-	if not actorView then
-		return
+do
+	local position = Vector()
+	local inverseMapSize = Vector()
+	local relativePosition = Vector()
+	local size = Vector()
+
+	function GameView:_getActorCanvasRelativePositionScale(delta, circle, actor, m)
+		local actorView = self:getActor(actor)
+		if not actorView then
+			return
+		end
+
+		local transform = actorView:getSceneNode():getTransform()
+		local currentTranslation = transform:getLocalTranslation()
+		local previousTranslation = transform:getPreviousTransform()
+		previousTranslation:lerp(currentTranslation, delta, position)
+
+		inverseMapSize:from(1 / (m.map:getWidth() * m.map:getCellSize()), 1, 1 / (m.map:getHeight() * m.map:getCellSize()))
+		position:product(inverseMapSize, relativePosition)
+
+		local min, max = actor:getBounds()
+		max:subtract(min, size)
+
+		local radius = math.min(size.x, size.z) / 2
+		local relativeScale = (radius + 3) / m.map:getCellSize()
+		relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / circle:getWidth()) * (m.meta and m.meta.bendyScale or 1)
+
+		return position, size, relativePosition, relativeScale
+	end
+end
+
+function GameView:_newBumpState(k1, k2, position, scale, time)
+	local t = table.remove(self.oldBumpStates)
+	if not t then
+		t = {
+			k1 = Vector(),
+			k2 = Vector(),
+			position = Vector(),
+			scale = 1,
+			time = 0
+		}
 	end
 
-	local transform = actorView:getSceneNode():getTransform()
-	local currentTranslation = transform:getLocalTranslation()
-	local previousTranslation = transform:getPreviousTransform()
-	local position = previousTranslation:lerp(currentTranslation, delta)
+	k1:copy(t.k1)
+	k2:copy(t.k2)
+	position:copy(t.position)
+	t.scale = scale
+	t.time = time
 
-	local relativePosition = position / Vector(m.map:getWidth() * m.map:getCellSize(), 1.0, m.map:getHeight() * m.map:getCellSize())
+	return t
+end
 
-	local min, max = actor:getBounds()
-	local size = max - min
-
-	local radius = math.min(size.x, size.z) / 2
-	local relativeScale = (radius + 3) / m.map:getCellSize()
-	relativeScale = relativeScale * (GameView.ACTOR_CANVAS_CELL_SIZE / circle:getWidth()) * (m.meta and m.meta.bendyScale or 1)
-
-	return position, size, relativePosition, relativeScale
+function GameView:_freeBumpState(t)
+	table.insert(self.oldBumpStates, t)
 end
 
 function GameView:_updateActorCanvases(delta)
@@ -2994,12 +3039,17 @@ function GameView:_updateActorCanvases(delta)
 					if state[1] then
 						if state[1].k1:distance(k1) < (m.meta and m.meta.fogDistance or 0.25) and state[1].k2 == k2 then
 							state[1].time = 0
-							state[1].position = p:keep()
+							p:copy(state[1].position)
 						else
-							table.insert(state, 1, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+							table.insert(
+								state,
+								1,
+								self:_newBumpState(k1, k2, p, s, 0))
 						end
 					else
-						table.insert(state, { k1 = k1:keep(), k2 = k2:keep(), position = p:keep(), scale = s, time = 0 })
+						table.insert(
+							state,
+							self:_newBumpState(k1, k2, p, s, 0))
 					end
 				end
 			end
@@ -3010,7 +3060,7 @@ function GameView:_updateActorCanvases(delta)
 		for id, state in pairs(m.bumpActors) do
 			for i = #state, 1, -1 do
 				if state[i].time >= 1 then
-					table.remove(state, i)
+					self:_freeBumpState(table.remove(state, i))
 				else
 					state[i].time = math.clamp(state[i].time + (time / (m.meta and m.meta.fogDuration or 1)))
 				end
@@ -3062,6 +3112,7 @@ function GameView:drawWorldTo(delta, renderer, width, height)
 	renderer:draw(self.scene, delta, width, height)
 end
 
+local CLEAR = Color(0, 0, 0, 0)
 function GameView:draw(delta, width, height)
 	for _, actor in pairs(self.actors) do
 		self.generalDebugStats:measure(
@@ -3078,14 +3129,16 @@ function GameView:draw(delta, width, height)
 		local info = self.skyboxes[skybox]
 		
 		self.renderer:setClearColor(info.color)
-		self.renderer:draw(skybox, delta, width, height, { self.sceneOutlinePostProcessPass })
+		self.renderer:draw(skybox, delta, width, height, self.skyboxPostProcessPasses)
 		self.renderer:present(false)
 	end
 
-	self.renderer:setClearColor(Color(0, 0, 0, 0))
-	--self.renderer:draw(self.scene, delta, width, height)
-	self.renderer:draw(self.scene, delta, width, height, { self.ssrPostProcessPass, self.toneMapPostProcessPass, self.sceneOutlinePostProcessPass })
+	local before = collectgarbage("count")
+	self.renderer:setClearColor(CLEAR)
+	self.renderer:draw(self.scene, delta, width, height, self.scenePostProcessPasses)
 	self.renderer:present(true)
+	local after = collectgarbage("count")
+	print(">>>> memory", after - before)
 end
 
 function GameView:preTick(frameDelta)

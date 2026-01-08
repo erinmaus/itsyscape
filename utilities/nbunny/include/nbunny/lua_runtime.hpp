@@ -165,8 +165,8 @@ namespace nbunny { namespace lua
         return 0;
     }
 
-    void push_sub(const std::string& function_name);
-    void pop_sub();
+    void push_sub(lua_State* L, const std::string& function_name);
+    void pop_sub(lua_State* L);
 
     template <typename T>
     void register_type(lua_State* L, lua_CFunction constructor, const luaL_Reg metatable[])
@@ -192,6 +192,8 @@ namespace nbunny { namespace lua
         }
         lua_setmetatable(L, -2);
     }
+
+    void push_function(lua_State* L, lua_CFunction method, const std::string& name);
 
     template <typename T, typename P>
     void register_child_type(lua_State* L, lua_CFunction constructor, const luaL_Reg metatable[])

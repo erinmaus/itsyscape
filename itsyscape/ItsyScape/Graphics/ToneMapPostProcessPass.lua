@@ -22,15 +22,22 @@ function ToneMapPostProcessPass.HSLCurve:new(min, max, curveStart, curveMiddle, 
 	self.curveStart = curveStart
 	self.curveMiddle = curveMiddle
 	self.curveEnd = curveEnd
+	self._currentIndex = false
 end
 
 function ToneMapPostProcessPass.HSLCurve:toShader(index)
-	return
-		string.format("scape_HSLCurves[%d].min", index), { self.min:get() },
-		string.format("scape_HSLCurves[%d].max", index), { self.max:get() },
-		string.format("scape_HSLCurves[%d].start", index), { self.curveStart:get() },
-		string.format("scape_HSLCurves[%d].middle", index), { self.curveMiddle:get() },
-		string.format("scape_HSLCurves[%d].end", index), { self.curveEnd:get() }
+	if self._currentIndex ~= index then
+		self._currentIndex = index
+		self._uniforms = {
+			string.format("scape_HSLCurves[%d].min", index), { self.min:get() },
+			string.format("scape_HSLCurves[%d].max", index), { self.max:get() },
+			string.format("scape_HSLCurves[%d].start", index), { self.curveStart:get() },
+			string.format("scape_HSLCurves[%d].middle", index), { self.curveMiddle:get() },
+			string.format("scape_HSLCurves[%d].end", index), { self.curveEnd:get() }
+		}
+	end
+
+	return unpack(self._uniforms)
 end
 
 ToneMapPostProcessPass.RGBCurve = Class()
@@ -38,13 +45,20 @@ function ToneMapPostProcessPass.RGBCurve:new(curveStart, curveMiddle, curveEnd)
 	self.curveStart = curveStart
 	self.curveMiddle = curveMiddle
 	self.curveEnd = curveEnd
+	self._currentIndex = false
 end
 
 function ToneMapPostProcessPass.RGBCurve:toShader(index)
-	return
-		string.format("scape_RGBCurves[%d].start", index), { self.curveStart:get() },
-		string.format("scape_RGBCurves[%d].middle", index), { self.curveMiddle:get() },
-		string.format("scape_RGBCurves[%d].end", index), { self.curveEnd:get() }
+	if self._currentIndex ~= index then
+		self._currentIndex = index
+		self._uniforms = {
+			string.format("scape_RGBCurves[%d].start", index), { self.curveStart:get() },
+			string.format("scape_RGBCurves[%d].middle", index), { self.curveMiddle:get() },
+			string.format("scape_RGBCurves[%d].end", index), { self.curveEnd:get() }
+		}
+	end
+
+	return unpack(self._uniforms)
 end
 
 function ToneMapPostProcessPass:new(...)

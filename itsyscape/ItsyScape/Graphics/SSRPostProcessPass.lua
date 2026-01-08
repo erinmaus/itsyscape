@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local NGBuffer = require "nbunny.optimaus.gbuffer"
@@ -82,21 +84,29 @@ function SSRPostProcessPass:draw(width, height)
 
 	love.graphics.clear(0, 0, 0, 0)
 
-	local projection, view = self:getRenderer():getCamera():getTransforms()
-	local inverseProjection, inverseView = projection:inverse(), view:inverse()
-	local cameraDirecion = (self:getRenderer():getCamera():getEye() - self:getRenderer():getCamera():getPosition()):getNormal()
+	self._projection, self._view = self:getRenderer():getCamera():getTransforms(self._projection, self._view)
+	self._inverseProjection = MathCommon.makeInverseTransform(self._projection, self._inverseProjection)
+	self._inverseView = MathCommon.makeInverseTransform(self._view, self._inverseView)
+	self._forward = self:getRenderer():getCamera():getForward(self._forward)
+
+	self._direction = self._direction or {}
+	self._direction[1], self._direction[2], self._direction[3] = self._forward:get()
+
+	self._gbufferTexelSize = self._gbufferTexelSize or {}
+	self._gbufferTexelSize[1], self._gbufferTexelSize[2] = 1 / width, 1 / height
+
 	self:bindShader(self.mapTextureCoordinatesShader,
-		"scape_ProjectionMatrix", projection,
-		"scape_ViewMatrix", view,
-		"scape_InverseProjectionMatrix", inverseProjection,
-		"scape_InverseViewMatrix", inverseView,
-		"scape_CameraDirection", { cameraDirecion:get() },
+		"scape_ProjectionMatrix", self._projection,
+		"scape_ViewMatrix", self._view,
+		"scape_InverseProjectionMatrix", self._inverseProjection,
+		"scape_InverseViewMatrix", self._inverseView,
+		"scape_CameraDirection", self._direction,
 		"scape_MaxDistanceViewSpace", self.maxDistanceViewSpace,
 		"scape_MinSecondPassSteps", self.minSecondPassSteps,
 		"scape_MaxSecondPassSteps", self.maxSecondPassSteps,
 		"scape_MaxFirstPassSteps", self.maxFirstPassSteps,
 		"scape_Resolution", self.resolution,
-		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_TexelSize", self._gbufferTexelSize,
 		"scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
 		"scape_DepthTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.DEPTH_INDEX),
 		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
@@ -108,39 +118,43 @@ function SSRPostProcessPass:draw(width, height)
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(self.buildColorShader,
 		"scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor(),
-		"scape_TexelSize", { 1 / width, 1 / height })
+		"scape_TexelSize", self._gbufferTexelSize)
 	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
 	
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(2))
 	love.graphics.clear(0, 0, 0, 0)
+
+	self._directionY = self._directionY or { 0, 1 }
+	self._directionX = self._directionY or { 1, 0 }
+
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 0, 1 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionY)
 		love.graphics.draw(self.colorBuffer:getCanvas(1))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(3))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 1, 0 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionX)
 	love.graphics.draw(self.colorBuffer:getCanvas(2))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(2))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 0, 1 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionY)
 	love.graphics.draw(self.colorBuffer:getCanvas(3))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(3))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 1, 0 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionX)
 	love.graphics.draw(self.colorBuffer:getCanvas(2))
 
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())

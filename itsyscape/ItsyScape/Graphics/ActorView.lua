@@ -490,6 +490,7 @@ function ActorView.CombinedModel:new(actorView, shader)
 	self.sceneNode:getMaterial():setShader(self.shader)
 
 	self.isUpdating = 0
+	self.isSkinDirty = false
 end
 
 function ActorView.CombinedModel:getShader()
@@ -1135,6 +1136,8 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 	if coroutine.running() then
 		self.currentApplySkin = self.currentApplySkin - 1
 	end
+
+	self.isSkinDirty = true
 end
 
 function ActorView:applySkin(slot, slotNodes)
@@ -1354,6 +1357,10 @@ function ActorView:draw()
 		return
 	end
 
+	if not self.isSkinDirty then
+		return
+	end
+
 	for _, slotNodes in pairs(self.skins) do
 		for _, slot in ipairs(slotNodes) do
 			local modelSceneNode = slot.model
@@ -1422,6 +1429,8 @@ function ActorView:draw()
 			end
 		end
 	end
+
+	self.isSkinDirty = false
 end
 
 function ActorView:getBoneTransform(boneName)

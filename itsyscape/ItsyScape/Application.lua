@@ -325,21 +325,13 @@ function Application:measure(name, func, ...)
 		return
 	end
 
-	local beforeMemory = 0
-	if _DEBUG == 'plus' then
-		collectgarbage("stop")
-		beforeMemory = collectgarbage("count")
-	end
+	local beforeMemory = collectgarbage("count")
 
 	local before = love.timer.getTime()
 	DebugStats.GLOBAL:measure(name, func, ...)
 	local after = love.timer.getTime()
 
-	local afterMemory = 0
-	if _DEBUG == 'plus' then
-		afterMemory = collectgarbage("count")
-		collectgarbage("restart")
-	end
+	local afterMemory = collectgarbage("count")
 
 	local memory = afterMemory - beforeMemory
 
@@ -1091,8 +1083,8 @@ local MEASURE_ROOT_FUNCS = {
 
 function Application:drawDebug()
 	if not _DEBUG or (not self.showDebug and not _MOBILE) then
-		self:drawFPS()
-		return
+		--self:drawFPS()
+		--return
 	end
 
 	love.graphics.setFont(self.defaultFont)

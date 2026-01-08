@@ -9,39 +9,66 @@
 --------------------------------------------------------------------------------
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local NTransform = require "nbunny.transform"
 
 local Common = {}
-function Common.decomposeTransform(transform)
+
+function Common.makeInverseTransform(transform, result)
+	result = result or transform
+	NTransform.inverse(transform, result)
+	return result
+end
+
+function Common.decomposeTransform(transform, translation, rotation)
 	local m11, m21, m31, m41,
 	      m12, m22, m32, m42,
 	      m13, m23, m33, m43,
 	      m14, m24, m34, m44 = transform:getMatrix("column")
 
+	translation = translation or Vector()
+	rotation = rotation or Quaternion()
+
 	local t, q
 	if m33 < 0 then
 		if m11 > m22 then
 			t = 1 + m11 - m22 - m33;
-			q = Quaternion(t, m12 + m21, m31 + m13, m23 - m32);
+			rotation.x = t
+			rotation.y = m12 + m21
+			rotation.z = m31 + m13
+			rotation.w = m23 - m32
 		else
 			t = 1 - m11 + m22 - m33;
-			q = Quaternion(m12 + m21, t, m23 + m32, m31 - m13);
+			rotation.x = m12 + m21
+			rotation.y = t
+			rotation.z = m23 + m32
+			rotation.w = m31 - m13
 		end
 	else
 		if m11 < -m22 then
 			t = 1 - m11 - m22 + m33;
-			q = Quaternion(m31 + m13, m23 + m32, t, m12 - m21);
+			rotation.x = m31 + m13
+			rotation.y = m23 + m32
+			rotation.z = t
+			rotation.w = m12 - m21
 		else
 			t = 1 + m11 + m22 + m33;
-			q = Quaternion(m23 - m32, m31 - m13, m12 - m21, t);
+			rotation.x = m23 - m32
+			rotation.y = m31 - m13
+			rotation.z = m12 - m21
+			rotation.w = t
 		end
 	end
 
-	q.x = q.x * (0.5 / math.sqrt(t))
-	q.y = q.y * (0.5 / math.sqrt(t))
-	q.z = q.z * (0.5 / math.sqrt(t))
-	q.w = q.w * (0.5 / math.sqrt(t))
+	rotation.x = rotation.x * (0.5 / math.sqrt(t))
+	rotation.y = rotation.y * (0.5 / math.sqrt(t))
+	rotation.z = rotation.z * (0.5 / math.sqrt(t))
+	rotation.w = rotation.w * (0.5 / math.sqrt(t))
 
-	return Vector(m41, m42, m43), q
+	translation.x = m41
+	translation.y = m42
+	translation.z = m43
+
+	return translation, rotation
 end
 
 function Common.projectPointOnLineSegment(a, b, p)
