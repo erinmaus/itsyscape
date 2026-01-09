@@ -27,15 +27,8 @@ function RPCService:getGameManager()
 	return self.gameManager
 end
 
-function RPCService:send(channel, e)
-	Class.ABSTRACT()
-end
-
 function RPCService:sendBatch(channel, b)
-	-- Naive implementation.
-	for i = 1, #b do
-		self:send(channel, b[i])
-	end
+	Class.ABSTRACT()
 end
 
 function RPCService:receive()
@@ -43,6 +36,10 @@ function RPCService:receive()
 end
 
 function RPCService:close()
+	-- Nothing.
+end
+
+function RPCService:tick()
 	-- Nothing.
 end
 

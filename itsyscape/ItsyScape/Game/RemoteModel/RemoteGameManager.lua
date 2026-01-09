@@ -21,12 +21,8 @@ local RemoteProp = require "ItsyScape.Game.RemoteModel.Prop"
 local RemoteStage = require "ItsyScape.Game.RemoteModel.Stage"
 local RemoteUI = require "ItsyScape.Game.RemoteModel.UI"
 local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
-local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local GameManager = require "ItsyScape.Game.RPC.GameManager"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
-local NGameManager = require "nbunny.gamemanager"
-local NEventQueue = require "nbunny.gamemanager.eventqueue"
-local NVariant = require "nbunny.gamemanager.variant"
 
 local RemoteGameManager = Class(GameManager)
 
@@ -187,6 +183,10 @@ function RemoteGameManager:tick()
 	end
 
 	table.clear(self.dirtyInstancesCache)
+
+	if self.rpcService then
+		self.rpcService:tick()
+	end
 end
 
 function RemoteGameManager:_flush()
@@ -194,6 +194,8 @@ function RemoteGameManager:_flush()
 	for i = 1, #self.pending do
 		local e = self.pending[i]
 		self:markDirty(e)
+
+		print(">>> PROCESS", e.type, e.interface, e.id, e.property or e.callback)
 
 		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
 			self:process(e)

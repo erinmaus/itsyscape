@@ -27,7 +27,7 @@ local Map = Class()
 function Map:new(width, height, cellSize)
 	width = math.floor(math.max(width or 1, 1))
 	height = math.floor(math.max(height or 1, 1))
-	cellSize = math.floor(math.max(cellSize or 1, 1))
+	cellSize = math.floor(math.max(cellSize or 2, 1))
 
 	self.width = width
 	self.height = height

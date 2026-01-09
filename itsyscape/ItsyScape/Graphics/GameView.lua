@@ -15,6 +15,7 @@ local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local Building = require "ItsyScape.Graphics.Building"
 local Color = require "ItsyScape.Graphics.Color"
@@ -532,12 +533,14 @@ function GameView:_getLargeTileSet(tileSet, map)
 end
 
 function GameView:addMap(map, layer, tileSetID, mask, meta)
-	meta = meta or {}
+	meta = RPCState.merge(meta)
 
 	local filename = false
 	if type(map) == 'string' then
 		filename = map
 		map = Map.loadFromFile(map)
+	else
+		map = Map.loadFromTable(map:serialize())
 	end
 
 	local mapResourceName, localLayer
@@ -645,7 +648,6 @@ function GameView:addMap(map, layer, tileSetID, mask, meta)
 		parts = {},
 		layer = layer,
 		weatherMap = WeatherMap(layer, -8, -8, map:getCellSize(), map:getWidth() + 16, map:getHeight() + 16),
-		maskID = maskID,
 		mapMeshMasks = mapMeshMasks,
 		mask = mapMeshMasks and MapMeshMask.combine(unpack(mapMeshMasks)),
 		islandProcessor = mapMeshMasks and meta.autoMask and MapMeshIslandProcessor(map, tileSet),
@@ -1115,6 +1117,7 @@ function GameView:updateMap(map, layer, partialI, partialJ, partialW, partialH)
 				end
 			else
 				m.filename = nil
+				map = Map.loadFromTable(map:serialize())
 			end
 
 			if m.lastFilename and m.lastFilename == m.filename then
@@ -1348,8 +1351,8 @@ function GameView:updateMapSky(layer, properties)
 		m.previousSkyProperties = false
 		m.currentSkyProperties = false
 	else
-		m.previousSkyProperties = m.currentSkyProperties or properties
-		m.currentSkyProperties = properties
+		m.previousSkyProperties = m.currentSkyProperties or RPCState.merge(properties)
+		m.currentSkyProperties = RPCState.merge(properties, m.currentSkyProperties)
 	end
 end
 
@@ -1447,7 +1450,7 @@ function GameView:updateMeta(layer, meta)
 		return
 	end
 
-	m.meta = meta
+	m.meta = RPCState.merge(meta, m.meta)
 	self:_updatePolygonMask(m)
 	self:_updateWindMeta()
 
@@ -3133,12 +3136,9 @@ function GameView:draw(delta, width, height)
 		self.renderer:present(false)
 	end
 
-	local before = collectgarbage("count")
 	self.renderer:setClearColor(CLEAR)
 	self.renderer:draw(self.scene, delta, width, height, self.scenePostProcessPasses)
 	self.renderer:present(true)
-	local after = collectgarbage("count")
-	print(">>>> memory", after - before)
 end
 
 function GameView:preTick(frameDelta)

@@ -12,6 +12,7 @@ local Function = require "ItsyScape.Common.Function"
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local Body = require "ItsyScape.Game.Body"
 local Equipment = require "ItsyScape.Game.Equipment"
 local NullActor = require "ItsyScape.Game.Null.Actor"
@@ -724,7 +725,7 @@ function ActorView:new(actor, actorID)
 	self.combinedModelSceneNodes = {}
 
 	self.layer = false
-	self.position = false
+	self.position = Vector(0)
 	self.rotation = Quaternion():keep()
 
 	self.animations = {}
@@ -787,7 +788,8 @@ function ActorView:new(actor, actorID)
 	actor.onDamage:register(self._onDamage)
 
 	self._onHUDMessage = function(_, message, ...)
-		self:flash(message, ...)
+		local arguments = RPCState.merge({ ... })
+		self:flash(message, unpack(arguments, 1, select("#", ...)))
 	end
 	actor.onHUDMessage:register(self._onHUDMessage)
 
@@ -866,7 +868,7 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 	   (a.instance and definition:getResource():getFadesIn())
 	then
 		a.next = {
-			cacheRef = animation,
+			cacheRef = animation:clone(),
 			definition = definition:getResource(),
 			priority = priority,
 			time = time
@@ -877,7 +879,7 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 			a.instance:stop()
 		end
 
-		a.cacheRef = animation
+		a.cacheRef = animation:clone()
 		a.definition = definition:getResource()
 		a.instance = self.instances[animation:getFilename()] or a.definition:play(self.animatable)
 		a.time = time or 0
@@ -1205,7 +1207,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	if priority then
 		local s = {
 			slot = slot,
-			definition = skin,
+			definition = skin:clone(),
 			priority = priority,
 			config = config or {}
 		}
@@ -1263,7 +1265,7 @@ function ActorView:move(position, layer, instant)
 	local previousLayer = self.layer
 	local previousPosition = self.position
 
-	self.position = position
+	self.position = position:keep(self.position)
 	self.layer = layer
 
 	local parent = self.game:getMapSceneNode(layer)

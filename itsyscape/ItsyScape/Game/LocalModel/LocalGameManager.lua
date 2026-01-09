@@ -32,7 +32,7 @@ function LocalGameManager:new(rpcService, game)
 	self.rpcService = rpcService
 	self.game = game
 
-	self.pending = OutgoingEventQueue()
+	self.pending = OutgoingEventQueue(self)
 	self.outgoingTargets = {}
 	self.outgoingKeys = {}
 	self.pendingDeletion = {}
@@ -245,14 +245,24 @@ function LocalGameManager:assignTargetToLastPush(target)
 end
 
 function LocalGameManager:newInstance(interface, id, obj)
+
 	self:pushCreate(interface, id)
 	return GameManager.newInstance(self, interface, id, obj)
 end
 
 function LocalGameManager:destroyInstance(interface, id)
+	if not self:getInstance(interface, id) then
+		return
+	end
+
 	table.insert(self.pendingDeletion, self:getInstance(interface, id))
 	self:pushDestroy(interface, id)
 	GameManager.destroyInstance(self, interface, id)
+end
+
+function LocalGameManager:pushTick()
+	GameManager.pushTick(self)
+	self.rpcService:tick()
 end
 
 function LocalGameManager:_doSend(player, e)
@@ -524,6 +534,7 @@ function LocalGameManager:receive()
 			self:process(e)
 		end
 	until not e
+
 	return true
 end
 

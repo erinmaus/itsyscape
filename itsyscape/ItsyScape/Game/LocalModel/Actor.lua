@@ -21,6 +21,7 @@ local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 -- Represents an Actor that is simulated locally.
 local LocalActor = Class(Actor)
@@ -78,6 +79,8 @@ function LocalActor:spawn(id, group, resource, ...)
 	self.id = id
 	self.oldID = nil
 	self.resource = resource or false
+
+	self[NPooledBuffer.ID] = self.id
 end
 
 function LocalActor:depart()

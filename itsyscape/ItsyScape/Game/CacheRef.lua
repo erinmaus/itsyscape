@@ -44,6 +44,10 @@ function CacheRef:getFilename()
 	return self.filename
 end
 
+function CacheRef:clone()
+	return CacheRef(self.resourceTypeID, self.filename)
+end
+
 -- Loads the resource. See CacheRef.new.
 function CacheRef:load(...)
 	local resource = self.resourceType()

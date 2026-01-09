@@ -12,6 +12,7 @@ local UI = require "ItsyScape.Game.Model.UI"
 local RPCState = require "ItsyScape.Game.RPC.State"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalUI = Class(UI)
 
@@ -29,6 +30,8 @@ end
 
 function LocalUI:new(game)
 	UI.new(self)
+
+	self[NPooledBuffer.ID] = 0
 
 	self.game = game
 	self.interfaces = {}

@@ -484,25 +484,7 @@ function Instance:new(id, filename, stage)
 	self.actorsPendingRemovalByID = {}
 
 	self._onActorSpawned = function(_, actorID, actor)
-		if self:hasActor(actor) then
-			Log.engine(
-				"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor already in instance.",
-				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-			return
-		end
-
-		local instance = stage:getPeepInstance(actor:getPeep())
-		if instance == self then
-			Log.engine(
-				"Added actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
-				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-			table.insert(self.actors, actor)
-			self.actorsByID[actor:getID()] = actor
-		else
-			Log.engine(
-				"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor not in instance.",
-				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-		end
+		self:addActor(actor)
 	end
 	stage.onActorSpawned:register(self._onActorSpawned)
 
@@ -530,25 +512,7 @@ function Instance:new(id, filename, stage)
 	self.propsPendingRemovalByID = {}
 
 	self._onPropPlaced = function(_, propID, prop)
-		if self:hasProp(prop) then
-			Log.engine(
-				"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop already in instance.",
-				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-			return
-		end
-
-		local instance = stage:getPeepInstance(prop:getPeep())
-		if instance == self then
-			Log.engine(
-				"Added prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
-				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-			table.insert(self.props, prop)
-			self.propsByID[prop:getID()] = prop
-		else
-			Log.engine(
-				"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop not in instance.",
-				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-		end
+		self:addProp(prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
@@ -1187,6 +1151,28 @@ function Instance:iterateActors()
 	return ipairs(self.actors)
 end
 
+function Instance:addActor(actor)
+	if self:hasActor(actor) then
+		Log.engine(
+			"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor already in instance.",
+			actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
+		return
+	end
+
+	local instance = self.stage:getPeepInstance(actor:getPeep())
+	if instance == self then
+		Log.engine(
+			"Added actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
+			actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
+		table.insert(self.actors, actor)
+		self.actorsByID[actor:getID()] = actor
+	else
+		Log.engine(
+			"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor not in instance.",
+			actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
+	end
+end
+
 function Instance:hasActor(actor, player)
 	local hasActor = self.actorsByID[actor:getID()] ~= nil
 	if hasActor and player and actor:getPeep() then
@@ -1201,6 +1187,28 @@ end
 
 function Instance:iterateProps()
 	return ipairs(self.props)
+end
+
+function Instance:addProp(prop)
+	if self:hasProp(prop) then
+		Log.engine(
+			"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop already in instance.",
+			prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
+		return
+	end
+
+	local instance = self.stage:getPeepInstance(prop:getPeep())
+	if instance == self then
+		Log.engine(
+			"Added prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
+			prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
+		table.insert(self.props, prop)
+		self.propsByID[prop:getID()] = prop
+	else
+		Log.engine(
+			"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop not in instance.",
+			prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
+	end
 end
 
 function Instance:hasProp(prop, player)

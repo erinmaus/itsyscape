@@ -35,136 +35,144 @@ do
 		_ITSYREALM_VERSION)
 end
 
-do
-	--local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
-	local Vector = require "ItsyScape.Common.Math.Vector"
-	local Quaternion = require "ItsyScape.Common.Math.Quaternion"
-	local e1 = {
-		a = 123,
-		b = {
-			1, 2, 3,
-			n = 3,
-			[10] = 10
-		},
-		c = "foo",
-		d = true,
-		v = Vector(1)
-	}
+-- do
+-- 	--local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+-- 	local Vector = require "ItsyScape.Common.Math.Vector"
+-- 	local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+-- 	local e1 = {
+-- 		a = 123,
+-- 		b = {
+-- 			1, 2, 3,
+-- 			n = 3,
+-- 			[10] = 10
+-- 		},
+-- 		c = "foo",
+-- 		d = true,
+-- 		v = Vector(1)
+-- 	}
 
-	local e2 = {
-		a = 123,
-		b = {
-			1, 2, 3,
-			n = 3,
-			[10] = 10
-		},
-		c = "foo",
-		d = true,
-		v = Vector(1)
-	}
+-- 	local e2 = {
+-- 		a = 123,
+-- 		b = {
+-- 			1, 2, 3,
+-- 			n = 3,
+-- 			[10] = 10
+-- 		},
+-- 		c = "foo",
+-- 		d = true,
+-- 		v = Vector(1)
+-- 	}
 
-	local NPooledBuffer = require "nbunny.pooledbuffer"
-	local buffer = require "string.buffer"
+-- 	local NPooledBuffer = require "nbunny.pooledbuffer"
+-- 	local buffer = require "string.buffer"
 
-	local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
-	local storage = PlayerStorage()
-	storage:deserialize(love.filesystem.read("Player/Default.dat"))
+-- 	local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+-- 	local storage = PlayerStorage()
+-- 	storage:deserialize(love.filesystem.read("Player/Default.dat"))
 
-	local m = { __index = {} }
-	local a = setmetatable({ [NPooledBuffer.ID] = "abc123", bloop = 1, bleep = 1 }, m)
-	e1 = storage:serialize()
+-- 	local m = { __index = {} }
+-- 	local a = setmetatable({ [NPooledBuffer.ID] = "abc123", bloop = 1, bleep = 1 }, m)
+-- 	e1 = storage:serialize()
 
-	local p = NPooledBuffer.new(table.clear)
+-- 	local p = NPooledBuffer.new(table.clear)
 
-	local encodeConfig = {
-		metatable = {
-			Vector._METATABLE,
-			Quaternion._METATABLE
-		},
-		proxy = {
-			[m] = "ItsyScape.Game.Model.Actor"
-		}
-	}
+-- 	local encodeConfig = {
+-- 		metatable = {
+-- 			Vector._METATABLE,
+-- 			Quaternion._METATABLE
+-- 		},
+-- 		proxy = {
+-- 			[m] = "ItsyScape.Game.Model.Actor"
+-- 		}
+-- 	}
 
-	local buffer = buffer.new({
-		metatable = {
-			Vector._METATABLE,
-			Quaternion._METATABLE
-		}
-	})
+-- 	local buffer = buffer.new({
+-- 		metatable = {
+-- 			Vector._METATABLE,
+-- 			Quaternion._METATABLE
+-- 		}
+-- 	})
 
-	local t = 0
-	local N = 10
-	for i = 1, N do
-		local b = love.timer.getTime()
-		NPooledBuffer.perform(NPooledBuffer.encode, p, encodeConfig, e1)
-		local a = love.timer.getTime()
-		t = t + (a - b) * 1000
-	end
-	t = t / N
-	print("encode time (nbunny)", t)
+-- 	local t = 0
+-- 	local N = 1000
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		NPooledBuffer.perform(NPooledBuffer.encode, p, encodeConfig, e1)
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	t = t / N
+-- 	print("encode time (nbunny)", t)
 
-	local t = 0
-	for i = 1, N do
-		local b = love.timer.getTime()
-		buffer:encode({ n = 1, e1 })
-		local a = love.timer.getTime()
-		t = t + (a - b) * 1000
-	end
-	t = t / N
-	print("encode time (buffer)", t)
+-- 	local t = 0
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		buffer:encode({ n = 1, e1 })
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	t = t / N
+-- 	print("encode time (buffer)", t)
 
-	local decodeConfig = {
-		metatable = {
-			Vector._METATABLE,
-			Quaternion._METATABLE,
-		},
+-- 	local decodeConfig = {
+-- 		metatable = {
+-- 			Vector._METATABLE,
+-- 			Quaternion._METATABLE,
+-- 		},
 
-		proxy = {
-			[m] = "ItsyScape.Game.Model.Actor",
-		},
+-- 		proxy = {
+-- 			[m] = "ItsyScape.Game.Model.Actor",
+-- 		},
 
-		proxyInstances = {
-			["ItsyScape.Game.Model.Actor"] = {
-				["abc123"] = a
-			}
-		},
+-- 		proxyInstances = {
+-- 			["ItsyScape.Game.Model.Actor"] = {
+-- 				["abc123"] = a
+-- 			}
+-- 		},
 
-		inputTablePool = {},
-		outputTablePool = {}
-	}
+-- 		inputTablePool = {},
+-- 		outputTablePool = {}
+-- 	}
 
-	NPooledBuffer.restart(p)
-	collectgarbage("stop")
-	local t = 0
-	local bm = collectgarbage("count")
-	local t1, t2
-	for i = 1, N do
-		local b = love.timer.getTime()
-		t1 = NPooledBuffer.perform(NPooledBuffer.decode, p, decodeConfig)
-		decodeConfig.inputTablePool, decodeConfig.outputTablePool = decodeConfig.outputTablePool, decodeConfig.inputTablePool
-		local a = love.timer.getTime()
-		t = t + (a - b) * 1000
-	end
-	local am = collectgarbage("count")
-	print("decode time (nbunny)", t / N, "memory", am - bm)
+-- 	NPooledBuffer.restart(p)
+-- 	collectgarbage("stop")
+-- 	local t = 0
+-- 	local bm = collectgarbage("count")
+-- 	local t1, t2
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		t1 = NPooledBuffer.perform(NPooledBuffer.decode, p, decodeConfig)
+-- 		decodeConfig.inputTablePool, decodeConfig.outputTablePool = decodeConfig.outputTablePool, decodeConfig.inputTablePool
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	local am = collectgarbage("count")
+-- 	print("decode time (nbunny)", t / N, "memory", am - bm)
+-- 	local storage2 = PlayerStorage()
+-- 	local storage3 = PlayerStorage()
+-- 	storage3:deserialize(love.filesystem.read("Player/Default1.dat"))
 
-	collectgarbage("stop")
-	local t = 0
-	local bm = collectgarbage("count")
-	local t1, t2
-	for i = 1, N do
-		local b = love.timer.getTime()
-		local q = buffer:decode()
-		t1 = unpack(q, 1, q.n)
-		local a = love.timer.getTime()
-		t = t + (a - b) * 1000
-	end
-	local am = collectgarbage("count")
-	print("decode time (nbunny)", t / N, "memory", am - bm)
+-- 	local x1 = require("ItsyScape.Game.RPC.State").merge({ metatable = {}, proxy = {} }, t1, storage3:serialize())
+-- 	storage2:deserialize(x1)
+-- 	love.filesystem.write("bla.txt", Log.dump(storage2:toString()))
+-- 	assert(require("ItsyScape.Game.RPC.State").deepEquals(x1, e1), "not equal!~!!")
 
-	os.exit(0)
-end
+-- 	collectgarbage("stop")
+-- 	local t = 0
+-- 	local bm = collectgarbage("count")
+-- 	local t1, t2
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		local q = buffer:decode()
+-- 		t1 = unpack(q, 1, q.n)
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	local am = collectgarbage("count")
+-- 	print("decode time (nbunny)", t / N, "memory", am - bm)
+
+-- 	os.exit(0)
+-- end
 
 itsyrealm = {
 	graphics = {

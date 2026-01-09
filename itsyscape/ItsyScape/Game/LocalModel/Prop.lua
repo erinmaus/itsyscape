@@ -18,6 +18,7 @@ local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalProp = Class(Prop)
 
@@ -55,6 +56,7 @@ function LocalProp:place(id, group, resource, ...)
 	propReference.prop = self
 
 	self.id = id
+	self[NPooledBuffer.ID] = self.id
 end
 
 function LocalProp:remove()
@@ -228,7 +230,7 @@ end
 
 function LocalProp:getState()
 	local peep = self:getPeep()
-	if peep and peep.getPropState then
+	if peep and peep:getIsReady() and peep.getPropState then
 		return peep:getPropState()
 	else
 		return {}

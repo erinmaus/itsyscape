@@ -20,12 +20,15 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Party = require "ItsyScape.Game.LocalModel.Party"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalGame = Class(Game)
 LocalGame.TICKS_PER_SECOND = 1
 
 function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)
+
+	self[NPooledBuffer.ID] = 0
 
 	self.gameDB = gameDB
 	self.director = ItsyScapeDirector(self, gameDB)
@@ -149,7 +152,7 @@ function LocalGame:spawnPlayer(clientID)
 
 	player.onLeave:register(self._onPlayerLeave, self)
 	player.onPoof:register(self._onPlayerPoofed, self)
-	self:onPlayerSpawned(player)
+	player.onSpawn:register(self._onPlayerSpawn, self)
 
 	return player
 end
@@ -169,6 +172,11 @@ end
 function LocalGame:_onPlayerLeave(player)
 	Log.info("Player %d (client %d) is leaving.", player:getID(), player:getClientID())
 	player:poof()
+end
+
+function LocalGame:_onPlayerSpawn(player)
+	Log.info("Player %d (client %d) is ready.", player:getID(), player:getClientID())
+	self:onPlayerSpawned(player)
 end
 
 function LocalGame:_onPlayerPoofed(player)

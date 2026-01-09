@@ -44,6 +44,7 @@ local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
 local NMap = require "nbunny.optimaus.map"
 local NMapCurve = require "nbunny.optimaus.mapcurve"
 local NTransformedMap = require "nbunny.optimaus.transformedmap"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalStage = Class(Stage)
 
@@ -52,6 +53,8 @@ LocalStage.PRELOAD_DURATION_MS = 100
 
 function LocalStage:new(game)
 	Stage.new(self)
+
+	self[NPooledBuffer.ID] = 0
 
 	self.game = game
 
@@ -288,8 +291,8 @@ function LocalStage:getPeepInstance(peep)
 		return self.dummyInstance
 	end
 
-	local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(peep:getLayerName())
-	return self:getInstanceByFilenameAndID(filename, id) or self.dummyInstance
+	local layer = Utility.Peep.getLayer(peep)
+	return self:getInstanceByLayer(layer) or self.dummyInstance
 end
 
 function LocalStage:iterateItems()
@@ -442,17 +445,17 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 		self.peeps[peep] = actor
 		self.actorsByID[actor:getID()] = actor
 
-		local function _onAssign()
-			local p = peep:getBehavior(PositionBehavior)
-			if p then
-				p.layer = layer
-			end
+		Utility.Peep.setLayer(peep, layer)
 
+		local function _onAssign()
 			self.onActorSpawned(self, realID, actor)
 
 			peep:silence('assign', _onAssign)
 		end
 		peep:listen('assign', _onAssign)
+
+		local instance = self:getInstanceByLayer(layer)
+		instance:addActor(actor)
 
 		return true, actor
 	end
@@ -495,12 +498,12 @@ function LocalStage:placeProp(propID, layer, layerName)
 		self.peeps[peep] = prop
 		self.propsByID[prop:getID()] = prop
 
-		peep:listen('ready', function()
-			local p = peep:getBehavior(PositionBehavior)
-			if p then
-				p.layer = layer
-			end
+		Utility.Peep.setLayer(peep, layer)
 
+		local instance = self:getInstanceByLayer(layer)
+		instance:addProp(prop)
+
+		peep:listen('ready', function()
 			self.onPropPlaced(self, self:lookupPropAlias(realID), prop)
 		end)
 

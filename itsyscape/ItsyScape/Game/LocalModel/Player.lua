@@ -53,7 +53,9 @@ function LocalPlayer:new(id, game, stage)
 	self.direction = Vector.UNIT_X
 	self.id = id
 	self.isPlayable = false
+	self.isSpawned = false
 
+	self.onSpawn = Callback(false)
 	self.onPoof = Callback(false)
 	self.onForceDisconnect = Callback(false)
 
@@ -119,6 +121,8 @@ function LocalPlayer:saveLocation()
 end
 
 function LocalPlayer:spawn(storage, newGame, password)
+	storage = storage:clone()
+
 	if not self.game:verifyPassword(password) then
 		Log.warn("Player %d (client %d) did not say the right password.", self:getID(), self:getClientID() or -1)
 		self:onForceDisconnect()
@@ -212,6 +216,11 @@ function LocalPlayer:spawn(storage, newGame, password)
 						end
 					end
 				end
+			end
+
+			if not self.isSpawned then
+				self.isSpawned = true
+				self:onSpawn()
 			end
 		end)
 

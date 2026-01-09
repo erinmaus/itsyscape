@@ -59,6 +59,7 @@ function CloudCortex:update(delta)
 			   (sky.windDirection.z > 0 and delta.z > 1) or
 			   (sky.windDirection.z < 0 and delta.z < 0)
 			then
+				self:removePeep(peep)
 				Utility.Peep.poof(peep)
 			end
 		end

@@ -118,7 +118,7 @@ end
 
 function StandardCutsceneCameraController:onTranslate(position, duration)
 	self.previousTranslation = self.currentTranslation
-	self.targetTranslation = position
+	self.targetTranslation = position:keep()
 
 	if duration == 0 or not duration then
 		self.currentTranslationTime = 1

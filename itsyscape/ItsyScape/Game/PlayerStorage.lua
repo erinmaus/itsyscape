@@ -266,6 +266,14 @@ function PlayerStorage:serialize()
 	return self.root:serialize()
 end
 
+function PlayerStorage:clone()
+	local t = self.root:serialize()
+	local result = PlayerStorage()
+	result:deserialize(t)
+
+	return result
+end
+
 function PlayerStorage:toString()
 	return serpent.block(self:serialize(), { comment = false })
 end

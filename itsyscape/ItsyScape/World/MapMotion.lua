@@ -31,7 +31,6 @@ function MapMotion:getReferenceY(e)
 		--min, max = Vector.transformBounds(min, max, e.transform)
 
 		local hit, point = e.ray:hitBounds(min, max)
-		print(">>> hit", hit, "point", Log.dump(point))
 		if hit and point then
 			return point.y
 		else

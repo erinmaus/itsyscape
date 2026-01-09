@@ -122,9 +122,21 @@ function Proxy:wrapServer(interface, id, instance, gameManager)
 		elseif Class.isCompatibleType(event, Event.ClientToServerRPC) then
 			Log.debug("Ignoring event '%s' of type 'ClientToServerRPC'; wrapping for server, not client.", key)
 		elseif Class.isCompatibleType(event, Event.Create) then
-			instance[event:getCallbackName()]:register(Callback.bind(event:getFunc(), event, gameManager))
+			local implementation = instance[key]
+			instance[key] = function(...)
+				return event:getFunc()(event, gameManager, implementation, ...)
+			end
+
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.invokeCallback, gameManager, interface, id, event))
+			--instance[event:getCallbackName()]:register(Callback.bind(event:getFunc(), event, gameManager))
 		elseif Class.isCompatibleType(event, Event.Destroy) then
-			instance[event:getCallbackName()]:register(Callback.bind(event:getFunc(), event, gameManager))
+			local implementation = instance[key]
+			instance[key] = function(...)
+				return event:getFunc()(event, gameManager, implementation, ...)
+			end
+
+			instance[event:getCallbackName()]:register(Callback.bind(gameManager.invokeCallback, gameManager, interface, id, event))
+			--instance[event:getCallbackName()]:register(Callback.bind(event:getFunc(), event, gameManager))
 		end
 	end
 end

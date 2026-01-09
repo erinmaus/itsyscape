@@ -38,20 +38,17 @@ end
 
 function CraftResourceCommand:step(peep)
 	if self.progress >= self.count then
-		print("DONE!", self.progress, "/", self.count)
 		self.isDone = true
 		return
 	end
 
 	local canStep = self.action:canPerform(peep:getState()) and self.action:canTransfer(peep:getState())
 	if not canStep then
-		print("CAN'T STEP", self.action:getDebugInfo().shortName)
 		self.isDone = true
 	end
 
 	local didPerform = self.action:perform(peep:getState(), peep, self.prop)
 	if not didPerform then
-		print("DID NOT PERFORM")
 		self.isDone = true
 	end
 
@@ -60,7 +57,6 @@ function CraftResourceCommand:step(peep)
 	end
 
 	if not peep:getCommandQueue():shift(self) then
-		print("COULD NOT SHIFT")
 		self.isDone = true
 	end
 
