@@ -24,7 +24,7 @@ function DebugStats:new()
 end
 
 function DebugStats:measure(node, ...)
-	if not _DEBUG then
+	if not _DEBUG or not (love.keyboard and love.keyboard.isDown("space")) then
 		return self:process(node, ...)
 	end
 
@@ -56,27 +56,18 @@ function DebugStats:measure(node, ...)
 
 	local duration, memory, result
 	do
-		local beforeMemory, afterMemory
 		local beforeTime = love.timer.getTime()
-
-		if _DEBUG == "plus" then
-			collectgarbage("stop")
-			beforeMemory = collectgarbage("count")
-		end
+		local beforeMemory = collectgarbage("count")
 
 		table.insert(DebugStats._STACK, stat)
 		result = self:process(node, ...)
 		table.remove(DebugStats._STACK)
 
 		local afterTime = love.timer.getTime()
-
-		if _DEBUG == "plus" then
-			afterMemory = collectgarbage("count")
-			collectgarbage("restart")
-		end
+		local afterMemory = collectgarbage("count")
 
 		duration = afterTime - beforeTime
-		memory = (afterMemory or 0) - (beforeMemory or 0)
+		memory = math.max(afterMemory - beforeMemory, 0)
 	end
 
 	stat.minTime = math.min(stat.minTime, duration)
@@ -152,9 +143,9 @@ function DebugStats:dumpStatsToCSV(topic)
 			stats.sampleCount,
 			#stats.samples,
 			(stats.currentTimeTotal / stats.sampleCount) * 1000,
-			stats.currentMemoryTotal / math.max(#stats.samples, 1),
-			stats.currentMemoryTotal / math.max(#stats.samples, 1) * 30,
-			stats.currentMemoryTotal / math.max(#stats.samples, 1) * 60)
+			stats.currentMemoryTotal / (#stats.samples > 1 and #stats.samples or stats.sampleCount),
+			stats.currentMemoryTotal / (#stats.samples > 1 and #stats.samples or stats.sampleCount) * 30,
+			stats.currentMemoryTotal / (#stats.samples > 1 and #stats.samples or stats.sampleCount) * 60)
 		table.insert(stringifiedStats, f)
 	end
 

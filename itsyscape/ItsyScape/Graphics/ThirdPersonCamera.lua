@@ -276,8 +276,8 @@ do
 	local x = Quaternion()
 	local y = Quaternion()
 	function ThirdPersonCamera:getLocalRotation(result)
-		Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation + math.pi, x):getNormal(x)
-		Quaternion.fromAxisAngle(self.up, -self.verticalRotation + math.pi / 2, y):getNormal(y)
+		Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation + math.pi, x):normalize(x)
+		Quaternion.fromAxisAngle(self.up, -self.verticalRotation + math.pi / 2, y):normalize(y)
 
 		result = result or Quaternion()
 		return x:product(y, result):normalize(result)
@@ -288,8 +288,8 @@ do
 	local x = Quaternion()
 	local y = Quaternion()
 	function ThirdPersonCamera:getCombinedRotation(result)
-		Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation + math.pi, x):getNormal(x)
-		Quaternion.fromAxisAngle(self.up, -self.verticalRotation + math.pi / 2, y):getNormal(y)
+		Quaternion.fromAxisAngle(Vector.UNIT_X, self.horizontalRotation + math.pi, x):normalize(x)
+		Quaternion.fromAxisAngle(self.up, -self.verticalRotation + math.pi / 2, y):normalize(y)
 
 		result = result or Quaternion()
 		return x:product(self.rotation, result):product(y, result):normalize(result)

@@ -44,9 +44,9 @@ function StandardCutsceneCameraController:new(...)
 	self.targetZoomTime = 1
 	self.zoomTween = 'linear'
 
-	self.currentTranslation = StandardCutsceneCameraController.TRANSLATION
-	self.previousTranslation = StandardCutsceneCameraController.TRANSLATION
-	self.targetTranslation = StandardCutsceneCameraController.TRANSLATION
+	self.currentTranslation = Vector(StandardCutsceneCameraController.TRANSLATION:get())
+	self.previousTranslation = Vector(StandardCutsceneCameraController.TRANSLATION:get())
+	self.targetTranslation = Vector(StandardCutsceneCameraController.TRANSLATION:get())
 	self.currentTranslationTime = 1
 	self.targetTranslationTime = 1
 	self.translationTween = 'linear'
@@ -118,7 +118,7 @@ end
 
 function StandardCutsceneCameraController:onTranslate(position, duration)
 	self.previousTranslation = self.currentTranslation
-	self.targetTranslation = position:keep()
+	self.targetTranslation:from(position:get())
 
 	if duration == 0 or not duration then
 		self.currentTranslationTime = 1

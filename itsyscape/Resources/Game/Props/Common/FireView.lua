@@ -370,24 +370,26 @@ function FireView:load()
 	end)
 end
 
-function FireView:flicker()
-	if self.light then
-		local flickerWidth = self.MAX_FLICKER_TIME - self.MIN_FLICKER_TIME
-		self.flickerTime = math.random() * flickerWidth + self.MIN_FLICKER_TIME
+do
+	local color = Color()
+	function FireView:flicker()
+		if self.light then
+			local flickerWidth = self.MAX_FLICKER_TIME - self.MIN_FLICKER_TIME
+			self.flickerTime = math.random() * flickerWidth + self.MIN_FLICKER_TIME
 
-		local min, max = self:getProp():getBounds()
-		local size = max - min
-		local scale = 1.0 + size:getLength()
-		local attenuationWidth = self.MAX_ATTENUATION - self.MIN_ATTENUATION
-		local attenuation = love.math.random() * attenuationWidth + self.MAX_ATTENUATION
-		self.light:setAttenuation(attenuation)
+			local min, max = self:getProp():getBounds()
+			local size = max:distance(min)
+			local scale = 1.0 + size
+			local attenuationWidth = self.MAX_ATTENUATION - self.MIN_ATTENUATION
+			local attenuation = love.math.random() * attenuationWidth + self.MAX_ATTENUATION
+			self.light:setAttenuation(attenuation)
 
-		local brightnessWidth = self.MAX_COLOR_BRIGHTNESS - self.MIN_COLOR_BRIGHTNESS
-		local brightness = love.math.random() * brightnessWidth + self.MAX_COLOR_BRIGHTNESS
-		local color = Color(brightness * self.COLOR.r, brightness * self.COLOR.g, brightness * self.COLOR.b, 1)
-		self.light:setColor(color)
+			local brightnessWidth = self.MAX_COLOR_BRIGHTNESS - self.MIN_COLOR_BRIGHTNESS
+			local brightness = love.math.random() * brightnessWidth + self.MAX_COLOR_BRIGHTNESS
+			color:from(brightness * self.COLOR.r, brightness * self.COLOR.g, brightness * self.COLOR.b, 1)
+			self.light:setColor(color)
+		end
 	end
-end
 
 function FireView:tick()
 	PropView.tick(self)

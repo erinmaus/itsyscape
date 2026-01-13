@@ -101,18 +101,18 @@ function Cloud:new(prop, gameView)
 	self.currentSunPosition = Vector():keep()
 end
 
-function Cloud:_getWind()
-	return Vector(unpack(self:getProp():getState().wind or {}))
+function Cloud:_getWind(result)
+	return result:from(unpack(self:getProp():getState().wind or {}))
 end
 
-function Cloud:_getInColor()
+function Cloud:_getInColor(result)
 	local state = self:getProp():getState()
-	return Color(unpack(state.color or {}))
+	return result:from(unpack(state.color))
 end
 
-function Cloud:_getOutColor()
+function Cloud:_getOutColor(result)
 	local state = self:getProp():getState()
-	return Color(unpack(state.color or {}))
+	return result:from(unpack(state.color or {}))
 end
 
 function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
@@ -138,20 +138,14 @@ function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
 
 		cloud.position = position:keep()
 		cloud.radius = radius
+		cloud.wind = (cloud.wind or Vector()):from(wind:get())
 		cloud.wind = wind:keep()
-		cloud.inColor = inColor
-		cloud.outColor = outColor
+		cloud.inColor = (cloud.inColor or Color()):from(inColor:get())
+		cloud.outColor = (cloud.outColor or Color()):from(outColor:get())
 
 		cloud.node:initParticleSystemFromDef(cloudParticleSystemDef, self:getResources())
 
 		if not cloud.ready then
-			cloud.node:onWillRender(function(renderer, delta)
-				local shader = renderer:getCurrentShader()
-				if shader:hasUniform("scape_SunPosition") then
-					shader:send("scape_SunPosition", { self.previousSunPosition:lerp(self.currentSunPosition, delta):get() })
-				end
-			end)
-
 			cloud.node:getMaterial():setShader(Cloud.SHADER)
 			cloud.node:getMaterial():setIsFullLit(false)
 			cloud.node:getMaterial():setIsZWriteDisabled(false)
@@ -174,28 +168,35 @@ function Cloud:getIsStatic()
 	return false
 end
 
-function Cloud:tick()
-	PropView.tick(self)
+do
+	local wind = Vector()
+	local inColor = Color()
+	local outColor = Color()
+	local empty = {}
 
-	local state = self:getProp():getState()
+	function Cloud:tick()
+		PropView.tick(self)
 
-	self.currentSunPosition:copy(self.previousSunPosition)
+		local state = self:getProp():getState()
 
-	local currentSunPosition = state.sun and Vector(unpack(state.sun)) or Vector()
-	currentSunPosition:copy(self.currentSunPosition)
+		self.currentSunPosition:copy(self.previousSunPosition)
 
-	for _, cloudInfo in pairs(self.clouds) do
-		cloudInfo.visited = false
-	end
+		local currentSunPosition = state.sun and Vector(unpack(state.sun)) or Vector()
+		currentSunPosition:copy(self.currentSunPosition)
 
-	for _, cloudInfo in ipairs(state.clouds or {}) do
-		self:updateParticle(cloudInfo, self:_getWind(), self:_getInColor(), self:_getOutColor(), state.alpha or 0.5)
-	end
+		for _, cloudInfo in pairs(self.clouds) do
+			cloudInfo.visited = false
+		end
 
-	for id, cloudInfo in pairs(self.clouds) do
-		if not cloudInfo.visited then
-			self.clouds[id].node:setParent(nil)
-			self.clouds[id] = nil
+		for _, cloudInfo in ipairs(state.clouds or empty) do
+			self:updateParticle(cloudInfo, self:_getWind(wind), self:_getInColor(inColor), self:_getOutColor(outColor), state.alpha or 0.5)
+		end
+
+		for id, cloudInfo in pairs(self.clouds) do
+			if not cloudInfo.visited then
+				self.clouds[id].node:setParent(nil)
+				self.clouds[id] = nil
+			end
 		end
 	end
 end

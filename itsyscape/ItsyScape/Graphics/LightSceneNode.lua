@@ -13,6 +13,8 @@ local Color = require "ItsyScape.Graphics.Color"
 local Light = require "ItsyScape.Graphics.Light"
 local NLightSceneNode = require "nbunny.optimaus.scenenode.lightscenenode"
 
+local FULL_LIT = Color(1)
+
 -- Basic light Scene Node.
 local LightSceneNode = Class(SceneNode)
 
@@ -53,7 +55,7 @@ end
 --
 -- Does nothing if value is falsey.
 function LightSceneNode:setColor(value)
-	return self:getHandle():setCurrentColor((value or Color(1)):get())
+	return self:getHandle():setCurrentColor((value or FULL_LIT):get())
 end
 
 function LightSceneNode:getPreviousColor()
@@ -61,7 +63,7 @@ function LightSceneNode:getPreviousColor()
 end
 
 function LightSceneNode:setPreviousColor(value)
-	return self:getHandle():setPreviousColor((value or Color(1)):get())
+	return self:getHandle():setPreviousColor((value or FULL_LIT):get())
 end
 
 -- Converts the LightSceneNode to a Light object.

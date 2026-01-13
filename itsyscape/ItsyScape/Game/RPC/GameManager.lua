@@ -184,10 +184,7 @@ end
 
 function GameManager.Property:pull(field, e)
 	self.hasValue = true
-	local b = collectgarbage("count")
 	self.value = State.merge(e[field], self.value)
-	local a = collectgarbage("count")
-	print(">>>", self.instance:getInterface(), self.field, "kb", a - b)
 end
 
 GameManager.PropertyGroup = Class()

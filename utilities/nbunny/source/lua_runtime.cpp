@@ -15,6 +15,350 @@
 #include "nbunny/lua_runtime.hpp"
 #include "nbunny/game_manager.hpp"
 
+#include <iostream>
+
+struct LuaCallSample
+{
+    std::string filename;
+    int line = 0;
+
+    std::string name;
+    std::string id;
+
+    int depth = 0;
+
+    float memory_before = 0.0f;
+    float memory_after = 0.0f;
+
+    float time_before = 0.0f;
+    float time_after = 0.0f;
+
+    std::string traceback;
+};
+
+struct LuaUniqueCall
+{
+    float total_memory = 0.0f;
+    float total_time = 0.0f;
+};
+
+struct LuaCall
+{
+    std::string name;
+    float total_memory = 0.0f;
+    float total_time = 0.0f;
+
+    std::vector<LuaCallSample> samples;
+    std::unordered_map<std::string, LuaUniqueCall> unique_calls;
+};
+
+struct LuaCallsInfo
+{
+    int id = -1;
+
+    float total_time = 0.0f;
+    float total_memory = 0.0f;
+
+    std::unordered_map<std::string, LuaCall> calls;
+    std::vector<LuaCallSample> stack;
+};
+
+thread_local std::unordered_map<lua_State*, LuaCallsInfo> lua_calls;
+thread_local int lua_calls_info_id = 0;
+
+static float nbunny_lua_gc_count(lua_State* L)
+{
+    return (float)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0f;
+}
+
+static float nbunny_lua_get_time()
+{
+    auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
+    return (float)timer_instance->getTime();
+}
+
+static int nbunny_lua_get_depth(lua_State* L)
+{
+    int level = 1;
+    lua_Debug ar;
+
+    while (lua_getstack(L, level, &ar))
+    {
+        ++level;
+    }
+
+    return level;
+}
+
+static LuaCallsInfo* nbunny_lua_get_calls_info(lua_State* L)
+{
+    auto iter = lua_calls.find(L);
+    if (iter == lua_calls.end())
+    {
+        ++lua_calls_info_id;
+
+        LuaCallsInfo c;
+        c.id = lua_calls_info_id;
+
+        lua_calls.emplace(L, c);
+
+        iter = lua_calls.find(L);
+        if (iter == lua_calls.end())
+        {
+            return nullptr;
+        }
+    }
+
+    return &iter->second;
+}
+
+static std::string nbunny_lua_traceback(lua_State* L, int level)
+{
+    lua_Debug ar;
+    std::stringstream result;
+    while(lua_getstack(L, level, &ar))
+    {
+        lua_getinfo(L, "nSl", &ar);
+
+        if (ar.name != nullptr)
+        {
+            result << ar.name;
+        }
+        else if (ar.what != nullptr)
+        {
+            result << "#" << ar.what;
+        }
+        else
+        {
+            result << "?";
+        }
+
+        if (ar.source != nullptr && ar.source[0] == '@')
+        {
+            result << "@";
+            result << std::string(ar.source + 1);
+            result << ":";
+            result << ar.linedefined;
+        }
+        else
+        {
+            result << ar.short_src;
+        }
+
+        result << "\n";
+
+        ++level;
+    }
+
+    return result.str();
+}
+
+static void nbunny_lua_enter(lua_State* L, LuaCallsInfo& calls_info, int level, int depth)
+{
+    LuaCallSample sample;
+
+    lua_Debug ar;
+    if (!(lua_getstack(L, level, &ar) && lua_getinfo(L, "nSl", &ar)))
+    {
+        return;
+    }
+
+    if (ar.source && ar.source[0] == '@')
+    {
+        sample.filename = std::string(ar.source + 1);
+    }
+    else
+    {
+        sample.filename = ar.short_src;
+    }
+
+    std::stringstream id;
+    id << sample.filename << "@" << ar.linedefined;
+
+    sample.id = id.str();
+    sample.line = ar.linedefined;
+    sample.depth = depth;
+
+    sample.traceback = nbunny_lua_traceback(L, level);
+
+    if (ar.name)
+    {
+        sample.name = ar.name;
+    }
+    else
+    {
+        sample.name = std::string("*") + sample.id;
+    }
+
+    calls_info.stack.emplace_back(std::move(sample));
+
+    calls_info.stack.back().memory_before = nbunny_lua_gc_count(L);
+    calls_info.stack.back().time_before = nbunny_lua_get_time();
+}
+
+static void nbunny_lua_leave(lua_State* L, LuaCallsInfo& calls_info)
+{
+    auto time = nbunny_lua_get_time();
+
+    if (calls_info.stack.empty())
+    {
+        return;
+    }
+
+    auto top = calls_info.stack.back();
+    calls_info.stack.pop_back();
+
+    top.memory_after = nbunny_lua_gc_count(L);
+    top.time_after = time;
+
+    auto total_memory = top.memory_after - top.memory_before;
+    auto total_time = top.time_after - top.time_before;
+
+    calls_info.total_memory += total_memory;
+    calls_info.total_time += total_time;
+
+    auto& calls = calls_info.calls[top.id];
+    calls.name = top.name;
+    calls.total_time += total_time;
+    calls.total_memory += total_memory;
+
+    auto& unique_call = calls.unique_calls[top.traceback];
+    unique_call.total_time += total_time;
+    unique_call.total_memory += total_memory;
+
+    calls.samples.push_back(std::move(top));
+}
+
+static void nbunny_lua_hook(lua_State* L, lua_Debug* ar)
+{
+    if (ar->event != LUA_HOOKCOUNT)
+    {
+        return;
+    }
+
+    auto calls = nbunny_lua_get_calls_info(L);
+    if (!calls)
+    {
+        return;
+    }
+
+    int current_depth = nbunny_lua_get_depth(L);
+
+    int previous_depth = 0;
+    if (!calls->stack.empty())
+    {
+        previous_depth = calls->stack.back().depth;
+    }
+
+    if (current_depth > previous_depth)
+    {
+        for (int i = previous_depth + 1; i <= current_depth; ++i)
+        {
+            nbunny_lua_enter(L, *calls, current_depth - i + 1, i);
+        }
+    }
+    else if (current_depth < previous_depth)
+    {
+        for (int i = previous_depth; i >= current_depth + 1; --i)
+        {
+            nbunny_lua_leave(L, *calls);
+        }
+    }
+}
+
+static int nbunny_lua_profile_start(lua_State* L)
+{
+    lua_calls.clear();
+    lua_calls_info_id = 0;
+
+    lua_sethook(L, &nbunny_lua_hook, LUA_MASKCOUNT, 1);
+
+    return 0;
+}
+
+static int nbunny_lua_profile_stop(lua_State* L)
+{
+    lua_sethook(L, nullptr, 0, 0);
+
+    lua_newtable(L);
+    int calls_info_index = 1;
+    for (auto& i: lua_calls)
+    {
+        auto& calls_info = i.second;
+
+        lua_newtable(L);
+
+        lua_pushnumber(L, calls_info.id);
+        lua_setfield(L, -2, "id");
+
+        lua_pushnumber(L, calls_info.total_memory);
+        lua_setfield(L, -2, "memory");
+
+        lua_pushnumber(L, calls_info.total_time);
+        lua_setfield(L, -2, "time");
+
+        lua_newtable(L);
+        int calls_index = 1;
+        for (auto& j: calls_info.calls)
+        {
+            auto& id = j.first;
+            auto& call = j.second;
+
+            lua_newtable(L);
+
+            lua_pushlstring(L, id.data(), id.size());
+            lua_setfield(L, -2, "id");
+
+            lua_pushlstring(L, call.name.data(), call.name.size());
+            lua_setfield(L, -2, "name");
+
+            lua_pushnumber(L, call.total_memory);
+            lua_setfield(L, -2, "memory");
+
+            lua_pushnumber(L, call.total_time);
+            lua_setfield(L, -2, "time");
+
+            lua_pushnumber(L, call.samples.size());
+            lua_setfield(L, -2, "samples");
+
+            lua_newtable(L);
+            int unique_calls_index = 1;
+            for (auto& k: call.unique_calls)
+            {
+                auto& traceback = k.first;
+                auto& unique_call = k.second;
+
+                lua_newtable(L);
+
+                lua_pushlstring(L, traceback.data(), traceback.size());
+                lua_setfield(L, -2, "traceback");
+
+                lua_pushnumber(L, unique_calls_index);
+                lua_setfield(L, -2, "id");
+
+                lua_pushnumber(L, unique_call.total_memory);
+                lua_setfield(L, -2, "memory");
+
+                lua_pushnumber(L, unique_call.total_time);
+                lua_setfield(L, -2, "time");
+
+                lua_rawseti(L, -2, unique_calls_index);
+                ++unique_calls_index;
+            }
+            lua_setfield(L, -2, "unique");
+
+            lua_rawseti(L, -2, calls_index);
+            ++calls_index;
+        }
+        lua_setfield(L, -2, "calls");
+
+        lua_rawseti(L, -2, calls_info_index);
+        ++calls_info_index;
+    }
+
+    return 1;
+}
+
 struct FuncTime
 {
     double time = 0.0;
@@ -195,6 +539,12 @@ NBUNNY_EXPORT int luaopen_nbunny_luaruntime(lua_State* L)
     lua_pushcfunction(L, &nbunny_lua_runtime_stop_debug);
     lua_setfield(L, -2, "stopDebug");
 
+    lua_pushcfunction(L, &nbunny_lua_profile_start);
+    lua_setfield(L, -2, "startProfile");
+
+    lua_pushcfunction(L, &nbunny_lua_profile_stop);
+    lua_setfield(L, -2, "stopProfile");
+
     return 1;
 }
 
@@ -229,8 +579,8 @@ void nbunny::lua::pop_sub(lua_State* L)
         auto timer_instance = love::Module::getInstance<love::timer::Timer>(love::Module::M_TIMER);
         call.time = (timer_instance->getTime() - call.time) * 1000.0;
 
-        auto after_memory = call.memory = (double)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0;
-        call.memory = after_memory - call.memory;
+        auto memory_after = call.memory = (double)lua_gc(L, LUA_GCCOUNT, 0) + lua_gc(L, LUA_GCCOUNTB, 0) / 1024.0;
+        call.memory = memory_after - call.memory;
 
         luax_wrapper_debug_calls.push_back(call);
 

@@ -26,6 +26,27 @@ function Color:new(r, g, b, a)
 	self.a = math.max(math.min(a or 1), 0)
 end
 
+function Color:from(r, g, b, a)
+	a = a or 1
+	if r and g and b then
+		self.r = r
+		self.g = g
+		self.b = b
+	elseif r and not (g and b) then
+		self.r = r
+		self.g = r
+		self.b = r
+		self.a = a
+	else
+		self.r = r or 0
+		self.g = g or 0
+		self.b = b or 0
+		self.a = a or 1
+	end
+
+	return self
+end
+
 function Color.fromHexString(color, alpha)
 	local red, green, blue = color:match("(%x%x)(%x%x)(%x%x)")
 

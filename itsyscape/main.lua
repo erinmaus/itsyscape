@@ -404,12 +404,19 @@ function love.keypressed(...)
 			itsyrealm.graphics.disable()
 		elseif (select(1, ...) == "f6") then
 			if love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift') then
-				if isProfiling then
+				local mem = require("mem")
+				if not isProfiling then
+					_PROFILING = true
 					isProfiling = true
-					require("jit.p").stop()
+					mem:start()
 				else
+					_PROFILING = nil
 					isProfiling = false
-					require("jit.p").start("3lm1i1")
+					mem:stop()
+					mem:dump()
+
+					collectgarbage()
+					collectgarbage()
 				end
 			elseif love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
 				local file = love.filesystem.read("settings.cfg")
@@ -472,7 +479,9 @@ end
 
 function love.quit()
 	if isProfiling then
-		require("jit.p").stop()
+		local mem = require("mem")
+		mem:stop()
+		mem:dump()
 	end
 
 	local result = _APP:quit()
@@ -515,6 +524,8 @@ function love.quit()
 end
 
 function itsyrealm.errorhandler()
+	debug.sethook()
+
 	if not love.graphics then
 		return function()
 			return 1

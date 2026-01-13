@@ -68,7 +68,7 @@ end
 
 function Variables:new(filename)
 	self.filename = filename
-	self.modifiedTime = -1
+	self.modifiedTime = -math.huge
 	self.paths = {}
 
 	self:_tryUpdate()

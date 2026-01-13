@@ -510,6 +510,10 @@ function Application:processAdminEvents()
 end
 
 function Application:_collect()
+	if _PROFILING then
+		return
+	end
+
 	local step = (_CONF.clientGCStepMS or 2) / 1000
 
 	local startTime = love.timer.getTime()
@@ -1083,8 +1087,8 @@ local MEASURE_ROOT_FUNCS = {
 
 function Application:drawDebug()
 	if not _DEBUG or (not self.showDebug and not _MOBILE) then
-		--self:drawFPS()
-		--return
+		self:drawFPS()
+		return
 	end
 
 	love.graphics.setFont(self.defaultFont)

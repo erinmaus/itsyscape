@@ -195,8 +195,6 @@ function RemoteGameManager:_flush()
 		local e = self.pending[i]
 		self:markDirty(e)
 
-		print(">>> PROCESS", e.type, e.interface, e.id, e.property or e.callback)
-
 		if not (e.type == EventQueue.EVENT_TYPE_CREATE or e.type == EventQueue.EVENT_TYPE_DESTROY) then
 			self:process(e)
 		end
