@@ -103,13 +103,15 @@ function SkyCubeSceneNode:new()
 
 	self.currentTopClearColor = Color(0, 0, 0, 1)
 	self.previousTopClearColor = false
+	self.tickedTopClearColor = false
 
 	self.currentBottomClearColor = Color(0, 0, 0, 1)
-	self.previousBottomClearColor = false
+	self.previousBottomClearColor = Color(0, 0, 0, 1)
+	self.tickedBottomClearColor = false
 end
 
 function SkyCubeSceneNode:setTopClearColor(value)
-	self.currentTopClearColor = value
+	self.currentTopClearColor:from(value:get())
 end
 
 function SkyCubeSceneNode:getTopClearColor()
@@ -117,7 +119,11 @@ function SkyCubeSceneNode:getTopClearColor()
 end
 
 function SkyCubeSceneNode:setPreviousTopClearColor(value)
-	self.previousTopClearColor = value
+	if not value then
+		self.tickedTopClearColor = false
+	else
+		self.previousTopClearColor:from(value:get())
+	end
 end
 
 function SkyCubeSceneNode:getPreviousTopClearColor()
@@ -125,7 +131,7 @@ function SkyCubeSceneNode:getPreviousTopClearColor()
 end
 
 function SkyCubeSceneNode:setBottomClearColor(value)
-	self.currentBottomClearColor = value
+	self.currentBottomClearColor:from(value:get())
 end
 
 function SkyCubeSceneNode:getBottomClearColor()
@@ -133,7 +139,11 @@ function SkyCubeSceneNode:getBottomClearColor()
 end
 
 function SkyCubeSceneNode:setPreviousBottomClearColor(value)
-	self.previousBottomClearColor = value
+	if not value then
+		self.tickedBottomClearColor = false
+	else
+		self.previousBottomClearColor:from(value:get())
+	end
 end
 
 function SkyCubeSceneNode:getPreviousBottomClearColor()
@@ -141,33 +151,48 @@ function SkyCubeSceneNode:getPreviousBottomClearColor()
 end
 
 function SkyCubeSceneNode:tick(frameDelta)
-	self.previousTopClearColor = (self.previousTopClearColor or self.currentTopClearColor):lerp(self.currentTopClearColor, frameDelta)
-	self.previousBottomClearColor = (self.previousBottomClearColor or self.currentBottomClearColor):lerp(self.currentBottomClearColor, frameDelta)
+	local pb = self.tickedBottomClearColor and self.previousBottomClearColor or self.currentBottomClearColor
+	local pt = self.tickedTopClearColor and self.previousTopClearColor or self.currentTopClearColor
+
+	pt:lerp(self.currentTopClearColor, frameDelta, self.previousTopClearColor)
+	pb:lerp(self.currentBottomClearColor, frameDelta, self.previousBottomClearColor)
 
 	SceneNode.tick(self, frameDelta)
 end
 
-function SkyCubeSceneNode:draw(renderer, frameDelta)
-	local shader = renderer:getCurrentShader()
-	if shader then
-		if shader:hasUniform("scape_TopClearColor") then
-			local topClearColor = (self.previousTopClearColor or self.currentTopClearColor):lerp(self.currentTopClearColor, frameDelta)
-			shader:send("scape_TopClearColor", { topClearColor:get() })
+do
+	local topClearColor, bottomClearColor = Color(), Color()
+	local topClearColorUniform, bottomClearColorUniform = {}, {}
+	local identity = love.math.newTransform()
+
+	function SkyCubeSceneNode:draw(renderer, frameDelta)
+		local pb = self.tickedBottomClearColor and self.previousBottomClearColor or self.currentBottomClearColor
+		local pt = self.tickedTopClearColor and self.previousTopClearColor or self.currentTopClearColor
+		pt:lerp(self.currentTopClearColor, frameDelta, topClearColor)
+		pb:lerp(self.currentBottomClearColor, frameDelta, bottomClearColor)
+
+		topClearColorUniform[1], topClearColorUniform[2], topClearColorUniform[3], topClearColorUniform[4] = topClearColor:get()
+		bottomClearColorUniform[1], bottomClearColorUniform[2], bottomClearColorUniform[3], bottomClearColorUniform[4] = bottomClearColor:get()
+
+		local shader = renderer:getCurrentShader()
+		if shader then
+			if shader:hasUniform("scape_TopClearColor") then
+				shader:send("scape_TopClearColor", topClearColorUniform)
+			end
+
+			if shader:hasUniform("scape_BottomClearColor") then
+				shader:send("scape_BottomClearColor", bottomClearColorUniform)
+			end
+
+			if shader:hasUniform("scape_WorldMatrix") then
+				shader:send("scape_WorldMatrix", identity)
+			end
 		end
 
-		if shader:hasUniform("scape_BottomClearColor") then
-			local bottomClearColor = (self.previousBottomClearColor or self.currentBottomClearColor):lerp(self.currentBottomClearColor, frameDelta)
-			shader:send("scape_BottomClearColor", { bottomClearColor:get() })
-		end
-
-		if shader:hasUniform("scape_WorldMatrix") then
-			shader:send("scape_WorldMatrix", love.math.newTransform())
-		end
+		love.graphics.setFrontFaceWinding("cw")
+		love.graphics.draw(self.mesh)
+		love.graphics.setFrontFaceWinding("ccw")
 	end
-
-	love.graphics.setFrontFaceWinding("cw")
-	love.graphics.draw(self.mesh)
-	love.graphics.setFrontFaceWinding("ccw")
 end
 
 return SkyCubeSceneNode

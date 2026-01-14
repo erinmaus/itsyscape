@@ -354,8 +354,10 @@ do
 		result = result or Vector()
 
 		local rotation = self:getCombinedRotation(rotation):conjugate(inverseRotation)
-		local transformedZ = inverseRotation:transformVector(-Vector.UNIT_Z, forward):normalize(forward)
-		return transformedZ:negate(result)
+		forward:from(Vector.UNIT_Z:get()):negate(forward)
+
+		inverseRotation:transformVector(forward, forward):normalize(forward)
+		return forward:negate(result)
 	end
 end
 
@@ -396,7 +398,7 @@ do
 
 		result = result or Vector()
 		distance:from(self.distance)
-		return forward:product(distance, result):add(self.position)
+		return forward:product(distance, result):add(self.position, result)
 	end
 end
 

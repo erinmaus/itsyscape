@@ -15,7 +15,9 @@
 #include "nbunny/lua_runtime.hpp"
 #include "nbunny/game_manager.hpp"
 
-#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 struct LuaCallSample
 {
@@ -24,6 +26,8 @@ struct LuaCallSample
 
     std::string name;
     std::string id;
+
+    bool is_lua = false;
 
     int depth = 0;
 
@@ -40,11 +44,12 @@ struct LuaUniqueCall
 {
     float total_memory = 0.0f;
     float total_time = 0.0f;
+    int samples = 0;
 };
 
 struct LuaCall
 {
-    std::string name;
+    std::unordered_set<std::string> name;
     float total_memory = 0.0f;
     float total_time = 0.0f;
 
@@ -79,7 +84,7 @@ static float nbunny_lua_get_time()
 
 static int nbunny_lua_get_depth(lua_State* L)
 {
-    int level = 1;
+    int level = 0;
     lua_Debug ar;
 
     while (lua_getstack(L, level, &ar))
@@ -172,6 +177,11 @@ static void nbunny_lua_enter(lua_State* L, LuaCallsInfo& calls_info, int level, 
         sample.filename = ar.short_src;
     }
 
+    if (strcmp(ar.what, "Lua") || strcmp(ar.what, "main"))
+    {
+        sample.is_lua = true;
+    }
+
     std::stringstream id;
     id << sample.filename << "@" << ar.linedefined;
 
@@ -214,17 +224,35 @@ static void nbunny_lua_leave(lua_State* L, LuaCallsInfo& calls_info)
     auto total_memory = top.memory_after - top.memory_before;
     auto total_time = top.time_after - top.time_before;
 
-    calls_info.total_memory += total_memory;
-    calls_info.total_time += total_time;
+    if (calls_info.stack.empty())
+    {
+        calls_info.total_memory += total_memory;
+        calls_info.total_time += total_time;
+    }
 
     auto& calls = calls_info.calls[top.id];
-    calls.name = top.name;
-    calls.total_time += total_time;
-    calls.total_memory += total_memory;
+    calls.name.emplace(top.name);
+
+    bool is_in_stack = false;
+    for (auto& sample: calls_info.stack)
+    {
+        if (sample.id == top.id)
+        {
+            is_in_stack = true;
+            break;
+        }
+    }
+
+    if (!is_in_stack)
+    {
+        calls.total_time += total_time;
+        calls.total_memory += total_memory;
+    }
 
     auto& unique_call = calls.unique_calls[top.traceback];
     unique_call.total_time += total_time;
     unique_call.total_memory += total_memory;
+    ++unique_call.samples;
 
     calls.samples.push_back(std::move(top));
 }
@@ -254,7 +282,7 @@ static void nbunny_lua_hook(lua_State* L, lua_Debug* ar)
     {
         for (int i = previous_depth + 1; i <= current_depth; ++i)
         {
-            nbunny_lua_enter(L, *calls, current_depth - i + 1, i);
+            nbunny_lua_enter(L, *calls, current_depth - i, i);
         }
     }
     else if (current_depth < previous_depth)
@@ -294,7 +322,7 @@ static int nbunny_lua_profile_stop(lua_State* L)
         lua_pushnumber(L, calls_info.total_memory);
         lua_setfield(L, -2, "memory");
 
-        lua_pushnumber(L, calls_info.total_time);
+        lua_pushnumber(L, calls_info.total_time * 1000);
         lua_setfield(L, -2, "time");
 
         lua_newtable(L);
@@ -309,13 +337,20 @@ static int nbunny_lua_profile_stop(lua_State* L)
             lua_pushlstring(L, id.data(), id.size());
             lua_setfield(L, -2, "id");
 
-            lua_pushlstring(L, call.name.data(), call.name.size());
+            lua_newtable(L);
+            int calls_name_index = 1;
+            for (auto& name: call.name)
+            {
+                lua_pushlstring(L, name.data(), name.size());
+                lua_rawseti(L, -2, calls_name_index);
+                ++calls_name_index;
+            }
             lua_setfield(L, -2, "name");
 
             lua_pushnumber(L, call.total_memory);
             lua_setfield(L, -2, "memory");
 
-            lua_pushnumber(L, call.total_time);
+            lua_pushnumber(L, call.total_time * 1000);
             lua_setfield(L, -2, "time");
 
             lua_pushnumber(L, call.samples.size());
@@ -339,8 +374,11 @@ static int nbunny_lua_profile_stop(lua_State* L)
                 lua_pushnumber(L, unique_call.total_memory);
                 lua_setfield(L, -2, "memory");
 
-                lua_pushnumber(L, unique_call.total_time);
+                lua_pushnumber(L, unique_call.total_time * 1000);
                 lua_setfield(L, -2, "time");
+
+                lua_pushnumber(L, unique_call.samples);
+                lua_setfield(L, -2, "samples");
 
                 lua_rawseti(L, -2, unique_calls_index);
                 ++unique_calls_index;

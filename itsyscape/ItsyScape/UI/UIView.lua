@@ -99,7 +99,7 @@ end
 
 local _mode
 function itsyrealm.graphics.getScaledMode()
-	local currentWidth, currentHeight = love.window.getMode(_mode)
+	local currentWidth, currentHeight = love.graphics.getWidth(), love.graphics.getHeight()
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
 	local paddingX, paddingY = 0, 0
 

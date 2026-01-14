@@ -181,26 +181,26 @@ end
 Log.debug("ItsyRealm meta: %s", Log.dump(_ITSYREALM_META))
 require("jit").off()
 
-local _collectgarbage = collectgarbage
-local gcStops = 0
+-- local _collectgarbage = collectgarbage
+-- local gcStops = 0
 
-function collectgarbage(opt, arg)
-	if opt == "stop" then
-		if gcStops == 0 then
-			Log.info("Disabling garbage collector...")
-			_collectgarbage("stop")
-		end
+-- function collectgarbage(opt, arg)
+-- 	if opt == "stop" then
+-- 		if gcStops == 0 then
+-- 			Log.info("Disabling garbage collector...")
+-- 			_collectgarbage("stop")
+-- 		end
 
-		gcStops = gcStops + 1
-	elseif opt == "restart" then
-		assert(gcStops >= 1)
-		gcStops = math.max(gcStops - 1, 0)
+-- 		gcStops = gcStops + 1
+-- 	elseif opt == "restart" then
+-- 		assert(gcStops >= 1)
+-- 		gcStops = math.max(gcStops - 1, 0)
 
-		if gcStops == 0 then
-			Log.info("Enabling garbage collector...")
-			return _collectgarbage("restart")
-		end
-	else
-		return _collectgarbage(opt, arg)
-	end
-end
+-- 		if gcStops == 0 then
+-- 			Log.info("Enabling garbage collector...")
+-- 			return _collectgarbage("restart")
+-- 		end
+-- 	else
+-- 		return _collectgarbage(opt, arg)
+-- 	end
+-- end

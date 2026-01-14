@@ -762,6 +762,16 @@ const glm::vec3& nbunny::SceneNode::get_max() const
 	return max;
 }
 
+void nbunny::SceneNode::set_will_render(bool value)
+{
+	will_render = value;
+}
+
+bool nbunny::SceneNode::get_will_render() const
+{
+	return will_render;
+}
+
 float nbunny::SceneNode::calculate_screen_size_percent(const Camera& camera, float delta) const
 {
 	auto transform = camera.get_projection() * camera.get_view() * get_transform().get_global(delta);
@@ -2229,6 +2239,20 @@ static int nbunny_scene_node_get_max(lua_State* L)
 	return 3;
 }
 
+static int nbunny_scene_node_set_will_render(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	node->set_will_render(lua_toboolean(L, 2));
+	return 0;
+}
+
+static int nbunny_scene_node_get_will_render(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	lua_pushboolean(L, node->get_will_render());
+	return 1;
+}
+
 static int nbunny_scene_node_tick(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
@@ -2335,6 +2359,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 		{ "setMin", &nbunny_scene_node_set_min },
 		{ "getMax", &nbunny_scene_node_get_max },
 		{ "setMax", &nbunny_scene_node_set_max },
+		{ "getWillRender", &nbunny_scene_node_get_will_render },
+		{ "setWillRender", &nbunny_scene_node_set_will_render },
 		{ "tick", &nbunny_scene_node_tick },
 		{ "tickChildren", &nbunny_scene_node_tick_children },
 		{ "frame", &nbunny_scene_node_frame },

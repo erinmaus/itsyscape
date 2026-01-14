@@ -321,7 +321,14 @@ end
 
 function Application:measure(name, func, ...)
 	if not _DEBUG then
+		local before = love.timer.getTime()
 		func(...)
+		local after = love.timer.getTime()
+		if name == "love.update()" or name == "love.draw()" then
+			if (after - before) * 1000 > 20 then
+				print(">>> um...", name, (after - before) * 1000)
+			end
+		end
 		return
 	end
 
@@ -509,17 +516,54 @@ function Application:processAdminEvents()
 	until not event
 end
 
+local BX = 0
+local TX = love.timer.getTime()
+
 function Application:_collect()
 	if _PROFILING then
 		return
 	end
 
-	local step = (_CONF.clientGCStepMS or 2) / 1000
+	local step = (_CONF.clientGCStepMS or 0.5) / 1000
 
+	local before = collectgarbage("count")
 	local startTime = love.timer.getTime()
+	local collected = false
+	local max = 0
+	local t = 0
 	while love.timer.getTime() < startTime + step do
-		collectgarbage("step", 50)
+		local b = love.timer.getTime()
+		local b2 = collectgarbage("count")
+		collected = collected or collectgarbage("step", 0)
+		local a2 = collectgarbage("count")
+		BX = BX+ math.abs(math.min(a2 - b2, 0))
+		local a = love.timer.getTime()
+		max = math.max((a - b) * 1000, max)
+		t = t + (a - b)
 	end
+	local endTime = love.timer.getTime()
+
+	if collected then
+		print("collected", BX, "kb")
+		print("time", love.timer.getTime() - TX, "seconds")
+
+		TX = love.timer.getTime()
+		BX = 0
+	end
+
+	if endTime - startTime > 5 / 1000 or collected then
+		-- print(">>> over", (endTime - startTime) * 1000, "t", t * 1000)
+		-- print(">>> memory collected", (before - collectgarbage("count")) / 1024)
+		-- print(">>>", collected and "DID A COLLECT" or "no collection")
+		-- print("max", max)
+		-- print()
+	else
+		local c = before - collectgarbage("count")
+		if c > 0 then
+			--print(">>> collected", c / 1024, "in", endTime - startTime)
+		end
+	end
+	collectgarbage("stop")
 end
 
 function Application:update(delta)

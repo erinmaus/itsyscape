@@ -86,9 +86,15 @@ end
 -- Lerps two colors by delta.
 --
 -- delta is clamped to 0 .. 1 inclusive.
-function Color:lerp(other, delta)
+
+function Color:lerp(other, delta, result)
+	result = result or Color()
 	delta = math.max(math.min(delta, 1), 0)
-	return self * (1 - delta) + other * delta
+	return result:from(
+		self.r * (1 - delta) + other.r * delta,
+		self.g * (1 - delta) + other.g * delta,
+		self.b * (1 - delta) + other.b * delta,
+		self.a * (1 - delta) + other.a * delta)
 end
 
 -- Gets the components of the color in the order red, green, blue, and alpha.

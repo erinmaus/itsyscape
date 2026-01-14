@@ -16,18 +16,27 @@ local BaseQuaternion, Metatable = Class()
 local Quaternion = Pool.wrap(BaseQuaternion)
 
 -- Creates a quaternion from an axis and angle.
-function BaseQuaternion.fromAxisAngle(axis, angle, result)
-	axis:compatible()
+do
+	local scale = Vector()
+	local axisNormal = Vector()
+	local xyz = Vector()
 
-	local halfAngle = angle * 0.5
-	local halfAngleSine = math.sin(halfAngle)
-	local halfAngleCosine = math.cos(halfAngle)
+	function BaseQuaternion.fromAxisAngle(axis, angle, result)
+		axis:compatible()
 
-	local xyz = axis:getNormal() * halfAngleSine
-	local w = halfAngleCosine
+		local halfAngle = angle * 0.5
+		local halfAngleSine = math.sin(halfAngle)
+		local halfAngleCosine = math.cos(halfAngle)
 
-	result = result or Quaternion()
-	return result:from(xyz.x, xyz.y, xyz.z, w)
+		scale:from(halfAngleSine)
+		axis:normalize(axisNormal)
+		axisNormal:product(scale, xyz)
+
+		local w = halfAngleCosine
+
+		result = result or Quaternion()
+		return result:from(xyz.x, xyz.y, xyz.z, w)
+	end
 end
 
 local E = 0.00001

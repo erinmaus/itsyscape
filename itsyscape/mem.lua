@@ -44,7 +44,23 @@ function mem:dump(filename)
 	for _, info in ipairs(mem.info) do
 		table.sort(info.calls, _sort)
 
+
 		for _, call in ipairs(info.calls) do
+			table.sort(call.name)
+
+			local filename, line = call.id:match("^(.*)@(%d+)$")
+			if filename and line then
+				local file = love.filesystem.read(filename)
+				if file then
+					local lines = {}
+					file:gsub("([^\n]*)\n", function(s)
+						table.insert(lines, s)
+					end)
+
+					call.source = lines[tonumber(line)]
+				end
+			end
+
 			table.sort(call.unique, _sort)
 		end
 	end

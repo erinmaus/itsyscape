@@ -242,8 +242,6 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	root_node = nullptr;
 }
 
-#include <iostream>
-
 void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 {
 	auto graphics = love::Module::getInstance<love::graphics::Graphics>(love::Module::M_GRAPHICS);
@@ -353,28 +351,31 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	}
 	else
 	{
-		if (node.get_reference(L))
+		if (node.get_will_render())
 		{
-			lua_getfield(L, -1, "willRender");
-			if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
+			if (node.get_reference(L))
 			{
-				get_weak_reference(L, reference);
-				if (!lua_isnil(L, -1))
+				lua_getfield(L, -1, "willRender");
+				if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
 				{
-					lua_pushnumber(L, delta);
-					lua_call(L, 2, 0);
+					get_weak_reference(L, reference);
+					if (!lua_isnil(L, -1))
+					{
+						lua_pushnumber(L, delta);
+						lua_call(L, 2, 0);
+					}
+					else
+					{
+						lua_pop(L, 1);
+					}
 				}
 				else
 				{
 					lua_pop(L, 1);
 				}
 			}
-			else
-			{
-				lua_pop(L, 1);
-			}
+			lua_pop(L, 1);
 		}
-		lua_pop(L, 1);
 
 		if (!node.is_base_type())
 		{

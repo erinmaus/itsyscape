@@ -503,7 +503,7 @@ static int nbunny_pooled_buffer_encode_impl(lua_State* L)
 
 static void nbunny_pooled_buffer_decode_impl_init_metatable_upvalue(lua_State* L, nbunny::PooledBuffer& p)
 {
-	//nbunny_buffer_clear_table(L, p, lua_upvalueindex(DECODE_UPVALUE_OBJECT_METATABLES));
+	nbunny_buffer_clear_table(L, p, lua_upvalueindex(DECODE_UPVALUE_OBJECT_METATABLES));
 
 	lua_getfield(L, 3, "metatable");
 	if (lua_isnil(L, -1))
@@ -512,7 +512,7 @@ static void nbunny_pooled_buffer_decode_impl_init_metatable_upvalue(lua_State* L
 		return;
 	}
 
-	lua_newtable(L);
+	lua_pushvalue(L, lua_upvalueindex(DECODE_UPVALUE_OBJECT_METATABLES));
 	lua_insert(L, DECODE_UPVALUE_OBJECT_METATABLES);
 
 	std::size_t metatable_length = lua_objlen(L, -1);
@@ -527,7 +527,7 @@ static void nbunny_pooled_buffer_decode_impl_init_metatable_upvalue(lua_State* L
 
 static void nbunny_pooled_buffer_decode_impl_init_proxy_upvalue(lua_State* L, nbunny::PooledBuffer& p)
 {
-	//nbunny_buffer_clear_table(L, p, lua_upvalueindex(DECODE_UPVALUE_PROXY_METATABLES));
+	nbunny_buffer_clear_table(L, p, lua_upvalueindex(DECODE_UPVALUE_PROXY_METATABLES));
 
 	lua_getfield(L, 3, "proxy");
 	if (lua_isnil(L, -1))
@@ -536,7 +536,7 @@ static void nbunny_pooled_buffer_decode_impl_init_proxy_upvalue(lua_State* L, nb
 		return;
 	}
 
-	lua_newtable(L);
+	lua_pushvalue(L, lua_upvalueindex(DECODE_UPVALUE_PROXY_METATABLES));
 	lua_insert(L, DECODE_UPVALUE_PROXY_METATABLES);
 
 	lua_pushnil(L);

@@ -14,6 +14,7 @@ local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Tween = require "ItsyScape.Common.Math.Tween"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local RPCState = require "ItsyScape.Game.RPC.State"
 local ActorView = require "ItsyScape.Graphics.ActorView"
@@ -532,8 +533,9 @@ function GameView:_getLargeTileSet(tileSet, map)
 	return result
 end
 
+local EMPTY_META = {}
 function GameView:addMap(map, layer, tileSetID, mask, meta)
-	meta = RPCState.merge(meta)
+	meta = RPCState.merge(meta or EMPTY_META)
 
 	local filename = false
 	if type(map) == 'string' then
@@ -1537,154 +1539,167 @@ function GameView:_isPlayerInBuilding()
 	return tile:hasFlag("building")
 end
 
-function GameView:_updateMapNodeWallHack(m, delta)
-	local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
-	wallHackEnabled = wallHackEnabled and self:_isPlayerInBuilding()
-	wallHackEnabled = wallHackEnabled and self:getCamera():getIsWallHackEnabled()
+do
+	local _translation = Vector()
+	local rotation = Quaternion()
+	local up = Vector()
 
-	local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 4, 4, 4, 2, 0
-	local isMapWallhackEnabled = false
-	if wallHackEnabled and not self:_getIsMapEditor() then
-		if m.meta and type(m.meta.wallHack) == "table" then
-			wallHackLeft = m.meta.wallHack.left or wallHackLeft
-			wallHackRight = m.meta.wallHack.right or wallHackRight
-			wallHackTop = m.meta.wallHack.top or wallHackTop
-			wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
-			wallHackNear = m.meta.wallHack.near or wallHackNear
-			isMapWallhackEnabled = not not m.meta.wallHack.map
+	function GameView:_updateMapNodeWallHack(m, delta)
+		local wallHackEnabled = m.wallHackEnabled == nil or m.wallHackEnabled
+		wallHackEnabled = wallHackEnabled and self:_isPlayerInBuilding()
+		wallHackEnabled = wallHackEnabled and self:getCamera():getIsWallHackEnabled()
+
+		local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 4, 4, 4, 2, 0
+		local isMapWallhackEnabled = false
+		if wallHackEnabled and not self:_getIsMapEditor() then
+			if m.meta and type(m.meta.wallHack) == "table" then
+				wallHackLeft = m.meta.wallHack.left or wallHackLeft
+				wallHackRight = m.meta.wallHack.right or wallHackRight
+				wallHackTop = m.meta.wallHack.top or wallHackTop
+				wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
+				wallHackNear = m.meta.wallHack.near or wallHackNear
+				isMapWallhackEnabled = not not m.meta.wallHack.map
+			end
 		end
-	end
 
-	local isGlobalWallHack = false
-	if wallHackEnabled then
-		local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
-		if playerActor then
-			local _, _, layer = playerActor:getTile()
+		local isGlobalWallHack = false
+		if wallHackEnabled then
+			local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+			if playerActor then
+				local _, _, layer = playerActor:getTile()
 
-			local hasLink = false
-			do
-				local otherM = self.mapMeshes[layer]
-				if otherM then
-					for i = 1, #m.links do
-						local link = m.links[i]
-						if otherM.localLayer == link and otherM.group == m.group then
-							hasLink = true
-							break
+				local hasLink = false
+				do
+					local otherM = self.mapMeshes[layer]
+					if otherM then
+						for i = 1, #m.links do
+							local link = m.links[i]
+							if otherM.localLayer == link and otherM.group == m.group then
+								hasLink = true
+								break
+							end
 						end
+					end
+				end
+
+				isGlobalWallHack = not hasLink and m.layer ~= layer
+
+				if isGlobalWallHack and m.meta and type(m.meta.wallHack) == "table" then
+					wallHackEnabled = not not m.meta.wallHack.global
+				end
+			end
+		end
+
+		local globalTransform = m.node:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		MathCommon.decomposeTransform(globalTransform, _translation, rotation)
+		rotation:transformVector(Vector.UNIT_Y, up):normalize(up)
+
+		local wallHackParameters = m.wallHackParameters
+		local time = math.min((wallHackParameters and wallHackParameters.time or 0) + delta, self.WALL_HACK_EXPAND_DURATION)
+
+		if not wallHackParameters or m.wallHackDirty or self.forceDirtyWallHack or
+		   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
+		   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
+		   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or
+		   wallHackParameters.time ~= time or
+		   wallHackParameters.enabled ~= wallHackEnabled
+		then
+			if wallHackParameters and wallHackEnabled ~= wallHackParameters.enabled then
+				time = self.WALL_HACK_EXPAND_DURATION - time
+			end
+
+			wallHackParameters = wallHackParameters or {}
+			wallHackParameters.left = wallHackLeft
+			wallHackParameters.right = wallHackRight
+			wallHackParameters.top = wallHackTop
+			wallHackParameters.bottom = wallHackBottom
+			wallHackParameters.near = wallHackNear
+			wallHackParameters.up = up
+			wallHackParameters.time = time
+			wallHackParameters.enabled = wallHackEnabled
+
+			if not (wallHackParameters.enabled or wallHackParameters.time < self.WALL_HACK_EXPAND_DURATION) then
+				wallHackLeft = 0
+				wallHackRight = 0
+				wallHackTop = 0
+				wallHackBottom = 0
+				wallHackNear = 0
+			end
+
+			local mu = Tween.sineEaseOut(time / self.WALL_HACK_EXPAND_DURATION)
+			if not wallHackEnabled then
+				mu = 1 - mu
+			end
+
+			local currentWallHackLeft = math.lerp(0, wallHackLeft, mu)
+			local currentWallHackRight = math.lerp(0, wallHackRight, mu)
+			local currentWallHackTop = math.lerp(0, wallHackTop, mu)
+			local currentWallHackBottom = math.lerp(0, wallHackBottom, mu)
+			local currentWallHackNear = math.lerp(0, wallHackNear, mu)
+
+			m.wallHackParameters = wallHackParameters
+			m.wallHackDirty = false
+
+			if isGlobalWallHack then
+				m.node:getMaterial():setIsGlobalWallHackEnabled(wallHackEnabled and isMapWallhackEnabled)
+				m.node:getMaterial():setGlobalWallHackWindow(currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+			else
+				m.node:getMaterial():setIsGlobalWallHackEnabled(false)
+
+				if isMapWallhackEnabled then
+					for _, part in ipairs(m.parts) do
+						local material = part.node:getMaterial()
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
+					end
+				else
+					for _, part in ipairs(m.parts) do
+						local material = part.node:getMaterial()
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
 					end
 				end
 			end
 
-			isGlobalWallHack = not hasLink and m.layer ~= layer
-
-			if isGlobalWallHack and m.meta and type(m.meta.wallHack) == "table" then
-				wallHackEnabled = not not m.meta.wallHack.global
+			for decoration in pairs(m.wallHackDecorations) do
+				local material = decoration:getMaterial()
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 			end
-		end
-	end
-
-	local globalTransform = m.node:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
-	local _, rotation = MathCommon.decomposeTransform(globalTransform)
-	local up = rotation:transformVector(Vector.UNIT_Y):getNormal()
-
-	local wallHackParameters = m.wallHackParameters
-	local time = math.min((wallHackParameters and wallHackParameters.time or 0) + delta, self.WALL_HACK_EXPAND_DURATION)
-
-	if not wallHackParameters or m.wallHackDirty or self.forceDirtyWallHack or
-	   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
-	   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
-	   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or
-	   wallHackParameters.time ~= time or
-	   wallHackParameters.enabled ~= wallHackEnabled
-	then
-		if wallHackParameters and wallHackEnabled ~= wallHackParameters.enabled then
-			time = self.WALL_HACK_EXPAND_DURATION - time
-		end
-
-		wallHackParameters = wallHackParameters or {}
-		wallHackParameters.left = wallHackLeft
-		wallHackParameters.right = wallHackRight
-		wallHackParameters.top = wallHackTop
-		wallHackParameters.bottom = wallHackBottom
-		wallHackParameters.near = wallHackNear
-		wallHackParameters.up = up:keep(wallHackParameters.up)
-		wallHackParameters.time = time
-		wallHackParameters.enabled = wallHackEnabled
-
-		if not (wallHackParameters.enabled or wallHackParameters.time < self.WALL_HACK_EXPAND_DURATION) then
-			wallHackLeft = 0
-			wallHackRight = 0
-			wallHackTop = 0
-			wallHackBottom = 0
-			wallHackNear = 0
-		end
-
-		local mu = Tween.sineEaseOut(time / self.WALL_HACK_EXPAND_DURATION)
-		if not wallHackEnabled then
-			mu = 1 - mu
-		end
-
-		local currentWallHackLeft = math.lerp(0, wallHackLeft, mu)
-		local currentWallHackRight = math.lerp(0, wallHackRight, mu)
-		local currentWallHackTop = math.lerp(0, wallHackTop, mu)
-		local currentWallHackBottom = math.lerp(0, wallHackBottom, mu)
-		local currentWallHackNear = math.lerp(0, wallHackNear, mu)
-
-		m.wallHackParameters = wallHackParameters
-		m.wallHackDirty = false
-
-		if isGlobalWallHack then
-			m.node:getMaterial():setIsGlobalWallHackEnabled(wallHackEnabled and isMapWallhackEnabled)
-			m.node:getMaterial():setGlobalWallHackWindow(currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
-		else
-			m.node:getMaterial():setIsGlobalWallHackEnabled(false)
-
-			if isMapWallhackEnabled then
-				for _, part in ipairs(m.parts) do
-					local material = part.node:getMaterial()
-					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
-					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
-					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
-				end
-			else
-				for _, part in ipairs(m.parts) do
-					local material = part.node:getMaterial()
-					material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
-					material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
-					material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
-				end
-			end
-		end
-
-		for decoration in pairs(m.wallHackDecorations) do
-			local material = decoration:getMaterial()
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
-			material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 		end
 	end
 end
 
-function GameView:_updateMapWater(m, delta)
-	local waterRimColor
-	if not (m.currentSkyProperties and m.previousSkyProperties) then
-		waterRimColor = Color(1, 1, 1, 1)
-	else
-		local previousAmbientColor = Color(unpack(m.previousSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
-		local currentAmbientColor = Color(unpack(m.currentSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
+do
+	local waterRimColor = Color()
+	local previousAmbientColor = Color()
+	local currentAmbientColor = Color()
+	function GameView:_updateMapWater(m, delta)
+		if not (m.currentSkyProperties and m.previousSkyProperties) then
+			waterRimColor:from(1, 1, 1, 1)
+		else
+			previousAmbientColor:from(unpack(m.previousSkyProperties.currentAmbientColor))
+			previousAmbientColor.a = 1
 
-		waterRimColor = previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta())
-	end
+			currentAmbientColor:from(unpack(m.currentSkyProperties.currentAmbientColor))
+			currentAmbientColor.a = 1
 
-	local windDirection, windSpeed, windPattern = self:getWind(m.layer)
+			previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta(), waterRimColor)
+		end
 
-	for _, water in ipairs(m.water) do
-		local material = water.node:getMaterial()
-		material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
+		local windDirection, windSpeed, windPattern = self:getWind(m.layer)
 
-		material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
-		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
-		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+		for _, water in ipairs(m.water) do
+			local material = water.node:getMaterial()
+			material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
+
+			material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
+			material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+			material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+		end
 	end
 end
 

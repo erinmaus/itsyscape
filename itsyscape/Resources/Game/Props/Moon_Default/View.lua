@@ -122,21 +122,24 @@ function Moon:load()
 		end)
 end
 
-function Moon:_updateColor()
-	local state = self:getProp():getState()
-	if state.color then
-		local color = Color(unpack(state.color))
+do
+	local color = Color()
+	function Moon:_updateColor()
+		local state = self:getProp():getState()
+		if state.color then
+			color:from(unpack(state.color))
 
-		if self.moonExterior then
-			self.moonExterior:getMaterial():setColor(Color(1, 1, 1, color.a))
-		end
+			if self.moonExterior then
+				self.moonExterior:getMaterial():setAlpha(color.a)
+			end
 
-		if self.moonInterior then
-			self.moonInterior:getMaterial():setColor(color)
-		end
+			if self.moonInterior then
+				self.moonInterior:getMaterial():setColor(color)
+			end
 
-		if self.particles then
-			self.particles:getMaterial():setColor(color)
+			if self.particles then
+				self.particles:getMaterial():setColor(color)
+			end
 		end
 	end
 end

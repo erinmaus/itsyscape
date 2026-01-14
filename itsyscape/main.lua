@@ -408,6 +408,7 @@ function love.keypressed(...)
 				if not isProfiling then
 					_PROFILING = true
 					isProfiling = true
+
 					mem:start()
 				else
 					_PROFILING = nil
@@ -565,7 +566,7 @@ function itsyrealm.errorhandler()
 
 	local width, height, scale
 	do
-		local s, w, h, scaleX, scaleY = pcall(love.graphics.getScaledMode)
+		local s, w, h, scaleX, scaleY = pcall(itsyrealm.graphics.getScaledMode)
 		if s then
 			scale = math.min(scaleX, scaleY)
 			width = love.graphics.getWidth() / scale

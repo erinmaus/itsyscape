@@ -868,7 +868,6 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 	   (a.instance and definition:getResource():getFadesIn())
 	then
 		a.next = {
-			cacheRef = animation:clone(),
 			definition = definition:getResource(),
 			priority = priority,
 			time = time
@@ -879,7 +878,6 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 			a.instance:stop()
 		end
 
-		a.cacheRef = animation:clone()
 		a.definition = definition:getResource()
 		a.instance = self.instances[animation:getFilename()] or a.definition:play(self.animatable)
 		a.time = time or 0
@@ -1292,13 +1290,13 @@ end
 function ActorView:face(direction, rotation)
 	if not rotation then
 		if math.sign(direction.x) < 0 then
-			rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi)
+			self.rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi, self.rotation)
 		else
-			rotation = Quaternion.IDENTITY
+			self.rotation:from(Quaternion.IDENTITY:get())
 		end
+	else
+		self.rotation:from(rotation:get())
 	end
-
-	self.rotation = rotation:keep()
 end
 
 function ActorView:damage(damageType, damage)
@@ -1511,7 +1509,6 @@ end
 function ActorView:nextAnimation(animation)
 	local oldID = animation.id
 
-	animation.cacheRef = animation.next.cacheRef
 	animation.definition = animation.next.definition
 	animation.instance = animation.definition:play(self.animatable)
 	animation.time = animation.next.time or 0

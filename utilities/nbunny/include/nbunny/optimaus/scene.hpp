@@ -244,6 +244,8 @@ namespace nbunny
 
 		std::vector<SceneNode*> pending_scene_nodes;
 
+		bool will_render = false;
+
 	public:
 		static const Type<SceneNode> type_pointer;
 
@@ -290,6 +292,9 @@ namespace nbunny
 		virtual void before_draw(Renderer& renderer, float delta);
 		virtual void draw(Renderer& renderer, float delta);
 		virtual void after_draw(Renderer& renderer, float delta);
+
+		void set_will_render(bool value);
+		bool get_will_render() const;
 
 		static void collect(
 			SceneNode& node,
