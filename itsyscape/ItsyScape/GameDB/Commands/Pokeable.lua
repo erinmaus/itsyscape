@@ -30,7 +30,7 @@ local Class = require "ItsyScape.Common.Class"
 --
 -- When instantiated, a Resource of type X with name "Foo" is created in the
 -- GameDB, with a connected Action of type Y.
-local Pokeable, Metatable = Class(Pokeable)
+local Pokeable, Metatable = Class()
 
 function Pokeable:new()
 	-- Nothing.
@@ -41,6 +41,10 @@ end
 -- Should return either a Mapp object (e.g., Mapp.Action, Mapp.Resource, ...) or
 -- a boolean value indicating whether or not the Pokeable was instantiated.
 function Pokeable:instantiate(brochure)
+	return Class.ABSTRACT()
+end
+
+function Pokeable:clean()
 	return Class.ABSTRACT()
 end
 

@@ -149,6 +149,8 @@ function CutsceneTransition:update(delta)
 			if self.totalTime > (minDuration - CutsceneTransition.FADE_DURATION_SECONDS) then
 				self.time = 0
 				self.isFadingOut = true
+
+				collectgarbage()
 				
 				self:sendPoke("close", nil, {})
 			end

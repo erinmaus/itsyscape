@@ -52,6 +52,7 @@ function Renderer:new(conf)
 	conf = conf or {}
 
 	self._renderer = NRenderer(self)
+	self._camera = self._renderer:getCamera()
 	self._time = love.timer.getTime()
 
 	local shadowsEnabled = not conf or (conf.shadows == nil or conf.shadows == true or (type(conf.shadows) == "number" and conf.shadows >= 1))
@@ -118,11 +119,11 @@ function Renderer:getHandle()
 end
 
 function Renderer:getCullEnabled()
-	return self._renderer:getCamera():getIsCullEnabled()
+	return self._camera:getIsCullEnabled()
 end
 
 function Renderer:setCullEnabled(value)
-	return self._renderer:getCamera():setIsCullEnabled(value or false)
+	return self._camera:setIsCullEnabled(value or false)
 end
 
 function Renderer:getClearColor()
@@ -188,20 +189,20 @@ do
 			local normal = clipPlaneNormal:getNormal()
 			local d = -normal:dot(clipPlanePosition)
 
-			self._renderer:getCamera():setClipPlane(normal.x, normal.y, normal.z, d)
+			self._camera:setClipPlane(normal.x, normal.y, normal.z, d)
 		else
-			self._renderer:getCamera():unsetClipPlane()
+			self._camera:unsetClipPlane()
 		end
 
-		self._renderer:getCamera():update(view, projection)
-		self._renderer:getCamera():setFieldOfView(self.camera:getFieldOfView())
-		self._renderer:getCamera():setNear(self.camera:getNear())
-		self._renderer:getCamera():setFar(self.camera:getFar())
-		self._renderer:getCamera():moveEye(eye:get())
-		self._renderer:getCamera():moveTarget(target:get())
-		self._renderer:getCamera():direction(forward:get())
-		self._renderer:getCamera():rotate(rotation:get())
-		self._renderer:getCamera():updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
+		self._camera:update(view, projection)
+		self._camera:setFieldOfView(self.camera:getFieldOfView())
+		self._camera:setNear(self.camera:getNear())
+		self._camera:setFar(self.camera:getFar())
+		self._camera:moveEye(eye:get())
+		self._camera:moveTarget(target:get())
+		self._camera:direction(forward:get())
+		self._camera:rotate(rotation:get())
+		self._camera:updateBoundingSphere(boundingSpherePosition.x, boundingSpherePosition.y, boundingSpherePosition.z, boundingSphereRadius)
 
 		love.graphics.push("all")
 		self._renderer:draw(scene:getHandle(), delta, width, height)

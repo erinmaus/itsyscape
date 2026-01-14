@@ -837,7 +837,7 @@ function itsyrealm.graphics.stop()
 end
 
 function itsyrealm.graphics.clearPseudoScissor()
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getWidth(), love.graphics.getHeight()
 
 	graphicsState.pseudoScissor.n = 1
 	graphicsState.pseudoScissor[1][1] = 0

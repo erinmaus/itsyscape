@@ -136,6 +136,7 @@ function GameDB.create(inputFilename, outputFilename)
 		Log.error("Error instantiating GameDB: %s", r)
 	end
 
+	game:clean()
 	return GameDB(brochure, game:getRecordDefinitions(), game:getMeta()), game:getErrors()
 end
 
@@ -178,6 +179,7 @@ function GameDB:getRecords(name, t, limit)
 	-- after = love.timer.getTime()
 	-- --Log.info(">>> getRecords select %f", (after - before) * 1000)
 
+	-- return r
 	return self.brochure:selectMeta(name, t, limit)
 end
 

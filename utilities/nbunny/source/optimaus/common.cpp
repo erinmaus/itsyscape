@@ -10,8 +10,6 @@
 
 #include "nbunny/optimaus/common.hpp"
 
-#include <iostream>
-
 const static int WEAK_REFERENCE_KEY = 0;
 void nbunny::get_weak_reference_table(lua_State* L)
 {

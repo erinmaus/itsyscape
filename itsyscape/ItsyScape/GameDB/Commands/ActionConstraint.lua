@@ -58,4 +58,8 @@ function ActionConstraint:instantiate(brochure)
 	return true
 end
 
+function ActionConstraint:clean()
+	-- Nothing.
+end
+
 return ActionConstraint

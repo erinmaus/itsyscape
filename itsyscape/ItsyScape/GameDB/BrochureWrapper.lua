@@ -35,7 +35,10 @@ end
 function BrochureWrapper:_pullActionDefinitions()
 	for actionDefinition in self.brochure.actionDefinitions do
 		self.actionDefinitions[actionDefinition.name] = {
-			definition = actionDefinition,
+			definition = {
+				id = { value = actionDefinition.id.value },
+				name = actionDefinition.name
+			},
 			actions = {}
 		}
 	end
@@ -43,17 +46,33 @@ end
 
 function BrochureWrapper:_pullActions()
 	for action in self.brochure.actions do
+		local serializedAction = {
+			id = { value = action.id.value }
+		}
+
 		local actionDefinition = self.brochure:getActionDefinitionFromAction(action)
 
 		local requirementConstraints = {}
 		for requirement in self.brochure:getRequirements(action) do
-			table.insert(requirementConstraints, requirement)
+			local constraint = {
+				id = { value = requirement.id.value },
+				type = requirement.type,
+				count = requirement.count
+			}
+
+			table.insert(requirementConstraints, constraint)
 
 			local c = self.constraints[requirement.type] or {}
+			local resource = self.brochure:getConstraintResource(requirement)
+
 			c[requirement.id.value] = {
-				constraint = requirement,
-				action = action,
-				resource = self.brochure:getConstraintResource(requirement)
+				constraint = constraint,
+				action = serializedAction,
+				resource = {
+					id = { value = resource.id.value },
+					name = resource.name,
+					isSingleton = resource.isSingleton
+				}
 			}
 
 			self.constraints[requirement.type] = c
@@ -61,47 +80,77 @@ function BrochureWrapper:_pullActions()
 
 		local inputConstraints = {}
 		for input in self.brochure:getInputs(action) do
-			table.insert(inputConstraints, input)
+			local constraint = {
+				id = { value = input.id.value },
+				type = input.type,
+				count = input.count
+			}
+
+			table.insert(inputConstraints, constraint)
 
 			local c = self.constraints[input.type] or {}
+			local resource = self.brochure:getConstraintResource(input)
+
 			c[input.id.value] = {
-				constraint = input,
-				action = action,
-				resource = self.brochure:getConstraintResource(input)
+				constraint = constraint,
+				action = serializedAction,
+				resource = {
+					id = { value = resource.id.value },
+					name = resource.name,
+					isSingleton = resource.isSingleton
+				}
 			}
 			self.constraints[input.type] = c
 		end
 
 		local outputConstraints = {}
 		for output in self.brochure:getOutputs(action) do
-			table.insert(outputConstraints, output)
+			local constraint = {
+				id = { value = output.id.value },
+				type = output.type,
+				count = output.count
+			}
+
+			table.insert(outputConstraints, constraint)
 
 			local c = self.constraints[output.type] or {}
+			local resource = self.brochure:getConstraintResource(output)
+
 			c[output.id.value] = {
-				constraint = output,
-				action = action,
-				resource = self.brochure:getConstraintResource(output)
+				constraint = constraint,
+				action = serializedAction,
+				resource = {
+					id = { value = resource.id.value },
+					name = resource.name,
+					isSingleton = resource.isSingleton
+				}
 			}
 			self.constraints[output.type] = c
 		end
 
 		self.actions[action.id.value] = {
-			action = action,
-			definition = actionDefinition,
+			action = serializedAction,
+			definition = {
+				id = { value = actionDefinition.id.value },
+				name = actionDefinition.name
+			},
 			resources = {},
 			requirementConstraints = requirementConstraints,
 			inputConstraints = inputConstraints,
 			outputConstraints = outputConstraints
 		}
 
-		table.insert(self.actionDefinitions[actionDefinition.name].actions, { action = action })
+		table.insert(self.actionDefinitions[actionDefinition.name].actions, { action = serializedAction })
 	end
 end
 
 function BrochureWrapper:_pullResourceTypes()
 	for resourceType in self.brochure.resourceTypes do
 		self.resourceTypes[resourceType.name] = {
-			resourceType = resourceType,
+			resourceType = {
+				id = { value = resourceType.id.value },
+				name = resourceType.name
+			},
 			resources = {},
 			resourcesByName = {}
 		}
@@ -110,15 +159,24 @@ end
 
 function BrochureWrapper:_pullResources()
 	for resource in self.brochure.resources do
+		local serializedResource = {
+			id = { value = resource.id.value },
+			name = resource.name,
+			isSingleton = resource.isSingleton
+		}
+
 		local resourceType = self.brochure:getResourceTypeFromResource(resource)
 
 		self.resources[resource.id.value] = {
-			resource = resource,
-			resourceType = resourceType,
+			resource = serializedResource,
+			resourceType = {
+				id = { value = resourceType.id.value },
+				name = resourceType.name
+			},
 			actions = {}
 		}
 
-		table.insert(self.resourceTypes[resourceType.name].resources, { resource = resource })
+		table.insert(self.resourceTypes[resourceType.name].resources, { resource = serializedResource })
 
 		resourcesByName = self.resourceTypes[resourceType.name].resourcesByName[resource.name]
 		if not resourcesByName then
@@ -126,20 +184,36 @@ function BrochureWrapper:_pullResources()
 			self.resourceTypes[resourceType.name].resourcesByName[resource.name] = resourcesByName
 		end
 
-		table.insert(resourcesByName, { resource = resource })
+		table.insert(resourcesByName, { resource = serializedResource })
 	end
 end
 
 function BrochureWrapper:_connect()
 	for _, r in pairs(self.actions) do
-		for resource in self.brochure:findResourcesByAction(r.action) do
-			table.insert(r.resources, { resource = resource })
+		local action = Mapp.Action()
+		action.id = Mapp.ID(r.action.id.value)
+
+		for resource in self.brochure:findResourcesByAction(action) do
+			local serializedResource = {
+				id = { value = resource.id.value },
+				name = resource.name,
+				isSingleton = resource.isSingleton
+			}
+
+			table.insert(r.resources, { resource = serializedResource })
 		end
 	end
 
 	for _, r in pairs(self.resources) do
-		for action in self.brochure:findActionsByResource(r.resource) do
-			table.insert(r.actions, { action = action })
+		local resource = Mapp.Resource()
+		resource.id = Mapp.ID(r.resource.id.value)
+
+		for action in self.brochure:findActionsByResource(resource) do
+			local serializedAction = {
+				id = { value = action.id.value }
+			}
+
+			table.insert(r.actions, { action = serializedAction })
 		end
 	end
 end
@@ -154,7 +228,7 @@ function BrochureWrapper:tryGetActionDefinition(id, definition)
 		if r == nil then
 			return false
 		else
-			definition.id = r.definition.id
+			definition.id = Mapp.ID(r.definition.id.value)
 			definition.name = r.definition.name
 			return true
 		end
@@ -167,7 +241,7 @@ function BrochureWrapper:actionDefinitions()
 	return coroutine.wrap(function()
 		for _, d in pairs(self.actionDefinitions) do
 			local i = Mapp.ActionDefinition()
-			i.id = d.definition.id
+			i.id = Mapp.ID(d.definition.id.value)
 			i.name = d.definition.name
 			coroutine.yield(i)
 		end
@@ -183,7 +257,7 @@ function BrochureWrapper:tryGetAction(id, action)
 
 	local r = self.actions[id]
 	if r then
-		action.id = r.action.id
+		action.id = Mapp.ID(r.action.id.value)
 		return true, action
 	end
 
@@ -196,7 +270,7 @@ function BrochureWrapper:getActionDefinitionFromAction(action)
 
 	local r = self.actions[id]
 	if r then
-		definition.id = r.definition.id
+		definition.id = Mapp.ID(r.definition.id.value)
 		definition.name = r.definition.name
 
 		return definition
@@ -209,7 +283,7 @@ function BrochureWrapper:actions()
 	return coroutine.wrap(function()
 		for _, a in pairs(self.actions) do
 			local i = Mapp.Action()
-			i.id = a.action.id
+			i.id = Mapp.ID(a.action.id.value)
 			coroutine.yield(i)
 		end
 
@@ -223,7 +297,7 @@ function BrochureWrapper:findActionsByDefinition(definition)
 		if r then
 			for _, a in ipairs(r.actions) do
 				local i = Mapp.Action()
-				i.id = a.action.id
+				i.id = Mapp.ID(a.action.id.value)
 				coroutine.yield(i)
 			end
 		end
@@ -239,7 +313,7 @@ function BrochureWrapper:findActionsByResource(resource)
 		if r then
 			for _, a in pairs(r.actions) do
 				local i = Mapp.Action()
-				i.id = a.action.id
+				i.id = Mapp.ID(a.action.id.value)
 				coroutine.yield(i)
 			end
 		end
@@ -254,7 +328,7 @@ function BrochureWrapper:tryGetResourceType(id, resourceType)
 		if r == nil then
 			return false
 		else
-			resourceType.id = r.resourceType.id
+			resourceType.id = Mapp.ID(r.resourceType.id.value)
 			resourceType.name = r.resourceType.name
 			return true
 		end
@@ -269,7 +343,7 @@ function BrochureWrapper:getResourceTypeFromResource(resource)
 
 	local r = self.resources[id]
 	if r then
-		resourceType.id = r.resourceType.id
+		resourceType.id = Mapp.ID(r.resourceType.id.value)
 		resourceType.name = r.resourceType.name
 
 		return resourceType
@@ -282,7 +356,7 @@ function BrochureWrapper:resourceTypes()
 	return coroutine.wrap(function()
 		for _, d in pairs(self.resourceTypes) do
 			local i = Mapp.ResourceType()
-			i.id = d.resourceType.id
+			i.id = Mapp.ID(d.resourceType.id.value)
 			i.name = d.resourceType.name
 			coroutine.yield(i)
 		end
@@ -296,7 +370,7 @@ function BrochureWrapper:tryGetResource(id, resource)
 
 	local r = self.resources[id]
 	if r then
-		resource.id = resource.id
+		resource.id = Mapp.ID(resource.id.value)
 		resource.name = resource.name
 		resource.isSingleton = resource.isSingleton
 
@@ -310,7 +384,7 @@ function BrochureWrapper:resources()
 	return coroutine.wrap(function()
 		for _, r in pairs(self.resources) do
 			local i = Mapp.Resource()
-			i.id = r.resource.id
+			i.id = Mapp.ID(r.resource.id.value)
 			i.name = r.resource.name
 			i.isSingleton = r.resource.isSingleton
 			coroutine.yield(i)
@@ -327,7 +401,7 @@ function BrochureWrapper:findResourcesByAction(action)
 		if r then
 			for _, r in ipairs(r.resources) do
 				local i = Mapp.Resource()
-				i.id = r.resource.id
+				i.id = Mapp.ID(r.resource.id.value)
 				i.name = r.resource.name
 				i.isSingleton = r.resource.isSingleton
 				coroutine.yield(i)
@@ -344,7 +418,7 @@ function BrochureWrapper:findResourcesByType(resourceType)
 		if r then
 			for _, j in ipairs(r.resources) do
 				local i = Mapp.Resource()
-				i.id = j.resource.id
+				i.id = Mapp.ID(j.resource.id.value)
 				i.name = j.resource.name
 				i.isSingleton = j.resource.isSingleton
 				coroutine.yield(i)
@@ -361,9 +435,10 @@ function BrochureWrapper:findResourcesByNameAndType(name, resourceType)
 		if r then
 			for _, j in ipairs(r.resourcesByName[name] or {}) do
 				local i = Mapp.Resource()
-				i.id = j.resource.id
+				i.id = Mapp.ID(j.resource.id.value)
 				i.name = j.resource.name
 				i.isSingleton = j.resource.isSingleton
+				print(">>> name", i.name)
 				coroutine.yield(i)
 			end
 		end
@@ -379,7 +454,7 @@ function BrochureWrapper:getInputs(action)
 		if r then
 			for _, constraint in ipairs(r.inputConstraints) do
 				local i = Mapp.Constraint()
-				i.id = constraint.id
+				i.id = Mapp.ID(constraint.id.value)
 				i.type = constraint.type
 				i.count = constraint.count
 				coroutine.yield(i)
@@ -397,7 +472,7 @@ function BrochureWrapper:getOutputs(action)
 		if r then
 			for _, constraint in ipairs(r.outputConstraints) do
 				local i = Mapp.Constraint()
-				i.id = constraint.id
+				i.id = Mapp.ID(constraint.id.value)
 				i.type = constraint.type
 				i.count = constraint.count
 				coroutine.yield(i)
@@ -415,7 +490,7 @@ function BrochureWrapper:getRequirements(action)
 		if r then
 			for _, constraint in ipairs(r.requirementConstraints) do
 				local i = Mapp.Constraint()
-				i.id = constraint.id
+				i.id = Mapp.ID(constraint.id.value)
 				i.type = constraint.type
 				i.count = constraint.count
 				coroutine.yield(i)
@@ -431,7 +506,7 @@ function BrochureWrapper:getConstraintResource(constraint)
 
 	local r = self.constraints[constraint.type][constraint.id.value]
 	if r then
-		resource.id = r.resource.id
+		resource.id = Mapp.ID(r.resource.id.value)
 		resource.name = r.resource.name
 		resource.isSingleton = r.resource.isSingleton
 	end
@@ -444,7 +519,7 @@ function BrochureWrapper:getConstraintAction(constraint)
 
 	local r = self.constraints[constraint.type][constraint.id.value]
 	if r then
-		action.id = r.action.id
+		action.id = Mapp.ID(r.action.id.value)
 	end
 
 	return action

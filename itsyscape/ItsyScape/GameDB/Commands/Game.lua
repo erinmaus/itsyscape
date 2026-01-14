@@ -63,8 +63,8 @@ end
 -- Gets the underlying record definitions.
 function Game:getRecordDefinitions()
 	local definitions = {}
-	for name, meta in self.Meta:iterate() do
-		definitions[name] = meta.definition.definition
+	for _, meta in self.Meta:iterate() do
+		definitions[meta.definition:getName()] = meta.definition:getDefinition()
 	end
 
 	return definitions
@@ -96,6 +96,26 @@ function Game:instantiate(brochure)
 	end
 
 	return true
+end
+
+function Game:clean()
+	for _, resources in self.Resource:iterate() do
+		for _, resource in ipairs(resources) do
+			resource:clean()
+		end
+	end
+
+	for _, actions in self.Action:iterate() do
+		for _, action in ipairs(actions) do
+			action:clean()
+		end
+	end
+
+	for index, metas in self.Meta:iterate() do
+		for _, meta in ipairs(metas) do
+			meta:clean()
+		end
+	end
 end
 
 --------------------------------------------------------------------------------

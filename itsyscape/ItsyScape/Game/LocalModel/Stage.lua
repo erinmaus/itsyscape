@@ -84,10 +84,10 @@ function LocalStage:new(game)
 	table.insert(self.instances, self.dummyInstance)
 	self.instancesByLayer[1] = self.dummyInstance
 
-	self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
-	if self:_preloadMapObjects() then
-		self._preloadMapObjects = nil
-	end
+	-- self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
+	-- if self:_preloadMapObjects() then
+	-- 	self._preloadMapObjects = nil
+	-- end
 
 	self.maps = {}
 
@@ -395,11 +395,13 @@ function LocalStage:lookupResource(resourceID, resourceType)
 
 				if r then
 					local record = gameDB:getRecords("PeepID", { Resource = r }, 1)[1]
+					print(">>> RECORD", Log.dump(record))
 					if record then
 						local t = record:get("Value")
 
 						if not t or t == "" then
 							Log.error("resource ID malformed for resource '%s'", value)
+					os.exit(0)
 							return false, nil
 						else
 							Type = require(t)

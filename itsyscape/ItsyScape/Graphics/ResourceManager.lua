@@ -377,7 +377,7 @@ function ResourceManager:update()
 	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > self.maxTimeForSyncResource
 
 	if _LOG_WRITE_ALL and c > 0 then
-		Log.debug("Ran async event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)
+		Log.debug("Ran sync event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)
 	end
 
 	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then

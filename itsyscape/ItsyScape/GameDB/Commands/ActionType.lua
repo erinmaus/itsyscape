@@ -37,4 +37,10 @@ function ActionType:instantiate(brochure)
 	return self.instance
 end
 
+function ActionType:clean()
+	if self.instance then
+		self.instance = true
+	end
+end
+
 return ActionType

@@ -283,10 +283,7 @@ function DemoApplication:new()
 
 	self:initTitleScreen()
 
-	--Pool():makeCurrent()
 	collectgarbage("stop")
-	collectgarbage("setpause", 16000)
-	collectgarbage("setstepmul", 16000)
 end
 
 function DemoApplication:changeCamera(_, cameraType)

@@ -24,6 +24,10 @@ function Stub:instantiate(brochure)
 	return true
 end
 
+function Stub:clean()
+	-- Nothing.
+end
+
 function Stub:poke(t)
 	-- Nothing.
 end

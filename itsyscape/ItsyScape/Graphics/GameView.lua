@@ -706,6 +706,10 @@ function GameView:removeMap(layer)
 	end
 end
 
+function GameView:_getIsEditor()
+	return Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication")
+end
+
 function GameView:_getIsMapEditor()
 	return _APP:getType() == require "ItsyScape.Editor.MapEditorApplication"
 end
@@ -878,7 +882,7 @@ function GameView:updateGroundDecorations(m)
 		tileSetIDs = m.tileSetID
 	end
 
-	local function updateDecorationMaterial(d, group)
+	local function updateDecorationMaterial(d, decoration, group)
 		for _, sceneNode in ipairs(d.sceneNodes) do
 			if m.polygonMask then
 				sceneNode:getMaterial():send(Material.UNIFORM_FLOAT, "scape_MapSize", m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize())
@@ -891,7 +895,7 @@ function GameView:updateGroundDecorations(m)
 			sceneNode:getMaterial():setOutlineColor(Color.fromHexString("aaaaaa"))
 			sceneNode:getMaterial():setIsShadowCaster(false)
 
-			local group = d.decoration:getUniform("_x_Group")
+			local group = decoration:getUniform("_x_Group")
 			local shaderFilename = "Resources/Shaders/GroundDecoration"
 
 			if group == Block.GROUP_SHINY then
@@ -1930,7 +1934,7 @@ local DEFAULT_WIND_SPEED = 4
 function GameView:getWind(layer)
 	local m = self.mapMeshes[layer]
 	if m and m.wind then
-		return m.wind.direction, m.wind.speed, m.wind.pattern, m.wind.bumpCanvas
+		return m.wind.direction, m.wind.speed, m.wind.pattern, m.bumpCanvas
 	end
 
 	return DEFAULT_WIND_DIRECTION, DEFAULT_WIND_SPEED, DEFAULT_WIND_PATTERN, self.whiteTexture:getResource()
@@ -2205,7 +2209,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 
 		if d.isGroundDecoration then
 			local groundDecorations
-			if d.decoration:getUniform("_x_Group") == Block.GROUP_BENDY then
+			if d.group == Block.GROUP_BENDY then
 				groundDecorations = m.dynamicGroundDecorations
 			else
 				groundDecorations = m.staticGroundDecorations
@@ -2414,7 +2418,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 			end
 
 			if callback then
-				callback(d)
+				callback(d, decoration)
 			end
 
 			if decoration:getIsWall() then
@@ -2422,7 +2426,8 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 			end
 		end)
 
-		d.decoration = decoration
+		d.decoration = self:_getIsEditor() and decoration or decoration:serialize()
+		d.group = decoration:getUniform("_x_Group") or false
 		d.name = group
 		d.layer = layer
 		d.materials = materials
