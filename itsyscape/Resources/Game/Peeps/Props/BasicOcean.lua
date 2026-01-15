@@ -38,7 +38,6 @@ function BasicOcean:getPropState()
 		local mask = shipMovement and shipMovement.mask
 		if mask then
 			local position, rotation, scale, origin = Utility.Peep.getDecomposedMapTransform(shipPeep)
-			print(">>> ship", shipPeep:getTally(), "rotation", rotation:getDebugEulerXYZ())
 			local ship = {
 				id = shipPeep:getTally(),
 				position = { position:get() },
