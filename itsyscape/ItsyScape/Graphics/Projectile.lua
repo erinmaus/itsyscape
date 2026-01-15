@@ -121,7 +121,7 @@ function Projectile:getTargetPosition(target, offset)
 				return position + Vector(0, y, 0)
 			end
 		elseif target:isCompatibleType(Vector) then
-			return target
+			return Vector(target:get())
 		end
 	end
 

@@ -228,6 +228,11 @@ function LocalProp:poke(action, scope, player)
 	end
 end
 
+function LocalProp:getHasState()
+	local peep = self:getPeep()
+	return peep and peep:getIsReady()
+end
+
 function LocalProp:getState()
 	local peep = self:getPeep()
 	if peep and peep:getIsReady() and peep.getPropState then

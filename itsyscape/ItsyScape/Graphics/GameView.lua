@@ -77,6 +77,7 @@ function GameView:new(game, camera)
 	self.game = game
 	self.camera = camera
 	self.actors = {}
+	self.pendingProps = {}
 	self.props = {}
 	self.views = {}
 	self.propViewDebugStats = GameView.PropViewDebugStats()
@@ -298,7 +299,7 @@ function GameView:attach(game)
 
 	self._onPropPlaced = function(_, propID, prop)
 		Log.info("Placing prop '%s' (%s).", propID, prop and prop:getPeepID())
-		self:addProp(propID, prop)
+		self:queueProp(propID, prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
@@ -2036,6 +2037,10 @@ function GameView:removePropProbe(prop, sceneNode)
 	probes[sceneNode] = nil
 end
 
+function GameView:queueProp(propID, prop)
+	table.insert(self.pendingProps, { propID, prop })
+end
+
 function GameView:addProp(propID, prop)
 	if not prop or self:getProp(prop) then
 		return
@@ -2088,6 +2093,14 @@ end
 function GameView:removeProp(prop)
 	if not prop then
 		return
+	end
+
+	for i, p in ipairs(self.pendingProps) do
+		local _, otherProp = unpack(p)
+		if otherProp == prop then
+			table.remove(self.pendingProps, i)
+			break
+		end
 	end
 
 	self.probe:remove("ItsyScape.Game.Model.Prop", prop:getID())
@@ -2795,6 +2808,14 @@ function GameView:updateActors(delta)
 end
 
 function GameView:updateProps(delta)
+	for i = #self.pendingProps, 1, -1 do
+		local propID, prop = unpack(self.pendingProps[i])
+		if prop:getHasState() then
+			self:addProp(propID, prop)
+			table.remove(self.pendingProps, i)
+		end
+	end
+
 	for _, prop in pairs(self.props) do
 		self.propViewDebugStats:measure(prop, delta)
 	end

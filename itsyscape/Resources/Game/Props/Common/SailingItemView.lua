@@ -60,6 +60,7 @@ function SailingItemView:getAttachments()
 	local resource = state and state.resource
 
 	if not resource then
+		print(">>> no resource", self:getDebugInfo().shortName)
 		return {}
 	end
 
@@ -110,9 +111,12 @@ do
 				color.a = self.hiddenAlpha * color.a
 			end
 
-			node:getMaterial():setColor(color)
+			if node then
+				node:getMaterial():setColor(color)
+			end
 		end
 	end
+end
 
 function SailingItemView:loadAttachments(parentNode, attachments)
 	if not attachments then

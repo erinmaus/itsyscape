@@ -104,6 +104,10 @@ function CutsceneTransition:new(id, index, ui)
 	self.totalTime = 0
 end
 
+function CutsceneTransition:getIsFullscreen()
+	return not self.isFadingOut
+end
+
 function CutsceneTransition:getOverflow()
 	return true
 end

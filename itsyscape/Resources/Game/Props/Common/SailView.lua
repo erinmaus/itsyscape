@@ -167,8 +167,6 @@ function SailView:updateTextures()
 	if state.colors then
 		local material = self.sailNode:getMaterial()
 
-		print(">>> state", Log.dump(state))
-
 		if state.colors[1] then
 			material:send(material.UNIFORM_FLOAT, "scape_PrimaryColor", state.colors[1])
 		end

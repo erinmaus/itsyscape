@@ -390,6 +390,7 @@ do
 			self.light:setColor(color)
 		end
 	end
+end
 
 function FireView:tick()
 	PropView.tick(self)

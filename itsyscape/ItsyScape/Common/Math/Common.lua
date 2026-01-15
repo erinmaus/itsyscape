@@ -185,20 +185,66 @@ function Common.makeScaleTransform(scale, transform)
 	return transform
 end
 
-function Common.makeTransform(position, rotation, scale, offset)
-	position = position or Vector.ZERO
-	rotation = rotation or Quaternion.IDENTITY
-	scale = scale or Vector.ONE
-	offset = offset or Vector.ZERO
+function Common.makeOrthoTransform(left, right, bottom, top, near, far, transform)
+	transform = transform or love.math.newTransform()
 
-	local transform = love.math.newTransform()
-	transform:translate(offset:get())
-	transform:translate(position:get())
-	transform:scale(scale:get())
-	transform:applyQuaternion(rotation:get())
-	transform:translate((-offset):get())
+	print("left-right", left, right)
+	print("bottom-top", bottom, top)
+	print("near-far", near, far)
+
+	local m11, m12, m13, m14 = 2 / (right - left), 0, 0, -(right + left) / (right - left)
+	local m21, m22, m23, m24 = 0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom)
+	local m31, m32, m33, m34 = 0, 0, -2 / (far - near), -(far + near) / (far - near)
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
 
 	return transform
+end
+
+do
+	local negatedOffset = Vector()
+	local offsetTransform = love.math.newTransform()
+	local translationTransform = love.math.newTransform()
+	local rotationTransform = love.math.newTransform()
+	local scaleTransform = love.math.newTransform()
+
+	function Common.makeTransform(translation, rotation, scale, offset, result)
+		result = result or love.math.newTransform()
+		result:reset()
+
+		if offset then
+			Common.makeTranslationTransform(offset, offsetTransform)
+			result:apply(offsetTransform)
+		end
+
+		if translation then
+			Common.makeTranslationTransform(translation, translationTransform)
+			result:apply(translationTransform)
+		end
+
+		if scale then
+			Common.makeScaleTransform(scale, scaleTransform)
+			result:apply(scaleTransform)
+		end
+
+		if rotation then
+			Common.makeRotationTransform(rotation, rotationTransform)
+			result:apply(rotationTransform)
+		end
+
+		if offset then
+			offset:negate(negatedOffset)
+			Common.makeTranslationTransform(negatedOffset, offsetTransform)
+			result:apply(offsetTransform)
+		end
+
+		return transform
+	end
 end
 
 return Common

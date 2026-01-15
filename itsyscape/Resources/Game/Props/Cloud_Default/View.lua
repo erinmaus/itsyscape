@@ -97,7 +97,7 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor, definition
 	definition.emitters[1].position[1], definition.emitters[1].position[2], definition.emitters[1].position[3] = position:get()
 	definition.emitters[1].radius[1], definition.emitters[1].radius[2] = 0, radius / 2
 	definition.emitters[1].speed[1], definition.emitters[1].speed[2] = radius / 32, radius / 16
-	definition.emitters[2].colors[1], definition.emitters[2].colors[2], definition.emitters[2].colors[3], definition.emitters[2].colors[4] = inColor:get()
+	definition.emitters[2].colors[1][1], definition.emitters[2].colors[1][2], definition.emitters[2].colors[1][3], definition.emitters[2].colors[1][4] = inColor:get()
 	definition.paths[1].fadeInColor[1], definition.paths[1].fadeInColor[2], definition.paths[1].fadeInColor[3], definition.paths[1].fadeInColor[4] = inColor:get()
 	definition.paths[1].fadeOutColor[1], definition.paths[1].fadeOutColor[2], definition.paths[1].fadeOutColor[3], definition.paths[1].fadeOutColor[4] = outColor:get()
 
@@ -210,6 +210,7 @@ do
 
 		for id, cloudInfo in pairs(self.clouds) do
 			if not cloudInfo.visited then
+				cloudInfo.ready = false
 				table.insert(QUEUE, cloudInfo)
 
 				self.clouds[id].node:setParent(nil)

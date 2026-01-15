@@ -27,6 +27,7 @@ PropProxy.getScale = Property(Vector.ONE)
 PropProxy.getTile = Property(0, 0, 0)
 PropProxy.getBounds = Property(Vector.ZERO, Vector.ZERO)
 PropProxy.getActions = Property.Actions({})
+PropProxy.getHasState = Property(false)
 PropProxy.getState = Property({})
 
 return Proxy(PropProxy)

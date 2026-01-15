@@ -918,9 +918,9 @@ function ActorView:playAnimation(slot, animation, priority, time)
 
 	if priority and animation then
 		if self:getIsImmediate() then
-			self:_loadAnimation(a, self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
+			self:_loadAnimation(a, self.game:getResourceManager():loadCacheRef(animation), slot, animation:clone(), priority, time)
 		else
-			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.definitions[animation:getFilename()] or self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
+			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.definitions[animation:getFilename()] or self.game:getResourceManager():loadCacheRef(animation), slot, animation:clone(), priority, time)
 		end
 
 		self.animations[slot] = a
