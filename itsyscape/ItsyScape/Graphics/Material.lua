@@ -350,8 +350,9 @@ function Material:unsetTexture(index)
 	self._handle:setTextures(unpack(self.textures.n))
 end
 
+local _data = {}
 function Material:send(uniformType, uniform, ...)
-	local data = {}
+	table.clear(_data)
 
 	for i = 1, select("#", ...) do
 		local values = select(i, ...)
@@ -360,23 +361,23 @@ function Material:send(uniformType, uniform, ...)
 			for _, a in ipairs(values) do
 				if type(a) == "table" then
 					for _, b in ipairs(a) do
-						table.insert(data, b)
+						table.insert(_data, b)
 					end
 				else
-					table.insert(data, a)
+					table.insert(_data, a)
 				end
 			end
 		else
-			table.insert(data, values)
+			table.insert(_data, values)
 		end
 	end
 
 	if uniformType == Material.UNIFORM_INTEGER then
-		self._handle:setIntUniform(uniform, data)
+		self._handle:setIntUniform(uniform, _data)
 	elseif uniformType == Material.UNIFORM_TEXTURE then
-		self._handle:setTextureUniform(uniform, unpack(data))
+		self._handle:setTextureUniform(uniform, unpack(_data))
 	else
-		self._handle:setFloatUniform(uniform, data)
+		self._handle:setFloatUniform(uniform, _data)
 	end
 end
 

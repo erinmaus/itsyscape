@@ -43,45 +43,54 @@ function InvisiblePortal:load()
 		end)
 end
 
-function InvisiblePortal:updateRotation(delta)
-	local scale
-	do
-		local playerPosition
+do
+	local playerToPropDifference = Vector()
+	local rotation = Quaternion()
+
+	function InvisiblePortal:updateRotation(delta)
+		local scale
 		do
-			local game = self:getGameView():getGame()
-			local playerActor = game:getPlayer() and game:getPlayer():getActor()
-			if not playerActor then
-				return
-			else
-				playerPosition = playerActor:getPosition()
+			local playerPosition
+			do
+				local game = self:getGameView():getGame()
+				local playerActor = game:getPlayer() and game:getPlayer():getActor()
+				if not playerActor then
+					return
+				else
+					playerPosition = playerActor:getPosition()
+				end
 			end
+
+			local propSize, propPosition
+			do
+				local prop = self:getProp()
+				propPosition = prop:getPosition()
+				local min, max = prop:getBounds()
+				propSize = min:distance(max)
+			end
+
+			playerPosition:subtract(propPosition, playerToPropDifference)
+			local playerToPropDistance = playerToPropDifference:getLength()
+			scale = 1 - math.min(math.max(playerToPropDistance - propSize, 0) / propSize, 1)
 		end
 
-		local propSize, propPosition
-		do
-			local prop = self:getProp()
-			propPosition = prop:getPosition()
-			local min, max = prop:getBounds()
-			propSize = (max - min):getLength()
-		end
+		local mu = (scale * InvisiblePortal.ROTATE_SPEED_MULTIPLIER_WIDTH) + InvisiblePortal.ROTATE_MIN_SPEED_MULTIPLIER
+		self.speedTime = (self.speedTime or 0) + mu * InvisiblePortal.ROTATE_RADIANS_PER_SECOND
 
-		local playerToPropDifference = playerPosition - propPosition
-		local playerToPropDistance = playerToPropDifference:getLength()
-		scale = 1 - math.min(math.max(playerToPropDistance - propSize, 0) / propSize, 1)
+		local angle = self.speedTime * InvisiblePortal.ROTATE_RADIANS_PER_SECOND
+		Quaternion.fromAxisAngle(Vector.UNIT_Y, angle, rotation):product(InvisiblePortal.STATIC_ROTATION, rotation)
+		self.quad:getTransform():setLocalRotation(rotation)
 	end
-
-	local mu = (scale * InvisiblePortal.ROTATE_SPEED_MULTIPLIER_WIDTH) + InvisiblePortal.ROTATE_MIN_SPEED_MULTIPLIER
-	self.speedTime = (self.speedTime or 0) + mu * InvisiblePortal.ROTATE_RADIANS_PER_SECOND
-
-	local angle = self.speedTime * InvisiblePortal.ROTATE_RADIANS_PER_SECOND
-	self.quad:getTransform():setLocalRotation(
-		Quaternion.fromAxisAngle(Vector.UNIT_Y, angle) * InvisiblePortal.STATIC_ROTATION)
 end
 
-function InvisiblePortal:updateTranslation(delta)
-	self.translationTime = (self.translationTime or 0) + delta
-	local angle = math.sin(self.translationTime * InvisiblePortal.TRANSLATE_RADIANS_PER_SECOND)
-	self.quad:getTransform():setLocalTranslation(InvisiblePortal.TRANSLATION_NORMAL * angle + InvisiblePortal.TRANSLATE_OFFSET)
+do
+	local offset = Vector()
+	function InvisiblePortal:updateTranslation(delta)
+		self.translationTime = (self.translationTime or 0) + delta
+		local angle = math.sin(self.translationTime * InvisiblePortal.TRANSLATE_RADIANS_PER_SECOND)
+		offset:from(angle):product(InvisiblePortal.TRANSLATION_NORMAL, offset):add(InvisiblePortal.TRANSLATE_OFFSET, offset)
+		self.quad:getTransform():setLocalTranslation(offset)
+	end
 end
 
 function InvisiblePortal:update(delta)

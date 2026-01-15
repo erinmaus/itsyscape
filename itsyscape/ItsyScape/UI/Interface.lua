@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Utility = require "ItsyScape.Game.Utility"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
@@ -63,6 +64,8 @@ end
 
 -- Called when the interface is poked.
 function Interface:poke(actionID, actionIndex, e)
+	e = RPCState.merge(e)
+
 	if actionIndex == nil then
 		local func = self[actionID]
 		if func then

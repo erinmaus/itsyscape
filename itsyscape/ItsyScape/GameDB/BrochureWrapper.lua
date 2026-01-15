@@ -438,7 +438,6 @@ function BrochureWrapper:findResourcesByNameAndType(name, resourceType)
 				i.id = Mapp.ID(j.resource.id.value)
 				i.name = j.resource.name
 				i.isSingleton = j.resource.isSingleton
-				print(">>> name", i.name)
 				coroutine.yield(i)
 			end
 		end

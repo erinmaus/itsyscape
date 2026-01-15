@@ -42,19 +42,26 @@ function WaterMeshSceneNode:getYOffset()
 	return self.yOffset
 end
 
-function WaterMeshSceneNode:setYOffset(value)
-	self.yOffset = value or self.yOffset
+do
+	local transformedMin, transformedMax = Vector(), Vector()
+	local yOffset = Vector()
+	function WaterMeshSceneNode:setYOffset(value)
+		self.yOffset = value or self.yOffset
 
-	local material = self:getMaterial()
-	material:send(material.UNIFORM_FLOAT, "scape_YOffset", self.yOffset)
+		local material = self:getMaterial()
+		material:send(material.UNIFORM_FLOAT, "scape_YOffset", self.yOffset)
 
-	if self.waterMesh then
-		local min, max = self.waterMesh:getBounds()
+		if self.waterMesh then
+			local min, max = self.waterMesh:getBounds()
 
-		if self.yOffset < 0 then
-			self:setBounds(min + Vector(0, self.yOffset, 0), max)
-		else
-			self:setBounds(min, max + Vector(0, self.yOffset, 0))
+			yOffset:from(0, self.yOffset, 0)
+			if self.yOffset < 0 then
+				min:add(yOffset, transformedMin)
+				self:setBounds(transformedMin, max)
+			else
+				max:add(yOffset, transformedMax)
+				self:setBounds(min, transformedMax)
+			end
 		end
 	end
 end

@@ -86,7 +86,6 @@ function EventQueue.newBuffer(gameManager)
 		local objectInstances = setmetatable({}, {
 			__mode = "v",
 			__index = function(self, id)
-				print(">>> instance", typeName, id)
 				local instance = gameManager:getInstance(typeName, id):getInstance()
 				if not instance then
 					error("not found")

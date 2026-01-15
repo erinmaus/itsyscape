@@ -130,11 +130,10 @@ do
 		projectionView:apply(projection)
 		projectionView:apply(view)
 
+		result = result or Vector()
 		local x, y, z = point:transform(projectionView, result):get()
 		x = (x + 1) / 2 * self.width
 		y = (y + 1) / 2 * self.height
-
-		result = result or Vector()
 		result:from(x, y, z)
 
 		return result

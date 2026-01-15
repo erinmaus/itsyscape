@@ -33,25 +33,35 @@ function Fire:new(prop, gameView)
 	self.flickerTime = 0
 end
 
-function Fire:_updateDirection(direction, speed)
-	local position, layer = self.prop:getPosition()
-	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
-
-	local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
-	windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
-	local windMu = (windDelta + 1) / 2
-
-	local fireDirection = Vector(windDelta * windDirection.x, 1, windDelta * windDirection.z):getNormal()
-
+do
+	local fireDirection = Vector()
+	local targetWindRotation = Quaternion()
 	local currentWindRotation = Quaternion()
-	local targetWindRotation = Quaternion.lookAt(Vector(0), fireDirection, Vector.UNIT_Y)
-	local normal = currentWindRotation:slerp(targetWindRotation, windMu):transformVector(Vector.UNIT_Y)
+	local normal = Vector()
 
-	direction.speed[1] = windSpeed / 3 * speed
-	direction.speed[2] = windSpeed / 3 * speed
-	direction.direction[1] = normal.x
-	direction.direction[2] = normal.y
-	direction.direction[3] = normal.z
+	function Fire:_updateDirection(direction, speed)
+		local position, layer = self.prop:getPosition()
+		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
+		local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
+		windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
+		local windMu = (windDelta + 1) / 2
+
+		fireDirection:from(
+			windDelta * windDirection.x,
+			1,
+			windDelta * windDirection.z):normalize(fireDirection)
+
+		Quaternion.lookAt(Vector.ZERO, fireDirection, Vector.UNIT_Y, targetWindRotation)
+		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
+		normal:normalize(normal)
+
+		direction.speed[1] = windSpeed / 3 * speed
+		direction.speed[2] = windSpeed / 3 * speed
+		direction.direction[1] = normal.x
+		direction.direction[2] = normal.y
+		direction.direction[3] = normal.z
+	end
 end
 
 function Fire:_getInnerParticleDefinition()

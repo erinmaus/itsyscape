@@ -102,6 +102,9 @@ function DemoApplication:new()
 	self.nextShimmerToolTip:setZDepth(-900)
 	self.nextShimmerToolTip:setRowSize(math.huge)
 
+	local relativePosition = Vector()
+	local positionA, directionA = Vector(), Vector()
+	local positionB, directionB = Vector(), Vector()
 	self._sortShimmerObjects = function(a, b)
 		if a.objectType ~= b.objectType then
 			if a.objectType == "item" then
@@ -170,27 +173,26 @@ function DemoApplication:new()
 				end
 			end
 
-			local relativePosition
 			do
 				player = player and player:getActor()
 				player = player and self:getGameView():getActor(player)
 
 				if player then
-					relativePosition = Vector.ZERO:transform(player:getSceneNode():getTransform():getGlobalDeltaTransform(0))
+					Vector.ZERO:transform(player:getSceneNode():getTransform():getGlobalDeltaTransform(0), relativePosition)
 				else
-					relativePosition = Vector.ZERO
+					relativePosition:from(0)
 				end
 			end
 
-			local positionA = Vector.ZERO:transform(nodeA:getTransform():getGlobalDeltaTransform(0))
-			local distanceA = (relativePosition - positionA):getLengthSquared()
-			local directionA = relativePosition:direction(positionA):getNormal()
+			Vector.ZERO:transform(nodeA:getTransform():getGlobalDeltaTransform(0), positionA)
+			local distanceA = relativePosition:distance(positionA)
+			relativePosition:direction(positionA, directionA):normalize(directionA)
 			local dotA = directionA:dot(self.currentPlayerDirection)
 
-			local positionB = Vector.ZERO:transform(nodeB:getTransform():getGlobalDeltaTransform(0))
-			local distanceB = (relativePosition - positionB):getLengthSquared()
-			local directionB = relativePosition:direction(positionB):getNormal()
-			local dotB = directionB:dot(self.currentPlayerDirection)
+			Vector.ZERO:transform(nodeB:getTransform():getGlobalDeltaTransform(0), positionB)
+			local distanceB = relativePosition:distance(positionB)
+			relativePosition:direction(positionB, directionB):normalize(directionB)
+			local dotB = directionA:dot(self.currentPlayerDirection)
 
 			local angleA = math.deg(math.acos(math.clamp(dotA, -1, 1)))
 			local angleB = math.deg(math.acos(math.clamp(dotB, -1, 1)))

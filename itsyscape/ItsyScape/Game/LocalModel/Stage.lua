@@ -395,13 +395,11 @@ function LocalStage:lookupResource(resourceID, resourceType)
 
 				if r then
 					local record = gameDB:getRecords("PeepID", { Resource = r }, 1)[1]
-					print(">>> RECORD", Log.dump(record))
 					if record then
 						local t = record:get("Value")
 
 						if not t or t == "" then
 							Log.error("resource ID malformed for resource '%s'", value)
-					os.exit(0)
 							return false, nil
 						else
 							Type = require(t)

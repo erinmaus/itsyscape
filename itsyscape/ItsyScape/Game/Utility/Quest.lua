@@ -277,7 +277,7 @@ function Quest.buildRichTextLabelFromQuestLog(questLog, peep, scroll)
 	for i = 1, #steps do
 		local step = steps[i]
 		local questLogForStep = questLog[step.id]
-		local isChoice = type(step[1]) == 'table'
+		local isChoice = (type(step[1]) == 'table' and #step[1] > 1)
 
 		if isChoice then
 			if i == #steps then
