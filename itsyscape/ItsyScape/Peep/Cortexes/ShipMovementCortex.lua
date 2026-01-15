@@ -137,7 +137,7 @@ function ShipMovementCortex.Ship:move(delta)
 	local position, rotation = Sailing.Ocean.getPositionRotation(self.ship)
 
 	Utility.Peep.setRotation(self.ship, (directionRotation * rotation):getNormal())
-	Utility.Peep.setPosition(self.ship, position + Vector(0, 8, 0))
+	Utility.Peep.setPosition(self.ship, position)
 
 	if shipMovement.isMoving then
 		local acceleration = currentDirectionNormal * movement.maxAcceleration

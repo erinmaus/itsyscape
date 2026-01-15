@@ -294,11 +294,14 @@ do
 
 			local currentTranslation = self.waterParent:getTransform():getLocalTranslation()
 
+			local width = (EndlessWater.WIDTH * 2 - 0.5) * EndlessWater.SIZE * EndlessWater.CELL_SIZE
+			local height = (EndlessWater.HEIGHT * 2 - 0.5) * EndlessWater.SIZE * EndlessWater.CELL_SIZE
+
 			MathCommon.makeOrthoTransform(
-				currentTranslation.x - EndlessWater.SIZE * 2,
-				currentTranslation.x + (EndlessWater.WIDTH * 2) * EndlessWater.SIZE * 2,
-				currentTranslation.z - EndlessWater.SIZE * 2,
-				currentTranslation.z + (EndlessWater.HEIGHT * 2) * EndlessWater.SIZE * 2,
+				currentTranslation.x - width / 2,
+				currentTranslation.x + width / 2 ,
+				currentTranslation.z - height / 2,
+				currentTranslation.z + height / 2,
 				-(state.ocean and state.ocean.offset * 2 or 32),
 				(state.ocean and state.ocean.offset * 2 or 32),
 				projectionTransform)
@@ -316,8 +319,8 @@ do
 
 			self.shaderCache:bindShader(
 				self.waterShader,
-				"scape_ViewMatrix", view,
-				"scape_ProjectionMatrix", projection,
+				"scape_ViewMatrix", viewTransform,
+				"scape_ProjectionMatrix", projectionTransform,
 				"scape_BumpForce", 0,
 				"scape_WindDirection", windDirectionUniform,
 				"scape_WindSpeed", windSpeed,
@@ -337,7 +340,7 @@ do
 				love.graphics.draw(self.waterMesh:getMesh())
 
 				local material = water:getMaterial()
-				material:send(material.UNIFORM_FLOAT, "scape_BumpProjectionViewMatrix", projectionViewTransform:getMatrix())
+				material:send(material.UNIFORM_FLOAT, "scape_BumpProjectionViewMatrix", Transform.getMatrix(projectionViewTransform))
 			end
 
 			self.shaderCache:bindShader(
@@ -374,8 +377,6 @@ do
 
 					scale:product(adjustedSize:divide(realSize, scaledSize), scale)
 					position:add(origin, position)
-
-					print(">>> position", position:get())
 
 					MathCommon.makeTransform(position, rotation, scale, nil, worldTransform)
 
