@@ -2060,6 +2060,8 @@ function GameView:addProp(propID, prop)
 
 	self.props[prop:getID()] = view
 	self.views[prop] = view
+
+	self:addOrUpdateProbe(prop)
 end
 
 function GameView:getProp(prop)
@@ -3197,6 +3199,24 @@ function GameView:preTick(frameDelta)
 	end
 end
 
+function GameView:addOrUpdateProbe(object)
+	local objectView = self.views[object]
+	if Class.isCompatibleType(objectView, PropView) then
+		local node = objectView:getRoot()
+		local nodeHandle = node and node:getHandle() or nil
+		local id = objectView:getProp():getID()
+		local min, max = objectView:getProp():getBounds()
+
+		self.probe:addOrUpdate("ItsyScape.Game.Model.Prop", object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getProp():getName())
+	elseif Class.isCompatibleType(objectView, ActorView) then
+		local node = objectView:getSceneNode()
+		local nodeHandle = node and node:getHandle() or nil
+		local id = objectView:getActor():getID()
+		local min, max = objectView:getActor():getBounds()
+		self.probe:addOrUpdate("ItsyScape.Game.Model.Actor", object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getActor():getName())
+	end
+end
+
 function GameView:postTick()
 	local gameManager = self.game:getGameManager()
 	if gameManager then
@@ -3209,22 +3229,9 @@ function GameView:postTick()
 					string.format("%s::%s::tick", interface, object:getPeepID()),
 					objectView.tick,
 					objectView)
-
-				if interface == "ItsyScape.Game.Model.Prop" then
-					local node = objectView:getRoot()
-					local nodeHandle = node and node:getHandle() or nil
-					local id = objectView:getProp():getID()
-					local min, max = objectView:getProp():getBounds()
-
-					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getProp():getName())
-				elseif interface == "ItsyScape.Game.Model.Actor" then
-					local node = objectView:getSceneNode()
-					local nodeHandle = node and node:getHandle() or nil
-					local id = objectView:getActor():getID()
-					local min, max = objectView:getActor():getBounds()
-					self.probe:addOrUpdate(interface, object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getActor():getName())
-				end
 			end
+
+			self:addOrUpdateProbe(object)
 		end
 	else
 		for _, actor in pairs(self.actors) do

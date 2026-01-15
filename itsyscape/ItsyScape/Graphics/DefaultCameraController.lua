@@ -841,16 +841,12 @@ function DefaultCameraController:onLeaveFirstPerson()
 end
 
 function DefaultCameraController:onUpdateFirstPersonDirection(rotation, distance)
-	self.nextFirstPersonDirection = rotation:keep()
+	self.nextFirstPersonDirection = (self.nextFirstPersonDirection or Quaternion()):from(rotation:get())
 	self.targetDistance = distance or 0
 end
 
 function DefaultCameraController:onUpdateFirstPersonPosition(position)
-	self.nextFirstPersonPosition = position:keep()
-end
-
-function DefaultCameraController:onUpdateFirstPersonDistance(position)
-	self.nextFirstPersonPosition = position:keep()
+	self.nextFirstPersonPosition = (self.nextFirstPersonPosition or Vector()):from(position:get())
 end
 
 function DefaultCameraController:onMapRotationStick()

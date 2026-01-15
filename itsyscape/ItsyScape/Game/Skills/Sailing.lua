@@ -50,7 +50,7 @@ end
 function Sailing.getShip(peep)
 	local instance = Utility.Peep.getInstance(peep)
 	local mapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
-	local baseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup)
+	local baseLayer = instance:getGlobalLayerFromLocalLayer(mapGroup, 1)
 	local mapScript = instance:getMapScriptByLayer(baseLayer)
 
 	if mapScript:hasBehavior(ShipMovementBehavior) then
