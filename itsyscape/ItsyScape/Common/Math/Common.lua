@@ -19,11 +19,26 @@ function Common.makeInverseTransform(transform, result)
 	return result
 end
 
-function Common.decomposeTransform(transform, translation, rotation)
+function Common.transposeTransform(transform, result)
+	result = result or transform
+
 	local m11, m21, m31, m41,
 	      m12, m22, m32, m42,
 	      m13, m23, m33, m43,
-	      m14, m24, m34, m44 = transform:getMatrix("column")
+	      m14, m24, m34, m44 = transform:getMatrix()
+	
+	result:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+end
+
+function Common.decomposeTransform(transform, translation, rotation)
+	local m11, m21, m31, m41,
+		  m12, m22, m32, m42,
+		  m13, m23, m33, m43,
+		  m14, m24, m34, m44 = transform:getMatrix("column")
 
 	translation = translation or Vector()
 	rotation = rotation or Quaternion()
@@ -96,9 +111,9 @@ function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
 end
 
 function Common.side(a, b, c, bias)
-    local left = (a.z - c.z) * (b.x - c.x)
-    local right = (a.x - c.x) * (b.z - c.z)
-    local result = left - right
+	local left = (a.z - c.z) * (b.x - c.x)
+	local right = (a.x - c.x) * (b.z - c.z)
+	local result = left - right
 
 	local sign
 	if result > 0 + (bias or 0) then
@@ -188,10 +203,6 @@ end
 function Common.makeOrthoTransform(left, right, bottom, top, near, far, transform)
 	transform = transform or love.math.newTransform()
 
-	print("left-right", left, right)
-	print("bottom-top", bottom, top)
-	print("near-far", near, far)
-
 	local m11, m12, m13, m14 = 2 / (right - left), 0, 0, -(right + left) / (right - left)
 	local m21, m22, m23, m24 = 0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom)
 	local m31, m32, m33, m34 = 0, 0, -2 / (far - near), -(far + near) / (far - near)
@@ -234,6 +245,7 @@ do
 
 		if rotation then
 			Common.makeRotationTransform(rotation, rotationTransform)
+			Common.transposeTransform(rotationTransform)
 			result:apply(rotationTransform)
 		end
 

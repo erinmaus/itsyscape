@@ -143,6 +143,59 @@ function EndlessWater:load()
 	self.bumpCanvas:setFilter("linear", "linear")
 end
 
+function EndlessWater:tickShipsState()
+	local state = self:getProp():getState()
+	local shipsState = state.ships
+	if not shipsState then
+		return
+	end
+
+	self.previousShips = RPCState.merge(self.currentShips, self.previousShips)
+
+	for _, shipState in pairs(self.currentShips) do
+		shipState.visited = false
+	end
+
+	for _, shipState in ipairs(shipsState) do
+		local previousShip = previousShips and previousShips[shipState.id]
+
+		local mask = shipState.mask
+		if not previousShip or previousShip.mask ~= mask then
+			local maskMesh = self.masks[mask]
+			if maskMesh == nil then
+				self.masks[mask] = false
+
+				self:getResources():queue(
+					StaticMeshResource,
+					string.format("Resources/Game/SailingItems/Hull_%s/Model.lstatic", mask),
+					function(mesh)
+						self.masks[mask] = mesh
+
+						local min, max = mesh:getResource():computeBounds("hull.exterior")
+						self.maskBounds[mask] = { min = min, max = max }
+					end)
+			end
+		end
+
+		local currentShip = self.currentShips[shipState.id]
+		if not currentShip then
+			currentShip = {}
+			self.currentShips[shipState.id] = currentShip
+		end
+
+		currentShip.mask = shipState.mask
+		currentShip.state = RPCState.merge(shipState, currentShip.state)
+		currentShip.visited = true
+	end
+
+	for id, shipState in pairs(self.currentShips) do
+		if not shipState.visited then
+			self.currentShips[id] = nil
+			self.previousShips[id] = nil
+		end
+	end
+end
+
 do
 	local previousAmbientColor = Color()
 	local currentAmbientColor = Color()
@@ -151,6 +204,8 @@ do
 
 	function EndlessWater:tick()
 		PropView.tick(self)
+
+		self:tickShipsState()
 
 		local state = self:getProp():getState()
 		local _, layer = self:getProp():getPosition()
@@ -237,56 +292,6 @@ do
 		end
 
 		local state = self:getProp():getState()
-		local shipsState = state.ships
-
-		if not shipsState then
-			return
-		end
-
-		self.previousShips = RPCState.merge(self.currentShips, self.previousShips)
-
-		for _, shipState in pairs(self.currentShips) do
-			shipState.visited = false
-		end
-
-		for _, shipState in ipairs(shipsState) do
-			local previousShip = previousShips and previousShips[shipState.id]
-
-			local mask = shipState.mask
-			if not previousShip or previousShip.mask ~= mask then
-				local maskMesh = self.masks[mask]
-				if maskMesh == nil then
-					self.masks[mask] = false
-
-					self:getResources():queue(
-						StaticMeshResource,
-						string.format("Resources/Game/SailingItems/Hull_%s/Model.lstatic", mask),
-						function(mesh)
-							self.masks[mask] = mesh
-
-							local min, max = mesh:getResource():computeBounds("hull.exterior")
-							self.maskBounds[mask] = { min = min, max = max }
-						end)
-				end
-			end
-
-			local currentShip = self.currentShips[shipState.id]
-			if not currentShip then
-				currentShip = {}
-				self.currentShips[shipState.id] = currentShip
-			end
-
-			currentShip.mask = shipState.mask
-			currentShip.state = RPCState.merge(shipState, currentShip.state)
-			currentShip.visited = true
-		end
-
-		for id, shipState in pairs(self.currentShips) do
-			if not shipState.visited then
-				self.currentShips[id] = nil
-			end
-		end
-
 		love.graphics.push("all")
 		do
 			love.graphics.setCanvas({ self.shipCanvas, depth = true })
@@ -300,8 +305,8 @@ do
 			MathCommon.makeOrthoTransform(
 				currentTranslation.x - width / 2,
 				currentTranslation.x + width / 2 ,
-				currentTranslation.z - height / 2,
 				currentTranslation.z + height / 2,
+				currentTranslation.z - height / 2,
 				-(state.ocean and state.ocean.offset * 2 or 32),
 				(state.ocean and state.ocean.offset * 2 or 32),
 				projectionTransform)
@@ -348,7 +353,7 @@ do
 				"scape_ViewMatrix", viewTransform,
 				"scape_ProjectionMatrix", projectionTransform)
 
-			love.graphics.setDepthMode("lequal", true)
+			love.graphics.setDepthMode("gequal", true)
 			local worldTransform = love.math.newTransform()
 			for _, currentShip in pairs(self.currentShips) do
 				local previousShip = self.previousShips[currentShip.state.id] or self.currentShips[currentShip.state.id]
@@ -371,7 +376,7 @@ do
 
 					local frameDelta = _APP:getPreviousFrameDelta()
 					previousPosition:lerp(currentPosition, frameDelta, position)
-					previousRotation:slerp(currentRotation, frameDelta, rotation)
+					previousRotation:slerp(currentRotation, frameDelta, rotation):normalize(rotation)
 					previousScale:lerp(currentScale, frameDelta, scale)
 					previousOrigin:lerp(currentOrigin, frameDelta, origin)
 
