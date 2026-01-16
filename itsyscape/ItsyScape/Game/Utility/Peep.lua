@@ -1855,17 +1855,17 @@ function Peep.getWalk(peep, ...)
 		targetPosition)
 
 	if path then
-		local n = path:getNodeAtIndex(-1)
-		if n then
-			local d = (n.position * Vector.PLANE_XZ):distance(targetPosition * Vector.PLANE_XZ)
-			if d > distance then
-				Log.info("Peep '%s' can't reach destination; distance to goal (%f) exceeds maximum distance to goal (%f); target position was (%f, ..., %f) and result was (%f, ..., %f).",
-					peep:getName(), d, distance,
-					targetPosition.x, targetPosition.z,
-					n.position.x, n.position.z)
-				return false, "distance to goal exceeds maximum distance to goal"
-			end
-		end
+		-- local n = path:getNodeAtIndex(-1)
+		-- if n then
+		-- 	local d = (n.position * Vector.PLANE_XZ):distance(targetPosition * Vector.PLANE_XZ)
+		-- 	if d > distance then
+		-- 		Log.info("Peep '%s' can't reach destination; distance to goal (%f) exceeds maximum distance to goal (%f); target position was (%f, ..., %f) and result was (%f, ..., %f).",
+		-- 			peep:getName(), d, distance,
+		-- 			targetPosition.x, targetPosition.z,
+		-- 			n.position.x, n.position.z)
+		-- 		return false, "distance to goal exceeds maximum distance to goal"
+		-- 	end
+		-- end
 
 		if t.asCloseAsPossible then
 			return ExecutePathCommand(path, 0), path
