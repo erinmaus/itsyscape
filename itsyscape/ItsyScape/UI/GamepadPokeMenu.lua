@@ -14,12 +14,14 @@ local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
+local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Widget = require "ItsyScape.UI.Widget"
 
 local GamepadPokeMenu = Class(Widget)
 GamepadPokeMenu.PADDING = 8
+GamepadPokeMenu.MAX_NUM_ROWS = 12
 
 function GamepadPokeMenu:new(view, actions)
 	Widget.new(self)
@@ -52,10 +54,11 @@ function GamepadPokeMenu:new(view, actions)
 	local actorColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.actor"))
 	local miscColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.poke.misc"))
 
-	self.gridLayout = GamepadGridLayout()
+	self.layout = ScrollablePanel(GamepadGridLayout)
+	self.gridLayout = self.layout:getInnerPanel()
 	self.gridLayout:setWrapFocus(true)
 	self.gridLayout:setWrapContents(true)
-	self:addChild(self.gridLayout)
+	self:addChild(self.layout)
 
 	local maxTextLength = 0
 	local function addAction(action)
@@ -138,9 +141,24 @@ function GamepadPokeMenu:new(view, actions)
 	self.gridLayout:setPosition(GamepadPokeMenu.PADDING, GamepadPokeMenu.PADDING)
 	self.gridLayout:performLayout()
 
-	local width, height = self.gridLayout:getSize()
+	local rowHeight = (height + GamepadPokeMenu.PADDING * 2)
 
-	self:setSize(width + GamepadPokeMenu.PADDING * 2, height + GamepadPokeMenu.PADDING * 2)
+	local windowWidth, windowHeight = itsyrealm.graphics.getScaledMode()
+	local maxHeight = math.ceil(math.floor(windowHeight * (3 / 4)) / rowHeight) * rowHeight
+
+	local realWidth, realHeight = self.gridLayout:getSize()
+	if realHeight > maxHeight then
+		realHeight = maxHeight
+		realWidth = realWidth + ScrollablePanel.DEFAULT_SCROLL_SIZE + GamepadPokeMenu.PADDING * 2
+	else
+		realWidth = realWidth + GamepadPokeMenu.PADDING * 2
+		realHeight = realHeight + GamepadPokeMenu.PADDING * 2
+	end
+
+	self.layout:setSize(realWidth, realHeight - GamepadPokeMenu.PADDING * 2)
+	self.layout:setScrollSize(self.gridLayout:getSize())
+
+	self:setSize(realWidth, realHeight)
 
 	self.onClose = Callback()
 
