@@ -14,7 +14,7 @@ float getGlobalWallHackAlpha(vec3 position, float globalAlpha)
 		return 1.0;
 	}
 
-	vec3 eyeToTargetDirection = -normalize(scape_InverseViewMatrix[2].xyz);
+	vec3 eyeToTargetDirection = normalize(scape_InverseViewMatrix[2].xyz);
 	vec3 leftDirection = normalize(scape_InverseViewMatrix[0].xyz);
 	vec3 topDirection = normalize(scape_InverseViewMatrix[1].xyz);
 
