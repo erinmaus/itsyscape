@@ -85,8 +85,8 @@ function SSRPostProcessPass:draw(width, height)
 	love.graphics.clear(0, 0, 0, 0)
 
 	self._projection, self._view = self:getRenderer():getCamera():getTransforms(self._projection, self._view)
-	self._inverseProjection = MathCommon.makeInverseTransform(self._projection, self._inverseProjection)
-	self._inverseView = MathCommon.makeInverseTransform(self._view, self._inverseView)
+	self._inverseProjection = MathCommon.makeInverseTransform(self._projection, self._inverseProjection or love.math.newTransform())
+	self._inverseView = MathCommon.makeInverseTransform(self._view, self._inverseView or love.math.newTransform())
 	self._forward = self:getRenderer():getCamera():getForward(self._forward)
 
 	self._direction = self._direction or {}
@@ -125,7 +125,7 @@ function SSRPostProcessPass:draw(width, height)
 	love.graphics.clear(0, 0, 0, 0)
 
 	self._directionY = self._directionY or { 0, 1 }
-	self._directionX = self._directionY or { 1, 0 }
+	self._directionX = self._directionX or { 1, 0 }
 
 	self:bindShader(
 		self.blurShader,
