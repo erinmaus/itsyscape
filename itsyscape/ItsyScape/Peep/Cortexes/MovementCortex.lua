@@ -10,6 +10,7 @@
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
@@ -263,19 +264,33 @@ function MovementCortex:addPropToWorld(layer, prop)
 
 	local w = self.worlds[layer]
 	if w then
-		w.props[prop] = true
 		self.peepsByLayer[prop] = Utility.Peep.getLayer(prop)
 		self.props[prop] = true
 
 		local position = Utility.Peep.getPosition(prop)
 		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
 		local scale = Utility.Peep.getScale(prop)
-		local size = Utility.Peep.getSize(prop) + Vector(1, 0, 1)
-		local offset = -size / 2
-		w.world:add(
-			prop,
-			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
-			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+		local size = Utility.Peep.getSize(prop)
+		local static = prop:getBehavior(StaticBehavior)
+
+		local propInfo = {
+			position = Vector(position:get()),
+			rotation = 0,
+			scale = Vector(scale:get()),
+			size = Vector(size:get()),
+			staticType = static and static.type or StaticBehavior.IMPASSABLE,
+			static = not static or static.static
+		}
+
+		w.props[prop] = propInfo
+
+		if propInfo.static and propInfo.staticType ~= StaticBehavior.PASSABLE then
+			local offset = -size / 2
+			w.world:add(
+				prop,
+				slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
+				slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+		end
 	end
 end
 
@@ -288,20 +303,42 @@ function MovementCortex:updateProp(prop)
 
 	local w = self.worlds[layer]
 	if w then
+		local propInfo = w.props[prop]
 		local position = Utility.Peep.getPosition(prop)
 		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
 		local scale = Utility.Peep.getScale(prop)
 		local size = Utility.Peep.getSize(prop)
-		local offset = -size / 2
-		w.world:update(
-			prop,
-			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
-			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+		local static = prop:getBehavior(StaticBehavior)
 
-		local collisionMaskUpdate = self.pendingCollisionMaskUpdates[prop]
-		if collisionMaskUpdate then
-			self.pendingCollisionMaskUpdates[prop] = nil
-			self:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
+		if not (propInfo.position == position and
+			propInfo.rotation == rotation and
+			propInfo.scale == scale and
+			propInfo.size == size and
+			propInfo.staticType == (static and static.type or StaticBehavior.IMPASSABLE) and
+			propInfo.static == (not static or static.static))
+		then
+			propInfo.position:from(position:get())
+			propInfo.rotation = rotation
+			propInfo.scale:from(scale:get())
+			propInfo.size:from(size:get())
+			propInfo.staticType = static and static.type or StaticBehavior.IMPASSABLE
+			propInfo.static = not static or static.static
+
+			if propInfo.static and propInfo.staticType ~= StaticBehavior.PASSABLE then
+				local offset = -size / 2
+				w.world:update(
+					prop,
+					slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
+					slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+			elseif w.world:has(prop) then
+				w.world:remove(prop)
+			end
+
+			local collisionMaskUpdate = self.pendingCollisionMaskUpdates[prop]
+			if collisionMaskUpdate then
+				self.pendingCollisionMaskUpdates[prop] = nil
+				self:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
+			end
 		end
 	end
 end
@@ -333,7 +370,7 @@ function MovementCortex:removePropFromWorld(layer, prop)
 	end
 
 	w.props[prop] = nil
-	self.props[prop] = true
+	self.props[prop] = nil
 
 	prop:silence("collisionMaskUpdate", self.updatePropCollisionMask)
 

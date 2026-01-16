@@ -52,6 +52,9 @@ function Power:spawn(power, powerName)
 			self.icon = icon
 		end)
 	resources:queueEvent(function()
+		local width, height = self.font:getWidth(powerName)
+	end)
+	resources:queueEvent(function()
 		if self.icon and self.icon:getIsReady() then
 			self.ready = true
 		end

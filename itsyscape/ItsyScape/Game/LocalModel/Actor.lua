@@ -38,6 +38,10 @@ function LocalActor:new(game, peepType, peepID)
 	self.animations = {}
 	self.body = false
 	self.resource = false
+
+	self.resourceID = false
+	self.mapObjectID = false
+	self.actions = {}
 end
 
 function LocalActor:getPeep()
@@ -305,26 +309,38 @@ function LocalActor:getActions(scope)
 		return {}
 	end
 
-	local result = {}
-	if self:getResource() then
-		local actions = Utility.getActions(self.game, self:getResource(), scope or 'world')
-		for i = 1, #actions do
-			result[i] = actions[i]
+	local mapObject = Utility.Peep.getMapObject(self.peep)
+	local resource = Utility.Peep.getResource(self.peep)
+
+	local mapObjectID = (mapObject and mapObject.id.value or false)
+	local resourceID = (resource and resource.id.value or false)
+
+	if mapObjectID == self.mapObjectID and resourceID == self.resourceID then
+		return self.actions
+	end
+
+	self.mapObjectID = mapObjectID
+	self.resourceID = resourceID
+
+	self.actions = {}
+	if resource then
+		local actions = Utility.getActions(self.game, resource, scope or 'world')
+		for _, action in ipairs(actions) do
+			table.insert(self.actions, action)
 		end
 
 		if self.peep then
-			local mapObject = Utility.Peep.getMapObject(self.peep)
 			if mapObject then
-				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
+				local otherActions = Utility.getActions(self.game, mapObject, scope or 'world')
 
-				for i = 1, #proxyActions do
-					table.insert(result, proxyActions[i])
+				for _, action in ipairs(otherActions) do
+					table.insert(self.actions, action)
 				end
 			end
 		end
 	end
 
-	return result
+	return self.actions
 end
 
 function LocalActor:poke(action, scope, player)

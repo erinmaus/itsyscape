@@ -147,11 +147,19 @@ function SmartNavMeshPathFinder:find(start, goal)
 					didJump = true
 					break
 				end
+
+				if self.yield then
+					coroutine.yield()
+				end
 			end
 		end
 
 		if not didJump then
 			index = index + 1
+		end
+
+		if self.yield then
+			coroutine.yield()
 		end
 	end
 
@@ -202,6 +210,10 @@ function SmartNavMeshPathFinder:find(start, goal)
 		if not materialized or i == #positions then
 			resultPath:makeNode(PositionPathNode, self.map, self.layer, current)
 			previous = current
+		end
+
+		if self.yield then
+			coroutine.yield()
 		end
 	end
 

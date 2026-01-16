@@ -152,7 +152,7 @@ function Damage:new(...)
 	local resources = self:getSpriteManager():getResources()
 	resources:queue(
 		FontResource,
-		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@24",
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@32",
 		function(font)
 			self.font = font
 		end)
@@ -164,6 +164,7 @@ function Damage:spawn(damageType, damage)
 	self.damage = damage
 	self.damageType = damageType or 'none'
 
+	local startTime = love.timer.getTime()
 	local resources = self:getSpriteManager():getResources()
 	resources:queue(
 		TextureResource,
@@ -200,11 +201,12 @@ function Damage:spawn(damageType, damage)
 		end)
 	resources:queueEvent(function()
 		self.ready = true
+		self.bufferTime = love.timer.getTime() - startTime
 	end)
 end
 
 function Damage:isDone(time)
-	return time > Damage.LIFE
+	return time > Damage.LIFE + (self.bufferTime or 0)
 end
 
 function Damage:draw(position, time)
@@ -225,16 +227,18 @@ function Damage:draw(position, time)
 			local particleSystem = self.particleSystems[i]
 			particleSystem:update(delta)
 
-			love.graphics.draw(particleSystem, position.x + self.offsetX, position.y + self.offsetY)
+			love.graphics.draw(particleSystem, position.x + self.offsetX, position.y + self.offsetY, 0, 2, 2)
 		end
 	end
 
 	local font = self.font:getResource()
 	local text = tostring(self.damage)
 
+	local alpha = math.clamp(math.sin(math.clamp((time - self.bufferTime) / Damage.LIFE) * math.pi) * 1.5)
+
 	love.graphics.setFont(font)
 	do
-		love.graphics.setColor(0, 0, 0, 1)
+		love.graphics.setColor(0, 0, 0, alpha)
 		love.graphics.printf(
 			text,
 			position.x + 2,
@@ -244,7 +248,7 @@ function Damage:draw(position, time)
 	end
 
 	do
-		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setColor(1, 1, 1, alpha)
 		love.graphics.printf(
 			text,
 			position.x,

@@ -2088,18 +2088,7 @@ end
 
 function Peep.getResource(peep)
 	local resource = peep:getBehavior(MappResourceBehavior)
-	if resource then
-		if resource.resource and peep:getIsReady() then
-			local brochure = peep:getDirector():getGameDB():getBrochure()
-			local resourceType = brochure:getResourceTypeFromResource(resource.resource)
-
-			return resource.resource, resourceType
-		end
-
-		return resource.resource, nil
-	else
-		return false
-	end
+	return resource and resource.resource or false
 end
 
 function Peep.setResource(peep, resource)

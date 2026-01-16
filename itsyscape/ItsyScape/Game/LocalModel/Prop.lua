@@ -30,6 +30,12 @@ function LocalProp:new(game, peepType, peepID, propID)
 	self.peepType = peepType
 	self.peepID = peepID
 	self.propID = propID
+	self.mapObjectID = false
+	self.resourceID = false
+	self.descriptionResourceID = false
+	self.descriptionMapObjectID = false
+	self.description = ""
+	self.actions = {}
 end
 
 function LocalProp:getPeep()
@@ -85,7 +91,19 @@ function LocalProp:getName()
 end
 
 function LocalProp:getDescription()
-	return Utility.Peep.getDescription(self.peep)
+	local mapObject = Utility.Peep.getMapObject(self.peep)
+	local resource = Utility.Peep.getResource(self.peep)
+
+	local mapObjectID = (mapObject and mapObject.id.value or false)
+	local resourceID = (resource and resource.id.value or false)
+
+	if not (mapObjectID == self.descriptionMapObjectID and resourceID == self.descriptionResourceID) then
+		self.description = Utility.Peep.getDescription(self.peep)
+		self.descriptionMapObjectID = mapObjectID
+		self.descriptionResourceID = resourceID
+	end
+
+	return self.description
 end
 
 function LocalProp:getResourceType()
@@ -188,23 +206,36 @@ end
 
 function LocalProp:getActions(scope)
 	local mapObject = Utility.Peep.getMapObject(self.peep)
+	local resource = Utility.Peep.getResource(self.peep)
+
+	local mapObjectID = (mapObject and mapObject.id.value or false)
+	local resourceID = (resource and resource.id.value or false)
+
+	if mapObjectID == self.mapObjectID and resourceID == self.resourceID then
+		return self.actions
+	end
+
+	self.mapObjectID = mapObjectID
+	self.resourceID = resourceID
+
 	if mapObject then
 		-- First we see if there's any actions whatsoever for the map object.
 		-- If so, we don't use the default actions.
 		--
 		-- However, we only want to return 'scope' actions, so we have to look-up
 		-- the actions *again*.
-		local actions = Utility.getActions(self.game, mapObject, scope or 'world')
+		local actions = Utility.getActions(self.game, mapObject)
 		if #actions > 0 then
-			return Utility.getActions(self.game, mapObject, scope or 'world')
+			self.actions = Utility.getActions(self.game, mapObject, scope or 'world')
+			return self.actions
 		end
 	end
 
 	if self:getResource() then
-		return Utility.getActions(self.game, self:getResource(), scope or 'world')
+		self.actions = Utility.getActions(self.game, self:getResource(), scope or 'world')
 	end
 
-	return {}
+	return self.actions
 end
 
 function LocalProp:poke(action, scope, player)

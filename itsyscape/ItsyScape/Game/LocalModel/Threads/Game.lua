@@ -92,11 +92,11 @@ local function tick()
 		game:cleanup()
 
 		if _DEBUG ~= "plus" then
-			local step = (_CONF.serverGCStepMS or 10) / 1000
+			local step = (_CONF.serverGCStepMS or 5) / 1000
 
 			local startTime = love.timer.getTime()
 			while love.timer.getTime() < startTime + step do
-				collectgarbage("step", 20)
+				collectgarbage("step", 0)
 			end
 		end
 
