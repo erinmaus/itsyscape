@@ -197,10 +197,7 @@ function LabelStyle:draw(widget, state)
 						table.insert(word, transformedText[newAbsoluteIndex])
 					end
 
-					currentIndex = currentIndex + utf8.len(w)
-					if k < #words then
-						currentIndex = currentIndex + 1
-					end
+					currentIndex = currentIndex + utf8.len(w) + 1
 
 					if self.textShadow then
 						love.graphics.setColor(0, 0, 0, self.color.a)
