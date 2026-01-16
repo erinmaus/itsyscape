@@ -23,16 +23,17 @@ function SSRPostProcessPass:load(resources)
 	self.mapTextureCoordinatesShader = self:loadPostProcessShader("MapTextureCoordinatesSSR")
 	self.buildColorShader = self:loadPostProcessShader("BuildColorSSR")
 	self.combineShader = self:loadPostProcessShader("CombineSSR")
+	self.cleanShader = self:loadPostProcessShader("CleanSSR")
 	self.blurShader = self:loadPostProcessShader("Blur")
 
-	self.textureCoordinatesBuffer = NGBuffer("rgba16f")
+	self.textureCoordinatesBuffer = NGBuffer("rgba16f", "rgba16f")
 	self.colorBuffer = NGBuffer("rgba8", "rgba8", "rgba8")
 
 	self.minSecondPassSteps = 40
 	self.maxSecondPassSteps = 120
 	self.maxFirstPassSteps = 180
 	self.resolution = 0.5
-	self.maxDistanceViewSpace = 14
+	self.maxDistanceViewSpace = 4
 end
 
 function SSRPostProcessPass:setMinMaxSecondPassSteps(min, max)
@@ -87,10 +88,7 @@ function SSRPostProcessPass:draw(width, height)
 	self._projection, self._view = self:getRenderer():getCamera():getTransforms(self._projection, self._view)
 	self._inverseProjection = MathCommon.makeInverseTransform(self._projection, self._inverseProjection or love.math.newTransform())
 	self._inverseView = MathCommon.makeInverseTransform(self._view, self._inverseView or love.math.newTransform())
-	self._forward = self:getRenderer():getCamera():getForward(self._forward)
-
-	self._direction = self._direction or {}
-	self._direction[1], self._direction[2], self._direction[3] = self._forward:get()
+	self._normal = MathCommon.transposeTransform(self._inverseView, self._normal or love.math.newTransform());
 
 	self._gbufferTexelSize = self._gbufferTexelSize or {}
 	self._gbufferTexelSize[1], self._gbufferTexelSize[2] = 1 / width, 1 / height
@@ -100,7 +98,7 @@ function SSRPostProcessPass:draw(width, height)
 		"scape_ViewMatrix", self._view,
 		"scape_InverseProjectionMatrix", self._inverseProjection,
 		"scape_InverseViewMatrix", self._inverseView,
-		"scape_CameraDirection", self._direction,
+		"scape_NormalMatrix", self._normal,
 		"scape_MaxDistanceViewSpace", self.maxDistanceViewSpace,
 		"scape_MinSecondPassSteps", self.minSecondPassSteps,
 		"scape_MaxSecondPassSteps", self.maxSecondPassSteps,
@@ -114,16 +112,23 @@ function SSRPostProcessPass:draw(width, height)
 	
 	self.colorBuffer:resize(width, height)
 
+	love.graphics.setCanvas(self.textureCoordinatesBuffer:getCanvas(2))
+	love.graphics.clear(0, 0, 0, 0)
+	self:bindShader(self.cleanShader,
+		"scape_TexelSize", self._gbufferTexelSize)
+	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
+
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(1))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(self.buildColorShader,
 		"scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor(),
 		"scape_TexelSize", self._gbufferTexelSize)
-	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
+	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(2))
 	
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(2))
+	love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.clear(0, 0, 0, 0)
-
+	
 	self._directionY = self._directionY or { 0, 1 }
 	self._directionX = self._directionX or { 1, 0 }
 
@@ -161,6 +166,7 @@ function SSRPostProcessPass:draw(width, height)
 	self:bindShader(self.combineShader,
 		"scape_ClearColorTexture", self.colorBuffer:getCanvas(1),
 		"scape_BlurColorTexture", self.colorBuffer:getCanvas(2),
+		"scape_SSRTextureCoordinatesTexture", self.textureCoordinatesBuffer:getCanvas(2),
 		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
 	love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.draw(self.colorBuffer:getCanvas(1))

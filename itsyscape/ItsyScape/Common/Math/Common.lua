@@ -32,6 +32,8 @@ function Common.transposeTransform(transform, result)
 		m21, m22, m23, m24,
 		m31, m32, m33, m34,
 		m41, m42, m43, m44)
+
+	return result
 end
 
 function Common.decomposeTransform(transform, translation, rotation)

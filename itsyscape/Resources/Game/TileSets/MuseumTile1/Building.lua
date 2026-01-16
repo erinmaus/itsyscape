@@ -18,7 +18,7 @@
 					isReflectiveOrRefractive = true,
 					reflectionPower = 0.5,
 					reflectionDistance = 1,
-					roughness = 0
+					roughness = 0.75
 				}
 			}
 		},
