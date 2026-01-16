@@ -455,7 +455,9 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 		peep:listen('assign', _onAssign)
 
 		local instance = self:getInstanceByLayer(layer)
-		instance:addActor(actor)
+		if instance then
+			instance:addActor(actor)
+		end
 
 		return true, actor
 	end
@@ -501,7 +503,9 @@ function LocalStage:placeProp(propID, layer, layerName)
 		Utility.Peep.setLayer(peep, layer)
 
 		local instance = self:getInstanceByLayer(layer)
-		instance:addProp(prop)
+		if instance then
+			instance:addProp(prop)
+		end
 
 		peep:listen('ready', function()
 			self.onPropPlaced(self, self:lookupPropAlias(realID), prop)
