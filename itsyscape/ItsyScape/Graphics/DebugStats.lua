@@ -24,7 +24,7 @@ function DebugStats:new()
 end
 
 function DebugStats:measure(node, ...)
-	if not _DEBUG or not (love.keyboard and love.keyboard.isDown("space")) then
+	if not _DEBUG then
 		return self:process(node, ...)
 	end
 
