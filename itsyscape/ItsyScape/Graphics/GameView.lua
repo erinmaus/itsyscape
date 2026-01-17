@@ -1876,6 +1876,13 @@ function GameView:getMapLocalLayer(layer)
 	end
 end
 
+function GameView:getMapGroup(layer)
+	local m = self.mapMeshes
+	if m then
+		return m.group
+	end
+end
+
 function GameView:getMapResourceID(layer)
 	local m = self.mapMeshes[layer]
 	if m then

@@ -696,22 +696,36 @@ end
 function DefaultCameraController:tryRecenter()
 	local player = self:getGame():getPlayer()
 	if not player then
-		return center
+		return false
 	end
 
 	local actor = player:getActor()
 	if not actor then
-		return center
+		return false
 	end
 
-	-- local _, _, layer = actor:getTile()
-	-- if layer ~= self.currentPlayerLayer then
-	-- 	self.currentPlayerLayer = layer
-	-- 	self:recenter()
-	-- 	return true
-	-- end
+	local _, _, layer = actor:getTile()
+	local group = self:getGameView():getMapGroup()
 
-	return false
+	local recenter = false
+
+	local instance = player:getInstanceID()
+	if instance ~= self.currentPlayerInstance then
+		self.currentPlayerInstance = instance
+		recenter = true
+	end
+
+	if layer ~= self.currentPlayerLayer and group ~= self.currentPlayerGroup then
+		self.currentPlayerLayer = layer
+		self.currentPlayerGroup = group
+		recenter = true
+	end
+
+	if recenter then
+		self:recenter()
+	end
+
+	return recenter
 end
 
 function DefaultCameraController:updateCenter(delta)
@@ -728,6 +742,10 @@ function DefaultCameraController:updateCenter(delta)
 
 	local distance = math.min(DefaultCameraController.CENTER_SPEED * delta, minDistance)
 	self.currentCenter = self.currentCenter + direction * distance
+end
+
+function DefaultCameraController:updatePlayer()
+
 end
 
 function DefaultCameraController:update(delta)
@@ -758,6 +776,7 @@ function DefaultCameraController:update(delta)
 	self:updatePanning(delta)
 	self:updateFirstPerson(delta)
 	self:updateCenter(delta)
+	self:updatePlayer(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if (isFocusDown ~= self.isFocusDown and isFocusDown) or _CONF.targetCameraMode ~= self.isTargetting then

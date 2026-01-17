@@ -67,6 +67,14 @@ function LocalPlayer:setInstance(previousLayerName, newLayerName, instance)
 	self.instance = instance
 end
 
+function LocalPlayer:getInstanceID()
+	if self.instance then
+		return string.format("%s@%d", self.instance:getFilename(), self.instance:getID())
+	end
+
+	return "::orphan"
+end
+
 function LocalPlayer:getInstance()
 	return self.instance
 end
