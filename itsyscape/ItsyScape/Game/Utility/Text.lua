@@ -838,7 +838,7 @@ function Text.Dialog.ir_get_stance(dialog, characterName)
 	return stance.stance
 end
 
-function Text.bind(dialog, common, language)
+function Text.bindDialog(dialog, common, language)
 	common = common or Text.Dialog
 
 	for k, v in pairs(common) do

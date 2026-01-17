@@ -26,6 +26,7 @@ end
 function Fog:tick()
 	PropView.tick(self)
 
+
 	local state = self:getProp():getState()
 	self.fog:setColor(Color(unpack(state.color or {})))
 	self.fog:setFarDistance((state.distance and state.distance.far) or 0)

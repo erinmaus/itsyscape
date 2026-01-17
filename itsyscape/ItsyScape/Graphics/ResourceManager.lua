@@ -15,11 +15,11 @@ local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
 ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 120
-ResourceManager.LOADING_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 20
+ResourceManager.LOADING_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 10
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
 
 ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME = _DEBUG == "plus" and 1 or 2 / 1000
-ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = _DEBUG == "plus" and 1 or 10 / 1000
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = _DEBUG == "plus" and 1 or 5 / 1000
 
 ResourceManager.FILE_IO_THREADS = 4
 
@@ -220,6 +220,7 @@ function ResourceManager:update()
 		self.wasPending = true
 	end
 
+	local _LOG_WRITE_ALL = true
 	local isEditor = _LOG_WRITE_ALL
 	do
 		local index = 1
@@ -259,7 +260,7 @@ function ResourceManager:update()
 				end
 
 				if _LOG_WRITE_ALL then
-					Log.debug("Tried loading resource '%s'.", pending.filename)
+					Log.debug("Tried loading resource '%s'; took %f ms.", pending.filename, (after - before) * 1000)
 				end
 			end
 		end
@@ -306,14 +307,14 @@ function ResourceManager:update()
 				else
 					index = index + 1
 				end
+
+				if _LOG_WRITE_ALL and _DEBUG then
+					Log.debug("Ran async event '%s'; took %f ms.", pending.callback, (after - before) * 1000)
+					Log.debug("Current async event stack: %s", debug.traceback(callback))
+				end
 			end
 
 			currentTime = love.timer.getTime()
-
-			if _LOG_WRITE_ALL and _DEBUG then
-				Log.debug("Ran async event '%s'.", pending.callback)
-				Log.debug("Current async event stack: %s", debug.traceback(callback))
-			end
 		end
 
 		if _LOG_WRITE_ALL then

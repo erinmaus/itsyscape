@@ -2057,6 +2057,7 @@ function GameView:addProp(propID, prop)
 	local view = PropView(prop, self)
 	view:attach()
 	view:load()
+	view:tick()
 
 	self.props[prop:getID()] = view
 	self.views[prop] = view
@@ -2422,14 +2423,26 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 						material:apply(alphaSceneNode, self.resourceManager)
 					end
 				end
+
+				if coroutine.running() then
+					coroutine.yield()
+				end
 			end
 
 			for _, sceneNode in ipairs(d.sceneNodes) do
 				self:_updateMapNode(m, sceneNode)
 			end
 
+			if coroutine.running() then
+				coroutine.yield()
+			end
+
 			for _, alphaSceneNode in ipairs(d.alphaSceneNodes) do
 				self:_updateMapNode(m, alphaSceneNode)
+			end
+
+			if coroutine.running() then
+				coroutine.yield()
 			end
 
 			if callback then

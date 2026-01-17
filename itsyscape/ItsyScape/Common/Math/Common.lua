@@ -257,7 +257,7 @@ do
 			result:apply(offsetTransform)
 		end
 
-		return transform
+		return result
 	end
 end
 

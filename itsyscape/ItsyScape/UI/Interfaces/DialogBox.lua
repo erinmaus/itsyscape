@@ -257,6 +257,7 @@ function DialogBox:select(index)
 end
 
 function DialogBox:next(state)
+	print(">>> arg state", Log.dump(state), "self state", Log.dump(self:getState()))
 	state = state or self:getState()
 
 	if self.gridLayout then
@@ -439,7 +440,7 @@ function DialogBox:update(delta)
 	self.colorTime = self.colorTime + delta
 	local panelColor = self.currentColor:lerp(self.targetColor or Color(0, 0, 0, 0), math.clamp(self.colorTime / self.BACKGROUND_FADE_TIME))
 	if panelColor.a > 0 then
-		self.background:setStyle({ image = false, color = { panelColor:get() } }, PanelStyle)
+		self.background:setStyle({ image = false, color = { panelColor:get() }, radius = 0 }, PanelStyle)
 
 		if self.background:getParent() ~= self:getView():getRoot() then
 			self:getView():getRoot():addChild(self.background)

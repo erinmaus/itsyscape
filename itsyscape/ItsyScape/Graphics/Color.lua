@@ -32,6 +32,7 @@ function Color:from(r, g, b, a)
 		self.r = r
 		self.g = g
 		self.b = b
+		self.a = a
 	elseif r and not (g and b) then
 		self.r = r
 		self.g = r
@@ -41,7 +42,7 @@ function Color:from(r, g, b, a)
 		self.r = r or 0
 		self.g = g or 0
 		self.b = b or 0
-		self.a = a or 1
+		self.a = a
 	end
 
 	return self

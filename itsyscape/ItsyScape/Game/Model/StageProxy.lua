@@ -160,7 +160,7 @@ StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, impl,
 end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
 StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, impl, stage, prop)
-	impl(stage, actor)
+	impl(stage, prop)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Prop", prop:getID())
 end, Event.Argument("prop", true), Event.Argument("layer", true))
 StageProxy.removeProp:link("onPropRemoved")

@@ -91,6 +91,10 @@ function LocalProp:getName()
 end
 
 function LocalProp:getDescription()
+	if not (self.peep and self.peep:getDirector()) then
+		return string.format("It's %s, as if you didn't know.", self:getName())
+	end
+
 	local mapObject = Utility.Peep.getMapObject(self.peep)
 	local resource = Utility.Peep.getResource(self.peep)
 

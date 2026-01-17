@@ -22,7 +22,7 @@ function Quest.isNextStep(quest, step, peep)
 
 	local isBranch = #nextStep > 1
 	for i = 1, #nextStep do
-		isBranch = isBranch and type(nextStep[i]) == 'table'
+		isBranch = isBranch and (type(nextStep[i]) == 'table' and #nextStep[i] > 0)
 	end
 
 	if isBranch then
@@ -48,7 +48,7 @@ function Quest._getNextStep(steps, peep, isBranch)
 
 		local numStepsCompleted = 0
 		for i = 1, #step do
-			if type(step[i]) == 'table' then
+			if type(step[i]) == 'table' and #step[i] > 0 then
 				local branchSteps = { Quest._getNextStep(step[i], peep, true) }
 				if #branchSteps > 0 then
 					local result = {}
@@ -240,7 +240,7 @@ function Quest.buildWorkingQuestLog(steps, gameDB, questInfo)
 			local block = { t = 'list' }
 
 			for j = 1, #step do
-				if type(step[j]) == 'table' then
+				if type(step[j]) == 'table' and #step[j] > 0 then
 					Quest.buildWorkingQuestLog(step[j], gameDB, questInfo)
 				else
 					local description1 = Utility.getDescription(step[j], gameDB, nil, 1)
@@ -277,7 +277,7 @@ function Quest.buildRichTextLabelFromQuestLog(questLog, peep, scroll)
 	for i = 1, #steps do
 		local step = steps[i]
 		local questLogForStep = questLog[step.id]
-		local isChoice = (type(step[1]) == 'table' and #step[1] > 1)
+		local isChoice = (type(step[1]) == 'table' and #step[1] > 0)
 
 		if isChoice then
 			if i == #steps then

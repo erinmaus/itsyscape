@@ -1207,7 +1207,7 @@ function ActorView:changeSkin(slot, priority, skin, config)
 			slot = slot,
 			definition = skin:clone(),
 			priority = priority,
-			config = config or {}
+			config = RPCState.merge(config or {})
 		}
 
 		table.insert(slotNodes, s)

@@ -294,6 +294,10 @@ function LargeTileSet:emitAll(map)
 							outlineImage:release()
 
 							index = index + 3
+
+							if coroutine.running() then
+								coroutine.yield()
+							end
 						end
 					end
 				end

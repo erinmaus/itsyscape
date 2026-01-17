@@ -130,6 +130,10 @@ function LocalActor:getName()
 end
 
 function LocalActor:getDescription()
+	if not (self.peep and self.peep:getDirector()) then
+		return string.format("It's %s, as if you didn't know.", self:getName())
+	end
+
 	local resource = Utility.Peep.getResource(self.peep)
 	if not self.descriptionResource or resource.id.value ~= self.descriptionResource.id.value then
 		self.description = Utility.Peep.getDescription(self.peep)

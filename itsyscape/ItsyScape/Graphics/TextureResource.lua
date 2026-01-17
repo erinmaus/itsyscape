@@ -108,12 +108,13 @@ function TextureResource.generateOutlineImage(image)
 	local widthBreakpoint = 0
 	local heightBreakpoint = 0
 
-	love.graphics.push("all")
-	
-	love.graphics.setBlendMode("replace", "premultiplied")
-	love.graphics.setShader(TextureResource.OUTLINE_MIPMAP_SHADER)
 	local mipmaps = {}
 	repeat
+		love.graphics.push("all")
+
+		love.graphics.setBlendMode("replace", "premultiplied")
+		love.graphics.setShader(TextureResource.OUTLINE_MIPMAP_SHADER)
+
 		local canvas = love.graphics.newCanvas(width, height)
 		local blockWidth = previousWidth / width
 		local blockHeight = previousHeight / height
@@ -143,8 +144,15 @@ function TextureResource.generateOutlineImage(image)
 
 		width = math.max(math.floor(width / 2), 1)
 		height = math.max(math.floor(height / 2), 1)
+
+		love.graphics.pop()
+
+		if coroutine.running() then
+			coroutine.yield()
+		end
 	until previousWidth == 1 and previousHeight == 1
 
+	love.graphics.push("all")
 	local result = love.graphics.newCanvas(image:getWidth(), image:getHeight(), { mipmaps = "manual" })
 	love.graphics.setShader()
 	for level, mipmap in ipairs(mipmaps) do
@@ -176,7 +184,8 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			string.format("%%1@%s%%2", passFilename))
 
 		if perPassTextureFilename ~= filename and love.filesystem.getInfo(perPassTextureFilename) then
-			local perPassImage = love.graphics.newImage(perPassTextureFilename)
+			local perPassImageData = Resource.readImageData(perPassTextureFilename)
+			local perPassImage = love.graphics.newImage(perPassImageData)
 			perPassImage:setFilter("linear", "linear")
 			perPassImage:setWrap("repeat")
 
@@ -185,10 +194,6 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			end
 
 			self:getHandle():setPerPassTexture(passID, perPassImage)
-
-			if coroutine.running() then
-				coroutine.yield()
-			end
 		end
 	end
 
@@ -198,15 +203,12 @@ function TextureResource:loadFromFile(filename, resourceManager)
 			string.format("%%1@%s%%2", passFilename))
 
 		if boundTextureFilename ~= filename and love.filesystem.getInfo(boundTextureFilename) then
-			local boundImage = love.graphics.newImage(boundTextureFilename)
+			local boundImageData = Resource.readImageData(boundTextureFilename)
+			local boundImage = love.graphics.newImage(boundImageData)
 			boundImage:setFilter('linear', 'linear')
 			boundImage:setWrap("repeat")
 
 			self:getHandle():setBoundTexture(passFilename, boundImage)
-
-			if coroutine.running() then
-				coroutine.yield()
-			end
 		end
 	end
 end
