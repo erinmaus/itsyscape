@@ -152,7 +152,7 @@ function Damage:new(...)
 	local resources = self:getSpriteManager():getResources()
 	resources:queue(
 		FontResource,
-		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@32",
+		"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf@26",
 		function(font)
 			self.font = font
 		end)
@@ -227,7 +227,7 @@ function Damage:draw(position, time)
 			local particleSystem = self.particleSystems[i]
 			particleSystem:update(delta)
 
-			love.graphics.draw(particleSystem, position.x + self.offsetX, position.y + self.offsetY, 0, 2, 2)
+			love.graphics.draw(particleSystem, position.x + self.offsetX, position.y + self.offsetY, 0, 1.5, 1.5)
 		end
 	end
 
