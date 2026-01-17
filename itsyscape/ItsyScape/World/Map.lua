@@ -193,13 +193,17 @@ function Map:isOutOfBounds(x, z)
 	return false
 end
 
-function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
-	if i1 == i2 and j1 == j2 then
-		return true, i2, j2
+function Map:lineOfSightPassable(startI, startJ, stopI, stopJ, shoot, isPassableFunc, isDebug)
+	if startI == stopI and startJ == stopJ then
+		return true, stopI, stopJ
 	end
 
-	local steep = math.abs(j2 - j1) > math.abs(i2 - i1)
+	if isDebug then
+		Log.info("Line of sight check from (%d, %d) to (%d, %d) engaged...", startI, startJ, stopI, stopJ)
+	end
 
+	local i1, j1, i2, j2 = startI, startJ, stopI, stopJ
+	local steep = math.abs(j2 - j1) > math.abs(i2 - i1)
 	if steep then
 		i1, j1 = j1, i1
 		i2, j2 = j2, i2
@@ -220,10 +224,6 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 	else
 		pi = x
 		pj = y
-	end
-
-	if isDebug then
-		Log.info("Line of sight check from (%d, %d) to (%d, %d) engaged...", i1, j1, i2, j2)
 	end
 
 	while x ~= i2 do
@@ -250,12 +250,12 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 			end
 
 			local di, dj = i - pi, j - pj
-			if not self:canMove(pi, pj, di, dj, shoot, nil, isDebug) then
+			if not (isPassableFunc or self.canMove)(self, pi, pj, di, dj, shoot) then
 				if isDebug then
 					Log.info("Cannot move to (%d, %d) from (%d, %d)!", i, j, pi, pj)
 				end
 
-				return false, pi, pj
+				return false, pi, pj, i, j
 			end
 
 			pi = i
@@ -264,10 +264,10 @@ function Map:lineOfSightPassable(i1, j1, i2, j2, shoot, isDebug)
 	end
 
 	if isDebug then
-		Log.info("Can move from (%d, %d) to (%d, %d)!", i1, j1, i2, j2)
+		Log.info("Can move from (%d, %d) to (%d, %d)!",  startI, startJ, stopI, stopJ)
 	end
 
-	return true, i2, j2
+	return true, stopI, stopJ
 end
 
 -- stepCallback is (map: Map, i: integer, j: integer, x: float, z: float, t: float) -> Boolean
@@ -329,7 +329,36 @@ function Map:castRay(ray, stepCallback)
 	return nil
 end
 
+Map.SHOOT_FROM_BELOW_TO_ABOVE = 1
+Map.SHOOT_FROM_ABOVE_TO_BELOW = 2
+Map.SHOOT_BIDIRECTIONAL       = 3
+
+local function _shoot(shoot, from1, to1, from2, to2)
+	from1 = from1 or from2
+	from2 = from2 or from1
+	to1 = to1 or to2
+	to2 = to2 or to1
+
+	if shoot == Map.SHOOT_BIDIRECTIONAL then
+		return true
+	elseif shoot == Map.SHOOT_FROM_BELOW_TO_ABOVE then
+		return from1 >= to1 and from2 >= to2
+	elseif shoot == Map.SHOOT_FROM_ABOVE_TO_BELOW then
+		return from1 <= to1 and from2 <= to2
+	end
+
+	return false
+end
+
 function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
+	if type(shoot) ~= "number" then
+		if shoot then
+			shoot = Map.SHOOT_FROM_ABOVE_TO_BELOW
+		else
+			shoot = false
+		end
+	end
+
 	if math.abs(di) > 1 or math.abs(dj) > 1 then
 		return false
 	end
@@ -345,7 +374,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if di < 0 and i > 1 then
 		local left = self:getTile(i - 1, j)
 		if ((left.topRight == tile.topLeft or left.bottomRight == tile.bottomLeft) or
-			(shoot and left.topRight <= tile.topLeft and left.bottomRight <= tile.bottomLeft)) and
+			(_shoot(shoot, left.topRight, tile.topLeft, left.bottomRight, tile.bottomLeft))) and
 		   (isPassableFunc and isPassableFunc(self, i, j, i - 1, j) or (left:getIsPassable() or (left:hasFlag("shoot") and shoot))) and
 		   (not left:hasFlag("wall-right") and not tile:hasFlag("wall-left"))
 		then
@@ -364,7 +393,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if di > 0 and i < self:getWidth() then
 		local right = self:getTile(i + 1, j)
 		if ((right.topLeft == tile.topRight or right.bottomLeft == tile.bottomRight) or
-			(shoot and right.topLeft <= tile.topRight and right.bottomLeft <= tile.bottomRight)) and
+			(_shoot(shoot, right.topLeft, tile.topRight, right.bottomLeft, tile.bottomRight))) and
 		   (right:getIsPassable() or (right:hasFlag("shoot") and shoot)) and
 		   (not right:hasFlag("wall-left") and not tile:hasFlag("wall-right"))
 		then
@@ -383,7 +412,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if dj < 0 and j > 1 then
 		local top = self:getTile(i, j - 1)
 		if ((top.bottomLeft == tile.topLeft or top.bottomRight == tile.topRight) or
-			(shoot and top.bottomLeft <= tile.topLeft and top.bottomRight <= tile.topRight)) and
+			(_shoot(shoot, top.bottomLeft, tile.topLeft, top.bottomRight, tile.topRight))) and
 		   (top:getIsPassable() or (top:hasFlag("shoot") and shoot)) and
 		   (not top:hasFlag("wall-bottom") and not tile:hasFlag("wall-top"))
 		then
@@ -402,7 +431,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if dj > 0 and j < self:getHeight() then
 		local bottom = self:getTile(i, j + 1)
 		if ((bottom.topLeft == tile.bottomLeft or bottom.topRight == tile.bottomRight) or
-			(shoot and bottom.topLeft <= tile.bottomLeft and bottom.topRight <= tile.bottomRight)) and
+			(_shoot(shoot, bottom.topLeft, tile.bottomLeft, bottom.topRight, tile.bottomRight))) and
 		   (bottom:getIsPassable() or (bottom:hasFlag("shoot") and shoot)) and
 		   (not bottom:hasFlag("wall-top") and not tile:hasFlag("wall-bottom"))
 		then
@@ -428,7 +457,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 	if math.abs(di) + math.abs(dj) > 1 then
 		if di < 0 and dj < 0 and i > 1 and j > 1 then
 			local topLeft = self:getTile(i - 1, j - 1)
-			if (topLeft.bottomRight == tile.topLeft or (shoot and topLeft.bottomRight <= tile.topLeft)) and
+			if (topLeft.bottomRight == tile.topLeft or (_shoot(shoot, topLeft.bottomRight, tile.topLeft))) and
 			   (topLeft:getIsPassable({ 'impassable' }) or (topLeft:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -453,7 +482,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 		if di < 0 and dj > 1 and i > 1 and j < self:getHeight() then
 			local bottomLeft = self:getTile(i - 1, j + 1)
-			if (bottomLeft.topRight == tile.bottomLeft or (shoot and bottomLeft.topRight <= tile.bottomLeft)) and
+			if (bottomLeft.topRight == tile.bottomLeft or (_shoot(shoot, bottomLeft.topRight, tile.bottomLeft))) and
 			   (bottomLeft:getIsPassable({ 'impassable' }) or (bottomLeft:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -478,7 +507,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 		if di > 0 and dj < 0 and i < self:getWidth() and j > 1 then
 			local topRight = self:getTile(i + 1, j - 1)
-			if (topRight.bottomLeft == tile.topRight or (shoot and topRight.bottomLeft <= tile.topRight)) and
+			if (topRight.bottomLeft == tile.topRight or (_shoot(shoot, topRight.bottomLeft, tile.topRight))) and
 			   (topRight:getIsPassable({ 'impassable' }) or (topRight:hasFlag("shoot") and shoot))
 			then
 				if isDebug then
@@ -503,7 +532,7 @@ function Map:canMove(i, j, di, dj, shoot, isPassableFunc, isDebug)
 
 		if di > 0 and dj > 0 and i < self:getWidth() and j < self:getHeight() then
 			local bottomRight = self:getTile(i + 1, j + 1)
-			if (bottomRight.topLeft == tile.bottomRight or (shoot and bottomRight.topLeft <= tile.bottomRight)) and
+			if (bottomRight.topLeft == tile.bottomRight or (_shoot(shoot, bottomRight.topLeft, tile.bottomRight))) and
 			   (bottomRight:getIsPassable({ 'impassable' }) or (bottomRight:hasFlag("shoot") and shoot))
 			then
 				if isDebug then

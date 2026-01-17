@@ -57,6 +57,10 @@ function Make:getActionDuration(...)
 	return self.PAUSE
 end
 
+function Make:getTileAnchors(prop, player)
+	return true, { { Utility.Peep.getTileAnchor(prop, player) } }
+end
+
 function Make:getSecondaryResourceActions(state, prop)
 	local gameDB = self:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -179,14 +183,47 @@ function Make:gather(state, player, prop, toolType, skill)
 
 			local progress = prop:getBehavior(PropResourceHealthBehavior)
 			if progress and progress.currentProgress < progress.maxProgress then
-				local position, layer = Utility.Peep.getTileAnchor(prop, player)
-				local walk, n = Utility.Peep.queueWalk(player, i, j, k, self.MAX_DISTANCE or 1.5)
+				local success, positions = self:getTileAnchors(prop, player)
+				if not success or #positions == 0 then
+					self:failWithMessage(player, "ActionFail_Walk")
+					return
+				end
 
-				walk:register(function(s)
-					if not s then
-						self:failWithMessage(player, "ActionFail_Walk")
+				local currentIndex = 1
+				local function step(s, c)
+					if not s and c then
 						return
 					end
+
+					if not s and currentIndex <= #positions then
+						local position, layer, maxSearchDistance = unpack(positions[currentIndex])
+						print(">>> trying", currentIndex, "xyz", position:get())
+
+						if not (position and layer) then
+							self:failWithMessage(player, "ActionFail_Walk")
+							return false
+						end
+
+						local walk, n = Utility.Peep.queueWalk(player, position, layer, 0, { maxSearchDistance = maxSearchDistance, maxGoalDistance = self.MAX_DISTANCE or 0.5 })
+						walk:register(step)
+
+						if not player:getCommandQueue():interrupt(QueueWalkCommand(walk, n)) then
+							self:failWithMessage(player, "ActionFail_Walk")
+							Utility.Peep.cancelWalk(n)
+							return false
+						end
+
+						currentIndex = currentIndex + 1
+						return true
+					end
+
+					if not s then
+						self:failWithMessage(player, "ActionFail_Walk")
+						return false
+					end
+
+					local p = unpack(positions[currentIndex - 1])
+					print(">>> success", currentIndex - 1, player:getName(), "p", p:get())
 
 					local face = CallbackCommand(Utility.Peep.face, player, prop)
 					local perform = CallbackCommand(Action.perform, self, state, player)
@@ -197,9 +234,9 @@ function Make:gather(state, player, prop, toolType, skill)
 					if not queue:push(CompositeCommand(nil, face, perform, gatherCommand)) then
 						self:fail(state, player)
 					end
-				end)
+				end
 
-				return player:getCommandQueue():interrupt(QueueWalkCommand(walk, n))
+				return step()
 			else
 				Log.info("Resource '%s' depleted.", prop:getName())
 			end
