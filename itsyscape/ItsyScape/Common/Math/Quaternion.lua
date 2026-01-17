@@ -97,12 +97,22 @@ do
 	end
 end
 
-function BaseQuaternion.fromVectors(source, target)
-	local dot = source:getNormal():dot(target:getNormal())
-	local halfCos = math.sqrt((1 + dot) / 2)
-	local halfSin = math.sqrt((1 - dot) / 2)
-	local cross = source:cross(target):getNormal() * halfSin
-	return Quaternion(cross.x, cross.y, cross.z, halfCos)
+do
+	local sourceNormal = Vector()
+	local targetNormal = Vector()
+	local cross = Vector()
+	local scale = Vector()
+
+	function BaseQuaternion.fromVectors(source, target, result)
+		local dot = source:normalize(sourceNormal):dot(target:normalize(targetNormal))
+		local halfCos = math.sqrt((1 + dot) / 2)
+		local halfSin = math.sqrt((1 - dot) / 2)
+		cross = sourceNormal:cross(targetNormal, cross):normalize(cross)
+		cross:product(scale:from(halfSin), cross)
+
+		result = result or Quaternion()
+		return result:from(cross.x, cross.y, cross.z, halfCos)
+	end
 end
 
 -- Constructs a new three-dimensional quaternion from the provided components.
