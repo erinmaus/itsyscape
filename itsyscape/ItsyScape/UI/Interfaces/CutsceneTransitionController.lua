@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 
 local CutsceneTransitionController = Class(Controller)
@@ -21,6 +22,7 @@ function CutsceneTransitionController:new(peep, director, minDuration, callback)
 	}
 
 	self.isClosing = false
+	self.isReady = false
 
 	self.onBeginClosing = Callback()
 	self.onFinishClosing = Callback()
@@ -33,11 +35,7 @@ function CutsceneTransitionController:getIsClosing()
 end
 
 function CutsceneTransitionController:move()
-	self:getDirector():getGameInstance():getUI():sendPoke(
-		self,
-		"onPlayerMove",
-		nil,
-		{})
+	self:send("onPlayerMove")
 end
 
 function CutsceneTransitionController:poke(actionID, actionIndex, e)
@@ -56,7 +54,23 @@ function CutsceneTransitionController:poke(actionID, actionIndex, e)
 end
 
 function CutsceneTransitionController:pull()
-	return self.state
+	return {
+		minDuration = self.state.minDuration,
+		isReady = self.isReady
+	}
+end
+
+function CutsceneTransitionController:update(delta)
+	Controller.update(self, delta)
+
+	if not self.isReady then
+		local instance = Utility.Peep.getInstance(self:getPeep())
+		local baseMapScript = instance and instance:getBaseMapScript()
+
+		if not baseMapScript or baseMapScript:getDirector() then
+			self.isReady = true
+		end
+	end
 end
 
 return CutsceneTransitionController
