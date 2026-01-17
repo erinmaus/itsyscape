@@ -34,7 +34,7 @@ function Flare:new(prop, gameView)
 end
 
 function Flare:_updateDirection(direction, speed)
-	local position, layer = self.prop:getPosition()
+	local position, layer = self:getProp():getPosition()
 	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
 	local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed

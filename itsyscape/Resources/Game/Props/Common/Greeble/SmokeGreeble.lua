@@ -26,6 +26,7 @@ SmokeGreeble.PARTICLE_SCALE = 1
 SmokeGreeble.SMOKE_SPEED = 0.2
 
 SmokeGreeble.SMOKE_HEIGHT = 1
+SmokeGreeble.SMOKE_WIND_RESISTANCE = 2
 
 SmokeGreeble.SMOKE_COLORS = {
 	Color(0.2, 0.2, 0.2),
@@ -42,19 +43,20 @@ do
 	local normal = Vector()
 
 	function SmokeGreeble:_updateDirection(direction, speed)
-		local position, layer = self.prop:getPosition()
+		local position, layer = self:getProp():getPosition()
 		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
 		local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
 		windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
 		local windMu = (windDelta + 1) / 2
 
+		local min, max = self:getProp():getBounds()
 		fireDirection:from(
 			windDelta * windDirection.x,
-			1,
+			self.SMOKE_WIND_RESISTANCE,
 			windDelta * windDirection.z):normalize(fireDirection)
 
-		Quaternion.lookAt(Vector.ZERO, fireDirection, Vector.UNIT_Y, targetWindRotation)
+		Quaternion.fromVectors(Vector.UNIT_Y, fireDirection, targetWindRotation)
 		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
 		normal:normalize(normal)
 

@@ -32,6 +32,7 @@ FireView.HEIGHT = 1
 FireView.SCALE = 1
 FireView.OFFSET = Vector(0):keep()
 FireView.HAS_CUSTOM_MODEL = false
+FireView.WIND_RESISTANCE = 2
 
 function FireView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -56,7 +57,7 @@ do
 	local normal = Vector()
 
 	function FireView:_updateDirection(direction, speed)
-		local position, layer = self.prop:getPosition()
+		local position, layer = self:getProp():getPosition()
 		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
 		local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
@@ -65,10 +66,10 @@ do
 
 		fireDirection:from(
 			windDelta * windDirection.x,
-			1,
+			self.WIND_RESISTANCE,
 			windDelta * windDirection.z):normalize(fireDirection)
 
-		Quaternion.lookAt(Vector.ZERO, fireDirection, Vector.UNIT_Y, targetWindRotation)
+		Quaternion.fromVectors(Vector.UNIT_Y, fireDirection, targetWindRotation)
 		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
 		normal:normalize(normal)
 

@@ -113,7 +113,7 @@ function GroundFog:_build()
 	material:setOutlineThreshold(-1)
 
 	local gameView = self:getGameView()
-	local _, layer = self.prop:getPosition()
+	local _, layer = self:getProp():getPosition()
 
 	local gameView = self:getGameView()
 	local _, _, canvas = gameView:getMapBumpCanvas(layer)
@@ -142,7 +142,7 @@ end
 function GroundFog:tick()
 	PropView.tick(self)
 
-	local _, layer = self.prop:getPosition()
+	local _, layer = self:getProp():getPosition()
 	if layer ~= self.currentLayer then
 		self:_build()
 		self.currentLayer = layer

@@ -60,7 +60,6 @@ function SailingItemView:getAttachments()
 	local resource = state and state.resource
 
 	if not resource then
-		print(">>> no resource", self:getDebugInfo().shortName)
 		return {}
 	end
 

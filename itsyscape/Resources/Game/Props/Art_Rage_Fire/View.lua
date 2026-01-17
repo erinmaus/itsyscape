@@ -25,6 +25,7 @@ Fire.MIN_COLOR_BRIGHTNESS = 0.9
 Fire.MAX_COLOR_BRIGHTNESS = 1.0
 Fire.COLOR = Color(1, 0.5, 0, 1)
 Fire.HEIGHT = 1
+Fire.WIND_RESISTANCE = 16
 
 function Fire:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -40,19 +41,20 @@ do
 	local normal = Vector()
 
 	function Fire:_updateDirection(direction, speed)
-		local position, layer = self.prop:getPosition()
+		local position, layer = self:getProp():getPosition()
 		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
 		local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
 		windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
 		local windMu = (windDelta + 1) / 2
 
+		local min, max = self:getProp():getBounds()
 		fireDirection:from(
 			windDelta * windDirection.x,
-			1,
+			(max.y - min.y) / 2,
 			windDelta * windDirection.z):normalize(fireDirection)
 
-		Quaternion.lookAt(Vector.ZERO, fireDirection, Vector.UNIT_Y, targetWindRotation)
+		Quaternion.fromVectors(Vector.UNIT_Y, fireDirection, targetWindRotation)
 		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
 		normal:normalize(normal)
 
