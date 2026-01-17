@@ -225,7 +225,7 @@ function TreeView:tick()
 		if r.depleted ~= self.isDepleted then
 			if r.depleted then
 				local globalTransform = self:getRoot():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
-				local _, globalRotation = MathCommon.decomposeTransform(globalRotation)
+				local _, globalRotation = MathCommon.decomposeTransform(globalTransform)
 				local inverseGlobalRotation = -globalRotation
 
 				if r.felledPosition then
@@ -268,8 +268,7 @@ function TreeView:update(delta)
 		local r = self:getProp():getState().resource
 		if self.isDepleted and r and r.felledPosition then
 			local currentRotation = Quaternion.IDENTITY:slerp(self.targetRotation, Tween.powerEaseOut(delta, 3))
-
-			MathCommon.makeRotationTransform(self._transform)
+			MathCommon.makeRotationTransform(currentRotation, self._transform)
 
 			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
