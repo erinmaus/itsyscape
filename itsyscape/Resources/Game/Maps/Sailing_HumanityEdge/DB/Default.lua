@@ -29,7 +29,7 @@ end
 M["Art_Rage_Fire1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 139.406250,
+		PositionX = 143.406250,
 		PositionY = 3.000000,
 		PositionZ = 167.437500,
 		RotationX = 0.000000,
@@ -53,7 +53,7 @@ end
 M["Art_Rage_Fire2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 141.156250,
+		PositionX = 146.156250,
 		PositionY = 3.000000,
 		PositionZ = 168.375000,
 		RotationX = 0.000000,

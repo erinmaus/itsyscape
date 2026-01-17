@@ -170,7 +170,7 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint, enab
 
 	if otherPeep then
 		Utility.Peep.setMashinaState(otherPeep, false)
-		Utility.Combat.disengage(otherPeep)
+		Utility.Peep.interrupt(otherPeep)
 		otherPeep:getCommandQueue():interrupt()
 
 		local i, j, k = Utility.Peep.getTile(playerPeep)
@@ -235,7 +235,7 @@ end
 
 function Island:onPlayFoundPiratesCutscene(playerPeep)
 	Utility.Peep.disable(playerPeep)
-	Utility.Combat.disengage(playerPeep)
+	Utility.Peep.interrupt(playerPeep)
 
 	self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
 		Utility.UI.closeAll(playerPeep)
@@ -1086,8 +1086,8 @@ function Island:updateTutorialFindPeakStep(playerPeep)
 
 		Utility.Peep.setMashinaState(orlando, "tutorial-disengage-follow-player")
 		Utility.Peep.setMashinaState(knightCommander, "tutorial-disengage-follow-player")
-		Utility.Combat.disengage(orlando)
-		Utility.Combat.disengage(knightCommander)
+		Utility.Peep.interrupt(orlando)
+		Utility.Peep.interrupt(knightCommander)
 
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-follow-player")
@@ -1119,19 +1119,19 @@ function Island:updateTutorialFindYendoriansStep(playerPeep)
 
 		Utility.Peep.setMashinaState(orlando, "tutorial-disengage-follow-player")
 		Utility.Peep.setMashinaState(knightCommander, "tutorial-disengage-follow-player")
-		Utility.Combat.disengage(orlando)
-		Utility.Combat.disengage(knightCommander)
+		Utility.Peep.interrupt(orlando)
+		Utility.Peep.interrupt(knightCommander)
 
 		local peakYendorian1 = self:getCompanion(playerPeep, "PeakYendorian1")
 		if peakYendorian1 then
 			Utility.Peep.setMashinaState(peakYendorian1, false)
-			Utility.Combat.disengage(peakYendorian1)
+			Utility.Peep.interrupt(peakYendorian1)
 		end
 
 		local peakYendorian2 = self:getCompanion(playerPeep, "PeakYendorian2")
 		if peakYendorian2 then
 			Utility.Peep.setMashinaState(peakYendorian2, false)
-			Utility.Combat.disengage(peakYendorian2)
+			Utility.Peep.interrupt(peakYendorian2)
 		end
 
 		self:poke("playFoundPiratesCutscene", playerPeep)
