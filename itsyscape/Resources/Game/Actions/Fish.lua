@@ -50,33 +50,6 @@ function Fish:getTileAnchors(prop, player)
 		xzFishRelativePosition,
 		xzFishRelativePosition:direction(xzPlayerRelativePosition))
 
-	-- local currentBestI, currentBestJ, currentPlayerRay
-	-- local previousI, previousJ
-	-- local function iterate(_, currentI, currentJ, _, _, t)
-	-- 	local currentPosition = Utility.Map.getAbsoluteTilePosition(self:getDirector(), currentI, currentJ, layer)
-	-- 	local xzCurrentPosition = Vector(currentPosition.x, 0, currentPosition.z)
-	-- 	if xzFishAbsolutePosition:distance(xzCurrentPosition) > self.TARGET_MAX_DISTANCE then
-	-- 		return true
-	-- 	end
-
-	-- 	if not (previousI and previousJ) then
-	-- 		previousI = previousI
-	-- 		previousJ = previousJ
-	-- 		return
-	-- 	end
-
-	-- 	local canSeeFish = map:canMove(previousI, previousJ, currentI - previousI, currentJ - previousJ, Map.SHOOT_BIDRECTIONAL)
-	-- 	if canSeeFish then
-	-- 		currentBestI = currentI
-	-- 		currentBestJ = currentJ
-	-- 	end
-
-	-- 	local canReachFish = map:canMove(previousI, previousJ, currentI - previousI, currentJ - previousJ, false)
-	-- 	if not canReachFish then
-	-- 		return true
-	-- 	end
-	-- end
-
 	local currentShoot
 	local function iterateFromFishToPlayer(_, previousI, previousJ, differenceI, differenceJ)
 		local canMoveUp = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_BELOW_TO_ABOVE)

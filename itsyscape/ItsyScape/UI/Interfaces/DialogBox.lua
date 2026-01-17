@@ -257,7 +257,6 @@ function DialogBox:select(index)
 end
 
 function DialogBox:next(state)
-	print(">>> arg state", Log.dump(state), "self state", Log.dump(self:getState()))
 	state = state or self:getState()
 
 	if self.gridLayout then

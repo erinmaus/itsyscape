@@ -197,7 +197,6 @@ function Make:gather(state, player, prop, toolType, skill)
 
 					if not s and currentIndex <= #positions then
 						local position, layer, maxSearchDistance = unpack(positions[currentIndex])
-						print(">>> trying", currentIndex, "xyz", position:get())
 
 						if not (position and layer) then
 							self:failWithMessage(player, "ActionFail_Walk")
@@ -221,9 +220,6 @@ function Make:gather(state, player, prop, toolType, skill)
 						self:failWithMessage(player, "ActionFail_Walk")
 						return false
 					end
-
-					local p = unpack(positions[currentIndex - 1])
-					print(">>> success", currentIndex - 1, player:getName(), "p", p:get())
 
 					local face = CallbackCommand(Utility.Peep.face, player, prop)
 					local perform = CallbackCommand(Action.perform, self, state, player)
