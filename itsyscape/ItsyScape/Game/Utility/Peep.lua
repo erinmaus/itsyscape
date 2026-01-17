@@ -46,6 +46,7 @@ local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
 local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
+local PendingWalkBehavior = require "ItsyScape.Peep.Behaviors.PendingWalkBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
@@ -1444,6 +1445,22 @@ end
 
 Peep.WALK_QUEUE = { n = 0, iterating = false, pending = {}, next = {}, cancelled = {} }
 
+function _finishWalk(peep, n)
+	local pendingWalk = peep:getBehavior(PendingWalkBehavior)
+	if pendingWalk then
+		if pendingWalk.nextWalkID == n then
+			pendingWalk.nextWalkID = false
+		elseif pendingWalk.currentWalkID == n then
+			pendingWalk.currentWalkID = pendingWalk.nextWalkID
+			pendingWalk.nextWalkID = false
+		end
+
+		if not (pendingWalk.nextWalkID or pendingWalk.currentWalkID) then
+			peep:removeBehavior(PendingWalkBehavior)
+		end
+	end
+end
+
 function Peep.cancelWalk(n)
 	for i = #Peep.WALK_QUEUE.pending, 1, -1 do
 		local pending = Peep.WALK_QUEUE.pending[i]
@@ -1452,6 +1469,8 @@ function Peep.cancelWalk(n)
 			if Peep.WALK_QUEUE.iterating then
 				table.insert(Peep.WALK_QUEUE.cancelled, pending)
 			else
+				_finishWalk(pending.peep, n)
+
 				table.remove(Peep.WALK_QUEUE.pending, i)
 				pending.callback(false, true)
 			end
@@ -1485,6 +1504,8 @@ function Peep.updateWalks(time)
 			if pending.s ~= nil then
 				pending.callback(pending.s)
 				table.remove(queue, i)
+
+				_finishWalk(pending.peep, pending.n)
 			end
 		end
 	end
@@ -1557,8 +1578,18 @@ function Peep.queueWalk(peep, ...)
 	else
 		pending.s = walkCoroutine(peep, args.position, args.layer, args.distance, y, unpack(args.args, 1, args.args.n))
 	end
-
 	table.insert(Peep.WALK_QUEUE.next, pending)
+
+	local _, pendingWalk = peep:addBehavior(PendingWalkBehavior)
+	if pendingWalk.currentWalkID and pendingWalk.nextWalkID then
+		Utility.Peep.cancelWalk(pendingWalk.nextWalkID)
+		pendingWalk.nextWalkID = pending.n
+	elseif pendingWalk.currentWalkID then
+		pendingWalk.nextWalkID = pending.n
+	else
+		pendingWalk.currentWalkID = pending.n
+	end
+
 	return callback, pending.n
 end
 
@@ -1825,7 +1856,6 @@ function Peep.getWalk(peep, ...)
 	local args = _getWalkArgs(...)
 
 	local t = args.t
-	print(peep:getName(), "t", Log.dump(t))
 	t = t or { asCloseAsPossible = true }
 
 	do
@@ -2059,6 +2089,15 @@ function Peep.applyCooldown(peep, time)
 	local _, cooldown = peep:addBehavior(AttackCooldownBehavior)
 	cooldown.cooldown = math.max(cooldown.cooldown, time)
 	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
+end
+
+function Peep.interrupt(peep)
+	Utility.Combat.disengage(peep)
+
+	peep:removeBehavior(TargetPositionBehavior)
+	peep:removeBehavior(TargetTileBehavior)
+
+	peep:getCommandQueue():clear()
 end
 
 function Peep.attack(peep, other, distance)

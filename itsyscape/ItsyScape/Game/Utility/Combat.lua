@@ -20,6 +20,7 @@ local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
@@ -27,6 +28,7 @@ local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+local Map = require "ItsyScape.World.Map"
 
 -- Contains utility methods that deal with combat.
 local Combat = {}
@@ -43,6 +45,7 @@ function Combat.disengage(peep)
 	if charge then
 		peep:removeBehavior(CombatChargeBehavior)
 		peep:removeBehavior(TargetTileBehavior)
+		peep:removeBehavior(TargetPositionBehavior)
 	end
 
 	peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
@@ -351,6 +354,38 @@ function Combat.setEquipmentStatBonus(peep, stat, value)
 	equipment.bonuses[stat] = value
 end
 
+local _currentShoot = nil
+local function _iterateTargetSight(map, previousI, previousJ, differenceI, differenceJ)
+	local canMove = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_BIDRECTIONAL)
+	if not canMove then
+		return false
+	end
+
+	local canMoveUp = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_BELOW_TO_ABOVE)
+	local canMoveDown = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_ABOVE_TO_BELOW)
+
+	local nextShoot
+	if canMoveUp and canMoveDown then
+		nextShoot = Map.SHOOT_BIDRECTIONAL
+	elseif canMoveUp then
+		nextShoot = Map.SHOOT_FROM_BELOW_TO_ABOVE
+	elseif canMoveDown then
+		nextShoot = Map.SHOOT_FROM_ABOVE_TO_BELOW
+	else
+		return false
+	end
+
+	if _currentShoot and nextShoot ~= Map.SHOOT_BIDRECTIONAL and nextShoot ~= _currentShoot then
+		return false
+	end
+
+	if nextShoot ~= Map.SHOOT_BIDRECTIONAL then
+		_currentShoot = nextShoot
+	end
+
+	return true	
+end
+
 function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 	if shoot == nil then
 		shoot = true
@@ -360,7 +395,9 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 	local targetI, targetJ, selfI, selfJ = Utility.Peep.getRelativeTile(selfPeep, targetPeep)
 
 	local isSameTile = targetI == selfI and targetJ == selfJ
-	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, shoot)
+
+	_currentShoot = nil
+	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, Map.SHOOT_BIDIRECTIONAL, _iterateTargetSight)
 
 	return isSameTile or isLineOfSightClear
 end

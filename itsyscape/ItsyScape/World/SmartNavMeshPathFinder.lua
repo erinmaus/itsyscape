@@ -41,7 +41,7 @@ function SmartNavMeshPathFinder:new(peep, t)
 	self.map = peep:getDirector():getMap(self.layer)
 	self.peep = peep
 
-	self.maxVisits = t.maxVisits or 128
+	self.maxVisits = t.maxVisits or 512
 	self.currentVisits = 0
 
 	local position = Utility.Peep.getPosition(self.peep)
@@ -60,7 +60,6 @@ function SmartNavMeshPathFinder:new(peep, t)
 	self.pathfinder = slick.navigation.path.new({
 		visit = function()
 			self.currentVisits = self.currentVisits + 1
-			print(self.peep:getName(), "cur", self.currentVisits, "max", self.maxVisits)
 			if self.currentVisits > self.maxVisits then
 				return false
 			end
@@ -204,7 +203,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 		end
 	end
 
-	local resultPath = Path()
+	local result = {}
 	local previous
 	for i = 1, #positions do
 		local current = positions[i]
@@ -238,8 +237,8 @@ function SmartNavMeshPathFinder:find(start, goal)
 				local forward2 = a2:direction(b2)
 				local bump2 = bump1 + forward2 * (radius + margin)
 
-				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump1)
-				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump2)
+				table.insert(result, bump1)
+				table.insert(result, bump2)
 
 				materialized = true
 				previous = bump2
@@ -247,8 +246,49 @@ function SmartNavMeshPathFinder:find(start, goal)
 		end
 
 		if not materialized or i == #positions then
-			resultPath:makeNode(PositionPathNode, self.map, self.layer, current)
+			table.insert(result, current)
 			previous = current
+		end
+
+		if self.yield then
+			coroutine.yield()
+		end
+	end
+
+	local resultPath = Path()
+	local index = 1
+	while path and index <= #result do
+		local current = result[index]
+		resultPath:makeNode(PositionPathNode, self.map, self.layer, current)
+
+		local didJump = false
+		if self.world and self.world:has(self.peep) then
+			for nextIndex = #result, index + 1, -1 do
+				local next = result[nextIndex]
+				local collisions = self.world:project(self.peep, current.x, current.z, next.x, next.z, self._filter)
+
+				local numCollisions = 0
+				for _, collision in ipairs(collisions) do
+					if not self.ignored[collision.other] then
+						numCollisions = numCollisions + 1
+						break
+					end
+				end
+
+				if #collisions == 0 then
+					index = nextIndex
+					didJump = true
+					break
+				end
+
+				if self.yield then
+					coroutine.yield()
+				end
+			end
+		end
+
+		if not didJump then
+			index = index + 1
 		end
 
 		if self.yield then

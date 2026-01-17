@@ -677,13 +677,13 @@ function CombatCortex:updatePeepCooldown(delta, peep)
 	end
 end
 
-function CombatCortex:_onPeepWalkCalculated(peep, success)
+function CombatCortex:_onPeepWalkCalculated(peep, success, cancelled)
 	local charge = peep:getBehavior(CombatChargeBehavior)
 	if charge then
 		charge.currentWalkID = false
 	end
 
-	if not success then
+	if not success and not cancelled then
 		peep:removeBehavior(CombatTargetBehavior)
 	end
 end
@@ -803,7 +803,6 @@ function CombatCortex:tickPeep(delta, peep)
 		peep:removeBehavior(CombatTargetBehavior)
 		return
 	elseif not isWithinRange then
-		print("peep", peep:getName(), "not within range of", target:getName())
 		peep:addBehavior(CombatChargeBehavior)
 		self:movePeep(peep)
 		return

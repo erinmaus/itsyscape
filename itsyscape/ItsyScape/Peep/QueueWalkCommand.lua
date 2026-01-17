@@ -47,12 +47,14 @@ function QueueWalkCommand:onBegin()
 	self.currentDuration = 0
 end
 
-function QueueWalkCommand:onEnd()
-	Log.info("Took %.2f ms to calculate walk.", self.currentDuration * 1000)
+function QueueWalkCommand:onEnd(peep)
+	Log.info("Took %.2f ms to calculate walk for '%s'.", self.currentDuration * 1000, peep:getName())
 end
 
-function QueueWalkCommand:onInterrupt()
+function QueueWalkCommand:onInterrupt(peep)
 	Utility.Peep.cancelWalk(self.n)
+
+	Log.info("Walk cancelled after %.2f ms for '%s'.", self.currentDuration * 1000, peep:getName())
 end
 
 function QueueWalkCommand:update(delta)

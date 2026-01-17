@@ -13,8 +13,14 @@ local Utility = require "ItsyScape.Game.Utility"
 
 local Interrupt = B.Node("Interrupt")
 Interrupt.QUEUE = B.Reference()
+Interrupt.EVERYTHING = B.Reference()
 
 function Interrupt:update(mashina, state, executor)
+	local everything = state[self.EVERYTHING]
+	if everything then
+		Utility.Peep.interrupt(mashina)
+	end
+
 	local q = state[self.QUEUE]
 	if mashina:getCommandQueue(q):clear() then
 		return B.Status.Success

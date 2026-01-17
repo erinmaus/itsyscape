@@ -30,12 +30,18 @@ function WalkToPeep:update(mashina, state, executor)
 			asCloseAsPossible = state[self.AS_CLOSE_AS_POSSIBLE]
 		})
 
-		Log.info("Queuing walk to (%d, %d; %d) for '%s'.", i, j, k, mashina:getName())
-		mashina:getCommandQueue():interrupt(QueueWalkCommand(callback, id))
+		callback:register(function(status, cancelled)
+			if cancelled then
+				self.walkID = nil
+			else
+				if status then
+					Log.info("Success walking to (%d, %d; %d) for '%s'.", i, j, k, mashina:getName())
+				else
+					Log.info("Failure walking to (%d, %d; %d) for '%s'.", i, j, k, mashina:getName())
+				end
 
-		self.walkID = id
-		callback:register(function(status)
-			self.walkStatus = status
+				self.walkStatus = status
+			end
 		end)
 	end
 
@@ -50,13 +56,6 @@ function WalkToPeep:update(mashina, state, executor)
 		end
 	else
 		return B.Status.Working
-	end
-end
-
-function WalkToPeep:deactivated()
-	if self.walkID then
-		Utility.Peep.cancelWalk(self.walkID)
-		self.walkID = nil
 	end
 end
 

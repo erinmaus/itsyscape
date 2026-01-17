@@ -68,10 +68,6 @@ function Wander:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	if tile:hasFlag('impassable') then
-		return B.Status.Working
-	end
-
 	local radialDistance = state[self.RADIAL_DISTANCE] or 5
 
 	local s, t
@@ -79,13 +75,13 @@ function Wander:update(mashina, state, executor)
 		local min = state[self.MIN_RADIAL_DISTANCE] or 0
 		local max = radialDistance - min
 		if wanderI then
-			s = math.random(-max, max) + min
+			s = love.math.random(-max, max) + min
 		else
 			s = 0
 		end
 
 		if wanderJ  then
-			t = math.random(-max, max) + min
+			t = love.math.random(-max, max) + min
 		else
 			t = 0
 		end
@@ -95,10 +91,6 @@ function Wander:update(mashina, state, executor)
 	local targetJ = j + t
 
 	local map = Utility.Peep.getMap(mashina)
-	if not map:lineOfSightPassable(i, targetI, j, targetJ, false) then
-		return B.Status.Failure
-	end
-
 	local start = map:getTileCenter(i, j)
 	start.y = 0
 	local stop = map:getTileCenter(targetI, targetJ)
@@ -129,11 +121,7 @@ function Wander:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	return B.Status.Working
-end
-
-function Wander:deactivated()
-	self.walk = nil
+	return B.Status.Success
 end
 
 return Wander
