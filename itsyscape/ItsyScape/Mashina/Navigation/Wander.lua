@@ -8,9 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local Ray = require "ItsyScape.Common.Math.Ray"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local ExecutePathcommand = require "ItsyScape.World.ExecutePathcommand"
+local Path = require "ItsyScape.World.Path"
+local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 
 local Wander = B.Node("Wander")
 Wander.MIN_RADIAL_DISTANCE = B.Reference()
@@ -19,15 +23,7 @@ Wander.WANDER_I = B.Reference()
 Wander.WANDER_J = B.Reference()
 
 function Wander:update(mashina, state, executor)
-	local k
-	do
-		local position = mashina:getBehavior(PositionBehavior)
-		if position then
-			k = position.layer or 1
-		else
-			k = 1
-		end
-	end
+	local k = Utility.Peep.getLayer(mashina)
 
 	local wanderI, wanderJ
 	do
@@ -98,34 +94,39 @@ function Wander:update(mashina, state, executor)
 	local targetI = i + s
 	local targetJ = j + t
 
-	local command, path
-	if not self.getWalk then
-		self.getWalk = coroutine.wrap(Utility.Peep.getWalk)
-		command, path = self.getWalk(
-			mashina,
-			targetI,
-			targetJ,
-			k,
-			0,
-			{
-				asCloseAsPossible = true,
-				maxDistanceFromGoal = radialDistance,
-				yield = true
-			})
-	else
-		command, path = self.getWalk()
+	local map = Utility.Peep.getMap(mashina)
+	if not map:lineOfSightPassable(i, targetI, j, targetJ, false) then
+		return B.Status.Failure
 	end
 
-	if command ~= nil then
-		self.getWalk = nil
+	local start = map:getTileCenter(i, j)
+	start.y = 0
+	local stop = map:getTileCenter(targetI, targetJ)
+	stop.y = 0
 
-		if command then
-			if mashina:getCommandQueue():interrupt(command) then
-				return B.Status.Success
-			else
-				return B.Status.Failure
-			end
+	local distance = start:distance(stop)
+	local direction = start:direction(stop)
+
+	local path = Path()
+	map:castRay(Ray(start, direction), function(_, currentI, currentJ, _, _, t)
+		if t > distance then
+			return true
 		end
+
+		path:makeNode(PositionPathNode, map, Utility.Peep.getLayer(mashina), map:getTileCenter(currentI, currentJ))
+
+		if currentI == targetI and currentJ == targetJ then
+			return true
+		end
+	end)
+
+	if path:getNumNodes() <= 1 then
+		return B.Status.Failure
+	end
+
+	local command = ExecutePathcommand(path)
+	if not mashina:getCommandQueue():interrupt(command) then
+		return B.Status.Failure
 	end
 
 	return B.Status.Working

@@ -105,7 +105,7 @@ function Combat.strafe(peep, target, distance, rotations, onStrafe)
 		end)
 
 		if isPassable then
-			local callback, n = Utility.Peep.queueWalk(peep, position.x, position.z, selfK, math.huge, { asCloseAsPossible = true, isPosition = true })
+			local callback, n = Utility.Peep.queueWalk(peep, position, selfK, math.huge, { asCloseAsPossible = true })
 			callback:register(function(s)
 				if onStrafe then
 					onStrafe(peep, target, s)

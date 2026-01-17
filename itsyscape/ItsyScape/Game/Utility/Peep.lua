@@ -1442,23 +1442,38 @@ function Peep.walk(peep, ...)
 	return false, r
 end
 
-Peep.WALK_QUEUE = { n = 0, pending = {} }
+Peep.WALK_QUEUE = { n = 0, iterating = false, pending = {}, next = {}, cancelled = {} }
 
 function Peep.cancelWalk(n)
 	for i = #Peep.WALK_QUEUE.pending, 1, -1 do
 		local pending = Peep.WALK_QUEUE.pending[i]
 
 		if (type(n) == "number" and pending.n == n) or pending.peep == n then
-			table.remove(Peep.WALK_QUEUE.pending, i)
+			if Peep.WALK_QUEUE.iterating then
+				table.insert(Peep.WALK_QUEUE.cancelled, pending)
+			else
+				table.remove(Peep.WALK_QUEUE.pending, i)
+				pending.callback(false, true)
+			end
+
+			break
 		end
 	end
 end
 
 function Peep.updateWalks(time)
+	local queue = Peep.WALK_QUEUE.pending
+	local nextPending = Peep.WALK_QUEUE.next
+
+	for _, pending in ipairs(nextPending) do
+		table.insert(queue, pending)
+	end
+	table.clear(nextPending)
+
 	local walkQueueTimeMS = Config.get("Config", "ENGINE", "var", "walkQueueTimeMS", "_", 10)
 	local targetTime = love.timer.getTime() + (time or (walkQueueTimeMS / 1000))
 
-	local queue = Peep.WALK_QUEUE.pending
+	Peep.WALK_QUEUE.iterating = true
 	while love.timer.getTime() < targetTime and #queue > 0 do
 		for i = #queue, 1, -1 do
 			local pending = queue[i]
@@ -1473,6 +1488,13 @@ function Peep.updateWalks(time)
 			end
 		end
 	end
+	Peep.WALK_QUEUE.iterating = false
+
+	local cancelled = Peep.WALK_QUEUE.cancelled
+	for _, pending in ipairs(cancelled) do
+		Peep.cancelWalk(n)
+	end
+	table.clear(cancelled)
 end
 
 function _getWalkArgs(a, b, c, d, e, ...)
@@ -1490,6 +1512,8 @@ function _getWalkArgs(a, b, c, d, e, ...)
 		distance = d
 		t = e
 		args = { n = select("#", ...), ... }
+	else
+		args = { n = 0 , ... }
 	end
 
 	return {
@@ -1497,7 +1521,7 @@ function _getWalkArgs(a, b, c, d, e, ...)
 		i = i,
 		j = j,
 		layer = layer,
-		distance = disabled,
+		distance = distance,
 		t = t,
 		args = args
 	}
@@ -1534,7 +1558,7 @@ function Peep.queueWalk(peep, ...)
 		pending.s = walkCoroutine(peep, args.position, args.layer, args.distance, y, unpack(args.args, 1, args.args.n))
 	end
 
-	table.insert(Peep.WALK_QUEUE.pending, pending)
+	table.insert(Peep.WALK_QUEUE.next, pending)
 	return callback, pending.n
 end
 
@@ -1801,6 +1825,7 @@ function Peep.getWalk(peep, ...)
 	local args = _getWalkArgs(...)
 
 	local t = args.t
+	print(peep:getName(), "t", Log.dump(t))
 	t = t or { asCloseAsPossible = true }
 
 	do

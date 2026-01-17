@@ -34,9 +34,19 @@ function SmartNavMeshPathFinder:new(peep, t)
 		self.yield = true
 	end
 
+	self.maxSearchDistance = t.maxSearchDistance
+	self.maxGoalDistance = t.maxGoalDistance
+
 	self.layer = Utility.Peep.getLayer(peep)
 	self.map = peep:getDirector():getMap(self.layer)
 	self.peep = peep
+
+	self.maxVisits = t.maxVisits or 128
+	self.currentVisits = 0
+
+	local position = Utility.Peep.getPosition(self.peep)
+	self.xzPeepPosition = Vector(position.x, 0, position.z)
+
 	self.proxy = {}
 
 	local movement = peep:getDirector():getCortex(MovementCortex)
@@ -48,10 +58,34 @@ function SmartNavMeshPathFinder:new(peep, t)
 
 	self.ignored = {}
 	self.pathfinder = slick.navigation.path.new({
+		visit = function()
+			self.currentVisits = self.currentVisits + 1
+			print(self.peep:getName(), "cur", self.currentVisits, "max", self.maxVisits)
+			if self.currentVisits > self.maxVisits then
+				return false
+			end
+
+			return true
+		end,
+
+		yield = function()
+			if self.yield then
+				coroutine.yield()
+			end
+
+			return true
+		end,
+
 		neighbor = function(_, _, e)
-			local a = Vector(e.a.point.x, e.a.point.y)
-			local b = Vector(e.b.point.x, e.b.point.y)
-			local x, y = a:lerp(b, 0.5):get()
+			local a = Vector(e.a.point.x, 0, e.a.point.y)
+			local b = Vector(e.b.point.x, 0, e.b.point.y)
+			local c = a:lerp(b, 0.5)
+
+			if self.maxSearchDistance and c:distance(self.xzPeepPosition) > self.maxSearchDistance then
+				return false
+			end
+
+			local x, _, y = c:get()
 
 			if self.world and self.world:has(self.proxy) then
 				local collisions = self.world:test(self.proxy, x, y, self._filter)
@@ -118,6 +152,13 @@ function SmartNavMeshPathFinder:find(start, goal)
 	end
 
 	local _, path = self.pathfinder:nearest(self.mesh, start.x, start.z, goal.x, goal.z)
+	if self.maxGoalDistance then
+		local distance = Vector(path[#path].point.x, 0, path[#path].point.y):distance(Vector(goal.x, 0, goal.z))
+		distance = distance - (radius + margin)
+		if distance > self.maxGoalDistance then
+			return nil
+		end
+	end
 
 	local positions = {}
 
@@ -192,12 +233,10 @@ function SmartNavMeshPathFinder:find(start, goal)
 				local left1 = Vector(forward1.z, 0, -forward1.x)
 				local bump1 = Vector(collision.touch.x, 0, collision.touch.y) + left1 * -side1 * (radius + margin)
 
-				local a2 = c
-				local b2 = current
+				local a2 = a1
+				local b2 = bump1
 				local forward2 = a2:direction(b2)
-				local side2 = MathCommon.side(a2, b2, c)
-				local left2 = Vector(forward2.z, 0, -forward2.x)
-				local bump2 = current + forward2 * (radius + margin)
+				local bump2 = bump1 + forward2 * (radius + margin)
 
 				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump1)
 				resultPath:makeNode(PositionPathNode, self.map, self.layer, bump2)
