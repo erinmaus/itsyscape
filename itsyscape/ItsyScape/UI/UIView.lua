@@ -22,6 +22,10 @@ local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local Drawable = require "ItsyScape.UI.Drawable"
 local DrawableRenderer = require "ItsyScape.UI.DrawableRenderer"
 local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
+local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
+local GamepadIconRenderer = require "ItsyScape.UI.GamepadIconRenderer"
+local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Icon = require "ItsyScape.UI.Icon"
 local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local Interface = require "ItsyScape.UI.Interface"
@@ -30,9 +34,6 @@ local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
-local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
-local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
-local GamepadIconRenderer = require "ItsyScape.UI.GamepadIconRenderer"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -1308,7 +1309,7 @@ end
 function UIView:_onBlur(_, widget)
 	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
-	if not interface or interface:getRootParent() ~= self.root then
+	if not (interface and Class.isCompatibleType(interface:getData(GamepadSink), GamepadSink) and interface:getRootParent() == self.root) then
 		return
 	end
 
@@ -1335,8 +1336,7 @@ end
 function UIView:_onFocus(_, widget)
 	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
-
-	if not interface or interface:getRootParent() ~= self.root then
+	if not (interface and Class.isCompatibleType(interface:getData(GamepadSink), GamepadSink) and interface:getRootParent() == self.root) then
 		return
 	end
 
@@ -1404,6 +1404,10 @@ function UIView:pull(interfaceID, interfaceIndex)
 	if not state then
 		state = self.game:getUI():pull(interfaceID, interfaceIndex)
 		interfaces[interfaceIndex] = state
+	end
+
+	if not state then
+		print("???", interfaceID, interfaceIndex)
 	end
 
 	return state or {}
@@ -1474,6 +1478,10 @@ function UIView:getInterface(interfaceID, index)
 end
 
 function UIView:open(ui, interfaceID, index)
+	if self:getInterface(interfaceID, index) then
+		return
+	end
+
 	local TypeName = string.format("ItsyScape.UI.Interfaces.%s", interfaceID)
 	local Type = require(TypeName)
 
