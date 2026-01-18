@@ -728,13 +728,20 @@ function DefaultCameraController:tryRecenter()
 	return recenter
 end
 
-function DefaultCameraController:updateCenter(delta)
+function DefaultCameraController:tick()
 	if self:tryRecenter() then
 		return
 	end
 
-	local had = not not self.currentCenter
-	self.currentCenter = (self.currentCenter or self:getCenter()):keep(self.currentCenter)
+	if not self.currentCenter then
+		self.currentCenter = self:getCenter()
+	end
+end
+
+function DefaultCameraController:updateCenter(delta)
+	if not self.currentCenter then
+		return
+	end
 
 	local targetCenter = self:getCenter()
 	local direction = self.currentCenter:direction(targetCenter)
@@ -742,10 +749,6 @@ function DefaultCameraController:updateCenter(delta)
 
 	local distance = math.min(DefaultCameraController.CENTER_SPEED * delta, minDistance)
 	self.currentCenter = self.currentCenter + direction * distance
-end
-
-function DefaultCameraController:updatePlayer()
-
 end
 
 function DefaultCameraController:update(delta)
@@ -776,7 +779,6 @@ function DefaultCameraController:update(delta)
 	self:updatePanning(delta)
 	self:updateFirstPerson(delta)
 	self:updateCenter(delta)
-	self:updatePlayer(delta)
 
 	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	if (isFocusDown ~= self.isFocusDown and isFocusDown) or _CONF.targetCameraMode ~= self.isTargetting then

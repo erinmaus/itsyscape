@@ -70,6 +70,10 @@ function CameraController:rotate(dx, dy)
 	-- Nothing.
 end
 
+function CameraController:tick()
+	-- Nothing.
+end
+
 function CameraController:update(delta)
 	-- Nothing.
 end
