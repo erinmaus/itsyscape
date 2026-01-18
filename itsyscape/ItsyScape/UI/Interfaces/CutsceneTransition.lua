@@ -51,15 +51,15 @@ function CutsceneTransition:new(id, index, ui)
 
 	local w, h, _, _, paddingX, paddingY = love.graphics.getScaledMode()
 
-	local panel = Panel()
-	local panelStyle = PanelStyle({
+	self.panel = Panel()
+	self.panelStyle = PanelStyle({
 		color = { 0, 0, 0, 0 },
 		radius = 0
 	}, ui:getResources())
-	panel:setSize(w + paddingX * 2, h + paddingY * 2)
-	panel:setPosition(-paddingX, -paddingY)
-	panel:setStyle(panelStyle)
-	self:addChild(panel)
+	self.panel:setSize(w + paddingX * 2, h + paddingY * 2)
+	self.panel:setPosition(-paddingX, -paddingY)
+	self.panel:setStyle(self.panelStyle)
+	self:addChild(self.panel)
 
 	local icon = ui:getResources():load(love.graphics.newImage, "Resources/Game/UI/CutsceneSpinner.png")
 	self.spinningIcon = CutsceneTransition.Spinner(icon)
@@ -69,7 +69,6 @@ function CutsceneTransition:new(id, index, ui)
 		h - icon:getHeight() / 2 - CutsceneTransition.PADDING)
 	self:addChild(self.spinningIcon)
 
-	self.panelStyle = panelStyle
 
 	self:setZDepth(5000)
 
@@ -198,6 +197,7 @@ function CutsceneTransition:update(delta)
 	end
 
 	self.panelStyle.color[4] = delta
+	self.panel:setIsSelfClickThrough(delta < 1)
 	self.spinningIcon:setAlpha(delta)
 end
 

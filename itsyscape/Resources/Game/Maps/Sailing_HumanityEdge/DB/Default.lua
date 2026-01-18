@@ -1566,7 +1566,7 @@ M["Rowboat_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 179.468700,
-		PositionY = 64.250000,
+		PositionY = 85.500000,
 		PositionZ = 181.141067,
 		RotationX = 0.000000,
 		RotationY = 0.382683,

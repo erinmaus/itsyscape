@@ -1445,11 +1445,16 @@ end
 
 Peep.WALK_QUEUE = { n = 0, iterating = false, pending = {}, next = {}, cancelled = {} }
 
-function _finishWalk(peep, n)
+function _finishWalk(peep, n, cancelled)
 	local pendingWalk = peep:getBehavior(PendingWalkBehavior)
 	if pendingWalk then
 		if pendingWalk.nextWalkID == n then
 			pendingWalk.nextWalkID = false
+
+			if not cancelled then
+				Utility.Peep.cancelWalk(pendingWalk.currentWalkID)
+				pendingWalk.currentWalkID = false
+			end
 		elseif pendingWalk.currentWalkID == n then
 			pendingWalk.currentWalkID = pendingWalk.nextWalkID
 			pendingWalk.nextWalkID = false
@@ -1469,7 +1474,7 @@ function Peep.cancelWalk(n)
 			if Peep.WALK_QUEUE.iterating then
 				table.insert(Peep.WALK_QUEUE.cancelled, pending)
 			else
-				_finishWalk(pending.peep, n)
+				_finishWalk(pending.peep, n, true)
 
 				table.remove(Peep.WALK_QUEUE.pending, i)
 				pending.callback(false, true)
@@ -1505,7 +1510,7 @@ function Peep.updateWalks(time)
 				pending.callback(pending.s)
 				table.remove(queue, i)
 
-				_finishWalk(pending.peep, pending.n)
+				_finishWalk(pending.peep, pending.n, false)
 			end
 		end
 	end
@@ -1921,6 +1926,46 @@ function Peep.getWalk(peep, ...)
 		-- 		return false, "distance to goal exceeds maximum distance to goal"
 		-- 	end
 		-- end
+		if peep:hasBehavior(TargetPositionBehavior) or peep:hasBehavior(PendingWalkBehavior) then
+			local peepPosition = Utility.Peep.getPosition(peep)
+			local xzPeepPosition = Vector(peepPosition.x, 0, peepPosition.z)
+
+			local currentIndex = 1
+			local foundClosestNode = false
+
+			while currentIndex < path:getNumNodes() do
+				local currentPathNode = path:getNodeAtIndex(currentIndex)
+				local nextPathNode = path:getNodeAtIndex(currentIndex + 1)
+
+				local xzCurrentPosition = Vector(currentPathNode.position.x, 0, currentPathNode.position.z)
+				local xzNextPosition = Vector(nextPathNode.position.x, 0, nextPathNode.position.z)
+				local currentNextEdgeDistance = xzCurrentPosition:distance(xzNextPosition)
+
+				ray = Ray(xzCurrentPosition, xzCurrentPosition:direction(xzNextPosition))
+
+				local ahead, projectedPosition = ray:closest(xzPeepPosition)
+				local convergeDistance, behind = ray:distance(xzPeepPosition)
+
+				local isDirectionSame = ahead and not behind
+				local isProjectedDistanceWithinRange = projectedPosition:distance(xzCurrentPosition) < currentNextEdgeDistance
+				local isConvergeDistanceWithinRange = convergeDistance < (t.maxConvergeDistance or 2)
+
+				if isDirectionSame and isProjectedDistanceWithinRange and isConvergeDistanceWithinRange then
+					foundClosestNode = true
+				elseif foundClosestNode then
+					break
+				end
+
+				currentIndex = currentIndex + 1
+			end
+
+			if foundClosestNode then
+				while currentIndex > 1 do
+					path:drop(1)
+					currentIndex = currentIndex - 1
+				end
+			end
+		end
 
 		if t.asCloseAsPossible then
 			return ExecutePathCommand(path, 0), path
@@ -1998,8 +2043,8 @@ function Peep.lookAt(self, target, delta)
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ
 
-		local r = Quaternion.lookAt(xzSelfPosition, xzPeepPosition, Vector.UNIT_Z):getNormal()
-		r = (r * -mapRotation):getNormal()
+		local r = Quaternion.lookAt(xzSelfPosition, xzPeepPosition, Vector.UNIT_Y):getNormal()
+		r = (-mapRotation * r):getNormal()
 
 		if delta then
 			rotation.rotation = rotation.rotation:slerp(r, delta):getNormal()
@@ -2067,7 +2112,7 @@ function Peep.face3D(self)
 
 				local delta = math.min((love.timer.getTime() - face3D.time) / face3D.duration, 1)
 
-				local targetRotation = Quaternion.lookAt(xzSelfPosition, xzTargetPosition, Vector.UNIT_Z)
+				local targetRotation = Quaternion.lookAt(xzSelfPosition, xzTargetPosition, Vector.UNIT_Y)
 				rotation.rotation = face3D.rotation:slerp(targetRotation, delta):getNormal()
 
 				return true
@@ -2494,6 +2539,14 @@ end
 
 function Peep.makeDummy(peep)
 	peep:listen('finalize', Utility.Peep.Dummy.onFinalize)
+end
+
+function Peep.makePlayer(peep)
+	local movement = peep:getBehavior(MovementBehavior)
+	if movement then
+		movement.maxSpeed = 10
+		movement.maxAcceleration = 6
+	end
 end
 
 function Peep.makeHuman(peep)

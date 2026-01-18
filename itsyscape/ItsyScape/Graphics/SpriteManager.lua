@@ -161,6 +161,7 @@ function SpriteManager:draw(scene, camera, delta)
 	end)
 
 	local width, height = love.graphics.getScaledMode()
+	love.graphics.push("all")
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.scale(scaleX, scaleY, 1)
@@ -176,6 +177,8 @@ function SpriteManager:draw(scene, camera, delta)
 			sprite:draw(position, time)
 		end
 	end
+
+	love.graphics.pop()
 end
 
 return SpriteManager

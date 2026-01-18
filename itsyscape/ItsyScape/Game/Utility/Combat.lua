@@ -397,7 +397,7 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 	local isSameTile = targetI == selfI and targetJ == selfJ
 
 	_currentShoot = nil
-	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, Map.SHOOT_BIDIRECTIONAL, _iterateTargetSight)
+	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, false, _iterateTargetSight, true)
 
 	return isSameTile or isLineOfSightClear
 end

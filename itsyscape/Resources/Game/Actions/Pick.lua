@@ -31,7 +31,7 @@ function Pick:perform(state, player, target)
 		local asCloseAsPossible
 		do
 			local map = Utility.Peep.getMap(target)
-			if map:getTile(i, j):hasFlag('impassable') then
+			if map:getTileAt(position.x, position.z):hasFlag('impassable') then
 				asCloseAsPossible = true
 			else
 				asCloseAsPossible = false

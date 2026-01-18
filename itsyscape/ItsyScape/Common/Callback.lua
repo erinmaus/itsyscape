@@ -145,6 +145,12 @@ function Callback:unregister(handler)
 	end
 end
 
+function Callback:clear()
+	for handler in pairs(self.handlers) do
+		self:unregister(handler)
+	end
+end
+
 -- Syntactic sugar for Callback:invoke(...).
 --
 -- See Callback.invoke for behavior.

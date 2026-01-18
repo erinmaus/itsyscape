@@ -17,36 +17,38 @@ local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local TARGET = B.Reference("Tutorial_Pirate_IdleLogic", "TARGET")
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.ParallelTry {
-		Mashina.Step {
-			Mashina.Peep.FindNearbyCombatTarget {
-				include_npcs = true,
-
-				filter = function(peep)
-					return not (peep:hasBehavior(PlayerBehavior) or peep:hasBehavior(FollowerBehavior))
-				end,
-
-				[TARGET] = B.Output.result
-			},
-
-			Mashina.Peep.TimeOut {
-				min_duration = 0.5,
-				max_duration = 1.5
-			},
-
-			Mashina.Peep.EngageCombatTarget {
-				peep = TARGET
-			},
-
-			Mashina.Peep.SetState {
-				state = "attack"
-			}
-		},
-
-		Mashina.Repeat {
+	Mashina.Repeat {
+		Mashina.ParallelTry {
 			Mashina.Step {
-				Mashina.Navigation.Wander,
-				Mashina.Peep.Wait
+				Mashina.Peep.FindNearbyCombatTarget {
+					include_npcs = true,
+
+					filter = function(peep)
+						return not (peep:hasBehavior(PlayerBehavior) or peep:hasBehavior(FollowerBehavior))
+					end,
+
+					[TARGET] = B.Output.result
+				},
+
+				Mashina.Peep.TimeOut {
+					min_duration = 0.5,
+					max_duration = 1.5
+				},
+
+				Mashina.Peep.EngageCombatTarget {
+					peep = TARGET
+				},
+
+				Mashina.Peep.SetState {
+					state = "attack"
+				}
+			},
+
+			Mashina.Repeat {
+				Mashina.Step {
+					Mashina.Navigation.Wander,
+					Mashina.Peep.Wait
+				}
 			}
 		}
 	}

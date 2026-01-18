@@ -1299,6 +1299,18 @@ do
 	}
 end
 
+M["Anchor_Tutorial_LightFire"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71,
+		PositionY = 5,
+		PositionZ = 151,
+		Name = "Anchor_Tutorial_LightFire",
+		Map = M._MAP,
+		Resource = M["Anchor_Tutorial_LightFire"]
+	}
+end
+
 
 M["Tutorial_DroppedItemsAnchor"] = ItsyScape.Resource.MapObject.Unique()
 do

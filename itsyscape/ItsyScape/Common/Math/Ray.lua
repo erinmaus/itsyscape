@@ -42,11 +42,11 @@ end
 function BaseRay:distance(point)
 	local v = point - self.origin
 	local dot = v:dot(self.direction)
-	if dot <= 0 then
-		return 0
+	if dot < 0 then
+		return 0, true
 	end
 
-	return math.abs(dot)
+	return dot, false
 end
 
 function BaseRay:closest(point)

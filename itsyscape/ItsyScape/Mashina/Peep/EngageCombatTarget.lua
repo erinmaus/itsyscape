@@ -32,6 +32,7 @@ function EngageCombatTarget:update(mashina, state, executor)
 	end
 
 	Utility.Peep.attack(aggressor, peep)
+	Log.info("'%s' attacked '%s'.", aggressor:getName(), peep:getName())
 
 	return B.Status.Success
 end

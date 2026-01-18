@@ -100,19 +100,14 @@ function Wander:update(mashina, state, executor)
 	local direction = start:direction(stop)
 
 	local path = Path()
-	map:castRay(Ray(start, direction), function(_, currentI, currentJ, _, _, t)
-		if t > distance then
-			return true
-		end
 
-		path:makeNode(PositionPathNode, map, Utility.Peep.getLayer(mashina), map:getTileCenter(currentI, currentJ))
-
-		if currentI == targetI and currentJ == targetJ then
-			return true
+	map:lineOfSightPassable(i, j, targetI, targetJ, false, function(_, previousI, previousJ, differenceI, differenceJ)
+		if map:canMove(previousI, previousJ, differenceI, differenceJ) then
+			path:makeNode(PositionPathNode, map, Utility.Peep.getLayer(mashina), map:getTileCenter(previousI + differenceI, previousJ + differenceJ))
 		end
 	end)
 
-	if path:getNumNodes() <= 1 then
+	if path:getNumNodes() == 0 then
 		return B.Status.Failure
 	end
 

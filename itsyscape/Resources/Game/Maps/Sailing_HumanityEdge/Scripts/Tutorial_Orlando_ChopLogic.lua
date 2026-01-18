@@ -42,6 +42,12 @@ local Tree = BTreeBuilder.Node() {
 					duration = 1
 				},
 
+				Mashina.Navigation.WalkToAnchor {
+					anchor = "Anchor_Tutorial_LightFire"
+				},
+
+				Mashina.Peep.Wait,
+
 				Mashina.Peep.PokeInventoryItem {
 					action  = "Light",
 					item = "BalsaLogs"
@@ -62,6 +68,10 @@ local Tree = BTreeBuilder.Node() {
 
 				Mashina.Peep.TimeOut {
 					duration = 1
+				},
+
+				Mashina.Navigation.WalkToAnchor {
+					anchor = "Anchor_Orlando_PostFish"
 				},
 
 				Mashina.Repeat {

@@ -330,9 +330,9 @@ do
 				"scape_WindDirection", windDirectionUniform,
 				"scape_WindSpeed", windSpeed,
 				"scape_WindPattern", windPatternUniform,
-				"scape_WindMaxDistance", state.ocean.offset,
-				"scape_WindSpeedMultiplier", state.ocean.windSpeedMultiplier,
-				"scape_WindPatternMultiplier", state.ocean.windPatternMultiplier,
+				"scape_WindMaxDistance", state.ocean and state.ocean.offset,
+				"scape_WindSpeedMultiplier", state.ocean and state.ocean.windSpeedMultiplier,
+				"scape_WindPatternMultiplier", state.ocean and state.ocean.windPatternMultiplier,
 				"scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()),
 				"scape_YOffset", state.ocean and state.ocean.offset or 0)
 
