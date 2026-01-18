@@ -140,6 +140,7 @@ void nbunny::DepthRendererPass::draw_pass(lua_State* L, float delta)
 
 		graphics->setDepthMode(love::graphics::COMPARE_GEQUAL, false);
 		graphics->drawToStencilBuffer(love::graphics::STENCIL_INCREMENT, 0);
+		graphics->setMeshCullMode(love::graphics::CULL_NONE);
 		glad::glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
 		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
 

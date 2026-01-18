@@ -396,37 +396,6 @@ void nbunny::DeferredRendererPass::copy_depth_buffer(lua_State* L, float delta)
 	graphics->draw(g_buffer.get_canvas(0), love::Matrix4());
 
 	graphics->flushStreamDraws();
-
-	if (!stencil_write_drawable_scene_nodes.empty())
-	{
-		auto renderer = get_renderer();
-
-		const auto& camera = renderer->get_camera();
-		auto view_matrix = camera.get_view();
-		auto projection_matrix = camera.get_projection();
-		love::math::Transform view(love::Matrix4(glm::value_ptr(view_matrix)));
-		love::Matrix4 projection(glm::value_ptr(projection_matrix));
-
-		graphics->replaceTransform(&view);
-		graphics->setProjection(projection);
-	
-		graphics->setBlendMode(love::graphics::Graphics::BLEND_REPLACE, love::graphics::Graphics::BLENDALPHA_PREMULTIPLIED);
-		graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-
-		draw_nodes(L, delta, stencil_masked_drawable_scene_nodes);
-
-		graphics->setDepthMode(love::graphics::COMPARE_GEQUAL, false);
-		graphics->drawToStencilBuffer(love::graphics::STENCIL_INCREMENT, 0);
-		glad::glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-		draw_nodes(L, delta, stencil_write_drawable_scene_nodes);
-
-		graphics->stopDrawToStencilBuffer();
-		glad::glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-		graphics->setMeshCullMode(love::graphics::CULL_BACK);
-		graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, true);
-	}
 }
 
 void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
