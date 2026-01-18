@@ -12,6 +12,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
+local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local ExecutePathcommand = require "ItsyScape.World.ExecutePathcommand"
 local Path = require "ItsyScape.World.Path"
 local PositionPathNode = require "ItsyScape.World.PositionPathNode"
@@ -99,11 +100,32 @@ function Wander:update(mashina, state, executor)
 	local distance = start:distance(stop)
 	local direction = start:direction(stop)
 
+	local movement = mashina:getDirector():getCortex(MovementCortex)
+	local world = movement:getWorld(k)
+
 	local path = Path()
 
 	map:lineOfSightPassable(i, j, targetI, targetJ, false, function(_, previousI, previousJ, differenceI, differenceJ)
+		if world and world:has(mashina) then
+			local previousCenter = map:getTileCenter(previousI, previousJ)
+			local currentCenter = map:getTileCenter(previousI + differenceI, previousJ + differenceJ)
+
+			local collisions = world:project(mashina, previousCenter.x, previousCenter.z, currentCenter.x, currentCenter.z, function(a, b)
+				return movement:filter(a, b)
+			end)
+
+			if #collisions > 0 then
+				local y = map:getInterpolatedHeight(collisions[1].touch.x, collisions[1].touch.y)
+				path:makeNode(PositionPathNode, map, k, Vector(collisions[1].touch.x, y, collisions[1].touch.y))
+
+				return false
+			end
+		end
+
 		if map:canMove(previousI, previousJ, differenceI, differenceJ) then
-			path:makeNode(PositionPathNode, map, Utility.Peep.getLayer(mashina), map:getTileCenter(previousI + differenceI, previousJ + differenceJ))
+			path:makeNode(PositionPathNode, map, k, map:getTileCenter(previousI + differenceI, previousJ + differenceJ))
+		else
+			return false
 		end
 	end)
 
