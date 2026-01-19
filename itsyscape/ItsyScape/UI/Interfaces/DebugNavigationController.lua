@@ -89,6 +89,8 @@ function DebugNavigationController:sendLayer(layerInfo, layer)
 
 		for _, triangle in ipairs(mesh.triangles) do
 			local t = {
+				index = triangle.index,
+
 				indices = {
 					triangle.triangle[1].index,
 					triangle.triangle[2].index,
@@ -144,10 +146,12 @@ function DebugNavigationController:path(e)
 	end
 
 	local before = love.timer.getTime()
-	local pathFinder = SmartNavMeshPathFinder(self:getPeep())
+	local pathFinder = SmartNavMeshPathFinder(self:getPeep(), { debug = true })
 	local path = pathFinder:find(Vector(e.startX, 0, e.startY), Vector(e.endX, 0, e.endY))
+	local after = love.timer.getTime()
 
 	if not path then
+		Log.info("Couldn't generate path from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX, e.startY, e.endX, e.endY, (after - before) * 1000)
 		return
 	end
 
@@ -158,10 +162,20 @@ function DebugNavigationController:path(e)
 		table.insert(result, p.position.z)
 	end
 
-	local after = love.timer.getTime()
+	local edges = {}
+	local debugInfo = pathFinder:getDebugStats()
+	for e in pairs(debugInfo.edges) do
+		table.insert(edges, {
+			e.a.point.x,
+			e.a.point.y,
+			e.b.point.x,
+			e.b.point.y,
+		})
+	end
+
 	Log.info("Generated from from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX, e.startY, e.endX, e.endY, (after - before) * 1000)
 
-	self:send("showPath", result)
+	self:send("showPath", result, { visited = edges })
 end
 
 function DebugNavigationController:pull()

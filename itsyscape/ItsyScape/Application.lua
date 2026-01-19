@@ -1216,7 +1216,7 @@ function Application:_draw()
 
 	local delta = self:getFrameDelta()
 	do
-		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE or not self.show2D) then
+		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE or not self.showUI) then
 			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
 

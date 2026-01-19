@@ -1915,58 +1915,6 @@ function Peep.getWalk(peep, ...)
 		targetPosition)
 
 	if path then
-		-- local n = path:getNodeAtIndex(-1)
-		-- if n then
-		-- 	local d = (n.position * Vector.PLANE_XZ):distance(targetPosition * Vector.PLANE_XZ)
-		-- 	if d > distance then
-		-- 		Log.info("Peep '%s' can't reach destination; distance to goal (%f) exceeds maximum distance to goal (%f); target position was (%f, ..., %f) and result was (%f, ..., %f).",
-		-- 			peep:getName(), d, distance,
-		-- 			targetPosition.x, targetPosition.z,
-		-- 			n.position.x, n.position.z)
-		-- 		return false, "distance to goal exceeds maximum distance to goal"
-		-- 	end
-		-- end
-		if peep:hasBehavior(TargetPositionBehavior) or peep:hasBehavior(PendingWalkBehavior) then
-			local peepPosition = Utility.Peep.getPosition(peep)
-			local xzPeepPosition = Vector(peepPosition.x, 0, peepPosition.z)
-
-			local currentIndex = 1
-			local foundClosestNode = false
-
-			while currentIndex < path:getNumNodes() do
-				local currentPathNode = path:getNodeAtIndex(currentIndex)
-				local nextPathNode = path:getNodeAtIndex(currentIndex + 1)
-
-				local xzCurrentPosition = Vector(currentPathNode.position.x, 0, currentPathNode.position.z)
-				local xzNextPosition = Vector(nextPathNode.position.x, 0, nextPathNode.position.z)
-				local currentNextEdgeDistance = xzCurrentPosition:distance(xzNextPosition)
-
-				ray = Ray(xzCurrentPosition, xzCurrentPosition:direction(xzNextPosition))
-
-				local ahead, projectedPosition = ray:closest(xzPeepPosition)
-				local convergeDistance, behind = ray:distance(xzPeepPosition)
-
-				local isDirectionSame = ahead and not behind
-				local isProjectedDistanceWithinRange = projectedPosition:distance(xzCurrentPosition) < currentNextEdgeDistance
-				local isConvergeDistanceWithinRange = convergeDistance < (t.maxConvergeDistance or 2)
-
-				if isDirectionSame and isProjectedDistanceWithinRange and isConvergeDistanceWithinRange then
-					foundClosestNode = true
-				elseif foundClosestNode then
-					break
-				end
-
-				currentIndex = currentIndex + 1
-			end
-
-			if foundClosestNode then
-				while currentIndex > 1 do
-					path:drop(1)
-					currentIndex = currentIndex - 1
-				end
-			end
-		end
-
 		if t.asCloseAsPossible then
 			return ExecutePathCommand(path, 0), path
 		else

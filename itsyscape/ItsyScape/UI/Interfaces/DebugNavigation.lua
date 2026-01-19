@@ -71,8 +71,9 @@ function DebugNavigation.Map:setLayer(layerInfo, layer)
 	self.zoom = 16
 end
 
-function DebugNavigation.Map:setPath(path)
+function DebugNavigation.Map:setPath(path, debugInfo)
 	self.path = path
+	self.debugInfo = debugInfo
 end
 
 function DebugNavigation.Map:mousePress(x, y, button, ...)
@@ -137,20 +138,27 @@ function DebugNavigation.Map:mouseScroll(x, y)
 	self.zoom = math.clamp(self.zoom + y, 4, 32)
 end
 
-function DebugNavigation.Map:update(...)
-	Widget.update(self, ...)
-
+function DebugNavigation.Map:tick()
 	if self.isPathing and self.pathMoved then
 		local parent = self:getParentOfType(Interface)
 		if parent then
-			parent:sendPoke("path", nil, {
+			local p = {
 				startX = self.pathStartX / self.zoom,
 				startY = self.pathStartY / self.zoom,
 				endX = self.pathEndX / self.zoom,
 				endY = self.pathEndY / self.zoom,
 				group = self.layerInfo.group,
 				localLayer = self.layerInfo.localLayer
-			})
+			}
+
+			if love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
+				p.startX = (math.floor((p.startX / 2)) + 0.5) * 2
+				p.startY = (math.floor((p.startY / 2)) + 0.5) * 2
+				p.endX = (math.floor((p.endX / 2)) + 0.5) * 2
+				p.endY = (math.floor((p.endY / 2)) + 0.5) * 2
+			end
+
+			parent:sendPoke("path", nil, p)
 		end
 
 		self.pathMoved = false
@@ -173,7 +181,7 @@ function DebugNavigation.Map:_draw()
 		local t = self.currentY / self.zoom
 
 		love.graphics.setColor(0, 1, 1, 1)
-		love.graphics.print(string.format("xz: %0.2f, %0.2f", s, t))
+		love.graphics.print(string.format("xz: %0.2f, %0.2f\nij: %d, %d\nzoom: %dx", s, t, math.floor(s / 2) + 1, math.floor(t / 2) + 1, self.zoom))
 	end
 
 	love.graphics.translate(self.panX, self.panY)
@@ -191,6 +199,33 @@ function DebugNavigation.Map:_draw()
 			x1 * self.zoom, y1 * self.zoom,
 			x2 * self.zoom, y2 * self.zoom,
 			x3 * self.zoom, y3 * self.zoom)
+	end
+
+	if self.zoom >= 24 then
+		for _, triangle in ipairs(self.triangles) do
+			local i, j, k = unpack(triangle.indices)
+
+			local x1, y1 = unpack(self.points, (i - 1) * 2 + 1, (i - 1) * 2 + 2)
+			local x2, y2 = unpack(self.points, (j - 1) * 2 + 1, (j - 1) * 2 + 2)
+			local x3, y3 = unpack(self.points, (k - 1) * 2 + 1, (k - 1) * 2 + 2)
+
+			local centerX = (x1 + x2 + x3) / 3
+			local centerY = (y1 + y2 + y3) / 3
+
+			local text = tostring(triangle.index)
+			local width = love.graphics.getFont():getWidth(text)
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.print(text, centerX * self.zoom - width / 2, centerY * self.zoom - 4)
+
+			for _, index in ipairs(triangle.indices) do
+				local text = tostring(index)
+				local width = love.graphics.getFont():getWidth(text)
+
+				local x, y = unpack(self.points, (index - 1) * 2 + 1, (index - 1) * 2 + 2)
+				love.graphics.setColor(0, 1, 1, 0.5)
+				love.graphics.print(text, x * self.zoom - width / 2, y * self.zoom - 4)
+			end
+		end
 	end
 
 	love.graphics.setLineStyle("rough")
@@ -231,6 +266,19 @@ function DebugNavigation.Map:_draw()
 		end
 	end
 
+	if self.debugInfo and self.debugInfo.visited then
+		love.graphics.setColor(1, 0, 1, 1)
+		love.graphics.setLineWidth(1)
+
+		for _, edge in ipairs(self.debugInfo.visited) do
+			love.graphics.line(
+				edge[1] * self.zoom,
+				edge[2] * self.zoom,
+				edge[3] * self.zoom,
+				edge[4] * self.zoom)
+		end
+	end
+
 	local numPathPoints = math.floor(#self.path / 2)
 	local path = {}
 	for index = 1, numPathPoints do
@@ -254,6 +302,16 @@ function DebugNavigation.Map:_draw()
 	love.graphics.setColor(1, 0, 0, 1)
 	love.graphics.setPointSize(8)
 	love.graphics.points(path)
+
+	if self.currentX and self.currentY then
+		love.graphics.setColor(0, 1, 0, 0.5)
+		love.graphics.setLineWidth(1)
+		love.graphics.circle("line", self.currentX, self.currentY, 0.5 * self.zoom)
+
+		love.graphics.setColor(0, 1, 0, 1)
+		love.graphics.setLineWidth(2)
+		love.graphics.circle("line", self.currentX, self.currentY, 0.75 * self.zoom)
+	end
 
 	love.graphics.pop()
 end
@@ -372,13 +430,19 @@ function DebugNavigation:selectLayer(layer, button, index)
 	self:sendPoke("select", nil, { group = layer.group, localLayer = layer.localLayer })
 end
 
-function DebugNavigation:showPath(path)
-	self.map:setPath(path)
+function DebugNavigation:showPath(path, debugInfo)
+	self.map:setPath(path, debugInfo)
 end
 
 function DebugNavigation:showLayer(layerInfo, layer)
 	self.map:setLayer(layerInfo, layer)
 	self:focusChild(self.map)
+end
+
+function DebugNavigation:tick()
+	Interface.tick(self)
+
+	self.map:tick()
 end
 
 return DebugNavigation

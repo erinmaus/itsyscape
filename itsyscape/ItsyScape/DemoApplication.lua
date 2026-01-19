@@ -408,6 +408,10 @@ end
 
 function DemoApplication:postTickMultiThread()
 	Application.postTickMultiThread(self)
+
+	if self.cameraController then
+		self.cameraController:tick()
+	end
 end
 
 function DemoApplication:closeTitleScreen()

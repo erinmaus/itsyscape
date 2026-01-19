@@ -195,7 +195,7 @@ function NavigationMeshBuilder:_addVertex(i, j, s, t)
 end
 
 function NavigationMeshBuilder:_resize()
-	local numPoints = (self.map:getWidth() + 1) * (self.map:getHeight() + 1)
+	local numPoints = (self.map:getWidth() + 1) * (self.map:getHeight() + 1) * 2
 
 	for i = 1, numPoints do
 		self.points[i] = 0
@@ -216,36 +216,41 @@ function NavigationMeshBuilder:_buildMap()
 			local tile = self.map:getTile(i, j)
 			local userdata = NavigationMeshBuilder.Userdata(tile)
 
-			self:_addVertexUserdata(i, j, 1, 1, userdata)
-			self:_addVertex(i, j, 1, 1)
-			self:_addVertexUserdata(i, j, 1, 2, userdata)
-			self:_addVertex(i, j, 1, 2)
-			self:_addVertexUserdata(i, j, 2, 1, userdata)
-			self:_addVertex(i, j, 2, 1)
-			self:_addVertexUserdata(i, j, 2, 2, userdata)
-			self:_addVertex(i, j, 2, 2)
+			if tile:hasFlag("impassable") then
+				self:_addVertexUserdata(i, j, 1, 1, userdata)
+				self:_addVertex(i, j, 1, 1)
+				self:_addVertexUserdata(i, j, 1, 2, userdata)
+				self:_addVertex(i, j, 1, 2)
+				self:_addVertexUserdata(i, j, 2, 1, userdata)
+				self:_addVertex(i, j, 2, 1)
+				self:_addVertexUserdata(i, j, 2, 2, userdata)
+				self:_addVertex(i, j, 2, 2)
 
-			self:_addEdgeUserdata(
-				self:_getVertexIndex(i, j, 1, 1),
-				self:_getVertexIndex(i, j, 1, 2),
-				userdata)
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 1, 1),
+					self:_getVertexIndex(i, j, 1, 2),
+					userdata)
 
-			self:_addEdgeUserdata(
-				self:_getVertexIndex(i, j, 1, 2),
-				self:_getVertexIndex(i, j, 2, 2),
-				userdata)
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 1, 2),
+					self:_getVertexIndex(i, j, 2, 2),
+					userdata)
 
-			self:_addEdgeUserdata(
-				self:_getVertexIndex(i, j, 2, 2),
-				self:_getVertexIndex(i, j, 2, 1),
-				userdata)
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 2, 2),
+					self:_getVertexIndex(i, j, 2, 1),
+					userdata)
 
-			self:_addEdgeUserdata(
-				self:_getVertexIndex(i, j, 2, 1),
-				self:_getVertexIndex(i, j, 1, 1),
-				userdata)
+				self:_addEdgeUserdata(
+					self:_getVertexIndex(i, j, 2, 1),
+					self:_getVertexIndex(i, j, 1, 1),
+					userdata)
+			end
 
 			if i == 1 then
+				self:_addVertex(i, j, 1, 1)
+				self:_addVertex(i, j, 1, 2)
+
 				self:_addEdgeUserdata(
 					self:_getVertexIndex(i, j, 1, 1),
 					self:_getVertexIndex(i, j, 1, 2),
@@ -253,6 +258,9 @@ function NavigationMeshBuilder:_buildMap()
 			end
 
 			if i == self.map:getWidth() then
+				self:_addVertex(i, j, 2, 1)
+				self:_addVertex(i, j, 2, 2)
+
 				self:_addEdgeUserdata(
 					self:_getVertexIndex(i, j, 2, 1),
 					self:_getVertexIndex(i, j, 2, 2),
@@ -260,6 +268,9 @@ function NavigationMeshBuilder:_buildMap()
 			end
 
 			if j == 1 then
+				self:_addVertex(i, j, 1, 1)
+				self:_addVertex(i, j, 2, 1)
+
 				self:_addEdgeUserdata(
 					self:_getVertexIndex(i, j, 1, 1),
 					self:_getVertexIndex(i, j, 2, 1),
@@ -267,6 +278,9 @@ function NavigationMeshBuilder:_buildMap()
 			end
 
 			if j == self.map:getHeight() then
+				self:_addVertex(i, j, 1, 2)
+				self:_addVertex(i, j, 2, 2)
+
 				self:_addEdgeUserdata(
 					self:_getVertexIndex(i, j, 1, 2),
 					self:_getVertexIndex(i, j, 2, 2),
@@ -283,6 +297,9 @@ function NavigationMeshBuilder:_buildMap()
 						tile:setFlag("impassable")
 
 						local userdata = NavigationMeshBuilder.Userdata(tile)
+
+						self:_addVertex(i + offsetI, j + offsetJ, s1, t1)
+						self:_addVertex(i + offsetI, j + offsetJ, s2, t2)
 
 						self:_addEdgeUserdata(
 							self:_getVertexIndex(i + offsetI, j + offsetJ, s1, t1),
@@ -386,10 +403,7 @@ function NavigationMeshBuilder:_map(map)
 end
 
 function NavigationMeshBuilder:_triangulate()
-	if #self.polygons > 0 then
-		self.points, self.edges, self.vertexUserdata = triangulator:clean(self.points, self.edges, self.vertexUserdata, self.cleanOptions)
-	end
-
+	self.points, self.edges, self.vertexUserdata = triangulator:clean(self.points, self.edges, self.vertexUserdata, self.cleanOptions)
 	self.triangles = triangulator:triangulate(self.points, self.edges, self.triangulateOptions)
 end
 

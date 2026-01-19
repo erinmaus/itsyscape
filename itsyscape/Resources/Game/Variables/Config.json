@@ -5,7 +5,7 @@
 	},
 
 	"engine": {
-		"walkQueueTimeMS": 10
+		"walkQueueTimeMS": 15
 	},
 
 	"colors": {

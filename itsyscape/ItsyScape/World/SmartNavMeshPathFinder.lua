@@ -19,6 +19,7 @@ local DoorBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local Path = require "ItsyScape.World.Path"
 local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 local Tile = require "ItsyScape.World.Tile"
@@ -40,8 +41,9 @@ function SmartNavMeshPathFinder:new(peep, t)
 	self.layer = Utility.Peep.getLayer(peep)
 	self.map = peep:getDirector():getMap(self.layer)
 	self.peep = peep
+	self.isPeepHuman = peep:hasBehavior(HumanoidBehavior)
 
-	self.maxVisits = t.maxVisits or 512
+	self.maxVisits = t.maxVisits or math.huge
 	self.currentVisits = 0
 
 	local position = Utility.Peep.getPosition(self.peep)
@@ -56,9 +58,17 @@ function SmartNavMeshPathFinder:new(peep, t)
 	self.world = movement:getWorld(self.layer)
 	self._filter = Function(MovementCortex.filter, movement)
 
+	self.visitedEdges = t.debug and {}
+	self.visitedTriangles = t.debug and {}
+
 	self.ignored = {}
 	self.pathfinder = slick.navigation.path.new({
-		visit = function()
+		visit = function(current, _, edge)
+			if self.visitedEdges and self.visitedTriangles then
+				self.visitedEdges[edge] = true
+				self.visitedTriangles[current] = true
+			end
+
 			self.currentVisits = self.currentVisits + 1
 			if self.currentVisits > self.maxVisits then
 				return false
@@ -75,7 +85,7 @@ function SmartNavMeshPathFinder:new(peep, t)
 			return true
 		end,
 
-		neighbor = function(_, _, e)
+		neighbor = function(from, to, e)
 			local a = Vector(e.a.point.x, 0, e.a.point.y)
 			local b = Vector(e.b.point.x, 0, e.b.point.y)
 			local c = a:lerp(b, 0.5)
@@ -84,10 +94,8 @@ function SmartNavMeshPathFinder:new(peep, t)
 				return false
 			end
 
-			local x, _, y = c:get()
-
-			if self.world and self.world:has(self.proxy) then
-				local collisions = self.world:test(self.proxy, x, y, self._filter)
+			if not self.isPeepHuman and self.world and self.world:has(self.peep) then
+				local collisions = self.world:test(self.peep, c.x, c.z, self._filter)
 				for _, collision in ipairs(collisions) do
 					if not self.ignored[collision.other] then
 						return false
@@ -126,6 +134,14 @@ function SmartNavMeshPathFinder:new(peep, t)
 	})
 end
 
+function SmartNavMeshPathFinder:getDebugStats()
+	return {
+		edges = self.visitedEdges,
+		triangles = self.visitedTriangles,
+		visits = self.currentVisits
+	}
+end
+
 function SmartNavMeshPathFinder:find(start, goal)
 	if not self.mesh then
 		return nil
@@ -150,8 +166,26 @@ function SmartNavMeshPathFinder:find(start, goal)
 		end
 	end
 
+	if self.world and self.world:has(self.peep) then
+		local collisions = self.world:project(
+			self.peep,
+			start.x, start.z,
+			goal.x, goal.z,
+			self._filter)
+
+		if #collisions == 0 then
+			local elevationStart = self.map:getInterpolatedHeight(start.x, start.z)
+			local elevationGoal = self.map:getInterpolatedHeight(goal.x, goal.z)
+
+			local resultPath = Path()
+			resultPath:makeNode(PositionPathNode, self.map, self.layer, Vector(start.x, elevationStart, start.z))
+			resultPath:makeNode(PositionPathNode, self.map, self.layer, Vector(goal.x, elevationGoal, goal.z))
+			return resultPath
+		end
+	end
+
 	local _, path = self.pathfinder:nearest(self.mesh, start.x, start.z, goal.x, goal.z)
-	if self.maxGoalDistance then
+	if self.maxGoalDistance and path then
 		local distance = Vector(path[#path].point.x, 0, path[#path].point.y):distance(Vector(goal.x, 0, goal.z))
 		distance = distance - (radius + margin)
 		if distance > self.maxGoalDistance then
@@ -160,88 +194,53 @@ function SmartNavMeshPathFinder:find(start, goal)
 	end
 
 	local positions = {}
-
-	local index = 1
-	while path and index <= #path do
-		local current = Vector(path[index].point.x, 0, path[index].point.y)
-		if current ~= positions[#positions] then
-			table.insert(positions, current)
-		end
-
-		local didJump = false
-		if self.world and self.world:has(self.peep) then
-			for nextIndex = #path, index + 1, -1 do
-				local next = path[nextIndex].point
-				local collisions = self.world:project(self.peep, current.x, current.z, next.x, next.y, self._filter)
-
-				local numCollisions = 0
-				for _, collision in ipairs(collisions) do
-					if not self.ignored[collision.other] then
-						numCollisions = numCollisions + 1
-						break
-					end
-				end
-
-				if #collisions == 0 then
-					index = nextIndex
-					didJump = true
-					break
-				end
-
-				if self.yield then
-					coroutine.yield()
-				end
-			end
-		end
-
-		if not didJump then
-			index = index + 1
-		end
-
-		if self.yield then
-			coroutine.yield()
-		end
+	for _, p in ipairs(path) do
+		table.insert(positions, Vector(p.point.x, 0, p.point.y))
 	end
 
-	local result = {}
-	local previous
-	for i = 1, #positions do
+	local previous = positions[1]
+	local result = { previous }
+	for i = 2, #positions - 1 do
 		local current = positions[i]
 		local next = positions[i + 1]
 
 		local materialized = false
-		if self.world and self.world:has(self.proxy) then
-			local collisions = self.world:project(self.proxy, (previous or current).x, (previous or current).z, current.x, current.z, self._filter)
 
-			local collision
-			for j = #collisions, 1, -1 do
-				local c = collisions[j]
-				if not self.ignored[c.other] then
-					collision = c
-					break
-				end
-			end
+		if self.world and self.world:has(self.peep) then
+			local collisions = self.world:project(self.peep, previous.x, previous.z, current.x, current.z, self._filter)
 
+			local collision = collisions[#collisions]
 			if collision then
-				local a1 = previous or current
-				local b1 = previous and current or next or current
-				local forward1 = a1:direction(b1)
+				local side = MathCommon.side(previous, next, current)
+				local forward = Vector(collision.normal.x, 0, collision.normal.y)
+				local bump = current + forward * (radius + margin)
 
-				local c = Vector(collision.otherShape.center.x, 0, collision.otherShape.center.y)
-				local side1 = MathCommon.side(a1, b1, c)
-				local left1 = Vector(forward1.z, 0, -forward1.x)
-				local bump1 = Vector(collision.touch.x, 0, collision.touch.y) + left1 * -side1 * (radius + margin)
+				table.insert(result, bump)
 
-				local a2 = a1
-				local b2 = bump1
-				local forward2 = a2:direction(b2)
-				local bump2 = bump1 + forward2 * (radius + margin)
+				local strafe
+				if side == MathCommon.SIDE_LEFT then
+					strafe = MathCommon.leftXZ(forward)
+				elseif side == MathCommon.SIDE_RIGHT then
+					strafe = MathCommon.rightXZ(forward)
+				end
 
-				table.insert(result, bump1)
-				table.insert(result, bump2)
+				if strafe then
+					local strafeBump = current + strafe * (radius + margin)
+					table.insert(result, strafeBump)
+
+					local cornerBump = strafeBump + -forward * (radius + margin)
+					table.insert(result, cornerBump)
+					previous = cornerBump
+				else
+					previous = bump
+				end
+
 
 				materialized = true
-				previous = bump2
+
+				if self.yield then
+					coroutine.yield()
+				end
 			end
 		end
 
@@ -254,46 +253,11 @@ function SmartNavMeshPathFinder:find(start, goal)
 			coroutine.yield()
 		end
 	end
+	table.insert(result, positions[#positions])
 
 	local resultPath = Path()
-	local index = 1
-	while path and index <= #result do
-		local current = result[index]
+	for _, current in ipairs(result) do
 		resultPath:makeNode(PositionPathNode, self.map, self.layer, current)
-
-		local didJump = false
-		if self.world and self.world:has(self.peep) then
-			for nextIndex = #result, index + 1, -1 do
-				local next = result[nextIndex]
-				local collisions = self.world:project(self.peep, current.x, current.z, next.x, next.z, self._filter)
-
-				local numCollisions = 0
-				for _, collision in ipairs(collisions) do
-					if not self.ignored[collision.other] then
-						numCollisions = numCollisions + 1
-						break
-					end
-				end
-
-				if #collisions == 0 then
-					index = nextIndex
-					didJump = true
-					break
-				end
-
-				if self.yield then
-					coroutine.yield()
-				end
-			end
-		end
-
-		if not didJump then
-			index = index + 1
-		end
-
-		if self.yield then
-			coroutine.yield()
-		end
 	end
 
 	if self.world then

@@ -112,6 +112,20 @@ function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
 	return rotation:transformVector(projectedPoint)
 end
 
+function Common.leftXZ(a, result)
+	result = result or Vector()
+	return result:from(a.z, a.y, -a.x)
+end
+
+function Common.rightXZ(a, result)
+	result = result or Vector()
+	return result:from(-a.z, a.y, a.x)
+end
+
+Common.SIDE_COLLINEAR = 0
+Common.SIDE_LEFT      = -1
+Common.SIDE_RIGHT     = 1
+
 function Common.side(a, b, c, bias)
 	local left = (a.z - c.z) * (b.x - c.x)
 	local right = (a.x - c.x) * (b.z - c.z)

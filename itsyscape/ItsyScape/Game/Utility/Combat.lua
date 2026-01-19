@@ -28,6 +28,7 @@ local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
+local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Map = require "ItsyScape.World.Map"
 
 -- Contains utility methods that deal with combat.
@@ -396,10 +397,30 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 
 	local isSameTile = targetI == selfI and targetJ == selfJ
 
-	_currentShoot = nil
-	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, false, _iterateTargetSight, true)
+	local isWorldLineOfSightClear
+	do
+		local movement = mashina:getDirector():getCortex(MovementCortex)
+		local world = movement and movement:getWorld(k)
+		if world and world:has(selfPeep) then
+			local targetCenter = selfMap:getTileCenter(targetI, targetJ)
+			local selfCenter = selfMap:getTileCenter(selfI, selfJ)
 
-	return isSameTile or isLineOfSightClear
+			local collisions = world:project(selfPeep, selfCenter.x, selfCenter.z, targetCenter.x, targetCenter.z, function(...)
+				return movement:filter(...)
+			end)
+
+			isWorldLineOfSightClear = (#collisions == 0)
+			if not isWorldLineOfSightClear then
+			end
+		else
+			isWorldLineOfSightClear = true
+		end
+	end
+
+	_currentShoot = nil
+	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, false, _iterateTargetSight)
+
+	return isSameTile or (isLineOfSightClear and isWorldLineOfSightClear)
 end
 
 -- function Combat.setTieredEquipmentStatBonuses(peep, bonuses)

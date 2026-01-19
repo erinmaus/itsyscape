@@ -333,12 +333,12 @@ function MovementCortex:updateProp(prop)
 			elseif w.world:has(prop) then
 				w.world:remove(prop)
 			end
+		end
 
-			local collisionMaskUpdate = self.pendingCollisionMaskUpdates[prop]
-			if collisionMaskUpdate then
-				self.pendingCollisionMaskUpdates[prop] = nil
-				self:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
-			end
+		local collisionMaskUpdate = self.pendingCollisionMaskUpdates[prop]
+		if collisionMaskUpdate then
+			self.pendingCollisionMaskUpdates[prop] = nil
+			self:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
 		end
 	end
 end

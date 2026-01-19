@@ -11,6 +11,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Map = require "ItsyScape.World.Map"
 
 local UMap = {}
@@ -438,6 +439,23 @@ function UMap.spawnShip(peep, shipName, layer, i, j, elevation, args)
 	end
 
 	return shipLayer, shipScript
+end
+
+function UMap.isPassable(peep, goalPosition)
+	local movement = peep:getDirector():getCortex(MovementCortex)
+	local world = movement and movement:getWorld(Utility.Peep.getLayer(peep))
+	if world and world:has(selfPeep) then
+		local targetCenter = selfMap:getTileCenter(targetI, targetJ)
+		local selfCenter = selfMap:getTileCenter(selfI, selfJ)
+
+		local collisions = world:project(selfPeep, selfCenter.x, selfCenter.z, targetCenter.x, targetCenter.z, function(...)
+			return movement:filter(...)
+		end)
+
+		return #collisions == 0
+	end
+
+	return true
 end
 
 -- Gets a random tile within the line of sight of (i, j) no more than 'distance' tiles away (Euclidean)
