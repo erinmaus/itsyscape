@@ -57,7 +57,7 @@ end
 function MoveToPosition:addPeep(peep)
 	Cortex.addPeep(self, peep)
 
-	self.speed[peep] = self.speed[peep] or peep:getBehavior(MovementBehavior).maxSpeed / 2
+	self.speed[peep] = self.speed[peep] or 0
 end
 
 function MoveToPosition:removePeep(peep)
@@ -94,16 +94,12 @@ function MoveToPosition:update(delta)
 			if map then
 				local currentDelta = delta
 				while currentDelta > 0 do
-					local currentPosition = position.position
-					local previousPosition = targetPositionBehavior.previousPathNode and targetPositionBehavior.previousPathNode.position
-					previousPosition = previousPosition or currentPosition
-
-					local targetPosition = targetPositionBehavior.pathNode.position
-					targetPosition = targetPosition + Vector(0, map:getInterpolatedHeight(targetPosition.x, targetPosition.z), 0)
-					targetPosition = targetPosition + Vector.UNIT_Y * movement.float
+					local currentPosition = position.position * Vector.PLANE_XZ
+					local targetPosition = targetPositionBehavior.pathNode.position * Vector.PLANE_XZ
 
 					local direction = currentPosition:direction(targetPosition)
-					local offset = direction * speed
+					local velocity = self:accumulateVelocity(peep, direction * speed)
+					velocity = velocity * Vector.PLANE_XZ
 
 					if not peep:hasBehavior(RotationBehavior) then
 						if direction.x < 0 then
@@ -113,41 +109,40 @@ function MoveToPosition:update(delta)
 						end
 					end
 
-					local velocity = offset
-					velocity = self:accumulateVelocity(peep, velocity)
+					local distance = currentPosition:distance(targetPosition)
 
-					local velocitySlice = velocity * currentDelta
-					local velocitySliceLength = velocitySlice:getLength()
+					if distance == 0 then
+						if not targetPositionBehavior.pathNode:getIsPending() then
+							if targetPositionBehavior.nextPathNode then
+								targetPositionBehavior.nextPathNode:activate(peep)
+							else
+								peep:removeBehavior(TargetPositionBehavior)
+								movement.isStopping = true
+							end
+						end
 
-					local didOvershoot = false
-					local distance = ((targetPosition - currentPosition) * Vector.PLANE_XZ):getLength()
-
-					local radius = peep:hasBehavior(DynamicBehavior) and peep:getBehavior(DynamicBehavior).radius or MovementCortex.DEFAULT_PEEP_RADIUS
-					if distance < velocitySliceLength and distance > radius + self.DISTANCE_PADDING then
-						currentDelta = currentDelta - (delta * (distance / velocitySliceLength))
-						velocitySlice = direction * distance
-						didOvershoot = true
-					else
-						currentDelta = 0
-						didOvershoot = false
+						break
 					end
 
-					local goal = position.position + velocitySlice
+					local velocityMagnitude = velocity:getLength()
+					if velocityMagnitude == 0 then
+						break
+					end
+
+					local estimatedPartialDelta = distance / velocityMagnitude
+					local partialDelta = math.min(currentDelta, estimatedPartialDelta)
+
+					local partialVelocitySlice = partialDelta * velocity
+					local goal = currentPosition + partialVelocitySlice
 					if world and world:has(peep) then
 						goal.x, goal.z = world:move(peep, goal.x, goal.z, self._filter)
 						distance = ((targetPosition - goal) * Vector.PLANE_XZ):getLength()
 					end
 
-					position.position = goal
+					local finalPosition = goal + Vector(0, map:getInterpolatedHeight(targetPosition.x, targetPosition.z) + movement.float)
+					position.position = finalPosition
 
-					if (didOvershoot or distance < radius + self.DISTANCE_PADDING) and not targetPositionBehavior.pathNode:getIsPending() then
-						if targetPositionBehavior.nextPathNode then
-							targetPositionBehavior.nextPathNode:activate(peep)
-						else
-							peep:removeBehavior(TargetPositionBehavior)
-							movement.isStopping = true
-						end
-					end
+					currentDelta = currentDelta - partialDelta
 				end
 
 				self.speed[peep] = speed
