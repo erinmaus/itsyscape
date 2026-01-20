@@ -195,12 +195,17 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 	local positions = {}
 	for _, p in ipairs(path) do
-		table.insert(positions, Vector(p.point.x, 0, p.point.y))
+		local position = Vector(p.point.x, 0, p.point.y)
+		if position ~= positions[#positions] then
+			table.insert(positions, position)
+		end
 	end
 
 	local previous = positions[1]
 	local result = { previous }
 	for i = 2, #positions - 1 do
+		print(">", "i", i)
+
 		local current = positions[i]
 		local next = positions[i + 1]
 
@@ -209,31 +214,86 @@ function SmartNavMeshPathFinder:find(start, goal)
 		if self.world and self.world:has(self.peep) then
 			local collisions = self.world:project(self.peep, previous.x, previous.z, current.x, current.z, self._filter)
 
-			local collision = collisions[#collisions]
+			local collision = collisions[1]
 			if collision then
-				local side = MathCommon.side(previous, next, current)
-				local forward = Vector(collision.normal.x, 0, collision.normal.y)
-				local bump = current + forward * (radius + margin)
+				print("-", "touch", collision.touch.x, collision.touch.y)
+				print("-", "normal", collision.normal.x, collision.normal.y)
+				print("-", "current", current.x, current.z)
+				print("-", "previous", previous.x, previous.z)
+				print("-", "next", next.x, next.z)
 
+				local touch = Vector(collision.touch.x, 0, collision.touch.y)
+				local normal = Vector(collision.normal.x, 0, collision.normal.y)
+				local side = MathCommon.side(previous, current, touch, 0.01)
+				print("side 'touch' is on from previous -> current", side)
+				local directionSign = math.sign(previous:direction(current):dot(normal))
+				print("-", "directionSign", directionSign)
+				local strafe = Vector(collision.normal.y, 0, -collision.normal.x)
+				local strafeSign = math.sign(previous:direction(current):dot(strafe))
+				print("-", "strafeSign", strafeSign)
+
+				--local side = MathCommon.side(previous, next, current)
+				local base = current
+				local bump = current + normal * (radius + margin)
+				local bumpCollisions = self.world:project(self.peep, previous.x, previous.z, bump.x, bump.z, self._filter)
+
+				local needsExtraBump = false
+				if #bumpCollisions > 0 then
+					print("!!! NEEDS EXTRA BUMP")
+					bump = current + -normal * (radius + margin)
+					-- needsExtraBump = true
+					strafeSign = -strafeSign
+				end
+
+				print("-", "bump", bump.x, bump.z)
 				table.insert(result, bump)
+				previous = bump
 
-				local strafe
-				if side == MathCommon.SIDE_LEFT then
-					strafe = MathCommon.leftXZ(forward)
-				elseif side == MathCommon.SIDE_RIGHT then
-					strafe = MathCommon.rightXZ(forward)
-				end
-
-				if strafe then
-					local strafeBump = current + strafe * (radius + margin)
+				local strafeBump = base + strafe * strafeSign * (radius + margin)
+				print("-", "strafe bump", strafeBump.x, strafeBump.z)
+				local strafeCollisions = self.world:project(self.peep, bump.x, bump.z, strafeBump.x, strafeBump.z, self._filter)
+				if #strafeCollisions == 0 then
 					table.insert(result, strafeBump)
+					previous = strafeBump
 
-					local cornerBump = strafeBump + -forward * (radius + margin)
-					table.insert(result, cornerBump)
-					previous = cornerBump
+					local cornerBump = strafeBump + -normal * (radius + margin)
+					local cornerCollisions = self.world:project(self.peep, strafeBump.x, strafeBump.z, cornerBump.x, cornerBump.z, self._filter)
+					print("cornerBump", cornerBump.x, cornerBump.z)
+					if #cornerCollisions == 0 then
+						print("-", "corner bump", cornerBump.x, cornerBump.z)
+						table.insert(result, cornerBump)
+						previous = cornerBump
+					else
+						print(">>>", "corner bump skipped")
+					end
 				else
-					previous = bump
+					print(">>> strafe bump skipped")
 				end
+
+				if needsExtraBump then
+
+				end
+				-- 	print("GOTA EXTRA BUMP")
+				-- 	local extraBump = current + strafe * strafeSign * (radius + margin)
+				-- 	print(">>> extraBump", extraBump.x, extraBump.z)
+				-- 	local extraBumpCollisions = self.world:project(self.peep, previous.x, previous.z, extraBump.x, extraBump.z, self._filter)
+				-- 	if #extraBumpCollisions == 0 then
+				-- 		table.insert(result, extraBump)
+
+				-- 		local extraBumpCorner = current + -normal * (radius + margin)
+				-- 			print(">>> extraBumpCorner", extraBumpCorner.x, extraBumpCorner.z)
+				-- 		local extraBumpCornerCollisions = self.world:project(self.peep, extraBump.x, extraBump.z, extraBumpCorner.x, extraBumpCorner.z, self._filter)
+				-- 		if #extraBumpCornerCollisions == 0 then
+				-- 			table.insert(result, extraBumpCorner)
+				-- 		else
+				-- 			print(">>> extraBump CORNER skipped", extraBump.x, extraBump.z)
+				-- 		end
+				-- 	else
+				-- 		print(">>> extraBump skipped", extraBump.x, extraBump.z)
+				-- 	end
+
+				-- 	previous = current
+				-- end
 
 
 				materialized = true
