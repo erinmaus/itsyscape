@@ -399,7 +399,7 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 
 	local isWorldLineOfSightClear
 	do
-		local movement = mashina:getDirector():getCortex(MovementCortex)
+		local movement = selfPeep:getDirector():getCortex(MovementCortex)
 		local world = movement and movement:getWorld(k)
 		if world and world:has(selfPeep) then
 			local targetCenter = selfMap:getTileCenter(targetI, targetJ)
@@ -410,8 +410,6 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 			end)
 
 			isWorldLineOfSightClear = (#collisions == 0)
-			if not isWorldLineOfSightClear then
-			end
 		else
 			isWorldLineOfSightClear = true
 		end
