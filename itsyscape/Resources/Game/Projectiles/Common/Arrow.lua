@@ -89,8 +89,9 @@ function Arrow:update(elapsed)
 		position.y = position.y + self.y
 
 		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
-		local lookRotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition, Vector.UNIT_Y)
-		local rotation = xRotation * lookRotation
+		local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
+		local lookRotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition, -Vector.UNIT_Z)
+		local rotation = lookRotation * yRotation * xRotation
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)
