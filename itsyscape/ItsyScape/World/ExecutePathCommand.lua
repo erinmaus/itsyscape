@@ -58,7 +58,7 @@ function ExecutePathCommand:step(peep)
 		if map then
 			local target = self.path:getNodeAtIndex(-1)
 			if target then
-				local center = map:getTileCenter(target.i, target.j) * Vector.PLANE_XZ
+				local center = (target.position or map:getTileCenter(target.i, target.j)) * Vector.PLANE_XZ
 				local distance = (center - (Utility.Peep.getPosition(peep) * Vector.PLANE_XZ)):getLength()
 
 				if distance <= self.distance then

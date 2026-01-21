@@ -111,7 +111,7 @@ function MoveToPosition:update(delta)
 
 					local distance = currentPosition:distance(targetPosition)
 
-					if distance == 0 then
+					if distance < 0.01 then
 						if not targetPositionBehavior.pathNode:getIsPending() then
 							if targetPositionBehavior.nextPathNode then
 								targetPositionBehavior.nextPathNode:activate(peep)
@@ -125,7 +125,7 @@ function MoveToPosition:update(delta)
 					end
 
 					local velocityMagnitude = velocity:getLength()
-					if velocityMagnitude == 0 then
+					if velocityMagnitude < 0.01 then
 						break
 					end
 

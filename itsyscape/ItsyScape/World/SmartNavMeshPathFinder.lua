@@ -148,6 +148,10 @@ function SmartNavMeshPathFinder:find(start, goal)
 		return nil
 	end
 
+	if self.yield then
+		coroutine.yield()
+	end
+
 	local dynamic = self.peep:getBehavior(DynamicBehavior)
 	local radius = dynamic and dynamic.radius or MovementCortex.DEFAULT_PEEP_RADIUS
 	local margin = dynamic and dynamic.margin or self.DEFAULT_PEEP_MARGIN
@@ -176,12 +180,9 @@ function SmartNavMeshPathFinder:find(start, goal)
 			self._filter)
 
 		if #collisions == 0 then
-			local elevationStart = self.map:getInterpolatedHeight(start.x, start.z)
-			local elevationGoal = self.map:getInterpolatedHeight(goal.x, goal.z)
-
 			local resultPath = Path()
-			resultPath:makeNode(PositionPathNode, self.map, self.layer, Vector(start.x, elevationStart, start.z))
-			resultPath:makeNode(PositionPathNode, self.map, self.layer, Vector(goal.x, elevationGoal, goal.z))
+			resultPath:makeNode(PositionPathNode, self.map, self.layer, Vector(start.x, 0, start.z))
+			resultPath:makeNode(PositionPathNode, self.map, self.layer, Vector(goal.x, 0, goal.z))
 			return resultPath
 		end
 	end
@@ -219,7 +220,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 		if self.world and self.world:has(self.peep) then
 			local previousDirection = previous:direction(current)
-			print("-", "previousDirection", previousDirection.x, previousDirection.z)
+			self.print("-", "previousDirection", previousDirection.x, previousDirection.z)
 
 			for i = 1, 16 do
 				self.print("iteration", i)
