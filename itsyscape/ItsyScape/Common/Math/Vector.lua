@@ -314,7 +314,7 @@ function BaseVector:direction(other, result)
 	self:compatible()
 	other:compatible()
 
-	local result = other - self --other:subtract(self, result)
+	other:subtract(self, result)
 	result:normalize(result)
 
 	return result
