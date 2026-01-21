@@ -145,6 +145,8 @@ function DebugNavigationController:path(e)
 		return
 	end
 
+	local SmartNavMeshPathFinder = love.filesystem.load("ItsyScape/World/SmartNavMeshPathFinder.lua")()
+
 	local before = love.timer.getTime()
 	local pathFinder = SmartNavMeshPathFinder(self:getPeep(), { debug = true })
 	local path = pathFinder:find(Vector(e.startX, 0, e.startY), Vector(e.endX, 0, e.endY))

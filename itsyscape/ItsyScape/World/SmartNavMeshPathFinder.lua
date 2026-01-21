@@ -60,6 +60,7 @@ function SmartNavMeshPathFinder:new(peep, t)
 
 	self.visitedEdges = t.debug and {}
 	self.visitedTriangles = t.debug and {}
+	self.print = t.debug and print or function(...) end
 
 	self.ignored = {}
 	self.pathfinder = slick.navigation.path.new({
@@ -205,29 +206,43 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 	local previous, source = positions[1], positions[1]
 	local result = { previous }
-	for i = 2, #positions - 1 do
+	for i = 2, #positions do
 		local current = positions[i]
-		local next = positions[i + 1]
+		local next = positions[i + 1] or current
 		local side = MathCommon.side(source, next, current)
+		self.print("index", i)
+		self.print("-", "source", source.x, source.z)
+		self.print("-", "previous", previous.x, previous.z)
+		self.print("-", "current", current.x, current.z)
+		self.print("-", "next", next.x, next.z)
+		self.print("-", "distance", previous:distance(current))
 
 		if self.world and self.world:has(self.peep) then
+			local previousDirection = previous:direction(current)
+			print("-", "previousDirection", previousDirection.x, previousDirection.z)
+
 			for i = 1, 16 do
-				local source = previous
+				self.print("iteration", i)
+				local direction = previous:direction(current)
 				local collisions = self.world:project(self.peep, previous.x, previous.z, current.x, current.z, self._filter)
 				local collision = collisions[1]
 
 				if not collision then
+					self.print("!", "no collision")
 					table.insert(result, current)
 					break
 				end
 
-				local direction = previous:direction(current)
-				local distance = previous:distance(current)
-				local touch = Vector(collision.touch.x, 0, collision.touch.y)
+				self.print("-", "normal", collision.normal.x, collision.normal.y)
+				self.print("-", "touch", collision.touch.x, collision.touch.y)
 
+				local touch = Vector(collision.touch.x, 0, collision.touch.y)
 				local normal = -Vector(collision.normal.x, 0, collision.normal.y)
+
 				local bumps
 				if side >= 0 then
+					side = 1
+					self.print("clockwise")
 					bumps = {
 						normal,
 						MathCommon.rightXZ(normal),
@@ -235,6 +250,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 						MathCommon.rightXZ(-normal)
 					}
 				else
+					self.print("counter-clockwise")
 					bumps = {
 						MathCommon.rightXZ(-normal),
 						-normal,
@@ -257,31 +273,42 @@ function SmartNavMeshPathFinder:find(start, goal)
 				end
 
 				local materialized = false
+				local nextDirection
 				for j = 1, #bumps do
 					local index = math.wrap(j + startIndex, 1, #bumps)
 					local bump = bumps[index]
 					local isFarEnough = i == 1 or bump:distance(previous) > radius
-					local isSameSide = MathCommon.side(source, next, bump) == side
-					local canCheckCollision = isFarEnough and isSameSide
+					local direction1 = previous:direction(bump)
+					local dot = previousDirection:dot(direction1)
+					local isAhead = dot >= 0
+					local canCheckCollision = isFarEnough and isAhead
+					self.print("-", "previousDirection", previousDirection.x, previousDirection.z)
+					self.print("-", "direction1", direction1.x, direction1.z)
+					self.print("-", "dot", dot)
+					self.print("-", "trying bump...", bump.x, bump.z)
+					self.print("-", "isAhead", isAhead, "isFarEnough", isFarEnough, "canCheckCollision", canCheckCollision)
 
 					local numProjectionCollisions = canCheckCollision and #self.world:project(self.peep, previous.x, previous.z, bump.x, bump.z, self._filter)
+					self.print("-", "numProjectionCollisions", numProjectionCollisions)
+
 					if numProjectionCollisions and numProjectionCollisions == 0 then
+						self.print("!!!", bump.x, bump.z)
 						table.insert(result, bump)
 						materialized = true
+						nextDirection = previous:direction(bump)
 						previous = bump
 
 						local numTargetCollisions = #self.world:project(self.peep, bump.x, bump.z, current.x, current.z, self._filter)
-						if numProjectionCollisions == 0 then
+						if numTargetCollisions == 0 then
 							break
 						end
 					elseif materialized then
 						break
 					end
-
-					normal = side * MathCommon.rightXZ(normal)
 				end
 
 				if not materialized then
+					self.print("!", "couldn't materialize")
 					if i == 1 then
 						table.insert(result, current)
 						previous = current
@@ -289,6 +316,8 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 					break
 				end
+
+				previousDirection = nextDirection or previousDirection
 			end
 		else
 			table.insert(result, current)

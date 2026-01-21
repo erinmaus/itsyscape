@@ -267,7 +267,7 @@ function DebugNavigation.Map:_draw()
 	end
 
 	if self.debugInfo and self.debugInfo.visited then
-		love.graphics.setColor(1, 0, 1, 1)
+		love.graphics.setColor(1, 0, 1, 0.25)
 		love.graphics.setLineWidth(1)
 
 		for _, edge in ipairs(self.debugInfo.visited) do
