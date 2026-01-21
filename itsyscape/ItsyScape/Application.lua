@@ -516,7 +516,7 @@ function Application:_collect()
 		return
 	end
 
-	local step = (_CONF.clientGCStepMS or 0.5) / 1000
+	local step = (_CONF.clientGCStepMS or 1) / 1000
 
 	local startTime = love.timer.getTime()
 	local collected = false
