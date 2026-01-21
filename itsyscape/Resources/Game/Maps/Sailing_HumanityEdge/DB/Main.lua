@@ -1204,10 +1204,10 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 169,
+		PositionX = 173,
 		PositionY = 3,
 		PositionZ = 31,
-		Direction = -1,
+		Direction = 1,
 		Name = "CapnRaven_PirateBodyGuard1",
 		Map = M._MAP,
 		Resource = M["CapnRaven_PirateBodyGuard1"]
@@ -1248,10 +1248,10 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 173,
+		PositionX = 169,
 		PositionY = 3,
 		PositionZ = 31,
-		Direction = 1,
+		Direction = -1,
 		Name = "CapnRaven_PirateBodyGuard2",
 		Map = M._MAP,
 		Resource = M["CapnRaven_PirateBodyGuard2"]

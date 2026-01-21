@@ -13,6 +13,43 @@ local NTransform = require "nbunny.transform"
 
 local Common = {}
 
+Common.EPSILON = -1e5
+
+do
+	local A, a = Vector(), Vector()
+	local B, b = Vector(), Vector()
+	local c = Vector()
+	local E, Q = Vector(), Vector()
+	local sv, tv = Vector(), Vector()
+	function Common.lineSegmentDistance(p1, p2, q1, q2)
+		A:from(p1:get())
+		p1:direction(p2, a)
+		B:from(q1:get())
+		q1:direction(q2, b)
+		B:subtract(A, c)
+
+		if math.abs(a:dot(a)) < Common.EPSILON or
+		   math.abs(b:dot(b)) < Common.EPSILON or
+		   math.abs(a:dot(b) ^ 2) < Common.EPSILON
+		then
+			return A:distance(B)
+		end
+
+		local r = (a:dot(a) * b:dot(b)) - (a:dot(b) * a:dot(b))
+		local s = -(a:dot(b) * b:dot(c)) + (a:dot(c) * b:dot(b))
+		local t = (a:dot(b) * a:dot(c)) - (b:dot(c) * a:dot(a))
+
+		r = 1 / r
+		sv:from(math.clamp(s * r, 0, p1:distance(p2)))
+		tv:from(math.clamp(t * r, 0, q1:distance(q2)))
+
+		A:add(a:product(sv, E), E)
+		B:add(b:product(tv, Q), Q)
+
+		return E:distance(Q), E, Q
+	end
+end
+
 function Common.makeInverseTransform(transform, result)
 	result = result or transform
 	NTransform.inverse(transform, result)

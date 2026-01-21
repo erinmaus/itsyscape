@@ -15,6 +15,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local Cortex = require "ItsyScape.Peep.Cortex"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
@@ -101,7 +102,7 @@ function MoveToPosition:update(delta)
 					local velocity = self:accumulateVelocity(peep, direction * speed)
 					velocity = velocity * Vector.PLANE_XZ
 
-					if not peep:hasBehavior(RotationBehavior) then
+					if not (peep:hasBehavior(RotationBehavior) or peep:hasBehavior(CombatTargetBehavior)) then
 						if direction.x < 0 then
 							movement.facing = MovementBehavior.FACING_LEFT
 						elseif direction.x > 0 then

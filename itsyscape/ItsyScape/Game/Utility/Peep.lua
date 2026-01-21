@@ -9,7 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
-local CommonMath = require "ItsyScape.Common.Math.Common"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
@@ -717,26 +717,94 @@ function Peep.getAbsolutePosition(peep)
 end
 
 function Peep.getAbsoluteDistance(sourcePeep, targetPeep)
-	local sourcePeepPosition = Peep.getAbsolutePosition(sourcePeep)
+	local sourcePeepTransform = Peep.getAbsoluteTransform(sourcePeep)
 	local sourcePeepSize = Peep.getSize(sourcePeep)
 	local sourcePeepHalfSize = sourcePeepSize / 2
-	local sourcePeepMin, sourcePeepMax = sourcePeepPosition - sourcePeepHalfSize, sourcePeepPosition + sourcePeepHalfSize
+	local sourcePeepMin, sourcePeepMax = -sourcePeepHalfSize, sourcePeepHalfSize
+	local sourcePeepPolygon = {
+		Vector(sourcePeepMin.x, 0, sourcePeepMin.z):transform(sourcePeepTransform),
+		Vector(sourcePeepMin.x, 0, sourcePeepMax.z):transform(sourcePeepTransform),
+		Vector(sourcePeepMax.x, 0, sourcePeepMax.z):transform(sourcePeepTransform),
+		Vector(sourcePeepMax.x, 0, sourcePeepMin.z):transform(sourcePeepTransform),
+	}
 
-	local targetPeepPosition = Peep.getAbsolutePosition(targetPeep)
+	local targetPeepTransform = Peep.getAbsoluteTransform(targetPeep)
 	local targetPeepSize = Peep.getSize(targetPeep)
 	local targetPeepHalfSize = targetPeepSize / 2
-	local targetPeepMin, targetPeepMax = targetPeepPosition - targetPeepHalfSize, targetPeepPosition + targetPeepHalfSize
+	local targetPeepMin, targetPeepMax = -targetPeepHalfSize, targetPeepHalfSize
+	local targetPeepPolygon = {
+		Vector(targetPeepMin.x, 0, targetPeepMin.z):transform(targetPeepTransform),
+		Vector(targetPeepMin.x, 0, targetPeepMax.z):transform(targetPeepTransform),
+		Vector(targetPeepMax.x, 0, targetPeepMax.z):transform(targetPeepTransform),
+		Vector(targetPeepMax.x, 0, targetPeepMin.z):transform(targetPeepTransform),
+	}
 
-	local u = (sourcePeepMin - targetPeepMax):max(Vector.ZERO)
-	local v = (targetPeepMin - sourcePeepMax):max(Vector.ZERO)
-	local squaredDistance = u:getLengthSquared() + v:getLengthSquared()
+	local minDistance = math.huge
+	for i1, p1 in ipairs(sourcePeepPolygon) do
+		local i2 = math.wrapIndex(i1, 1, #sourcePeepPolygon)
+		local p2 = sourcePeepPolygon[i2]
 
-	if squaredDistance > 0 then
-		return math.sqrt(squaredDistance)
+		for j1, q1 in ipairs(targetPeepPolygon) do
+			local j2 = math.wrapIndex(j1, 1, #targetPeepPolygon)
+			local q2 = targetPeepPolygon[j2]
+
+			local distance = MathCommon.lineSegmentDistance(p1, p2, q1, q2)
+			minDistance = math.min(distance, minDistance)
+		end
 	end
 
-	-- Overlapping.
-	return 0
+	local isSourceInsideTarget = true
+	local sourceSide
+	for i1, p in ipairs(sourcePeepPolygon) do
+		for j1, q1 in ipairs(targetPeepPolygon) do
+			local j2 = math.wrapIndex(j1, 1, #targetPeepPolygon)
+			local q2 = sourcePeepPolygon[j2]
+
+			local side = MathCommon.side(q1, q2, p)
+			if side ~= 0 and sourceSide and side ~= sourceSide then
+				isSourceInsideTarget = false
+				break
+			end
+
+			if side ~= 0 then
+				sourceSide = side
+			end
+		end
+
+		if not isSourceInsideTarget then
+			break
+		end
+	end
+
+	local isTargetInsideSource = true
+	local targetSide
+	for i1, p in ipairs(targetPeepPolygon) do
+		for j1, q1 in ipairs(sourcePeepPolygon) do
+			local j2 = math.wrapIndex(j1, 1, #sourcePeepPolygon)
+			local q2 = sourcePeepPolygon[j2]
+
+			local side = MathCommon.side(q1, q2, p)
+			if side ~= 0 and targetSide and side ~= targetSide then
+				isTargetInsideSource = false
+				break
+			end
+
+			if side ~= 0 then
+				targetSide = side
+			end
+		end
+
+		if not isTargetInsideSource then
+			break
+		end
+	end
+
+	if isSourceInsideTarget or isTargetInsideSource then
+		-- Overlapping.
+		return 0
+	end
+
+	return minDistance
 end
 
 function Peep.getSize(peep)
@@ -1986,7 +2054,7 @@ function Peep.lookAt(self, target, delta)
 		end
 
 		local selfMapTransform = Peep.getParentTransform(self)
-		local _, mapRotation = CommonMath.decomposeTransform(selfMapTransform)
+		local _, mapRotation = MathCommon.decomposeTransform(selfMapTransform)
 
 		local xzSelfPosition = selfPosition * Vector.PLANE_XZ
 		local xzPeepPosition = peepPosition * Vector.PLANE_XZ

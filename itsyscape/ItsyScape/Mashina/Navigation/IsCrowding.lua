@@ -12,7 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 
 local IsCrowding = B.Node("IsCrowding")
-IsCrowding.PEEP = B.Reference()
+IsCrowding.PEEP = B.Reference()	
 IsCrowding.DISTANCE = B.Reference()
 
 function IsCrowding:update(mashina, state, executor)
@@ -29,11 +29,7 @@ function IsCrowding:update(mashina, state, executor)
 	end
 
 	local distance = state[self.DISTANCE] or 1.5
-
-	local peepPosition = Utility.Peep.getAbsolutePosition(peep)
-	local selfPosition = Utility.Peep.getAbsolutePosition(mashina)
-
-	local selfDistanceFromPeep = peepPosition:distance(selfPosition)
+	local selfDistanceFromPeep = Utility.Peep.getAbsoluteDistance(mashina, peep)
 	if selfDistanceFromPeep <= distance then
 		return B.Status.Success
 	end

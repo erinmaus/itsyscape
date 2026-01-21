@@ -23,7 +23,7 @@ local FollowPlayer = Mashina.Success {
 		Mashina.Step {
 			Mashina.Navigation.WalkToPeep {
 				peep = CommonLogic.PLAYER,
-				distance = 2.5,
+				distance = 4.5,
 				as_close_as_possible = false
 			},
 

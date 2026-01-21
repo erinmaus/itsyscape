@@ -60,37 +60,56 @@ do
 		up:cross(F, R):normalize(R)
 		F:cross(R, U):normalize(U)
 
+		if F:getLengthSquared() == 0 or R:getLengthSquared() == 0 or U:getLengthSquared() == 0 then
+			result:from()
+			return result
+		end
+
 		local trace = R.x + U.y + F.z
 		if trace > 0 then
 			local s = 0.5 / math.sqrt(trace + 1)
-			result.x = (U.z - F.y) * s
-			result.y = (F.x - R.z) * s
-			result.z = (R.y - U.x) * s
-			result.w = 0.25 / s
+			if math.abs(s) < E then
+				result:from()
+			else
+				result.x = (U.z - F.y) * s
+				result.y = (F.x - R.z) * s
+				result.z = (R.y - U.x) * s
+				result.w = 0.25 / s
+			end
 		end
 
 		if R.x > U.y and R.x > F.z then
 			local s = 2 * math.sqrt(1 + R.x - U.y - F.z)
-			result.x = 0.25 * s
-			result.y = (U.x + R.y) / s
-			result.z = (F.x + R.z) / s
-			result.w = (U.z - F.y) / s
+			if math.abs(s) < E then
+				result:from()
+			else
+				result.x = 0.25 * s
+				result.y = (U.x + R.y) / s
+				result.z = (F.x + R.z) / s
+				result.w = (U.z - F.y) / s
+			end
 		end
 
 		if U.y > F.z then
 			local s = 2 * math.sqrt(1 + U.y - R.x - F.z)
-			result.x = (U.x + R.y) / s
-			result.y = 0.25 * s
-			result.z = (F.y + U.z) / s
-			result.w = (F.x - R.z) / s
-		end
-		
-		do
+			if math.abs(s) < E then
+				result:from()
+			else
+				result.x = (U.x + R.y) / s
+				result.y = 0.25 * s
+				result.z = (F.y + U.z) / s
+				result.w = (F.x - R.z) / s
+			end
+		else
 			local s = 2 * math.sqrt(1 + F.z - R.x - U.y)
-			result.x = (F.x + R.z) / s
-			result.y = (F.y + U.z) / s
-			result.z = 0.25 * s
-			result.w = (R.y - U.x) / s
+			if math.abs(s) < E then
+				result:from()
+			else
+				result.x = (F.x + R.z) / s
+				result.y = (F.y + U.z) / s
+				result.z = 0.25 * s
+				result.w = (R.y - U.x) / s
+			end
 		end
 
 		return result

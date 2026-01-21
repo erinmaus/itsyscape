@@ -256,6 +256,14 @@ do
 	end
 end
 
+do
+	local difference = Vector()
+
+	function Vector:distanceSquared(other)
+		return self:subtract(other, difference):getLengthSquared()
+	end
+end
+
 -- Gets the length (i.e., magnitude) of the vector, squared.
 function BaseVector:getLengthSquared()
 	self:compatible()

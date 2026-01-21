@@ -24,7 +24,7 @@ local GetPlayer = Mashina.Peep.GetPlayer {
 local AvoidCrowdingPlayer = Mashina.Step {
 	Mashina.Navigation.IsCrowding {
 		peep = PLAYER,
-		distance = 1
+		distance = 1.5
 	},
 
 	Mashina.Player.IsEnabled {
@@ -61,7 +61,7 @@ local AvoidCrowdingPlayerTarget = Mashina.Step {
 
 	Mashina.Navigation.IsCrowding {
 		peep = TARGET_TO_AVOID,
-		distance = 3
+		distance = 1
 	},
 
 	Mashina.Player.IsEnabled {
@@ -94,7 +94,7 @@ local AvoidCrowdingSelfTarget = Mashina.Step {
 
 	Mashina.Navigation.IsCrowding {
 		peep = TARGET_TO_AVOID,
-		distance = 3
+		distance = 1
 	},
 
 	Mashina.Peep.Strafe {
