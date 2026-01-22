@@ -231,7 +231,7 @@ function TreeView:tick()
 				if r.felledPosition then
 					local xzSelfPosition = self:getProp():getPosition() * Vector.PLANE_XZ
 					local xzFelledPosition = Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ
-					self.targetRotation = (Quaternion.lookAt(xzSelfPosition, xzFelledPosition, Vector.UNIT_Y) * -inverseGlobalRotation):getNormal()
+					self.targetRotation = (inverseGlobalRotation * Quaternion.lookAt(xzFelledPosition, xzSelfPosition, Vector.UNIT_Z)):getNormal()
 				else
 					self.targetRotation = Quaternion.Y_180
 				end
@@ -267,7 +267,7 @@ function TreeView:update(delta)
 
 		local r = self:getProp():getState().resource
 		if self.isDepleted and r and r.felledPosition then
-			local currentRotation = Quaternion.IDENTITY:slerp(self.targetRotation, Tween.powerEaseOut(delta, 3))
+			local currentRotation = Quaternion.IDENTITY:slerp(self.targetRotation, Tween.powerEaseOut(delta, 1.1)):getNormal()
 			MathCommon.makeRotationTransform(currentRotation, self._transform)
 
 			self.transforms:applyTransform(

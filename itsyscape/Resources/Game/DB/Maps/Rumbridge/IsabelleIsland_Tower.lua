@@ -989,9 +989,14 @@ do
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 3,
-		SizeY = 3,
+		SizeY = 1.5,
 		SizeZ = 1.5,
 		MapObject = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.MakeOffset {
+		OffsetY = 0.5,
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
 	}
 
 	ItsyScape.Meta.ResourceName {

@@ -22,7 +22,7 @@ function BasicTree:new(...)
 	Prop.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1, 2, 1)
+	size.size = Vector(2, 4, 2)
 
 	self:addBehavior(PropResourceHealthBehavior)
 
