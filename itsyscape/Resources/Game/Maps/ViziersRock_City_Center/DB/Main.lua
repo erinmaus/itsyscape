@@ -99,7 +99,6 @@ do
 		ColorBlue = 120,
 		NearDistance = 15,
 		FarDistance = 25,
-		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
 end

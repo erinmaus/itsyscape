@@ -13,7 +13,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
-local ExecutePathcommand = require "ItsyScape.World.ExecutePathcommand"
+local ExecutePathcommand = require "ItsyScape.World.ExecutePathCommand"
 local Path = require "ItsyScape.World.Path"
 local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 
