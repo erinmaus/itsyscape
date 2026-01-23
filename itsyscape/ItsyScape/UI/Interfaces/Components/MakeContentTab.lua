@@ -96,7 +96,7 @@ function MakeContentTab:new(interface)
 		self.WIDTH - self.MAKE_INPUT_HEIGHT * 2 - self.PADDING * 3,
 		self.MAKE_INPUT_HEIGHT)
 	self.makeInput:setZDepth(100)
-	self.makeInput.onSubmit:register(self.make, self)
+	self.makeInput.onSubmit:register(self.onMakeInputSubmit, self)
 	self.makeInput.onValueChanged:register(self.updateConstraints, self)
 	self.makeInput.onGamepadRelease:register(self.onMakeInputGamepadRelease, self)
 	self.makeLayout:addChild(self.makeInput)
