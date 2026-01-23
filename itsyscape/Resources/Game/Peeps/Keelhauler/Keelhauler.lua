@@ -77,7 +77,7 @@ function Keelhauler:ready(director, game)
 		Equipment.SKIN_PRIORITY_BASE,
 		"Keelhauler/Feathers_Bendy.lua")
 
-	Utility.Peep.equipXWeapon(self, "Keelhauler_MudSplash")
+	Utility.Peep.equipXWeapon(self, "Keelhauler_FireBreathe")
 
 	Creep.ready(self, director, game)
 end
