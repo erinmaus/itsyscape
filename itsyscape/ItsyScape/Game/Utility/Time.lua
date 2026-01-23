@@ -143,7 +143,6 @@ function Time.toCurrentTime(year, month, day)
 	offsetDays = offsetDays * math.sign(yearDifference)
 
 	local offsetTime = offsetDays * Time.DAY
-	local currentTime = Time.BIRTHDAY_TIME + offsetTime
 	return currentTime
 end
 
@@ -244,8 +243,8 @@ end
 
 function Time.getAndUpdateTime(root)
 	local currentOffset = root:getSection("Clock"):get("offset") or 0
-	local currentGameTime = root:getSection("Clock"):get("time") or os.time()
-	local currentTime = os.time()
+	local currentGameTime = root:getSection("Clock"):get("time") or (os.difftime(os.time(), Time.BIRTHDAY_TIME))
+	local currentTime = os.difftime(os.time(), Time.BIRTHDAY_TIME)
 
 	if currentTime >= currentGameTime then
 		root:getSection("clock"):set("time", currentTime)

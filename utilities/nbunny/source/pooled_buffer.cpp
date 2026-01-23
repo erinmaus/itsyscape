@@ -179,7 +179,7 @@ static inline void nbunny_buffer_encode_number(lua_State* L, nbunny::PooledBuffe
 {
 	p.buffer.append(TYPE_NUMBER);
 
-	auto value = (float)lua_tonumber(L, index);
+	auto value = lua_tonumber(L, index);
 	p.buffer.append(value);
 }
 
@@ -248,7 +248,7 @@ static inline void nbunny_buffer_decode_nil(lua_State* L, nbunny::PooledBuffer& 
 
 static inline void nbunny_buffer_decode_number(lua_State* L, nbunny::PooledBuffer& p)
 {
-	float value = 0.0f;
+	double value = 0.0f;
 	p.buffer.read(value);
 
 	lua_pushnumber(L, value);
