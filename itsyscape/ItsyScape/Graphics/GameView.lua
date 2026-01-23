@@ -494,24 +494,6 @@ function GameView:_getLargeTileSet(tileSet, map)
 		key = table.concat(ids, ",")
 	end
 
-	if _DEBUG then
-		Log.info("Not caching large tile set with key '%s' because of debug mode.", key)
-
-		local result = LargeTileSet(tileSet)
-
-		if self:_getIsMapEditor() then
-			result:emitAll(map)
-		else
-			self.largeTileSetsPending = self.largeTileSetsPending + 1
-			self.resourceManager:queueAsyncEvent(function()
-				result:emitAll(map)
-				self.largeTileSetsPending = self.largeTileSetsPending - 1
-			end)
-		end
-
-		return result
-	end
-
 	local result = self.largeTileSets[key]
 	if not result then
 		Log.info("Building large tile set with key '%s'.", key)
