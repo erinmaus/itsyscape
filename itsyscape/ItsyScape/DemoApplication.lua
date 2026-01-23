@@ -1762,16 +1762,11 @@ function DemoApplication:getScreenshotName(prefix, index)
 end
 
 function DemoApplication:snapshotPlayerPeep()
-	local actors
-	if _DEBUG then
-		actors = {}
-		for actor in self:getGame():getStage():iterateActors() do
-			if self:getGameView():getActor(actor) then
-				table.insert(actors, actor)
-			end
+	local actors = {}
+	for actor in self:getGame():getStage():iterateActors() do
+		if self:getGameView():getActor(actor) then
+			table.insert(actors, actor)
 		end
-	else
-		actors = { self:getGame():getPlayer():getActor() }
 	end
 
 	love.graphics.push('all')
