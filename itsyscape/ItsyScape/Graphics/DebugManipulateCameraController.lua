@@ -295,11 +295,7 @@ function DebugManipulateCameraController:mouseScroll(uiActive, x, y)
 		return
 	end
 
-	if love.system.getOS() ~= "OS X" then
-		y = y * self.SCROLL_SPEED_MULTIPLIER
-	else
-		y = y / self.SCROLL_SPEED_MULTIPLIER
-	end
+	y = y / self.SCROLL_SPEED_MULTIPLIER
 
 	local offset = self:getCamera():getUp() * y
 	self.translationOffset = (self.translationOffset + offset):keep()
