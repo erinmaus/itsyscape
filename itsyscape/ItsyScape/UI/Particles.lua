@@ -84,6 +84,10 @@ function Particles:_initParticleSystem(particleSystemProperties)
 		end
 	end
 
+	if particleSystemProperties.Offset then
+		particleSystem:setOffset(unpack(particleSystemProperties.Offset))
+	end
+
 	self.particleSystem = particleSystem
 end
 
@@ -141,6 +145,8 @@ function Particles:draw(resources, state)
 	if not self:getOverflow() then
 		itsyrealm.graphics.applyPseudoScissor()
 	end
+
+	print("drewwwwwwwww", self:getAbsolutePosition())
 
 	love.graphics.setColor(self.tintColor:get())
 	itsyrealm.graphics.uncachedDraw(self.particleSystem)

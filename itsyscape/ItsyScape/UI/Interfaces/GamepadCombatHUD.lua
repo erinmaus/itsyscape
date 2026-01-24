@@ -27,6 +27,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local BaseCombatHUD = require "ItsyScape.UI.Interfaces.BaseCombatHUD"
 local GamepadCirclePanel = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanel"
+local GamepadCirclePanelZap = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanelZap"
 local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowerIcon"
 local RechargingPowerBar = require "ItsyScape.UI.Interfaces.Components.RechargingPowerBar"
 
@@ -641,7 +642,15 @@ function GamepadCombatHUD:newSpiralButton()
 	button:addChild(icon)
 	button:setData("icon", icon)
 
+	button.onClick:register(self._zapButton, self)
+
 	return button
+end
+
+function GamepadCombatHUD:_zapButton(button, index)
+	if index == 1 then
+		GamepadCirclePanelZap.zap(button)
+	end
 end
 
 function GamepadCombatHUD:layoutSpiralButton(button, delta)
