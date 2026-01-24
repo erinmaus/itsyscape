@@ -312,7 +312,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Channel the power of Prisium, the Great Intelligence, and cast spells without the need for runes.",
+	Value = "Channel the power of Prisium, the Great Intelligence, and cast spells without the need for runes. Spells will also reward zeal instead of consuming it.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Nirvana"
 }
@@ -324,7 +324,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Channel the power of Prisium, the Great Intelligence, and eliminate the need of runes for 30 seconds.",
+	Value = "Channel the power of Prisium, the Great Intelligence, and eliminate the need of runes for 30 seconds. Spells will also reward zeal instead of consuming it.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Nirvana"
 }

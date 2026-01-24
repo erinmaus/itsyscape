@@ -62,14 +62,8 @@ function MagicWeapon:rollDamage(peep, purpose, target)
 	return roll
 end
 
-function MagicWeapon:perform(peep, target)
-	local success = Weapon.perform(self, peep, target)
-	local spell = self:getSpell(peep)
-	if spell then
-		spell:cast(peep, target)
-	end
-
-	return success
+function Weapon:canCastSpells()
+	return true
 end
 
 function MagicWeapon:getAttackRange(peep)

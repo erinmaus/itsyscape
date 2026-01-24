@@ -97,7 +97,7 @@ function Spell:canCast(peep)
 	local success = false
 
 	local inputFlags = { ['item-inventory'] = true, ['item-equipment'] = true }
-	local requirementFlags = { ['item-equipment'] = true }
+	local requirementFlags = { ['item-inventory'] = true, ['item-equipment'] = true }
 	local state = peep:getState()
 	local gameDB = self.game:getGameDB()
 	local brochure = gameDB:getBrochure()

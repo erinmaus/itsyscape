@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
+local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local DebugAscend = Class(Action)
@@ -25,6 +26,9 @@ function DebugAscend:perform(state, peep, item)
 			skill:setLevelBoost(21)
 		end
 	end
+
+	local status = peep:getBehavior(CombatStatusBehavior)
+	status.currentZeal = 1
 
 	Action.perform(self, state, peep)
 

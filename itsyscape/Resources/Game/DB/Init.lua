@@ -390,6 +390,7 @@ Game "ItsyScape"
 
 	Meta "CombatSpell" {
 		Strength = Meta.TYPE_INTEGER,
+		ZealCost = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
 

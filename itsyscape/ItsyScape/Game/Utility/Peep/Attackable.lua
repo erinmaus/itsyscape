@@ -144,7 +144,7 @@ function Attackable:onZeal(p)
 				offset = offset + o
 			end
 
-			local recharge = math.clamp(p:getEffectiveZeal() * multiplier + offset, 0.01, 1)
+			local recharge = math.clamp(p:getEffectiveZeal() * multiplier + offset, 0, 1)
 			powerZeal = powerZeal - recharge
 
 			if powerZeal <= 0 then

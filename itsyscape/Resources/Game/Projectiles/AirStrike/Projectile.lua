@@ -104,7 +104,8 @@ function AirStrike:update(elapsed)
 		local alpha = math.abs(math.sin(delta * math.pi)) * self.ALPHA_MULTIPLIER
 		alpha = math.max(math.min(alpha, 1), 0)
 
-		self.airWave:getTransform():setLocalRotation(Quaternion.lookAt(self.spawnPosition, self.hitPosition))
+		local rotation = Quaternion.lookAt(self.hitPosition, self.spawnPosition)
+		self.airWave:getTransform():setLocalRotation(rotation)
 		self.airWave:getTransform():setLocalTranslation(self.spawnPosition)
 		self.airWave:getMaterial():setColor(Color(
 			self.COLOR.r,

@@ -665,6 +665,10 @@ function Weapon:getWeaponType()
 	return 'none'
 end
 
+function Weapon:canCastSpells()
+	return false
+end
+
 function Weapon:getDelay(peep, target)
 	if peep:hasBehavior(PlayerBehavior) then
 		return 0

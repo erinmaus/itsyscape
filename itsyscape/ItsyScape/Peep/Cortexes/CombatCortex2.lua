@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CombatPower = require "ItsyScape.Game.CombatPower"
+local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Config = require "ItsyScape.Game.Config"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
@@ -19,6 +20,7 @@ local ZealPoke = require "ItsyScape.Game.ZealPoke"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
@@ -153,6 +155,22 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
 	local isTooClose = distance <= 0
 	return canReachTarget, isTooFar, isTooClose
+end
+
+function CombatCortex:_getPeepSpell(peep, weapon)
+	local stance = peep:getBehavior(StanceBehavior)
+	if stance and stance.useSpell then
+		local activeSpell = peep:getBehavior(ActiveSpellBehavior)
+		if activeSpell
+		   and activeSpell.spell
+		   and activeSpell.spell:isCompatibleType(CombatSpell)
+		   and activeSpell.spell:canCast(peep):good()
+		then
+			return activeSpell.spell
+		end
+	end
+
+	return nil
 end
 
 function CombatCortex:_getPeepWeapon(peep)
@@ -475,7 +493,7 @@ function CombatCortex:_getLevelZeal(averageLevel)
 	return zeal
 end
 
-function CombatCortex:_givePeepZeal(peep, target)
+function CombatCortex:_givePeepZeal(peep)
 	local rollInfo = self.currentRoll[peep]
 
 	if not rollInfo.initiateAttack then
@@ -556,6 +574,16 @@ function CombatCortex:_giveTargetZeal(selfPeep, targetPeep)
 			zeal = zeal
 		}))
 	end
+end
+
+function CombatCortex:_takeSpellZeal(peep, spell, weapon)
+	local zeal = -spell:getZealCost(peep, spell)
+
+	peep:poke("zeal", ZealPoke.onCastSpell({
+		spell = spell,
+		weapon = weapon,
+		zeal = zeal
+	}))
 end
 
 function CombatCortex:_updateAggressiveTarget(peep)
@@ -848,10 +876,24 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
+	local spell
+	if weapon:canCastSpells() then
+		spell = self:_getPeepSpell(peep, weapon)
+		if spell then
+			print(">>> cast spell", spell:getID())
+			spell:cast(peep, target)
+		end
+		print(">>> no spells.....", peep:getName())
+	end
+
 	if not didUsePower then
 		self:_givePeepZeal(peep)
 	end
 	self:_giveTargetZeal(peep, target)
+
+	if spell then
+		self:_takeSpellZeal(peep, spell, weapon)
+	end
 
 	local projectile = weapon:getProjectile(peep)
 	if projectile then
