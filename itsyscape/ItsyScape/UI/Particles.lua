@@ -146,8 +146,6 @@ function Particles:draw(resources, state)
 		itsyrealm.graphics.applyPseudoScissor()
 	end
 
-	print("drewwwwwwwww", self:getAbsolutePosition())
-
 	love.graphics.setColor(self.tintColor:get())
 	itsyrealm.graphics.uncachedDraw(self.particleSystem)
 
