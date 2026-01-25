@@ -33,6 +33,7 @@ function PlayerStats:new(id, index, ui)
 
 	self.infoContent = SkillInfoContentTab(self)
 	self.skillsContent = SkillsGamepadContentTab(self)
+	self.skillsContent:setHasActions(true)
 
 	self.layout:addChild(self.skillsContent)
 	self.layout:addChild(self.infoContent)

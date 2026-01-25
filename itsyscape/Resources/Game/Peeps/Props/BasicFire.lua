@@ -44,7 +44,7 @@ function BasicFire:onSpawnedByAction(instigator)
 
 		if record then
 			local spawnTime = record:get("SpawnTime")
-			local level = Curve.XP_CURVE:getLevel(instigator:getState():count("Skill", "Firemaking"))
+			local level = Curve.XP_CURVE:getLevel(instigator:getState():count("Skill", "Alchemy"))
 			level = level / 20
 			if spawnTime then
 				self.duration = spawnTime * (level + 1)

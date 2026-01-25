@@ -175,7 +175,7 @@ do
 
 	local LightAction = ItsyScape.Action.Light() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(45)
 		},
 
@@ -195,7 +195,7 @@ do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(45)
 		},
 

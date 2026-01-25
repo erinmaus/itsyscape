@@ -68,7 +68,7 @@ for name, metal in spairs(METALS) do
 		},
 
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(metal.tier)
 		},
 
@@ -103,7 +103,7 @@ for name, metal in spairs(METALS) do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(metal.tier + 1)
 		}
 	}
@@ -120,7 +120,7 @@ for name, metal in spairs(METALS) do
 		},
 
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(metal.tier + 10)
 		},
 
@@ -155,7 +155,7 @@ for name, metal in spairs(METALS) do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(metal.tier + 11)
 		}
 	}

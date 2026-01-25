@@ -59,7 +59,7 @@ function GamepadGridLayout:focus(reason)
 		return
 	end
 
-	if self.previousFocusedWidget and self.previousFocusedWidget:getParent() == self then
+	if self.previousFocusedWidget and self.previousFocusedWidget:getParent() == self and reason ~= "reset" then
 		inputProvider:setFocusedWidget(self.previousFocusedWidget, reason)
 	elseif self:getNumChildren() > 0 then
 		for i = 1, self:getNumChildren() do

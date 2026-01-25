@@ -103,7 +103,7 @@ do
 	local UnlitKursedCandle = ItsyScape.Resource.Item "UnlitKursedCandle" {
 		ItsyScape.Action.Craft() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(10)
 			},
 
@@ -128,7 +128,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(15)
 			},
 
@@ -143,7 +143,7 @@ do
 
 	local LightAction = ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 
@@ -163,7 +163,7 @@ do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(10)
 		}
 	}

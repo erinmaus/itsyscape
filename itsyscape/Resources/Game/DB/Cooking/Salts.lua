@@ -420,7 +420,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
-		Skill = ItsyScape.Resource.Skill "Firemaking",
+		Skill = ItsyScape.Resource.Skill "Alchemy",
 		Boost = 2,
 		Resource = Item
 	}
@@ -1148,7 +1148,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
-		Skill = ItsyScape.Resource.Skill "Firemaking",
+		Skill = ItsyScape.Resource.Skill "Alchemy",
 		Boost = 4,
 		Resource = Item
 	}
@@ -1920,7 +1920,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
-		Skill = ItsyScape.Resource.Skill "Firemaking",
+		Skill = ItsyScape.Resource.Skill "Alchemy",
 		Boost = 8,
 		Resource = Item
 	}

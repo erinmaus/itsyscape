@@ -31,8 +31,14 @@ local PropertiesPrompt = require "ItsyScape.UI.Interfaces.Components.PropertiesP
 
 local SkillGuideContentTab = Class(GamepadContentTab)
 
+SkillGuideContentTab.OVERRIDE_BUTTON_LABEL_STYLE = Theme.override(
+	Theme.BUTTON_LABEL_STYLE,
+	{ padding = Theme.DEFAULT_INNER_PADDING })
+
 function SkillGuideContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
+
+	self.onSelectAction = Callback()
 
 	self.scrollableLayout = ScrollablePanel(GamepadGridLayout)
 	self.scrollableLayout:setSize(self:getSize())
@@ -51,9 +57,28 @@ function SkillGuideContentTab:new(interface)
 
 	self.layout:setID("PlayerSkillGuide")
 
-	self:getInterface().onClose:register(self._onClose)
+	self:getInterface().onClose:register(self._onClose, self)
 
 	self.currentSkillGuideEntryIndex = 1
+	self.currentHoveredSkillGuideEntryIndex = false
+end
+
+function SkillGuideContentTab:selectEntry(index)
+	local state = self:getState()
+	local actions = state and state.actions
+	local action = actions and actions[index]
+
+	if not action then
+		return false
+	end
+
+	local button = self.layout:getChildAt(index)
+	if not button then
+		return false
+	end
+
+	self.currentSkillGuideEntryIndex = index
+	self:onSelectAction(action, button)
 end
 
 function SkillGuideContentTab:getCurrentEntryIndex()
@@ -90,10 +115,6 @@ function SkillGuideContentTab:focus(reason)
 	end
 end
 
-function SkillGuideContentTab:openSkillGuide(skill)
-	self:getInterface():sendPoke("selectSkillGuide", nil, { skill = skill })
-end
-
 function SkillGuideContentTab:_addSkillGuideEntryButton(action)
 	local index = self.layout:getNumChildren() + 1
 
@@ -123,6 +144,7 @@ end
 function SkillGuideContentTab:refresh(state)
 	GamepadContentTab.refresh(self, state)
 
+	self.currentSkillGuideEntryIndex = 1
 	self:populate(#state.actions)
 
 	for index, action in ipairs(state.actions) do
@@ -131,14 +153,18 @@ function SkillGuideContentTab:refresh(state)
 		if button:getData("actionID") ~= action.id then
 			button:clearChildren()
 
-			local icon, label = Theme.getIconLabelForAction(action.id, self:getGameDB())
+			local icon, label, description = Theme.getIconLabelForAction(action.id, self:getGameDB())
+			button:setData("name", label:getText())
+			button:setData("description", description)
 
 			icon:setPosition(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
 			button:addChild(icon)
 
-			label:setPosition(Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_ICON_SIZE), Theme.DEFAULT_INNER_PADDING)
-			label:setSize(0, Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
-			label:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
+			-- We don't bake in padding because `OVERRIDE_BUTTON_LABEL_STYLE`
+			-- includes the padding in the style.
+			label:setPosition(Theme.DEFAULT_ICON_SIZE, 0)
+			label:setSize(0, Theme.DEFAULT_BUTTON_SIZE)
+			label:setStyle(self.OVERRIDE_BUTTON_LABEL_STYLE, LabelStyle)
 			button:addChild(label)
 		end
 	end
@@ -194,6 +220,10 @@ function SkillGuideContentTab:summonX(action)
 
 		self.summonPrompt = panel
 	end
+end
+
+function SkillGuideContentTab:examine(action, widget)
+	self:getUIView():examine(widget:getData("name"), widget:getData("description"), widget)
 end
 
 function SkillGuideContentTab:probe(index, button)
@@ -254,7 +284,7 @@ function SkillGuideContentTab:activate(index, button, buttonIndex)
 		return
 	end
 
-	self:openSkillGuide(action.id)
+	self:onSelectAction(action, button)
 end
 
 return SkillGuideContentTab

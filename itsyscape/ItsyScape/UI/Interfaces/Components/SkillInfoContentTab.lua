@@ -161,7 +161,7 @@ function SkillInfoContentTab:refresh(state)
 	local currentBaseLevel = self.skillValueLabel:getData("baseLevel")
 	if currentWorkingLevel ~= state.workingLevel or currentBaseLevel ~= state.baseLevel then
 		self.skillValueLabel:setText({
-			color,
+			workingLevelColor,
 			tostring(state.workingLevel),
 			"ui.stat.zero",
 			"/",

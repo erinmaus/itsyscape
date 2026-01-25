@@ -93,7 +93,7 @@ for gunName, gun in spairs(GUNS) do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(metal.tier + gun.bars)
 			},
 
@@ -138,7 +138,7 @@ for gunName, gun in spairs(GUNS) do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(metal.tier + 1 + gun.bars) * (gun.logs + gun.bars)
 			}
 		}

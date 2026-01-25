@@ -63,7 +63,7 @@ do
 				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Woodcutting")
 				result = QUIT
 			elseif skillGuideChoice == FIREMAKING then
-				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Firemaking")
+				Utility.UI.openInterface(_TARGET, "SkillGuide", true, "Alchemy")
 				result = QUIT
 			else
 				message "Yer choice."

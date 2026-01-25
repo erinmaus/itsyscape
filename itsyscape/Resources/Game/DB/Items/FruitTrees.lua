@@ -292,7 +292,7 @@ do
 	ItsyScape.Resource.Item "PecanBranch" {
 		ItsyScape.Action.Burn() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(10)
 			},
 
@@ -307,7 +307,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(10)
 			}
 		}
@@ -453,7 +453,7 @@ do
 	ItsyScape.Resource.Item "AppleBranch" {
 		ItsyScape.Action.Burn() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(1)
 			},
 
@@ -468,7 +468,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(1)
 			}
 		}
@@ -697,7 +697,7 @@ do
 	ItsyScape.Resource.Item "PearBranch" {
 		ItsyScape.Action.Burn() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(20)
 			},
 
@@ -712,7 +712,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(20)
 			}
 		}
@@ -853,7 +853,7 @@ do
 	ItsyScape.Resource.Item "PeachBranch" {
 		ItsyScape.Action.Burn() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(10)
 			},
 
@@ -868,7 +868,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(10)
 			}
 		}
@@ -1032,7 +1032,7 @@ do
 	ItsyScape.Resource.Item "OrangeBranch" {
 		ItsyScape.Action.Burn() {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(30)
 			},
 
@@ -1047,7 +1047,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(30)
 			}
 		}
@@ -1177,7 +1177,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
-		Skill = ItsyScape.Resource.Skill "Firemaking",
+		Skill = ItsyScape.Resource.Skill "Alchemy",
 		Boost = 10,
 		Resource = ItsyScape.Resource.Item "FireOrange"
 	}

@@ -25,12 +25,11 @@ function LabelStyle:new(t, resources)
 
 	if t.font then
 		self.font = resources:load(love.graphics.newFont, t.font, t.fontSize or 12)
-		if t.lineHeight then
-			self.font:setLineHeight(t.lineHeight)
-		end
 	else
 		self.font = false
 	end
+
+	self.lineHeight = t.lineHeight or 1
 
 	if t.width then
 		self.width = t.width
@@ -44,6 +43,7 @@ function LabelStyle:new(t, resources)
 	self.shrink = t.shrink or false
 	self.center = t.center or false
 	self.scroll = t.scroll or false
+	self.padding = t.padding or 0
 end
 
 function LabelStyle:draw(widget, state)
@@ -77,6 +77,14 @@ function LabelStyle:draw(widget, state)
 			end
 		end
 
+		if width > 0 then
+			width = math.max(width - self.padding * 2, 0)
+		end
+
+		if height > 0 then
+			height = math.max(height - self.padding * 2, 0)
+		end
+
 		if type(text) == "table" then
 			local result = {}
 
@@ -95,7 +103,7 @@ function LabelStyle:draw(widget, state)
 			text = result
 		end
 
-		local x, y = 0, 0
+		local x, y = self.padding, self.padding
 		if width == 0 then
 			local r
 			if type(text) == "table" then
@@ -107,7 +115,7 @@ function LabelStyle:draw(widget, state)
 			width = font:getWidth(r or text)
 
 			if self.align == "center" then
-				x = -width / 2
+				x = x + -width / 2
 			end
 		end
 
@@ -118,6 +126,7 @@ function LabelStyle:draw(widget, state)
 
 		local maxWidth = self.width or width
 		local oldLineHeight = font:getLineHeight()
+		font:setLineHeight(self.lineHeight)
 		local newLines = {}
 		if self.spaceLines then
 			local prespacedText = text
@@ -146,17 +155,11 @@ function LabelStyle:draw(widget, state)
 			local commonAlign = #wrappedText == 1 and self.align or "justify"
 			local finalAlign = self.align
 
-			local newLineHeight
-			if #wrappedText == 1 then
-				newLineHeight = font:getHeight()
-			else
-				newLineHeight = math.min(height / #wrappedText, font:getHeight() * 1.5)
-			end
-
-			local yOffset = (newLineHeight - font:getHeight()) / 2
+			local newLineHeight = height / #wrappedText
+			local offsetY = (newLineHeight - (font:getHeight() * font:getLineHeight())) / 2
 
 			local wordX = 0
-			local wordY = height / 2 - (newLineHeight * #wrappedText) / 2
+			local wordY = math.max(offsetY, 0)
 			local words = {}
 			local currentIndex = 0
 			for index, line in ipairs(wrappedText) do
@@ -266,7 +269,7 @@ function LabelStyle:draw(widget, state)
 
 		love.graphics.setFont(previousFont)
 
-		oldLineHeight = font:setLineHeight(oldLineHeight)
+		font:setLineHeight(oldLineHeight)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)

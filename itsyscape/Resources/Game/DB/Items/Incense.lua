@@ -20,7 +20,7 @@ do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(1)
 			},
 
@@ -40,7 +40,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(1) / 10
 			},
 
@@ -59,7 +59,7 @@ do
 	local FalteringHolyIncenseBurnAction = ItsyScape.Action.Burn()
 	FalteringHolyIncenseBurnAction {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(1),
 		},
 
@@ -69,7 +69,7 @@ do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(6)
 		}
 	}
@@ -122,7 +122,7 @@ do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(5)
 			},
 
@@ -142,7 +142,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(5) / 10
 			},
 
@@ -189,7 +189,7 @@ do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(10)
 			},
 
@@ -209,7 +209,7 @@ do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(10) / 10
 			},
 
@@ -228,7 +228,7 @@ do
 	local DreadfulIncenseBurnAction = ItsyScape.Action.Burn()
 	DreadfulIncenseBurnAction {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(10),
 		},
 
@@ -238,7 +238,7 @@ do
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(15)
 		}
 	}

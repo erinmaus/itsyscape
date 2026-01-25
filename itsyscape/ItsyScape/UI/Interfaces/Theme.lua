@@ -48,6 +48,9 @@ Theme.CONTENT_SCROLL_SPEED_DURATION = 0.25
 Theme.TITLE_HEIGHT = 128
 Theme.MINI_TITLE_HEIGHT = 48 + Theme.DEFAULT_OUTER_PADDING * 2
 
+Theme.CONTENT_WINDOW_WIDTH = Theme.CONTENT_WIDTH * 2 + Theme.DEFAULT_OUTER_PADDING * 3
+Theme.CONTENT_WINDOW_HEIGHT = Theme.MINI_TITLE_HEIGHT + Theme.CONTENT_HEIGHT + Theme.DEFAULT_OUTER_PADDING * 2
+
 Theme.DEFAULT_INACTIVE_BUTTON_STYLE = {
 	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
 	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
@@ -155,16 +158,26 @@ function Theme.newTitlePanel(parent, windowWidth)
 	return panel
 end
 
-function Theme.newMiniTitlePanelWithLabel(parent, windowWidth)
+function Theme.newMiniTitlePanelWithLabel(parent, windowWidth, icon)
 	windowWidth = windowWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 
 	local panel = Panel()
 	panel:setSize(windowWidth, Theme.MINI_TITLE_HEIGHT)
 	panel:setStyle(Theme.WINDOW_TITLE_PANEL_STYLE, PanelStyle)
 
+	if icon then
+		icon:setSize(Theme.DEFAULT_ICON_SIZE, Theme.DEFAULT_ICON_SIZE)
+		icon:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+		panel:addChild(icon)
+	end
+
 	local label = Label()
 	label:setStyle(Theme.WINDOW_TITLE_LABEL_STYLE, LabelStyle)
-	label:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+	if icon then
+		label:setPosition(Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ICON_SIZE), Theme.DEFAULT_OUTER_PADDING)
+	else
+		label:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+	end
 	panel:addChild(label)
 
 	if parent then

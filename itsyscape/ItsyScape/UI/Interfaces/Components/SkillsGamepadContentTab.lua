@@ -86,12 +86,25 @@ function SkillsGamepadContentTab:new(interface)
 	self.layout:setID("PlayerSkills")
 
 	self.toolTip = GamepadToolTip()
-	self.toolTip:setKeybind("gamepadPrimaryAction")
+	self.toolTip:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadPrimaryAction")
+	self.toolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "mouse_right")
 	self.toolTip:setText("Open skill guide")
 	self:getInterface().onClose:register(self._onClose, self)
 
 	self.currentSkillIndex = 1
 	self.showToolTip = false
+	self.hasActions = false
+	self.showHoverToolTip = false
+	self.currentHoverSkillIndex = false
+end
+
+function SkillsGamepadContentTab:getHasActions()
+	return self.hasActions
+end
+
+function SkillsGamepadContentTab:setHasActions(value)
+	self.hasActions = value
+	self:_updateToolTip()
 end
 
 function SkillsGamepadContentTab:getCurrentSkillIndex()
@@ -99,24 +112,33 @@ function SkillsGamepadContentTab:getCurrentSkillIndex()
 end
 
 function SkillsGamepadContentTab:_updateToolTip()
-	local root = self:getUIView():getRoot()
+	local root = self
 
-	if self.showToolTip then
+	if (self.showToolTip and self.hasActions) or (self.showHoverToolTip and self.currentHoverSkillIndex) then
 		if self.toolTip:getParent() ~= root then
 			root:addChild(self.toolTip)
 		end
 
-		local toolTipWidth = self.toolTip:getSize()
+		local toolTipWidth, toolTipHeight = self.toolTip:getSize()
 
-		local child = self.layout:getChildAt(self.currentSkillIndex)
+		local child = self.layout:getChildAt(self.currentHoverSkillIndex or self.currentSkillIndex)
+		if not child then
+			return
+		end
+
 		local absoluteChildX, absoluteChildY = child:getAbsolutePosition()
+		local absoluteSelfX, absoluteSelfY = self:getAbsolutePosition()
+		local selfWidth, selfHeight = self:getSize()
 		local childWidth, childHeight = child:getSize()
-		local positionX, positionY = absoluteChildX + childWidth - self.PADDING, absoluteChildY + childHeight + self.PADDING
 
-		local selfAbsoluteX1 = self.layout:getAbsolutePosition()
+		local positionX = absoluteChildX - absoluteSelfX + childWidth - self.PADDING
+		local positionY = absoluteChildY - absoluteSelfY + childHeight + self.PADDING
+		if positionY + toolTipHeight >= selfHeight then
+			positionY = absoluteChildY - absoluteSelfY - toolTipHeight - self.PADDING
+		end
+
 		local selfWidth = self.layout:getSize()
-
-		self.toolTip:setPosition(math.min(positionX, selfAbsoluteX1 + selfWidth - toolTipWidth), positionY)
+		self.toolTip:setPosition(math.min(positionX, (selfWidth - toolTipWidth) / 2), positionY)
 	else
 		if self.toolTip:getParent() == root then
 			root:removeChild(self.toolTip)
@@ -165,12 +187,36 @@ function SkillsGamepadContentTab:focus(reason)
 	end
 end
 
+function SkillsGamepadContentTab:_onSoftFocus(index, isHovered, button)
+	if isHovered then
+		self.currentHoverSkillIndex = index
+	end
+
+	self:_updateToolTip()
+end
+
+function SkillsGamepadContentTab:mouseEnter()
+	GamepadContentTab.mouseEnter(self)
+
+	self.showHoverToolTip = true
+	self:_updateToolTip()
+end
+
+function SkillsGamepadContentTab:mouseLeave()
+	GamepadContentTab.mouseLeave(self)
+
+	self.showHoverToolTip = false
+	self.currentHoverSkillIndex = false
+end
+
 function SkillsGamepadContentTab:_addSkillButton()
 	local index = self.layout:getNumChildren() + 1
 	local button = Button()
 	button:setData("index", index)
 	button:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
 	button.onClick:register(self.activate, self, index)
+	button.onMouseEnter:register(self._onSoftFocus, self, index, true)
+	button.onMouseLeave:register(self._onSoftFocus, self, index, false)
 
 	local skillIcon = Icon()
 	skillIcon:setSize(self.ICON_SIZE, self.ICON_SIZE)

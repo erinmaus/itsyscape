@@ -34,7 +34,7 @@ PlayerStatsController.SKILLS_SORT_ORDER = {
 	"Crafting",
 	"Cooking",
 	"Engineering",
-	"Firemaking",
+	"Alchemy",
 	"Sailing",
 	"Antilogika",
 	"Necromancy"

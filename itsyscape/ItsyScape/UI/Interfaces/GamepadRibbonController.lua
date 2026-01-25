@@ -51,7 +51,7 @@ GamepadRibbonController.SKILLS_SORT_ORDER = {
 	"Crafting",
 	"Cooking",
 	"Engineering",
-	"Firemaking",
+	"Alchemy",
 	"Sailing",
 	"Antilogika",
 	"Necromancy"
@@ -133,9 +133,15 @@ function GamepadRibbonController:pull()
 	local clockSection = playerStorage:getSection("clock")
 	local lastSurveyTime = clockSection:get("survey") or (os.time() - Utility.Time.DAY)
 	local showSurvey = (os.time() - lastSurveyTime) >= Utility.Time.DAY
+	local hasAmuletOfYendor = self:getPeep():getState():has("Item", "AmuletOfYendor", 1, {
+		["item-inventory"] = true,
+		["item-equipment"] = true,
+		["item-bank"] = true,
+	})
 
 	return {
-		showSurvey = showSurvey
+		showSurvey = showSurvey,
+		hasAmuletOfYendor = hasAmuletOfYendor
 	}
 end
 
@@ -932,18 +938,6 @@ function GamepadRibbonController:updateInventory()
 	if not RPCState.deepEquals(self.previousInventory, self.currentInventory) then
 		self:send("updateInventory", self.currentInventory)
 	end
-end
-
-function GamepadRibbonController:pull()
-	local hasAmuletOfYendor = self:getPeep():getState():has("Item", "AmuletOfYendor", 1, {
-		["item-inventory"] = true,
-		["item-equipment"] = true,
-		["item-bank"] = true,
-	})
-
-	return {
-		hasAmuletOfYendor = hasAmuletOfYendor
-	}
 end
 
 function GamepadRibbonController:update(delta)

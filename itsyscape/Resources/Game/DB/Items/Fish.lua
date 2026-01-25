@@ -2361,7 +2361,7 @@ do
 	}
 
 	ItsyScape.Meta.ItemStatBoostUserdata {
-		Skill = ItsyScape.Resource.Skill "Firemaking",
+		Skill = ItsyScape.Resource.Skill "Alchemy",
 		Boost = 3,
 		Resource = ItsyScape.Resource.Item "LightningStormfish"
 	}

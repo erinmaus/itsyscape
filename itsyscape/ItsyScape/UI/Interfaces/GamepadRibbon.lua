@@ -243,7 +243,7 @@ function GamepadRibbon:gamepadRelease(joystick, button)
 		local currentFocusedWidget = inputProvider:getFocusedWidget()
 
 		inputProvider:setFocusedWidget(self.tabLayout:getChildAt(index), "select")
-		self:openTab(self.tabs[index])
+		self:openTab (self.tabs[index])
 
 		if not currentFocusedWidget:hasParent(self.tabLayout) then
 			local child = self.contentLayout:getChildAt(1)
@@ -381,6 +381,9 @@ function GamepadRibbon:openTab(tab)
 		return
 	end
 
+	self.contentLayoutTargetScrollX = 0
+	self.contentLayoutWrapper:setScroll(0, 0)
+
 	self.contentLayout:clearChildren()
 
 	local currentTabButton = self.tabButtons[self.currentTabName]
@@ -401,7 +404,9 @@ function GamepadRibbon:openTab(tab)
 	end
 
 	self.contentLayout:setSize(
-		Theme.calculateTiledSizeWithPadding(self.PADDING, GamepadContentTab.WIDTH, self.contentLayout:getNumChildren()),
+		math.max(
+			Theme.calculateTiledSizeWithPadding(self.PADDING, GamepadContentTab.WIDTH, self.contentLayout:getNumChildren()),
+			Theme.calculateTiledSizeWithPadding(self.PADDING, GamepadContentTab.WIDTH, 2)),
 		self.CONTENT_HEIGHT)
 	self.contentLayout:performLayout()
 	self.contentLayoutWrapper:setScrollSize(self.contentLayout:getSize())
@@ -413,8 +418,8 @@ function GamepadRibbon:openTab(tab)
 end
 
 function GamepadRibbon:_setKeybindInfo(secondary, tertiary, secondaryButton, tertiaryButton)
-	secondaryButton = "gamepadSecondaryAction"
-	tertiaryButton = "gamepadTertiaryAction"
+	secondaryButton = secondaryButton or "gamepadSecondaryAction"
+	tertiaryButton = tertiaryButton or "gamepadTertiaryAction"
 
 	if secondary then
 		self.secondaryKeybindInfo:setText(secondary)
@@ -533,16 +538,29 @@ function GamepadRibbon:_initEquipmentTab()
 end
 
 function GamepadRibbon:_onSelectSkill()
+	local skillGuideState = self.skillGuideContentTab:getState()
+	if skillGuideState.actions and #skillGuideState.actions == 0 then
+		return
+	end
+
 	self.contentLayoutTargetScrollX = self.skillGuideContentTab:getPosition() - self.PADDING
 	self:focusChild(self.skillGuideContentTab, "select")
 
 	self:_setKeybindInfo("Back", nil, "gamepadBack")
+
+	local skillInfoState = self.skillInfoTabContent:getState()
+	if skillInfoState and skillInfoState.name then
+		self.titleLabel:setText(string.format("%s Skill Guide", skillInfoState.name))
+	end
 end
 
 function GamepadRibbon:_navigateSkillsBack(_, control)
 	if control:is("back") then
+		self.titleLabel:setText("Skills")
 		self:focusChild(self.skillsTabContent, "select")
 		self.contentLayoutTargetScrollX = 0
+
+		self:_setKeybindInfo()
 	end
 end
 
@@ -614,10 +632,12 @@ function GamepadRibbon:populateSkillGuide(skill, actions)
 		actions = actions
 	})
 
+	self.skillsTabContent:setHasActions(#actions > 0)
+
 	if #actions > 0 then
 		self:sendPoke("selectSkillAction", nil, { id = actions[1].id })
 	else
-		self:sendPoke("selectSkillAction", { id = -1 }, { requirements = {}, inputs = {}, outputs = {} })
+		self:sendPoke("selectSkillAction", nil, { id = -1 })
 	end
 end
 

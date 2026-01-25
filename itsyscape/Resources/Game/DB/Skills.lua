@@ -170,7 +170,7 @@ ItsyScape.Resource.Skill "Woodcutting"
 		Skill = ItsyScape.Resource.Skill "Woodcutting"
 	}
 
-ItsyScape.Resource.Skill "Firemaking"
+ItsyScape.Resource.Skill "Alchemy"
 	ActionType "Light"
 	ActionType "Light_Prop"
 		ItsyScape.Meta.ActionTypeVerb {
@@ -184,17 +184,17 @@ ItsyScape.Resource.Skill "Firemaking"
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Light",
-		Skill = ItsyScape.Resource.Skill "Firemaking"
+		Skill = ItsyScape.Resource.Skill "Alchemy"
 	}
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Burn",
-		Skill = ItsyScape.Resource.Skill "Firemaking"
+		Skill = ItsyScape.Resource.Skill "Alchemy"
 	}
 
 	ItsyScape.Meta.SkillAction {
 		ActionType = "Craft",
-		Skill = ItsyScape.Resource.Skill "Firemaking"
+		Skill = ItsyScape.Resource.Skill "Alchemy"
 	}
 
 ItsyScape.Resource.Skill "Engineering"
@@ -504,9 +504,9 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Firemaking",
+	Value = "Alchemy",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Skill "Firemaking"
+	Resource = ItsyScape.Resource.Skill "Alchemy"
 }
 
 ItsyScape.Meta.ResourceName {
@@ -630,9 +630,9 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lets you light fires, incense, bonfires, among other pyromaniacal activities.",
+	Value = "Purify and perfect materials, compounds, chemicals, and elixirs.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Skill "Firemaking"
+	Resource = ItsyScape.Resource.Skill "Alchemy"
 }
 
 ItsyScape.Meta.ResourceDescription {

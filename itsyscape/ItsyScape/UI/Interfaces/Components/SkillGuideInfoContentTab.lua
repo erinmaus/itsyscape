@@ -30,7 +30,7 @@ local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadCon
 
 local SkillGuideInfoContentTab = Class(GamepadContentTab)
 SkillGuideInfoContentTab.ICON_SIZE = 64
-SkillGuideInfoContentTab.DESCRIPTION_HEIGHT = 68
+SkillGuideInfoContentTab.DESCRIPTION_HEIGHT = 100
 SkillGuideInfoContentTab.CONSTRAINTS_HEIGHT = Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.HEIGHT, SkillGuideInfoContentTab.ICON_SIZE, SkillGuideInfoContentTab.DESCRIPTION_HEIGHT)
 
 SkillGuideInfoContentTab.ITEM_NAME_LABEL_STYLE = {
