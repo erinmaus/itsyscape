@@ -146,6 +146,7 @@ function CraftInfoContentTab:new(interface)
 end
 
 function CraftInfoContentTab:gamepadScroll(x, y)
+	GamepadContentTab.gamepadScroll(self, x, y)
 	self.constraintsPanel:mouseScroll(x, y)
 end
 

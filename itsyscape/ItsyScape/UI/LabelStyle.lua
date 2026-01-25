@@ -43,6 +43,7 @@ function LabelStyle:new(t, resources)
 	self.align = t.align or "left"
 	self.shrink = t.shrink or false
 	self.center = t.center or false
+	self.scroll = t.scroll or false
 end
 
 function LabelStyle:draw(widget, state)
@@ -63,14 +64,15 @@ function LabelStyle:draw(widget, state)
 		local width, height = widget:getSize()
 		if width == 0 or height == 0 then
 			local p = widget:getParent()
+			local x, y = widget:getPosition()
 			if p then
 				local parentWidth, parentHeight = p:getSize()
 				if width == 0 then
-					width = parentWidth
+					width = parentWidth - x
 				end
 
 				if height == 0 then
-					height = parentHeight
+					height = parentHeight - y
 				end
 			end
 		end

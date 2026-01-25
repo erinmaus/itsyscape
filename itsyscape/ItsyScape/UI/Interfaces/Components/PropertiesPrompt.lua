@@ -137,6 +137,7 @@ function PropertiesPrompt:focus(...)
 	Widget.focus(self, ...)
 
 	self.propertiesGrid:getInnerPanel():focus()
+	print("foh-cus")
 end
 
 function PropertiesPrompt:_onPropertyValueChanged(property, _, value)

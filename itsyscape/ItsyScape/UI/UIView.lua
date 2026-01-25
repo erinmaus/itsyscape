@@ -1310,6 +1310,7 @@ function UIView:_onBlur(_, widget)
 	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
 	if not (interface and Class.isCompatibleType(interface:getData(GamepadSink), GamepadSink) and interface:getRootParent() == self.root) then
+		self.hasPendingInterfaceFocus = true
 		return
 	end
 
@@ -1337,6 +1338,7 @@ function UIView:_onFocus(_, widget)
 	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
 	if not (interface and Class.isCompatibleType(interface:getData(GamepadSink), GamepadSink) and interface:getRootParent() == self.root) then
+		self.hasPendingInterfaceFocus = false
 		return
 	end
 
@@ -1907,7 +1909,11 @@ end
 
 function UIView:_onPokeMenuClosed(pokeMenu)
 	if self.pokeMenu == pokeMenu and self.previousFocusedWidget then
-		self.inputProvider:setFocusedWidget(self.previousFocusedWidget, "select")
+		local currentFocusedWidget = self.inputProvider:getFocusedWidget()
+		if currentFocusedWidget == nil then
+			self.inputProvider:setFocusedWidget(self.previousFocusedWidget, "select")
+		end
+
 		self.previousFocusedWidget = nil
 	end
 

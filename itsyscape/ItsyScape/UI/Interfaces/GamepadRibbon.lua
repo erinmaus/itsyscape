@@ -27,6 +27,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local ConfigGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.ConfigGamepadContentTab"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 local EquipmentGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.EquipmentGamepadContentTab"
@@ -34,6 +35,8 @@ local InventoryGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.I
 local ItemInfoGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.ItemInfoGamepadContentTab"
 local SkillInfoContentTab = require "ItsyScape.UI.Interfaces.Components.SkillInfoContentTab"
 local SkillsGamepadContentTab = require "ItsyScape.UI.Interfaces.Components.SkillsGamepadContentTab"
+local SkillGuideContentTab = require "ItsyScape.UI.Interfaces.Components.SkillGuideContentTab"
+local SkillGuideInfoContentTab = require "ItsyScape.UI.Interfaces.Components.SkillGuideInfoContentTab"
 
 local GamepadRibbon = Class(Interface)
 
@@ -165,14 +168,19 @@ function GamepadRibbon:new(id, index, ui)
 	self.titleLabel:setPosition(self.PADDING, 0)
 	self.contentPanel:addChild(self.titleLabel)
 
-	self.contentLayout = GridLayout()
+	self.contentLayoutWrapper = Widget()
+	self.contentLayoutWrapper:setSize(self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
+	self.contentLayoutWrapper:setPosition(
+			self.TAB_CONTAINER_WIDTH / 2 - self.CONTENT_WIDTH / 2,
+			self.TAB_CONTAINER_HEIGHT + self.TITLE_ROW_HEIGHT)
+	self.container:addChild(self.contentLayoutWrapper)
+
+	self.contentLayout = GamepadGridLayout()
+	self.contentLayout:setWrapScroll(false)
 	self.contentLayout:setSize(self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
 	self.contentLayout:setPadding(self.PADDING, self.PADDING)
 	self.contentLayout:setUniformSize(true, GamepadContentTab.WIDTH, GamepadContentTab.HEIGHT)
-	self.contentLayout:setPosition(
-			self.TAB_CONTAINER_WIDTH / 2 - self.CONTENT_WIDTH / 2,
-			self.TAB_CONTAINER_HEIGHT + self.TITLE_ROW_HEIGHT)
-	self.container:addChild(self.contentLayout)
+	self.contentLayoutWrapper:addChild(self.contentLayout)
 
 	self:setSize(
 		self.WINDOW_WIDTH,
@@ -199,6 +207,8 @@ function GamepadRibbon:new(id, index, ui)
 
 	self:performLayout()
 	self.isDirty = false
+
+	self.contentLayoutTargetScrollX = 0
 
 	self.combinedState = {}
 end
@@ -257,10 +267,7 @@ function GamepadRibbon:_openOrClose()
 	if self.isShowing and not self.isHiding then
 		self:addChild(self.container)
 
-		local child = self.contentLayout:getChildAt(1)
-		if inputProvider and child then
-			inputProvider:setFocusedWidget(child, "select")
-		end
+		self.contentLayout:focus()
 	else
 		local focusedWidget = inputProvider:getFocusedWidget()
 		if focusedWidget and focusedWidget:hasParent(self) then
@@ -329,27 +336,6 @@ function GamepadRibbon:_onContentWrapFocus(content, directionX, directionY)
 	if directionY < 0 then
 		inputProvider:setFocusedWidget(self.tabLayout, "select")
 		self.previousFocusedContent = content
-	elseif directionX ~= 0 then
-		local focusedWidget = inputProvider:getFocusedWidget()
-
-		if focusedWidget then
-			local index
-
-			for i, widget in self.contentLayout:iterate() do
-				if focusedWidget:hasParent(widget) or focusedWidget == widget then
-					index = i
-					break
-				end
-			end
-
-			if index then
-				local newIndex = math.wrapIndex(index, math.zerosign(directionX), self.contentLayout:getNumChildren())
-				local child = self.contentLayout:getChildAt(newIndex)
-				if child and child:getIsFocusable() then
-					inputProvider:setFocusedWidget(child, "select")
-				end
-			end
-		end
 	end
 end
 
@@ -414,15 +400,25 @@ function GamepadRibbon:openTab(tab)
 		openFunc(self)
 	end
 
+	self.contentLayout:setSize(
+		Theme.calculateTiledSizeWithPadding(self.PADDING, GamepadContentTab.WIDTH, self.contentLayout:getNumChildren()),
+		self.CONTENT_HEIGHT)
+	self.contentLayout:performLayout()
+	self.contentLayoutWrapper:setScrollSize(self.contentLayout:getSize())
+
 	self:sendPoke("openTab", nil, { tab = tab })
 
 	self.isDirty = true
 	self.previousFocusedContent = false
 end
 
-function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
+function GamepadRibbon:_setKeybindInfo(secondary, tertiary, secondaryButton, tertiaryButton)
+	secondaryButton = "gamepadSecondaryAction"
+	tertiaryButton = "gamepadTertiaryAction"
+
 	if secondary then
 		self.secondaryKeybindInfo:setText(secondary)
+		self.secondaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, secondaryButton)
 
 		if self.secondaryKeybindInfo:getParent() ~= self.container then
 			self.container:addChild(self.secondaryKeybindInfo)
@@ -437,6 +433,7 @@ function GamepadRibbon:_setKeybindInfo(secondary, tertiary)
 
 	if tertiary then
 		self.tertiaryKeybindInfo:setText(tertiary)
+		self.tertiaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, tertiaryButton)
 
 		if self.tertiaryKeybindInfo:getParent() ~= self.container then
 			self.container:addChild(self.tertiaryKeybindInfo)
@@ -535,10 +532,34 @@ function GamepadRibbon:_initEquipmentTab()
 		self._openEquipmentTab)
 end
 
+function GamepadRibbon:_onSelectSkill()
+	self.contentLayoutTargetScrollX = self.skillGuideContentTab:getPosition() - self.PADDING
+	self:focusChild(self.skillGuideContentTab, "select")
+
+	self:_setKeybindInfo("Back", nil, "gamepadBack")
+end
+
+function GamepadRibbon:_navigateSkillsBack(_, control)
+	if control:is("back") then
+		self:focusChild(self.skillsTabContent, "select")
+		self.contentLayoutTargetScrollX = 0
+	end
+end
+
+function GamepadRibbon:_propagateSkillGuideScroll(_, x, y)
+	self.skillGuideInfoContentTab:gamepadScroll(x, y)
+end
+
 function GamepadRibbon:_initSkillTab()
 	self.skillsTabContent = SkillsGamepadContentTab(self)
 	self.skillsTabContent.onWrapFocus:register(self._onContentWrapFocus, self)
+	self.skillsTabContent.onSelectSkill:register(self._onSelectSkill, self)
 	self.skillInfoTabContent = SkillInfoContentTab(self)
+	self.skillGuideContentTab = SkillGuideContentTab(self)
+	self.skillGuideContentTab.onWrapFocus:register(self._onContentWrapFocus, self)
+	self.skillGuideContentTab.onControlDown:register(self._navigateSkillsBack, self)
+	self.skillGuideContentTab.onGamepadScroll:register(self._propagateSkillGuideScroll, self)
+	self.skillGuideInfoContentTab = SkillGuideInfoContentTab(self)
 
 	self:_addTab(
 		self.TAB_PLAYER_SKILLS,
@@ -549,6 +570,8 @@ end
 function GamepadRibbon:_openSkillTab()
 	self.contentLayout:addChild(self.skillsTabContent)
 	self.contentLayout:addChild(self.skillInfoTabContent)
+	self.contentLayout:addChild(self.skillGuideContentTab)
+	self.contentLayout:addChild(self.skillGuideInfoContentTab)
 	self:_updateSkillTab()
 
 	self.titleLabel:setText("Skills")
@@ -563,9 +586,46 @@ function GamepadRibbon:_updateSkillTab()
 	self.skillsTabContent:refresh(self.combinedState.skills)
 
 	local index = self.skillsTabContent:getCurrentSkillIndex()
-	if self.combinedState.skills then
-		self.skillInfoTabContent:refresh(self.combinedState.skills.skills[index])
+	local skill = self.combinedState.skills and self.combinedState.skills.skills[index]
+	if skill then
+		self.skillInfoTabContent:refresh(skill)
 	end
+
+	local skillGuideState = self.skillGuideContentTab:getState()
+	if skillGuideState.skill ~= (skill and skill.id) then
+		self:sendPoke("selectSkill", nil, { skill = skill.id })
+		self.skillGuideContentTab:refresh({
+			skill = skill.id,
+			actions = skillGuideState.actions or {}
+		})
+	end
+
+	local skillGuideInfoState = self.skillGuideInfoContentTab:getState()
+	local currentSkillGuideAction = skillGuideState.actions and skillGuideState.actions[self.skillGuideContentTab:getCurrentEntryIndex()]
+	if currentSkillGuideAction and skillGuideInfoState.action and skillGuideInfoState.action.id ~= currentSkillGuideAction.id then
+		self:sendPoke("selectSkillAction", nil, { id = currentSkillGuideAction.id })
+	end
+end
+
+function GamepadRibbon:populateSkillGuide(skill, actions)
+	self.skillGuideContentTab:refresh({
+		hasAmuletOfYendor = self:getState().hasAmuletOfYendor,
+		skill = skill,
+		actions = actions
+	})
+
+	if #actions > 0 then
+		self:sendPoke("selectSkillAction", nil, { id = actions[1].id })
+	else
+		self:sendPoke("selectSkillAction", { id = -1 }, { requirements = {}, inputs = {}, outputs = {} })
+	end
+end
+
+function GamepadRibbon:populateSkillGuideAction(action, constraints)
+	self.skillGuideInfoContentTab:refresh({
+		action = action,
+		constraints = constraints
+	})
 end
 
 function GamepadRibbon:_updateSettingsTab()
@@ -674,9 +734,23 @@ function GamepadRibbon:updateInventory(inventory)
 	self.combinedState.inventory = inventory
 end
 
+function GamepadRibbon:_updateScroll(delta)
+	local currentScrollX, currentScrollY = self.contentLayoutWrapper:getScroll()
+	local scrollOffsetX = delta * (Theme.CONTENT_SCROLL_SPEED_UNITS / Theme.CONTENT_SCROLL_SPEED_DURATION)
+
+	if self.contentLayoutTargetScrollX < currentScrollX then
+		currentScrollX = math.max(currentScrollX - scrollOffsetX, self.contentLayoutTargetScrollX)
+	elseif self.contentLayoutTargetScrollX > currentScrollX then
+		currentScrollX = math.min(currentScrollX + scrollOffsetX, self.contentLayoutTargetScrollX)
+	end
+
+	self.contentLayoutWrapper:setScroll(currentScrollX, currentScrollY)
+end
+
 function GamepadRibbon:update(delta)
 	Interface.update(self, delta)
 
+	self:_updateScroll(delta)
 	self:_updateInventoryTab()
 	self:_updateEquipmentTab()
 	self:_updateSkillTab()

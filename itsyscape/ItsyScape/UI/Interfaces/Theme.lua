@@ -9,18 +9,21 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local PropView = require "ItsyScape.Graphics.PropView"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local CloseButton = require "ItsyScape.UI.CloseButton"
 local Interface = require "ItsyScape.UI.Interface"
+local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
 local Theme = {}
@@ -38,6 +41,9 @@ Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING = Theme.DEFAULT_BUTTON_SIZE + Theme.DEFAU
 
 Theme.CONTENT_WIDTH  = GamepadContentTab.WIDTH
 Theme.CONTENT_HEIGHT = GamepadContentTab.HEIGHT
+
+Theme.CONTENT_SCROLL_SPEED_UNITS = GamepadContentTab.WIDTH
+Theme.CONTENT_SCROLL_SPEED_DURATION = 0.25
 
 Theme.TITLE_HEIGHT = 128
 Theme.MINI_TITLE_HEIGHT = 48 + Theme.DEFAULT_OUTER_PADDING * 2
@@ -243,6 +249,10 @@ Theme.ITEM_PANEL_STYLE = {
 	image = "Resources/Game/UI/Buttons/ItemButton-Default.png"
 }
 
+Theme.GROUP_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/WindowGroup.png"
+}
+
 Theme.CONTENT_TITLE_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/SemiBold.ttf",
 	fontSize = 16,
@@ -260,7 +270,7 @@ Theme.CONTENT_LABEL_STYLE = {
 
 Theme.BUTTON_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 24,
+	fontSize = 20,
 	color = { 1, 1, 1, 1 },
 	align = "center",
 	textShadow = true,
@@ -323,7 +333,7 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, z
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
 	camera:setPosition(Vector.ZERO:transform(node:getTransform():getGlobalTransform(_APP:getFrameDelta())) + (offset * distance / 2))
-	camera:setRotation(-node:getTransform():getLocalRotation())
+	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
 	camera:setDistance(distance * zoom + 2)
 
 	local width, height = sceneSnippet:getSize()
@@ -429,5 +439,138 @@ function Theme.layoutScrollablePanelWithGridLayout(panel, elementWidth, elementH
 end
 
 Theme.DEFAULT_TEXT_INPUT_HEIGHT = 48
+
+local _action = { id = { value = 1 } }
+function Theme.getIconLabelForAction(action, gameDB)
+	local brochure = gameDB:getBrochure()
+
+	if type(action) == "number" then
+		_action.id.value = action
+		action = _action
+	end
+
+	local item, quantity
+	local prop, peep, spell, prayer, power, sailing
+	for output in brochure:getOutputs(action) do
+		local outputResource = brochure:getConstraintResource(output)
+		local outputType = brochure:getResourceTypeFromResource(outputResource)
+		if outputType.name == "Item" then
+			item = outputResource
+			quantity = output.count
+			break
+		end
+	end
+
+	for resource in brochure:findResourcesByAction(action) do
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+		if resourceType.name == "Prop" or resourceType.name == "SailingCrew" then
+			prop = resource
+			break
+		elseif resourceType.name == "Peep" then
+			peep = resource
+			break
+		elseif resourceType.name == "Spell" then
+			spell = resource
+			break
+		elseif resourceType.name == "Effect" then
+			prayer = resource
+			break
+		elseif resourceType.name == "Power" then
+			power = resource
+			break
+		elseif resourceType.name == "SailingItem" then
+			sailing = resource
+			break
+		end
+	end
+
+	if not item then
+		for input in brochure:getInputs(action) do
+			local inputResource = brochure:getConstraintResource(input)
+			local inputType = brochure:getResourceTypeFromResource(inputResource)
+			if inputType.name == "Item" then
+				item = inputResource
+				quantity = input.count
+				break
+			end
+		end
+	end
+
+	if not item then
+		for resource in brochure:findResourcesByAction(action) do
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+			if resourceType.name == "Item" then
+				item = resource
+				quantity = 1
+				break
+			end
+		end
+	end
+
+	local icon, label, description
+	if item or peep or prop or prayer or power or sailing or spell then
+		if spell then
+			icon = SpellIcon()
+			icon:setSpellID(spell.name)
+			icon:setSpellEnabled(true)
+		elseif prayer then
+			icon = Icon()
+			icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", prayer.name))
+		elseif sailing then
+			icon = Icon()
+			icon:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", sailing.name))
+		elseif item then
+			icon = ItemIcon()
+			icon:setItemID(item.name)
+			if quantity > 1 then
+				icon:setItemCount(quantity)
+			end
+		elseif power then
+			icon = Icon()
+			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.name))
+			icon:setPosition(4, 4)
+		end
+
+		label = Label()
+		if peep then
+			label:setText(Utility.getName(peep, gameDB))
+			description = Utility.getDescription(peep, gameDB)
+		elseif prop then
+			label:setText(Utility.getName(prop, gameDB))
+			description = Utility.getDescription(prop, gameDB)
+		elseif spell then
+			label:setText(Utility.getName(spell, gameDB))
+			description = Utility.getDescription(spell, gameDB)
+		elseif prayer then
+			label:setText(Utility.getName(prayer, gameDB))
+			description = Utility.getDescription(prayer, gameDB)
+		elseif power then
+			label:setText(Utility.getName(power, gameDB))
+			description = Utility.getDescription(power, gameDB)
+		elseif sailing then
+			label:setText(Utility.getName(sailing, gameDB))
+			description = Utility.getDescription(sailing, gameDB)
+		else
+			label:setText(Utility.getName(item, gameDB))
+			description = Utility.getDescription(item, gameDB)
+		end
+	end
+
+	if not icon then
+		icon = ItemIcon()
+		icon:setItemID("Null")
+	end
+
+	if not label then
+		label = Label()
+		label:setText("???")
+	end
+
+	if not description then
+		description = "..."
+	end
+
+	return icon, label, description
+end
 
 return Theme

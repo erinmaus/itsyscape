@@ -34,6 +34,7 @@ function Widget:new()
 	self.onGamepadRelease = Callback()
 	self.onGamepadAxis = Callback()
 	self.onGamepadDirection = Callback()
+	self.onGamepadScroll = Callback()
 	self.onControlDown = Callback()
 	self.onControlUp = Callback()
 	self.onZDepthChange = Callback()
@@ -708,6 +709,13 @@ function Widget:gamepadDirection(...)
 	self:onGamepadDirection(...)
 	if self:getParent() then
 		self:getParent():gamepadDirection(...)
+	end
+end
+
+function Widget:gamepadScroll(...)
+	self:onGamepadScroll(...)
+	if self:getParent() then
+		self:getParent():gamepadScroll(...)
 	end
 end
 

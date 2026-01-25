@@ -10,14 +10,12 @@
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Variables = require "ItsyScape.Game.Variables"
+local Config = require "ItsyScape.Game.Config"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Widget = require "ItsyScape.UI.Widget"
 
 local WidgetInputProvider = Class()
 
-local DIRECTION_X_AXIS = Variables.Path("keybinds", "ui", "xAxis")
-local DIRECTION_Y_AXIS = Variables.Path("keybinds", "ui", "yAxis")
-local DIRECTION_AXIS_SENSITIVITY = Variables.Path("ui", "legacyGamepadControls", "axisSensitivity")
 local DIRECTION_MIN_TIME = Variables.Path("ui", "legacyGamepadControls", "minTime")
 local DIRECTION_START_TIME = Variables.Path("ui", "legacyGamepadControls", "startTime")
 local DIRECTION_ACCELERATION_STEP = Variables.Path("ui", "legacyGamepadControls", "accelerationStep")
@@ -37,6 +35,8 @@ function WidgetInputProvider:new(root)
 	self.joysticks = {}
 	self.currentJoystickIndex = 1
 	self.currentJoystick = false
+	self.currentJoystickScrollYDirection = 0
+	self.currentJoystickScrollXDirection = 0
 
 	self.onFocus = Callback()
 	self.onBlur = Callback()
@@ -406,6 +406,26 @@ function WidgetInputProvider:gamepadAxis(joystick, axis, value)
 		joystickInfo.axis[axis] = value
 	end
 
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
+	local scrollYAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "scrollYAxis")
+	local scrollXAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "scrollXAxis")
+
+	if self:isCurrentJoystick(joystick) then
+		if axis == scrollYAxis then
+			if math.abs(value) > axisSensitivity then
+				self.currentJoystickScrollYDirection = value
+			else
+				self.currentJoystickScrollYDirection = 0
+			end
+		elseif axis == scrollXAxis then
+			if math.abs(value) > axisSensitivity then
+				self.currentJoystickScrollXDirection = value
+			else
+				self.currentJoystickScrollXDirection = 0
+			end
+		end
+	end
+
 	local widget = self:getFocusedWidget()
 	if widget then
 		widget:gamepadAxis(joystick, axis, value)
@@ -558,11 +578,18 @@ function WidgetInputProvider:_updateGamepad(delta)
 	local joystickInfo = self.joysticks[id]
 	if not joystickInfo then
 		return
+	end 
+
+	local scrollXValue = self.currentJoystickScrollXDirection * delta
+	local scrollYValue = self.currentJoystickScrollYDirection * delta
+	local focusedWidget = self:getFocusedWidget()
+	if focusedWidget and (math.abs(scrollXValue) > 0 or math.abs(scrollYValue) > 0) then
+		focusedWidget:gamepadScroll(scrollXValue, -scrollYValue)
 	end
 
-	local xAxis = self.config:get(DIRECTION_X_AXIS)
-	local yAxis = self.config:get(DIRECTION_Y_AXIS)
-	local axisSensitivity = self.config:get(DIRECTION_AXIS_SENSITIVITY)
+	local xAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "xAxis")
+	local yAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "yAxis")
+	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
 
 	local isXEngaged = math.abs(joystickInfo.axis[xAxis] or 0) > axisSensitivity
 	local isYEngaged = math.abs(joystickInfo.axis[yAxis] or 0) > axisSensitivity
@@ -570,7 +597,7 @@ function WidgetInputProvider:_updateGamepad(delta)
 	if not (isXEngaged or isYEngaged) then
 		joystickInfo.directionX = 0
 		joystickInfo.directionY = 0
-		joystickInfo.velocity = self.config:get(DIRECTION_START_TIME)
+		joystickInfo.velocity = Config.path("Input", DIRECTION_START_TIME)
 		joystickInfo.elapsed = 0
 		return
 	end
@@ -588,7 +615,7 @@ function WidgetInputProvider:_updateGamepad(delta)
 	end
 
 	if joystickInfo.directionX ~= directionX or joystickInfo.directionY ~= directionY then
-		joystickInfo.velocity = self.config:get(DIRECTION_START_TIME)
+		joystickInfo.velocity = Config.path("Input", DIRECTION_START_TIME)
 		joystickInfo.elapsed = 0
 	end
 
@@ -599,7 +626,7 @@ function WidgetInputProvider:_updateGamepad(delta)
 	if joystickInfo.elapsed < 0 then
 		self:_updateGamepadFocus(directionX, directionY)
 
-		joystickInfo.velocity = math.max(joystickInfo.velocity - self.config:get(DIRECTION_ACCELERATION_STEP), self.config:get(DIRECTION_MIN_TIME))
+		joystickInfo.velocity = math.max(joystickInfo.velocity - Config.path("Input", DIRECTION_ACCELERATION_STEP), Config.path("Input", DIRECTION_MIN_TIME))
 		joystickInfo.elapsed = joystickInfo.velocity
 	end
 end

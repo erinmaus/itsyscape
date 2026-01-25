@@ -880,10 +880,8 @@ function CombatCortex:tickPeep(delta, peep)
 	if weapon:canCastSpells() then
 		spell = self:_getPeepSpell(peep, weapon)
 		if spell then
-			print(">>> cast spell", spell:getID())
 			spell:cast(peep, target)
 		end
-		print(">>> no spells.....", peep:getName())
 	end
 
 	if not didUsePower then

@@ -126,6 +126,7 @@ function CraftWindow:new(id, index, ui)
 		self,
 		self.craftCategoriesContentTab)
 	self.craftItemsContentTab.onItemSelected:register(self.selectItem, self)
+	self.craftItemsContentTab.onGamepadScroll:register(self._propagateScroll, self)
 
 	self.craftInfoContentTab = CraftInfoContentTab(self)
 	self.makeContentTab = MakeContentTab(self)
@@ -201,22 +202,6 @@ function CraftWindow:gamepadRelease(joystick, button)
 	end
 
 	Interface.gamepadRelease(self, joystick, button)
-end
-
-function CraftWindow:gamepadAxis(joystick, axis, value)
-	local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity")
-	local scrollYAxis = Config.get("Input", "KEYBIND", "type", "ui", "name", "scrollYAxis")
-
-	local inputProvider = self:getInputProvider()
-	if inputProvider and inputProvider:isCurrentJoystick(joystick) then
-		if axis == scrollYAxis then
-			if math.abs(value) > axisSensitivity then
-				self.contentTabScrollYDirection = value
-			else
-				self.contentTabScrollYDirection = 0
-			end
-		end
-	end
 end
 
 function CraftWindow:setFocusedTab(focusedTab, scrolledTab)
@@ -394,11 +379,8 @@ function CraftWindow:updateControls()
 	end
 end
 
-function CraftWindow:updateScroll(delta)
-	local scrollValue = self.contentTabScrollYDirection * delta
-
-	self.craftInfoContentTab:gamepadScroll(0, -scrollValue)
-	self.makeContentTab:gamepadScroll(0, -scrollValue)
+function CraftWindow:_propagateScroll(_, x, y)
+	self.craftInfoContentTab:gamepadScroll(x, y)
 end
 
 function CraftWindow:update(delta)
@@ -430,7 +412,6 @@ function CraftWindow:update(delta)
 
 	self:updateTitleScene()
 	self:updateControls()
-	self:updateScroll(delta)
 end
 
 return CraftWindow

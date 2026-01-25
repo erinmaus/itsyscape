@@ -101,7 +101,7 @@ function ConstraintsPanel:performLayout(doLogic)
 	self.layout:setSize(width, 0)
 	self.panel:addChild(self.layout)
 
-	local rowHeight = (self.config.constraintFontSize or 22) * 2
+	local rowHeight = (self.config.constraintFontSize or 22) + 8
 	local leftWidth = rowHeight
 	local rightWidth = width - leftWidth - self.padding * 7
 	for i = 1, #self.constraints do

@@ -19,6 +19,20 @@ function Config.getOverride()
 	return Variables.load("Player/Variables.json")
 end
 
+function Config.path(name, path, ...)
+	if not Config.NAMES_CACHE[name] then
+		local defaultFilename = string.format("Resources/Game/Variables/%s.json", name)
+		Config.NAMES_CACHE[name] = defaultFilename
+	end
+
+	local override = Config.getOverride():get()[name] or Config.DEFAULT_OVERRIDE
+
+	local filename = Config.NAMES_CACHE[name]
+	local variables = Variables.load(filename)
+
+	return path:get(override, Variables.DEFAULT, variables:get(path, ...), ...)
+end
+
 function Config.get(name, path, ...)
 	if not Config.NAMES_CACHE[name] then
 		local defaultFilename = string.format("Resources/Game/Variables/%s.json", name)
