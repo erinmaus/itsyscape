@@ -523,10 +523,6 @@ function Application:_collect()
 	while love.timer.getTime() < startTime + step and not collected do
 		collected = collected or collectgarbage("step", 0)
 	end
-
-	if collected then
-		print("DONE CLEANING")
-	end
 end
 
 function Application:update(delta)
