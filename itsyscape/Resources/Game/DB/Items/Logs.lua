@@ -93,6 +93,7 @@ local LOGS = {
 		weight = 6,
 		health = 100,
 		tinderbox = "Tinderbox",
+		variants = { "Default1" },
 		secondaries = {
 			"Leaf",
 			"Branch"
