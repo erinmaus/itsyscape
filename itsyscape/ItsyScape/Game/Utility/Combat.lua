@@ -405,8 +405,14 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 			local targetCenter = selfMap:getTileCenter(targetI, targetJ)
 			local selfCenter = selfMap:getTileCenter(selfI, selfJ)
 
-			local collisions = world:project(selfPeep, selfCenter.x, selfCenter.z, targetCenter.x, targetCenter.z, function(...)
-				return movement:filter(...)
+			local collisions = world:project(selfPeep, selfCenter.x, selfCenter.z, targetCenter.x, targetCenter.z, function(item, other, ...)
+				if Class.isCompatibleType(other, Tile) then
+					if other:hasFlag("shoot") then
+						return false
+					end
+				end
+
+				return movement:filter(item, other, ...)
 			end)
 
 			isWorldLineOfSightClear = (#collisions == 0)
