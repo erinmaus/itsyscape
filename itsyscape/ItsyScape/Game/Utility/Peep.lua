@@ -29,6 +29,7 @@ local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
@@ -1825,10 +1826,13 @@ function Peep.getTileAnchor(targetPeep, playerPeep, offsetI, offsetJ)
 		offsetJ = offsetJ or 1
 	end
 
+	local dynamic = playerPeep:getBehavior(DynamicBehavior)
+	local radius = dynamic and (dynamic.radius + dynamic.margin) or 1
+
 	local relativeOffset = Vector(
-		offsetI * (targetHalfSize.x + 0.5),
+		offsetI * (targetHalfSize.x + radius),
 		0,
-		offsetJ * (targetHalfSize.z + 0.5))
+		offsetJ * (targetHalfSize.z + radius))
 	local rotatedOffset = targetRotation:transformVector(relativeOffset)
 	local position = Peep.getPosition(targetPeep) + rotatedOffset
 
