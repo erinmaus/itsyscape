@@ -9,6 +9,7 @@ uniform ArrayImage scape_TriplanarTexture;
 uniform ArrayImage scape_TriplanarSpecularTexture;
 uniform Image scape_RainDiffuseTexture;
 uniform Image scape_RainSpecularTexture;
+uniform float scape_RainScale;
 
 uniform float scape_RainSpeed;
 uniform float scape_TriplanarExponent[MAX_TEXTURES];
@@ -27,8 +28,8 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	vec3 rainWeight = triplanarWeights(frag_PretransformedNormal, 0.0, 1.0);
 	rainWeight = normalize(vec3(rainWeight.x, 0.0, rainWeight.z));
 
-	vec4 rainDiffuse = sampleTriplanar(scape_RainDiffuseTexture, rainTextureCoordinates, rainWeight, 0.125);
-	vec4 rainSpecular = sampleTriplanar(scape_RainSpecularTexture, rainTextureCoordinates, rainWeight, 0.125);
+	vec4 rainDiffuse = sampleTriplanar(scape_RainDiffuseTexture, rainTextureCoordinates, rainWeight, scape_RainScale + 1.0);
+	vec4 rainSpecular = sampleTriplanar(scape_RainSpecularTexture, rainTextureCoordinates, rainWeight, scape_RainScale + 1.0);
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
 	vec4 diffuseSample = Texel(scape_DiffuseTexture, textureCoordinate);

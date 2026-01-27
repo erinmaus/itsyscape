@@ -97,8 +97,8 @@ do
 		ColorRed = 89,
 		ColorGreen = 89,
 		ColorBlue = 120,
-		NearDistance = 15,
-		FarDistance = 25,
+		NearDistance = 25,
+		FarDistance = 40,
 		Resource = M["Light_Fog"]
 	}
 end

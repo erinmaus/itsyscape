@@ -6,6 +6,7 @@
 
 		uniforms = {
 			scape_RainSpeed = { "float", 2.0 },
+			scape_RainScale = { "float", -0.875 },
 			scape_RainDiffuseTexture = { "texture", "Resources/Game/Skins/Cthulhu/Rain.png" },
 			scape_RainSpecularTexture = { "texture", "Resources/Game/Skins/Cthulhu/Rain@Specular.png" },
 			scape_NumLayers = { "integer", 1 }, 
