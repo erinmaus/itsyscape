@@ -1357,3 +1357,13 @@ Aye, whenever you change yer mind, lemme know.
 Oi! We got stuff to do over here!
 
 -> DONE
+
+== quest_tutorial_surprised_by_yenderling ==
+
+# speaker={C_ORLANDO}
+WATCH OUT, {player_name}! You gotta be careful! Gathering isn't the time to be all comfy-cozy! You never know when a creepy crawly is gonna jump out.
+
+# speaker={C_ORLANDO}
+So c'mon! Let's kill this thing!
+
+-> DONE

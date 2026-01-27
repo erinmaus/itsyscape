@@ -24,6 +24,7 @@ local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
@@ -618,6 +619,8 @@ function Island:onFinishPreparingTeam(playerPeep)
 		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-chop")
 		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-follow-player")
 	end
+
+	self:prepareTutorialMeteor(playerPeep) -- TODO TEMP
 end
 
 function Island:onFinishPreparingYenderhounds(playerPeep)
@@ -702,6 +705,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 		playerPeep:listen("gotKeyItem", _gotKeyItem)
 	end
 
+	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Meteor")
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_TeamKnights")
 	Utility.spawnInstancedMapGroup(playerPeep, "Cutscene")
@@ -1196,6 +1200,42 @@ function Island:updateTutorialPlayers()
 	for playerPeep in pairs(self.playersInTutorial) do
 		self:updateTutorialPlayer(playerPeep)
 	end
+end
+
+function Island:prepareTutorialMeteor(playerPeep)
+	local knight1 = self:getCompanion(playerPeep, "MiningKnight1")
+	Utility.Peep.interrupt(knight1)
+	Utility.Peep.setMashinaState(knight1, "idle")
+	local knight2 = self:getCompanion(playerPeep, "MiningKnight2")
+	Utility.Peep.interrupt(knight2)
+	Utility.Peep.setMashinaState(knight2, "idle")
+
+	local meteor = self:getCompanion(playerPeep, "AzatiteMeteor")
+	local health = meteor:getBehavior(PropResourceHealthBehavior)
+	health.currentProgress = 0
+	health.maxProgress = 200
+
+	local function onYenderlingAttack(yenderling)
+		yenderling:silence("initiateAttack", onYenderlingAttack)
+
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
+			Utility.Peep.enable(playerPeep)
+			Utility.Peep.attack(orlando, yenderling)
+		end, "quest_tutorial_surprised_by_yenderling")
+	end
+
+	local function onSpawnYenderling()
+		if health.currentProgress >= 100 then
+			local peeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Yenderling")
+			local yenderling = peeps[1]
+
+			yenderling:listen("initiateAttack", onYenderlingAttack)
+			meteor:silence("postResourceHit", onSpawnYenderling)
+		end
+	end
+
+	meteor:listen("postResourceHit", onSpawnYenderling)
 end
 
 function Island:update(director, game)

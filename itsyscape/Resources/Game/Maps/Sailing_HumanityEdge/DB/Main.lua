@@ -1655,9 +1655,15 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
+		State = "mining-idle",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_MineLogic.lua",
 		IsDefault = 1,
+		Resource = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
 		Resource = M["MiningKnight1"]
 	}
 
@@ -1718,8 +1724,46 @@ do
 	}
 end
 
+M["Yenderling"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Yenderling",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 0,
+		PositionZ = 159,
+		Name = "Yenderling",
+		Map = M._MAP,
+		Resource = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "ExtraterrestrialYenderling",
+		MapObject = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "begin-attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderling_BeginAttackLogic.lua",
+		IsDefault = 1,
+		Resource = M["Yenderling"]
+	}
+end
+
 M["AzatiteMeteor"] = ItsyScape.Resource.MapObject.Unique()
 do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Meteor",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["AzatiteMeteor"]
+	}
+
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 155,
 		PositionY = 0,
@@ -2817,3 +2861,100 @@ do
 		Resource = M["KnightCommander"]
 	}
 end
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire1"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire1"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire2"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire2"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire3"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire3"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire4"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire4"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire5"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire5"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire6"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire6"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire7"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire7"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire8"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire8"]
+}
+
