@@ -502,7 +502,7 @@ function CombatCortex:_givePeepZeal(peep)
 	local maxCriticalMultiplier = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER")
 	local criticalMultiplierStep = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP")
 
-	local criticalMultiplier = 1 + (((rollInfo.accuracyBonus * 3) / rollInfo.defenseBonus - 1) * criticalMultiplierStep)
+	local criticalMultiplier = 1 + ((((rollInfo.accuracyBonus or 0) * 3) / (rollInfo.defenseBonus or 0) - 1) * criticalMultiplierStep)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
 
 	local currentStanceInfo = self.currentStance[peep]

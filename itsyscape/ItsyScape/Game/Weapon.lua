@@ -55,6 +55,11 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 
 	purpose = purpose or Weapon.PURPOSE_KILL
 
+	local gameDB = peep:getDirector():getGameDB()
+	local xWeaponBoost = gameDB:getRecord("XWeaponBoost", {
+		Resource = gameDB:getResource(weapon:getID(), "Item")
+	})
+
 	self.weapon = weapon
 	self.peep = peep
 	self.target = target
@@ -107,7 +112,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		end
 
 		self.stat = skill
-		self.bonus = (bonuses[bonusType] or 0)
+		self.bonus = (bonuses[bonusType] or 0) + (xWeaponBoost and xWeaponBoost:get("StrengthBonus") or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
 		self.bonus = 0
 
@@ -159,7 +164,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			local styleBonus = weapon:getBonusForStance(peep)
 
 			local accuracyBonusName = "Accuracy" .. styleBonus
-			local accuracyBonus = bonuses[accuracyBonusName] or 0
+			local accuracyBonus = (bonuses[accuracyBonusName] or 0) + (xWeaponBoost and xWeaponBoost:get("AccurayBonus") or 0)
 			local accuracyTier = math.max(CurveConfig.StyleBonus:solvePlus(accuracyBonus * 3) - 10, 0)
 
 			local defenseBonusName = "Defense" .. styleBonus
@@ -316,6 +321,16 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 		accuracyBonus = bonuses[k] or 0
 
 		self.accuracyBonusType = k
+	end
+
+	do
+		local gameDB = peep:getDirector():getGameDB()
+		local xWeaponBoost = gameDB:getRecord("XWeaponBoost", {
+			Resource = gameDB:getResource(weapon:getID(), "Item")
+		})
+
+		self.alwaysHits = xWeaponBoost and xWeaponBoost:get("AlwaysHits") ~= 0
+		accuracyBonus = accuracyBonus + (xWeaponBoost and xWeaponBoost:get("AccurayBonus") or 0)
 	end
 
 	self.accuracyBonus = accuracyBonus
@@ -475,6 +490,10 @@ function Weapon.AttackRoll:roll()
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end
 
+function Weapon:pokeRollAttack(peep, target, roll)
+	peep:poke("rollAttack", roll)
+end
+
 -- Rolls an attack.
 function Weapon:rollAttack(peep, target, bonus)
 	local roll = Weapon.AttackRoll(self, peep, target, bonus)
@@ -522,6 +541,10 @@ function Weapon:applyDamageModifiers(roll, purpose)
 	end
 end
 
+function Weapon:pokeRollDamage(peep, target, roll)
+	peep:poke("rollDamage", roll)
+end
+
 function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
 	self:applyDamageModifiers(roll)
@@ -538,6 +561,18 @@ end
 
 function Weapon:getAttackRange(peep)
 	return 1
+end
+
+function Weapon:pokeHeal(peep, target, e)
+	target:poke("heal", e)
+end
+
+function Weapon:pokeReceiveAttack(peep, target, attack)
+	target:poke("receiveAttack", attack, peep)
+end
+
+function Weapon:pokeInitiateAttack(peep, target, attack)
+	peep:poke("initiateAttack", attack, target)
 end
 
 function Weapon:onAttackHit(peep, target)
@@ -566,13 +601,10 @@ function Weapon:onAttackHit(peep, target)
 	})
 
 	if damage < 0 then
-		target:poke('heal', {
-			hitPoints = -damage
-		})
+		self:pokeHeal(peep, target, { hitPoints = -damage })
 	else
-
-		target:poke('receiveAttack', attack, peep)
-		peep:poke('initiateAttack', attack, target)
+		self:pokeReceiveAttack(peep, target, attack)
+		self:pokeInitiateAttack(peep, target, attack)
 	end
 
 	self:dealtDamage(peep, target, attack, roll)
@@ -585,17 +617,21 @@ function Weapon:dealtDamage(peep, target, attack, roll)
 	-- Nothing.
 end
 
-function Weapon:onAttackMiss(peep, target)
-	local attack = AttackPoke({
+function Weapon:getMissAttackPoke(peep, target)
+	return AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
 		damage = 0,
 		aggressor = peep,
 		delay = self:getDelay(peep, target)
 	})
+end
 
-	target:poke('receiveAttack', attack, peep)
-	peep:poke('initiateAttack', attack, target)
+function Weapon:onAttackMiss(peep, target)
+	local attack = self:getMissAttackPoke(peep, target)
+
+	self:pokeReceiveAttack(peep, target, attack)
+	self:pokeInitiateAttack(peep, target, attack)
 
 	self:applyCooldown(peep, target)
 

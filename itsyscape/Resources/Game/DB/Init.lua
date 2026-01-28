@@ -394,6 +394,13 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "XWeaponBoost" {
+		AccuracyBonus = Meta.TYPE_INTEGER,
+		StrengthBonus = Meta.TYPE_INTEGER,
+		AlwaysHits = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	} 
+
 	Meta "Equipment" {
 		Name = Meta.TYPE_TEXT,
 
@@ -1578,6 +1585,7 @@ include "Resources/Game/DB/Creeps/Dummy.lua"
 include "Resources/Game/DB/Creeps/Yenderhounds.lua"
 include "Resources/Game/DB/Creeps/GildedDragon.lua"
 include "Resources/Game/DB/Creeps/ExtraterrestrialYenderling.lua"
+include "Resources/Game/DB/Creeps/GoredDragon.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1693,6 +1701,7 @@ include "Resources/Game/DB/Props/Glyphstone.lua"
 include "Resources/Game/DB/Props/ProjectedGlyph.lua"
 include "Resources/Game/DB/Props/Drakkenson.lua"
 include "Resources/Game/DB/Props/ColorfulFire.lua"
+include "Resources/Game/DB/Props/DragonFireball.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
