@@ -18,6 +18,9 @@ DynamicBehavior.IMPASSABLE = "impassable"
 DynamicBehavior.SHAPE_SQUARE = "square"
 DynamicBehavior.SHAPE_CIRCLE = "circle"
 
+DynamicBehavior.DEFAULT_RADIUS = 0.5
+DynamicBehavior.DEFAULT_MARGIN = 0.5
+
 -- Constructs a DynamicBehavior.
 function DynamicBehavior:new()
 	Behavior.Type.new(self)
