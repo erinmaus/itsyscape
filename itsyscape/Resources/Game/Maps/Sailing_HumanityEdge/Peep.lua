@@ -1216,21 +1216,31 @@ function Island:prepareTutorialMeteor(playerPeep)
 	health.maxProgress = 200
 
 	local function onYenderlingAttack(yenderling)
-		yenderling:silence("initiateAttack", onYenderlingAttack)
+		yenderling:silence("hit", onYenderlingAttack)
+		yenderling:silence("miss", onYenderlingAttack)
 
 		Utility.Peep.disable(playerPeep)
 		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
 			Utility.Peep.enable(playerPeep)
+			Utility.Peep.attack(yenderling, playerPeep)
 			Utility.Peep.attack(orlando, yenderling)
 		end, "quest_tutorial_surprised_by_yenderling")
 	end
 
 	local function onSpawnYenderling()
 		if health.currentProgress >= 100 then
+			Utility.Peep.interrupt(playerPeep)
+
 			local peeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Yenderling")
 			local yenderling = peeps[1]
 
-			yenderling:listen("initiateAttack", onYenderlingAttack)
+			yenderling:listen("ready", function()
+				Utility.Peep.lookAt(yenderling, playerPeep)
+				Utility.Peep.face3D(yenderling)
+			end)
+
+			yenderling:listen("hit", onYenderlingAttack)
+			yenderling:listen("miss", onYenderlingAttack)
 			meteor:silence("postResourceHit", onSpawnYenderling)
 		end
 	end

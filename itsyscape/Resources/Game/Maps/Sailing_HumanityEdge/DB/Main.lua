@@ -1711,9 +1711,15 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
+		State = "mining-idle",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_MineLogic.lua",
 		IsDefault = 1,
+		Resource = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
 		Resource = M["MiningKnight2"]
 	}
 

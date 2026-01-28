@@ -74,6 +74,8 @@ function Yenderling:ready(director, game)
 		"ExtraterrestrialYenderling_Spawn")
 
 	Creep.ready(self, director, game)
+
+	Utility.Peep.equipXWeapon(self, "ExtraterrestrialYenderling_Smash")
 end
 
 function Yenderling:update(...)

@@ -17,23 +17,61 @@ local TARGET = B.Reference("Tutorial_Yenderling_AttackLogic", "TARGET")
 
 local Tree = BTreeBuilder.Node() {
 	Mashina.Sequence {
-		Mashina.Success {
-			Mashina.Peep.DisengageCombatTarget
-		},
-
 		Mashina.Step {
-			Mashina.Peep.TimeOut {
-				duration = 2,
+			Mashina.Sequence {
+				Mashina.Success {
+					Mashina.Peep.DisengageCombatTarget
+				},
+
+				Mashina.Step {
+					Mashina.Peep.ApplyEffect {
+						effect = "Tutorial_NoKill",
+						singular = true
+					},
+
+					Mashina.Peep.ApplyEffect {
+						effect = "Tutorial_AlwaysHit",
+						singular = true
+					},
+
+					Mashina.Peep.TimeOut {
+						duration = 1,
+					}
+				}
 			},
 
-			CommonLogic.GetPlayer,
+			Mashina.Step {
+				CommonLogic.GetPlayer,
 
-			Mashina.Peep.EngageCombatTarget {
-				peep = CommonLogic.PLAYER
-			},
+				Mashina.Peep.Talk {
+					message = "lmfao gonna smash em"
+				},
 
-			Mashina.Peep.SetState {
-				state = "attack"
+				Mashina.Peep.EngageCombatTarget {
+					peep = CommonLogic.PLAYER
+				},
+
+				Mashina.Peep.Talk {
+					message = "waiting..."
+				},
+
+				Mashina.Peep.DidAttack,
+
+				Mashina.Peep.Talk {
+					message = "lmfao"
+				},
+
+				Mashina.Peep.RemoveEffect {
+					effect = "Tutorial_AlwaysHit",
+				},
+
+				Mashina.Peep.RemoveEffect {
+					effect = "Tutorial_NoKill",
+				},
+
+				Mashina.Peep.SetState {
+					state = "attack"
+				}
 			}
 		}
 	}
