@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local sort = require "batteries.sort"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
@@ -154,7 +155,7 @@ function SpriteManager:draw(scene, camera, delta)
 		positions[sprite] = Vector(x, y, z)
 	end
 
-	table.sort(self.sprites, function(a, b)
+	sort.stable_sort(self.sprites, function(a, b)
 		local i = positions[a]
 		local j = positions[b]
 		return i.z > j.z
