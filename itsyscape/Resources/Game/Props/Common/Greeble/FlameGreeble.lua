@@ -23,11 +23,16 @@ FlameGreeble.FLAME_OFFSET = Vector(0):keep()
 
 FlameGreeble.PARTICLE_SCALE = 1
 
+FlameGreeble.INNER_RADIUS = 0.125
+FlameGreeble.OUTER_RADIUS = 0.25
+
 FlameGreeble.INNER_FLAME_SPEED = 0.45
 FlameGreeble.OUTER_FLAME_SPEED = 0.5
 
 FlameGreeble.FLAME_HEIGHT = 1
 FlameGreeble.FLAME_WIND_RESISTANCE = 2
+
+FlameGreeble.SOFT = false
 
 FlameGreeble.INNER_FLAME_COLORS = {
 	Color.fromHexString("ffd52a"),
@@ -42,6 +47,8 @@ FlameGreeble.OUTER_FLAME_COLORS = {
 	Color(1, 0.5, 0.0),
 	Color(0.9, 0.5, 0.0),
 }
+
+FlameGreeble.LOCAL_DIRECTION = Vector(0, 1, 0)
 
 do
 	local fireDirection = Vector()
@@ -76,14 +83,15 @@ end
 
 function FlameGreeble:_getInnerParticleDefinition()
 	self._innerParticleDefinition = self._innerParticleDefinition or {
-		numParticles = 50,
+		numParticles = 200,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
+		soft = self.SOFT,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.125 * self.PARTICLE_SCALE },
+				radius = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE },
 				position = { 0, 0.1, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 1.25, 0.15 }
@@ -122,8 +130,8 @@ function FlameGreeble:_getInnerParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
-			delay = { 1 / 10 }
+			count = { 2, 5 },
+			delay = { 1 / 30 }
 		}
 	}
 
@@ -134,14 +142,15 @@ end
 
 function FlameGreeble:_getOuterParticleDefinition()
 	self._outerParticleDefinition = self._outerParticleDefinition or {
-		numParticles = 50,
+		numParticles = 200,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
+		soft = self.SOFT,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.25 * self.PARTICLE_SCALE },
+				radius = { 0, self.OUTER_RADIUS * self.PARTICLE_SCALE },
 				position = { 0, 0, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 1.5, 0.4 }
@@ -180,8 +189,8 @@ function FlameGreeble:_getOuterParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
-			delay = { 1 / 10 }
+			count = { 2, 5 },
+			delay = { 1 / 30 }
 		}
 	}
 
@@ -291,6 +300,24 @@ function FlameGreeble:updateLocalPosition(position)
 		end)
 	else
 		self.innerFlames:updateLocalPosition(position)
+	end
+end
+
+function FlameGreeble:updateLocalDirection(direction)
+	if not self.outerFlames then
+		self:getResources():queueEvent(function()
+			self.outerFlames:updateLocalDirection(direction)
+		end)
+	else
+		self.outerFlames:updateLocalDirection(direction)
+	end
+
+	if not self.innerFlames then
+		self:getResources():queueEvent(function()
+			self.innerFlames:updateLocalDirection(direction)
+		end)
+	else
+		self.innerFlames:updateLocalDirection(direction)
 	end
 end
 

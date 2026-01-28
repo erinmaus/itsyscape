@@ -60,7 +60,7 @@ function PropView:addGreeble(GreebleType, t, transform, parentRoot, ...)
 		end
 
 		if transform.scale then
-			greeble:getRoot():getTransform():setLocalOffset(transform.scale)
+			greeble:getRoot():getTransform():setLocalScale(transform.scale)
 		end
 	end
 

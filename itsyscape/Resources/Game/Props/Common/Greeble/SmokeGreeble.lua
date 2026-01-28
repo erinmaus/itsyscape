@@ -36,6 +36,8 @@ SmokeGreeble.SMOKE_COLORS = {
 	Color(0.1, 0.1, 0.1),
 }
 
+SmokeGreeble.SOFT = false
+
 do
 	local fireDirection = Vector()
 	local targetWindRotation = Quaternion()
@@ -73,6 +75,7 @@ function SmokeGreeble:_getSmokeParticleDefinition()
 		numParticles = 25,
 		texture = "Resources/Game/Props/Common/Particle_Smoke.png",
 		columns = 4,
+		soft = self.SOFT,
 
 		emitters = {
 			{
@@ -196,6 +199,16 @@ function SmokeGreeble:updateLocalPosition(position)
 		end)
 	else
 		self.smoke:updateLocalPosition(position)
+	end
+end
+
+function SmokeGreeble:updateLocalDirection(direction)
+	if not self.smoke then
+		self:getResources():queueEvent(function()
+			self.smoke:updateLocalDirection(direction)
+		end)
+	else
+		self.smoke:updateLocalDirection(direction)
 	end
 end
 
