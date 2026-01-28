@@ -193,12 +193,10 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 
 	local canReachTarget, isTooFar, isTooClose = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	if not canReachTarget then
-		print(selfPeep:getName(), "vs", targetPeep:getName(), "cant reach target", isTooFar, isTooClose)
 		return false, isTooFar, isTooClose
 	end
 
 	if not Utility.Combat.canSeeTarget(selfPeep, targetPeep) then
-		print(selfPeep:getName(), "vs", targetPeep:getName(), "cant see target", isTooFar, isTooClose)
 		return false, isTooFar, isTooClose
 	end
 
