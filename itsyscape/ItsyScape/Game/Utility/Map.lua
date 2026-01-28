@@ -444,11 +444,10 @@ end
 function UMap.isPassable(peep, goalPosition)
 	local movement = peep:getDirector():getCortex(MovementCortex)
 	local world = movement and movement:getWorld(Utility.Peep.getLayer(peep))
-	if world and world:has(selfPeep) then
-		local targetCenter = selfMap:getTileCenter(targetI, targetJ)
-		local selfCenter = selfMap:getTileCenter(selfI, selfJ)
+	if world and world:has(peep) then
+		local selfPosition = Utility.Peep.getPosition(peep)
 
-		local collisions = world:project(selfPeep, selfCenter.x, selfCenter.z, targetCenter.x, targetCenter.z, function(...)
+		local collisions = world:project(peep, selfPosition.x, selfPosition.z, goalPosition.x, goalPosition.z, function(...)
 			return movement:filter(...)
 		end)
 
