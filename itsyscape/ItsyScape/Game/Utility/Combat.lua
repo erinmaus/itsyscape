@@ -362,14 +362,16 @@ function Combat.setEquipmentStatBonus(peep, stat, value)
 end
 
 local _currentShoot = nil
+local _startElevation = 0
 local function _iterateTargetSight(map, previousI, previousJ, differenceI, differenceJ)
-	local canMove = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_BIDRECTIONAL)
+	local canMove = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_BIDIRECTIONAL)
 	if not canMove then
 		return false
 	end
 
-	local canMoveUp = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_BELOW_TO_ABOVE)
-	local canMoveDown = map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_ABOVE_TO_BELOW)
+	local elevation = map:getTileCenter(previousI + differenceI, previousJ + differenceJ).y
+	local canMoveUp = elevation <= _startElevation or map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_BELOW_TO_ABOVE)
+	local canMoveDown = elevation <= _startElevation or map:canMove(previousI, previousJ, differenceI, differenceJ, Map.SHOOT_FROM_ABOVE_TO_BELOW)
 
 	local nextShoot
 	if canMoveUp and canMoveDown then
@@ -428,6 +430,7 @@ function Combat.canSeeTarget(selfPeep, targetPeep, shoot)
 	end
 
 	_currentShoot = nil
+	_startElevation = Utility.Peep.getPosition(selfPeep).y
 	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, false, _iterateTargetSight)
 
 	return isSameTile or (isLineOfSightClear and isWorldLineOfSightClear)
