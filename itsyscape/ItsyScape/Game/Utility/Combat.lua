@@ -27,6 +27,7 @@ local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBeh
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local CombatCortex = require "ItsyScape.Peep.Cortexes.CombatCortex2"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Map = require "ItsyScape.World.Map"
@@ -96,6 +97,10 @@ function Combat.strafe(peep, target, distance, rotations, onStrafe)
 
 		local previousI, previousJ
 		local isPassable = map:castRay(ray, function(_, tileI, tileJ, _, _, d)
+			if not Utility.Map.isPassable(peep, map:getTileCenter(tileI, tileJ)) then
+				return false
+			end
+
 			if previousI and previousJ and not map:canMove(previousI, previousJ, tileI - previousI, tileJ - previousJ) then
 				return false
 			end
@@ -103,13 +108,14 @@ function Combat.strafe(peep, target, distance, rotations, onStrafe)
 			previousI = tileI
 			previousJ = tileJ
 
+
 			if d > distance then
 				return true
 			end
 		end)
 
-		if isPassable then
-			local callback, n = Utility.Peep.queueWalk(peep, position, selfK, math.huge, { asCloseAsPossible = true })
+		if isPassable or (previousI and previousJ) then
+			local callback, n = Utility.Peep.queueWalk(peep, isPassable and position or map:getTileCenter(previousI, previousJ), selfK, math.huge, { asCloseAsPossible = true })
 			callback:register(function(s)
 				if onStrafe then
 					onStrafe(peep, target, s)
