@@ -16,6 +16,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
@@ -75,6 +76,23 @@ function MoveToPosition:accumulateVelocity(peep, value)
 	return value
 end
 
+function MoveToPosition:step(peep)
+	local movement = peep:getBehavior(MovementBehavior)
+	local targetPositionBehavior = peep:getBehavior(TargetPositionBehavior)
+	if not (targetPositionBehavior and movement) then
+		return
+	end
+
+	if not targetPositionBehavior.pathNode:getIsPending() then
+		if targetPositionBehavior.nextPathNode then
+			targetPositionBehavior.nextPathNode:activate(peep)
+		else
+			peep:removeBehavior(TargetPositionBehavior)
+			movement.isStopping = true
+		end
+	end
+end
+
 function MoveToPosition:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local finished = {}
@@ -83,6 +101,8 @@ function MoveToPosition:update(delta)
 		local position = peep:getBehavior(PositionBehavior)
 		local targetPositionBehavior = peep:getBehavior(TargetPositionBehavior)
 		local movement = peep:getBehavior(MovementBehavior)
+		local dynamic = peep:getBehavior(DynamicBehavior)
+		local radius = dynamic and (dynamic.radius + dynamic.margin) or (DynamicBehavior.DEFAULT_RADIUS + DynamicBehavior.DEFAULT_MARGIN)
 		if movement.maxSpeed == 0 or movement.maxAcceleration == 0 or
 		   movement.velocityMultiplier == 0 or movement.accelerationMultiplier == 0
 		then
@@ -113,15 +133,7 @@ function MoveToPosition:update(delta)
 					local distance = currentPosition:distance(targetPosition)
 
 					if distance < 0.01 then
-						if not targetPositionBehavior.pathNode:getIsPending() then
-							if targetPositionBehavior.nextPathNode then
-								targetPositionBehavior.nextPathNode:activate(peep)
-							else
-								peep:removeBehavior(TargetPositionBehavior)
-								movement.isStopping = true
-							end
-						end
-
+						self:step(peep)
 						break
 					end
 
@@ -136,7 +148,17 @@ function MoveToPosition:update(delta)
 					local partialVelocitySlice = partialDelta * velocity
 					local goal = currentPosition + partialVelocitySlice
 					if world and world:has(peep) then
+						local currentGoalX, currentGoalZ = goal.x, goal.z
 						goal.x, goal.z = world:move(peep, goal.x, goal.z, self._filter)
+
+						if not (currentGoalX == goal.x and currentGoalZ == goal.z) and
+						   goal.x == currentPosition.x and goal.z == currentPosition.z and
+						   goal:distance(targetPosition) <= radius
+						then
+							self:step(peep)
+							break
+						end
+
 						distance = ((targetPosition - goal) * Vector.PLANE_XZ):getLength()
 					end
 
