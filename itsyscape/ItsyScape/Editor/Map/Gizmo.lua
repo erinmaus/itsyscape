@@ -239,7 +239,7 @@ end
 Gizmo.TranslationAxisOperation = Class(Gizmo.Operation)
 Gizmo.TranslationAxisOperation.LENGTH = 2
 Gizmo.TranslationAxisOperation.SHAPE_SIZE = 16
-Gizmo.TranslationAxisOperation.MOVE_DISTANCE = 32
+Gizmo.TranslationAxisOperation.MOVE_DISTANCE = 4
 Gizmo.TranslationAxisOperation.SNAP_DISTANCE = 0.25
 
 function Gizmo.TranslationAxisOperation:new(axis, x, y, z)
@@ -328,7 +328,7 @@ end
 Gizmo.RotationAxisOperation = Class(Gizmo.Operation)
 Gizmo.RotationAxisOperation.SEGMENTS = 32
 Gizmo.RotationAxisOperation.STEP_ANGLE = math.rad(45)
-Gizmo.RotationAxisOperation.MOVE_DISTANCE = 64
+Gizmo.RotationAxisOperation.MOVE_DISTANCE = 16
 
 function Gizmo.RotationAxisOperation:new(axis)
 	Gizmo.Operation.new(self)
@@ -422,7 +422,7 @@ end
 Gizmo.ScaleAxisOperation = Class(Gizmo.Operation)
 Gizmo.ScaleAxisOperation.LENGTH = 2
 Gizmo.ScaleAxisOperation.SHAPE_SIZE = 16
-Gizmo.ScaleAxisOperation.MOVE_DISTANCE = 32
+Gizmo.ScaleAxisOperation.MOVE_DISTANCE = 8
 Gizmo.ScaleAxisOperation.SNAP_DISTANCE = 0.25
 
 function Gizmo.ScaleAxisOperation:new(axis)
