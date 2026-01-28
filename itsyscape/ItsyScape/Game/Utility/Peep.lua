@@ -640,20 +640,22 @@ function Peep.teleportCompanion(peep, targetPeep)
 	local i, j, k = Peep.getTile(targetPeep)
 	local map = Peep.getMap(targetPeep)
 
+	Utility.Peep.teleport(peep, Utility.Peep.getPosition(targetPeep))
+
 	local offsetX = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
 	local offsetZ = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
 	local offset = Vector(offsetX, 0, offsetZ)
 
-	if map:canMove(i, j, 1, 0) then
+	if map:canMove(i, j, 1, 0) and Utility.Map.isPassable(peep, map:getTileCenter(i + 1, j) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i + 1, j) + offset)
 		return true
-	elseif map:canMove(i, j, -1, 0) then
+	elseif map:canMove(i, j, -1, 0) and Utility.Map.isPassable(peep, map:getTileCenter(i - 1, j) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i - 1, j) + offset)
 		return true
-	elseif map:canMove(i, j, 0, -1) then
+	elseif map:canMove(i, j, 0, -1) and Utility.Map.isPassable(peep, map:getTileCenter(i, j - 1) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i, j - 1) + offset)
 		return true
-	elseif map:canMove(i, j, 0, 1) then
+	elseif map:canMove(i, j, 0, 1) and Utility.Map.isPassable(peep, map:getTileCenter(i, j + 1) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i, j + 1) + offset)
 		return true
 	end
