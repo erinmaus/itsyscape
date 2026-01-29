@@ -26,6 +26,7 @@ Human.ANIMATIONS = {
 	{ "animation-walk-cane", "Human_WalkCane_1" },
 	{ "animation-trip", "Human_Trip_1" },
 	{ "animation-idle", "Human_Idle_1" },
+	{ "animation-dodge", "Human_Dodge_1" },
 	{ "animation-idle-cane", "Human_IdleCane_1" },
 	{ "animation-idle-zweihander", "Human_IdleZweihander_1" },
 	{ "animation-idle-blunderbuss", "Human_IdleBlunderbuss_1" },

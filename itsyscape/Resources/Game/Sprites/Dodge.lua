@@ -17,7 +17,7 @@ local Dodge = Class(Sprite)
 Dodge.DURATION = 0.75
 Dodge.SLIDE_IN_OUT_DISTANCE = 32
 Dodge.BACKGROUND_PADDING = 8
-Dodge.SCALE = 1.5
+Dodge.SCALE = 1
 
 function Dodge:new(...)
 	Sprite.new(self, ...)
@@ -69,10 +69,8 @@ function Dodge:draw(position, time)
 
 	local textOffsetX
 	if delta > 0.5 then
-		print("> 0.5", mu)
 		textOffsetX = self.SLIDE_IN_OUT_DISTANCE * (1 - mu)
 	else
-		print("< 0.5", mu)
 		textOffsetX = -self.SLIDE_IN_OUT_DISTANCE * (1 - mu)
 	end
 

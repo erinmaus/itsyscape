@@ -56,6 +56,10 @@ function Cortex:require(b)
 	end
 end
 
+function Cortex:matchPeep(peep)
+	return peep:match(unpack(self.requirements))
+end
+
 -- Called when a Peep is added or modified.
 --
 -- The default behavior is to check if the Peep matches (i.e., Cortex.filter
@@ -67,7 +71,7 @@ end
 function Cortex:previewPeep(peep)
 	local exists = self:hasPeep(peep)
 
-	if peep:match(unpack(self.requirements)) then
+	if self:matchPeep(peep) then
 		if not exists then
 			self:addPeep(peep)
 		end

@@ -41,6 +41,12 @@
 		"ui.poke.misc": "999999",
 		"world.shimmer.attackable": "c93736",
 		"world.shimmer.unselected": "999999",
-		"world.shimmer.interactive": "ffcc00"
+		"world.shimmer.interactive": "ffcc00",
+		"world.dodgeAura.archery.inner": "339d80",
+		"world.dodgeAura.archery.outer": "9d7033",
+		"world.dodgeAura.melee.inner": "a02c4b",
+		"world.dodgeAura.melee.outer": "a0602c",
+		"world.dodgeAura.magic.inner": "463779",
+		"world.dodgeAura.magic.outer": "d1a019",
 	}
 }

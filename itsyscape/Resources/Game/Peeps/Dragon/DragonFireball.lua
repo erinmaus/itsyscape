@@ -22,8 +22,8 @@ DragonFireball.DEFAULT_MOUTH_POSITION = Vector(0, 6, 14)
 
 DragonFireball.DEFAULT_EXPLOSION_RADIUS = 6
 
-DragonFireball.DEFAULT_ACCELERATION_MAGNITUDE = 4
-DragonFireball.DEFAULT_VELOCITY_MAGNITUDE     = 6
+DragonFireball.DEFAULT_ACCELERATION_MAGNITUDE = 8
+DragonFireball.DEFAULT_VELOCITY_MAGNITUDE     = 12
 
 function DragonFireball:new(...)
 	PassableProp.new(self, ...)
@@ -132,7 +132,7 @@ function DragonFireball:_tryExplode()
 						actor = actor and actor.actor
 
 						if actor then
-							actor:flash("Dodge", Vector(0))
+							actor:flash("Dodge", Vector(0, 0.5, 0))
 						end
 					end
 

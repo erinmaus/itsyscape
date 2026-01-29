@@ -20,7 +20,7 @@ function MagicWeapon:getFarAttackRange(peep)
 end
 
 function MagicWeapon:getNearAttackRange(peep)
-	return 1
+	return 4
 end
 
 function MagicWeapon:getSpell(peep)

@@ -14,11 +14,11 @@ local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local Cane = Class(MagicWeapon)
 
 function Cane:getFarAttackRange(peep)
-	return 6
+	return 7
 end
 
 function Cane:getNearAttackRange(peep)
-	return 1
+	return 5
 end
 
 function Cane:getBonusForStance(peep)

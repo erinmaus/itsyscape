@@ -9,8 +9,15 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Config = require "ItsyScape.Game.Config"
+local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
+local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
+local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Weapon = require "ItsyScape.Game.Weapon"
+local Color = require "ItsyScape.Graphics.Color"
 local Peep = require "ItsyScape.Peep.Peep"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
@@ -24,18 +31,79 @@ local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Tile = require "ItsyScape.World.Tile"
 
 local DodgeCortex = Class(Cortex)
+DodgeCortex.OFFSET = Vector(0, 1.5, 0)
 
 function DodgeCortex:new()
 	Cortex.new(self)
 
 	self:require(MovementBehavior)
 	self:require(PositionBehavior)
-	self:require(CombatDodgeBehavior)
 
-	self.speed = {}
-	self.previousTileCenter = {}
+	self.aura = {}
 
 	self._filter = Callback.bind(self.filter, self)
+end
+
+function DodgeCortex:matchPeep(peep)
+ 	return Cortex.matchPeep(self, peep) and (peep:hasBehavior(DodgeCooldownBehavior) or peep:hasBehavior(CombatDodgeBehavior))
+end
+
+function DodgeCortex:showDodgeAura(peep)
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if not dodge then
+		return
+	end
+
+	local position = Utility.Peep.getPosition(peep)
+	local targetPosition = position + dodge.direction * dodge.maximumDistance
+
+	local aura = Utility.spawnPropAtPosition(peep, "Dodge", position:get())
+	if not aura then
+		return
+	end
+
+	local auraPeep = aura:getPeep()
+	Utility.Peep.setRotation(auraPeep, Quaternion.lookAt(position, targetPosition, Vector.UNIT_Y))
+
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true)
+	local innerColor, outerColor
+	if not weapon or Class.isCompatibleType(weapon, MeleeWeapon) then
+		innerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.melee.inner"))
+		outerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.melee.outer"))
+	elseif Class.isCompatibleType(weapon, MagicWeapon) then
+		innerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.magic.inner"))
+		outerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.magic.outer"))
+	elseif Class.isCompatibleType(weapon, RangedWeapon) then
+		innerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.archery.inner"))
+		outerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.archery.outer"))
+	else
+		innerColor = Color(1, 1, 0)
+		outerColor = Color(1, 0, 0)
+	end
+	auraPeep:pushPoke("color", innerColor, outerColor)
+
+	self.aura[peep] = auraPeep
+end
+
+function DodgeCortex:hideDodgeAura(peep)
+	local aura = self.aura[peep]
+	if aura then
+		self.aura[peep] = nil
+		aura:pushPoke("fade")
+	end
+end
+
+function DodgeCortex:addPeep(peep)
+	if peep:hasBehavior(HumanoidBehavior) and peep:hasBehavior(CombatDodgeBehavior) then
+		self:showDodgeAura(peep)
+	end
+
+	Cortex.addPeep(self, peep)
+end
+
+function DodgeCortex:removePeep(peep)
+	self:hideDodgeAura(peep)
+	Cortex.removePeep(self, peep)
 end
 
 function DodgeCortex:filter(item, other)
@@ -91,7 +159,7 @@ function DodgeCortex:updateDodge(peep, delta)
 	end
 
 	local layer = Utility.Peep.getLayer(peep)
-	local world = game:getDirector():getCortex(MovementCortex):getWorld(layer)
+	local world = self:getDirector():getCortex(MovementCortex):getWorld(layer)
 	if not world and world:has(peep) then
 		peep:removeBehavior(CombatDodgeBehavior)
 		return
@@ -111,6 +179,7 @@ function DodgeCortex:updateDodge(peep, delta)
 	local goalX, goalZ = position.x + velocitySlice.x, position.z + velocitySlice.z
 	local nextX, nextZ, collisions = world:move(peep, goalX, goalZ, self._filter)
 
+	local map = Utility.Peep.getMap(peep)
 	local finalPosition = Vector(nextX, map:getInterpolatedHeight(nextX, nextZ) + movement.float, nextZ)
 	local finalDistance = Vector(position.x, 0, position.z):distance(Vector(nextX, 0, nextZ))
 
@@ -126,6 +195,20 @@ function DodgeCortex:updateDodge(peep, delta)
 	peep:removeBehavior(TargetPositionBehavior)
 end
 
+function DodgeCortex:updateAura(peep)
+	if not peep:hasBehavior(CombatDodgeBehavior) then
+		self:hideDodgeAura(peep)
+		return
+	end
+
+	local aura = self.aura[peep]
+	if aura then
+		Utility.Peep.setPosition(aura, Utility.Peep.getPosition(peep) + self.OFFSET)
+	elseif peep:hasBehavior(CombatDodgeBehavior) then
+		self:showDodgeAura(peep)
+	end
+end
+
 function DodgeCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 
@@ -134,7 +217,7 @@ function DodgeCortex:update(delta)
 		self:updateDodge(peep, delta)
 
 		if peep:hasBehavior(HumanoidBehavior) then
-			--self:update
+			self:updateAura(peep)
 		end
 	end
 end

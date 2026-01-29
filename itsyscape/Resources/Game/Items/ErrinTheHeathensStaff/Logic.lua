@@ -18,7 +18,7 @@ function ErrinTheHeathensStaff:getFarAttackRange(peep)
 end
 
 function ErrinTheHeathensStaff:getNearAttackRange(peep)
-	return 2
+	return 8
 end
 
 function ErrinTheHeathensStaff:perform(peep, target)

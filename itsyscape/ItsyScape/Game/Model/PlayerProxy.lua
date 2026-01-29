@@ -41,9 +41,11 @@ PlayerProxy.getTarget = Property()
 PlayerProxy.getOffensiveRange = Property()
 
 PlayerProxy.move = Event.ClientToServerRPC(Event.Argument("x"), Event.Arguments("z"))
-PlayerProxy.dodge = Event.ClientToServerRPC(Event.Argument("target"))
 PlayerProxy.walk = Event.ClientToServerRPC(
 	Event.Argument("i"), Event.Argument("j"), Event.Arguments("k"))
+PlayerProxy.startDodge = Event.ClientToServerRPC(Event.Argument("target"))
+PlayerProxy.stopDodge = Event.ClientToServerRPC(Event.Argument("target"))
+PlayerProxy.getIsDodging = Property()
 
 PlayerProxy.poke = Event.ClientToServerRPC(Event.Argument("id"), Event.Argument("obj"), Event.Argument("scope"))
 

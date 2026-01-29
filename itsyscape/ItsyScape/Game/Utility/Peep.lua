@@ -2590,7 +2590,7 @@ function Peep.makeHuman(peep)
 		movement.velocityMultiplier = 1
 		movement.accelerationMultiplier = 1
 		movement.stoppingForce = 3
-		movement.dodgeSpeed = 8
+		movement.dodgeSpeed = 18
 	end
 
 	peep:addPoke("trip")

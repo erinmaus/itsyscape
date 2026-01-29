@@ -699,18 +699,19 @@ function Weapon:applyDodgeCooldown(peep)
 end
 
 function Weapon:getDodgeRange(peep, target)
-	local targetPosition
-	if Class.isCompatibleType(target, Peep) then
-		targetPosition = Utility.Peep.getRelativePosition(peep, target)
-	elseif Class.isCompatibleType(target, Vector) then
-		targetPosition = target
-	end
+	-- local targetPosition
+	-- if Class.isCompatibleType(target, Peep) then
+	-- 	targetPosition = Utility.Peep.getRelativePosition(peep, target)
+	-- elseif Class.isCompatibleType(target, Vector) then
+	-- 	targetPosition = target
+	-- end
 
-	if not targetPosition then
-		return self:getAttackRange(peep)
-	end
+	-- if not targetPosition then
+	-- 	return self:getAttackRange(peep)
+	-- end
 
-	return math.min(targetPosition:distance(Utility.Peep.getPosition(peep)), self:getAttackRange(peep))
+	-- return math.min(targetPosition:distance(Utility.Peep.getPosition(peep)), self:getAttackRange(peep))
+	return self:getAttackRange(peep)
 end
 
 function Weapon:getDodgeCooldown(peep)

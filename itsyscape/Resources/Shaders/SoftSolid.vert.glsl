@@ -7,7 +7,12 @@ void performTransform(
 	out vec4 projectedPosition)
 {
 	localPosition = position.xyz;
-	projectedPosition = modelViewProjectionMatrix * position;
+
+	vec4 worldPosition = scape_WorldMatrix * position;
+	float yOffset = (sin(worldPosition.x) + sin(worldPosition.z)) / 2.0 * 0.5;
+	localPosition.y += yOffset;
+
+	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
 
 	vec2 screenPosition = projectedPosition.xy / projectedPosition.w;
 	screenPosition += vec2(1.0);

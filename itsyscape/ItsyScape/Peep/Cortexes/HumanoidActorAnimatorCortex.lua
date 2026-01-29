@@ -16,6 +16,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -40,6 +41,7 @@ function HumanoidActorAnimatorCortex:new()
 
 	self.walking = {}
 	self.idling = {}
+	self.dodging = {}
 end
 
 function HumanoidActorAnimatorCortex:addPeep(peep)
@@ -238,6 +240,11 @@ function HumanoidActorAnimatorCortex:getWalkAnimation(peep, weapon)
 	return self:getXAnimation(peep, "walk", x)
 end
 
+function HumanoidActorAnimatorCortex:getDodgeAnimation(peep, weapon)
+	local x = self:getPeepWeaponType(peep, weapon)
+	return self:getXAnimation(peep, "dodge", x)
+end
+
 function HumanoidActorAnimatorCortex:getXAnimation(peep, prefix, x)
 	local animations = {
 		string.format("animation-%s", prefix)
@@ -347,6 +354,10 @@ function HumanoidActorAnimatorCortex:isWalking(peep)
     return (velocity:getLength() > 0.1 or isMoving) and canMove
 end
 
+function HumanoidActorAnimatorCortex:isDodging(peep)
+	return peep:hasBehavior(CombatDodgeBehavior)
+end
+
 function HumanoidActorAnimatorCortex:update(delta)
 	local game = self:getDirector():getGameInstance()
 	local finished = {}
@@ -355,22 +366,33 @@ function HumanoidActorAnimatorCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if self:isWalking(peep) then
+		if self:isDodging(peep) then
+			if not self.dodging[actor] then
+				local resource = self:getDodgeAnimation(peep)
+				if resource then
+					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false)
+					self.dodging[actor] = resource
+					self.idling[actor] = nil
+					self.walking[actor] = nil
+				end
+			end
+		elseif self:isWalking(peep) then
 			if not self.walking[actor] then
 				local resource = self:getWalkAnimation(peep)
 				if resource then
 					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
 					self.walking[actor] = resource
 					self.idling[actor] = nil
+					self.dodging[actor] = nil
 				end
 			end
 		else
 			if not self.idling[actor] then
 				local resource = self:getIdleAnimation(peep)
 				if resource then
-					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, math.random())
+					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, love.math.random())
 					self.idling[actor] = resource
-					self.walking[actor] = false
+					self.walking[actor] = nil
 				end
 			end
 		end

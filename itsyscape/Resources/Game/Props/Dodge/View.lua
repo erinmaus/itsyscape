@@ -8,20 +8,23 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local PropView = require "ItsyScape.Graphics.PropView"
 local StaticGreeble = require "Resources.Game.Props.Common.Greeble.StaticGreeble"
 
 local Dodge = Class(PropView)
 
-Dodge.LIGHTNESS_SHIFT  = 0.2
+Dodge.LIGHTNESS_SHIFT  = 0.05
 Dodge.SATURATION_SHIFT = 0.1
 
-Dodge.ALPHA = 0.1
+Dodge.SHIFT_SPEED = math.pi * 4
 
-Dodge.SHIFT_SPEED = math.pi / 2
+Dodge.INNER_ROTATION_SPEED = -math.pi
+Dodge.OUTER_ROTATION_SPEED = math.pi
 
 function Dodge:new(...)
 	PropView.new(self, ...)
@@ -29,7 +32,7 @@ function Dodge:new(...)
 	self.innerGreeble = self:addGreeble(StaticGreeble, {
 		MESH = "Resources/Game/Props/Dodge/Model.lstatic",
 		GROUP = "dodge.inner",
-		MATERIAL = {
+		MATERIAL = DecorationMaterial({
 			shader = "Resources/Shaders/SoftSolid",
 			texture = false,
 
@@ -39,12 +42,13 @@ function Dodge:new(...)
 				color = "ffffff",
 				alpha = 0,
 				outlineThreshold = -1,
+				zBias = 1
 			},
 
 			uniforms = {
 				scape_Specular = { "float", 1 }
 			}
-		}
+		})
 	})
 
 	self.innerColor = Color(1, 1, 1, 0)
@@ -53,7 +57,7 @@ function Dodge:new(...)
 	self.outerGreeble = self:addGreeble(StaticGreeble, {
 		MESH = "Resources/Game/Props/Dodge/Model.lstatic",
 		GROUP = "dodge.outer",
-		MATERIAL = {
+		MATERIAL = DecorationMaterial({
 			shader = "Resources/Shaders/SoftSolid",
 			texture = false,
 
@@ -68,7 +72,7 @@ function Dodge:new(...)
 			uniforms = {
 				scape_Specular = { "float", 1 }
 			}
-		}
+		})
 	})
 
 	self.outerColor = Color(1, 1, 1, 0)
@@ -92,7 +96,7 @@ function Dodge:tick()
 	end
 
 	if state.outerColor then
-		self.outerColor:from(unpack(State.outerColor))
+		self.outerColor:from(unpack(state.outerColor))
 	end
 
 	self.previousAlpha = self.currentAlpha or 0
@@ -108,15 +112,29 @@ function Dodge:update(delta)
 	local alpha = math.lerp(self.previousAlpha, self.currentAlpha, _APP:getPreviousFrameDelta())
 
 	self.outerColor:shiftHSL(0, saturationShift, lightnessShift, self.shiftedInnerColor)
-	self.outerColor.a = self.ALPHA * alpha
 	self.innerColor:shiftHSL(0, saturationShift, lightnessShift, self.shiftedOuterColor)
-	self.innerColor.a = self.ALPHA * alpha
 
-	local innerMaterial = self.innerGreeble:getDecorationNode():getMaterial()
-	innerMaterial:setColor(self.shiftedInnerColor)
+	if self.innerGreeble:getDecorationNode() then
+		local node = self.innerGreeble:getDecorationNode()
 
-	local outerMaterial = self.outerGreeble:getDecorationNode():getMaterial()
-	outerMaterial:setColor(self.shiftedOuterColor)
+		local transform = node:getTransform()
+		transform:setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Z, love.timer.getTime() * self.INNER_ROTATION_SPEED))
+
+		local material = node:getMaterial()
+		material:setColor(self.shiftedInnerColor)
+		material:setAlpha(alpha)
+	end
+
+	if self.outerGreeble:getDecorationNode() then
+		local node = self.outerGreeble:getDecorationNode()
+
+		local transform = node:getTransform()
+		transform:setLocalRotation(Quaternion.fromAxisAngle(Vector.UNIT_Z, love.timer.getTime() * self.OUTER_ROTATION_SPEED))
+
+		local material = node:getMaterial()
+		material:setColor(self.shiftedOuterColor)
+		material:setAlpha(alpha)
+	end
 end
 
-return Cannonball
+return Dodge

@@ -18,7 +18,7 @@ function Staff:getFarAttackRange(peep)
 end
 
 function Staff:getNearAttackRange(peep)
-	return 1
+	return 8
 end
 
 function Staff:getBonusForStance(peep)

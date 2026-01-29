@@ -24,9 +24,10 @@ local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavio
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
+local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
-local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
@@ -362,6 +363,10 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 	end
 
 	if isRecharging then
+		return false
+	end
+
+	if not power:getIsInstant() and peep:hasBehavior(CombatDodgeBehavior) then
 		return false
 	end
 
@@ -862,6 +867,10 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
+	if peep:hasBehavior(CombatDodgeBehavior) then
+		return
+	end
+
 	local rollInfo = self.currentRoll[peep]
 	rollInfo.rolledAttack = false
 	rollInfo.rolledDamage = false
@@ -872,7 +881,7 @@ function CombatCortex:tickPeep(delta, peep)
 
 	if not success then
 		return
-	end
+	end 
 
 	local spell
 	if weapon:canCastSpells() then

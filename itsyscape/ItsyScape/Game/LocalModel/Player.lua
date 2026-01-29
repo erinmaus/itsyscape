@@ -21,6 +21,7 @@ local Color = require "ItsyScape.Graphics.Color"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -466,7 +467,7 @@ function LocalPlayer:move(x, z)
 	end
 end
 
-function LocalPlayer:dodge(target)
+function LocalPlayer:startDodge(target)
 	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
 		return
 	end
@@ -496,6 +497,11 @@ function LocalPlayer:dodge(target)
 		return
 	end
 
+	if Class.isCompatibleType(target, Vector) then
+		-- 'target' is a direction, we need to turn it into a position relative to the player peep.
+		target = Utility.Peep.getPosition(peep) + target:getNormal() * weapon:getDodgeRange(peep)
+	end
+
 	if weapon:dodge(peep, target) then
 		Log.info(
 			"Player '%s' (%d) successfully dodged.",
@@ -505,6 +511,24 @@ function LocalPlayer:dodge(target)
 			"Player '%s' (%d) did NOT dodge.",
 			self:getActor():getName(), self:getID())
 	end
+end
+
+function LocalPlayer:stopDodge()
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
+		return
+	end
+
+	local peep = self:getActor():getPeep()
+	peep:removeBehavior(CombatDodgeBehavior)
+end
+
+function LocalPlayer:getIsDodging()
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
+		return false
+	end
+
+	local peep = self:getActor():getPeep()
+	return peep:hasBehavior(CombatDodgeBehavior)
 end
 
 function LocalPlayer:isPendingActionMovement()

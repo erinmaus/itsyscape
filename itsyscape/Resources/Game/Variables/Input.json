@@ -64,6 +64,10 @@
 			"gamepadProbe": "y",
 			"gamepadAction": "a",
 			"gamepadCycleTarget": "x",
+
+			"minFlickIntervalMS": 50,
+			"maxFlickIntervalMS": 250,
+			"flickInputStallIntervalMS": 250,
 		}
 	}
 }

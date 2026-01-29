@@ -56,8 +56,16 @@ function Player:move(x, z)
 	Class.ABSTRACT()
 end
 
-function Player:dodge(x, z)
+function Player:startDodge()
 	Class.ABSTRACT()
+end
+
+function Player:stopDodge()
+	Class.ABSTRACT()
+end
+
+function Player:getIsDodging()
+	return Class.ABSTRACT()
 end
 
 -- Moves the player to the specified position on the map via walking.

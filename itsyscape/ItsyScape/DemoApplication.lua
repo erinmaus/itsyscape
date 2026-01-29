@@ -102,6 +102,19 @@ function DemoApplication:new()
 	self.nextShimmerToolTip:setZDepth(-900)
 	self.nextShimmerToolTip:setRowSize(math.huge)
 
+	self.hadPotentialJoystickFlickInput = false
+	self.previousJoystickFlickTime = love.timer.getTime()
+	self.previousJoystickFlickDirection = Vector(0)
+	self.currentJoystickFlickDirection = Vector(0)
+
+	self.hadPotentialKeyboardFlickInput = false
+	self.previousKeyboardFlickTime = love.timer.getTime()
+	self.previousKeyboardFlickDirection = Vector(0)
+	self.currentKeyboardFlickDirection = Vector(0)
+
+	self.previousFlickTime = love.timer.getTime()
+	self.currentDodgeDirection = Vector()
+
 	local relativePosition = Vector()
 	local positionA, directionA = Vector(), Vector()
 	local positionB, directionB = Vector(), Vector()
@@ -2404,68 +2417,110 @@ function DemoApplication:updatePlayerMovement()
 	end
 
 	local didPressKey = false
+	local isDodging = false
 
-	local x, z = 0, 0
-	if self.hasGyroInput then
-		for _, gyroState in pairs(self.currentGyroState) do
-			if math.abs(gyroState.left[1]) > x and math.abs(gyroState.left[1]) > 0.1 then
-				x = -gyroState.left[1]
-			end
+	local minFlickIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "minFlickIntervalMS") / 1000
+	local maxFlickIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "maxFlickIntervalMS") / 1000
+	local flickInputStallIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "flickInputStallIntervalMS") / 1000
 
-			if math.abs(gyroState.left[2]) > z and math.abs(gyroState.left[2]) > 0.1 then
-				z = gyroState.left[2]
-			end
-		end
-	else
+	local keyboardX, keyboardZ = 0, 0
+	do
 		local up = Keybinds['PLAYER_1_MOVE_UP']:isDown()
 		local down = Keybinds['PLAYER_1_MOVE_DOWN']:isDown()
 		local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
 		local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
 
 		if up then
-			z = z + 1
+			keyboardZ = keyboardZ + 1
 		end
 
 		if down then
-			z = z - 1
+			keyboardZ = keyboardZ - 1
 		end
 
 		if left then
-			x = x + 1
+			keyboardX = keyboardX + 1
 		end
 
 		if right then
-			x = x - 1
+			keyboardX = keyboardX - 1
 		end
 
 		didPressKey = up or down or left or right
+
+		if math.abs(keyboardX) + math.abs(keyboardZ) > 0 then
+			local flickTime = love.timer.getTime() - self.previousKeyboardFlickTime
+
+			self.currentKeyboardFlickDirection:from(keyboardX, 0, keyboardZ)
+			if self.currentKeyboardFlickDirection:dot(self.previousKeyboardFlickDirection) > 0.5 and
+			   flickTime >= minFlickIntervalSeconds and flickTime <= maxFlickIntervalSeconds
+			then
+				isDodging = true
+			end
+
+			self.hadPotentialKeyboardFlickInput = true
+		elseif self.hadPotentialKeyboardFlickInput then
+			self.hadPotentialKeyboardFlickInput = false
+			self.previousKeyboardFlickDirection:from(self.currentKeyboardFlickDirection:get())
+			self.previousKeyboardFlickTime = love.timer.getTime()
+		end
 	end
 
+	local joystickX, joystickZ = 0, 0
 	do
 		local xAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadMoveXAxis")
 		local yAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadMoveYAxis")
 		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
 
-		local inputProvider = self:getUIView():getInputProvider()
+		local uiView = self:getUIView()
+		local inputProvider = uiView:getInputProvider()
 		local currentJoystick = inputProvider:getCurrentJoystick()
+
 		if currentJoystick and not self:isInterfaceBlockingGamepadMovement() then
 			local xAxis = inputProvider:getGamepadAxis(currentJoystick, xAxisKeybind)
 			local yAxis = inputProvider:getGamepadAxis(currentJoystick, yAxisKeybind)
 
 			if math.abs(xAxis) > axisSensitivity then
-				x = x + -math.sign(xAxis)
+				joystickX = -math.sign(xAxis)
 			end
 
 			if math.abs(yAxis) > axisSensitivity then
-				z = z + -math.sign(yAxis)
+				joystickZ = -math.sign(yAxis)
 			end
+		end
+
+		if math.abs(joystickX) + math.abs(joystickZ) > 0 then
+			local flickTime = love.timer.getTime() - self.previousJoystickFlickTime
+
+			self.currentJoystickFlickDirection:from(joystickX, 0, joystickZ)
+			if self.currentJoystickFlickDirection:dot(self.previousJoystickFlickDirection) > 0.5 and
+			   flickTime >= minFlickIntervalSeconds and flickTime <= maxFlickIntervalSeconds
+			then
+				isDodging = true
+			end
+
+			self.hadPotentialJoystickFlickInput = true
+		elseif self.hadPotentialJoystickFlickInput then
+			self.hadPotentialJoystickFlickInput = false
+			self.previousJoystickFlickDirection:from(self.currentJoystickFlickDirection:get())
+			self.previousJoystickFlickTime = love.timer.getTime()
 		end
 	end
 
-	x = -math.clamp(x, -1, 1)
-	z = -math.clamp(z, -1, 1)
+	if math.abs(joystickX) + math.abs(joystickZ) > 0 and
+	   math.abs(keyboardX) + math.abs(keyboardZ) == 0
+	then
+		self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_GAMEPAD)
+	elseif math.abs(joystickX) + math.abs(joystickZ) == 0 and
+	       math.abs(keyboardX) + math.abs(keyboardZ) > 0
+	then
+		self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_MOUSE_KEYBOARD)
+	end
 
-	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
+	x = -math.clamp(joystickX + keyboardX, -1, 1)
+	z = -math.clamp(joystickZ + keyboardZ, -1, 1)
+
+	local isMoving = math.abs(x) + math.abs(z) > 0
 	if isMoving then
 		local rotation = self:getCamera():getLocalRotation()
 		local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
@@ -2478,11 +2533,22 @@ function DemoApplication:updatePlayerMovement()
 		if not focusedWidget or
 		   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
 		then
-			if didPressKey then
-				self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_MOUSE_KEYBOARD)
-			end
+			if isDodging then
+				self.previousFlickTime = love.timer.getTime()
+				self.currentDodgeDirection:from(x, 0, z)
+				player:startDodge(self.currentDodgeDirection)
+			else
+				local flickDuration = love.timer.getTime() - self.previousFlickTime
+				if flickDuration > flickInputStallIntervalSeconds then
+					if player:getIsDodging() then
+						player:stopDodge()
+					end
 
-			player:move(x, z)
+					player:move(x, z)
+				else
+					player:move(0, 0)
+				end
+			end
 
 			self.stationaryDuration = 0
 		else

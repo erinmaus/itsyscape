@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 
@@ -36,14 +37,14 @@ function BasicDodge:onColor(innerColor, outerColor)
 	self.outerColor:from(outerColor:get())
 
 	self.isFadingIn = true
-	self.isFadingOut = true
+	self.isFadingOut = false
 	self.fadeDuration = BasicDodge.FADE_IN_OUT_DURATION
 end
 
 function BasicDodge:onFade()
 	self.fadeDuration = BasicDodge.FADE_IN_OUT_DURATION - self.fadeDuration
 	self.isFadingIn = false
-	self.isFadingOut = false
+	self.isFadingOut = true
 end
 
 function BasicDodge:onVanish()
@@ -62,16 +63,8 @@ end
 function BasicDodge:update(director, game)
 	PassableProp.update(self, director, game)
 
-	if not self.isShot then
-		return
-	end
-
 	local delta = game:getDelta()
-	self:_updatePosition(delta)
-
-	if not self:_tryExplode() then
-		self:_tryHit(0)
-	end
+	self:_updateFade(delta)
 end
 
 function BasicDodge:getPropState()
