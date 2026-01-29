@@ -110,7 +110,6 @@ function DefaultCameraController:new(...)
 	self.currentDistance = self:getCamera():getDistance()
 
 	self.isTargetting = _CONF.targetCameraMode == nil and true or not not _CONF.targetCameraMode
-	self.isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	self.targetOpponentDistance = 0
 	_CONF.targetCameraMode = self.isTargetting
 
@@ -491,8 +490,6 @@ function DefaultCameraController:updateControls(delta)
 	local downPressed = Keybinds['CAMERA_DOWN']:isDown()
 	local leftPressed = Keybinds['CAMERA_LEFT']:isDown()
 	local rightPressed = Keybinds['CAMERA_RIGHT']:isDown()
-	local panDown = Keybinds['CAMERA_PAN']:isDown()
-	self.isPanning = panDown
 
 	local angle1 = self.isPanning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset
 	do
@@ -780,13 +777,8 @@ function DefaultCameraController:update(delta)
 	self:updateFirstPerson(delta)
 	self:updateCenter(delta)
 
-	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
-	if (isFocusDown ~= self.isFocusDown and isFocusDown) or _CONF.targetCameraMode ~= self.isTargetting then
-		if isFocusDown then
-			self.isTargetting = not self.isTargetting
-		else
-			self.isTargetting = _CONF.targetCameraMode
-		end
+	if _CONF.targetCameraMode ~= self.isTargetting then
+		self.isTargetting = _CONF.targetCameraMode
 
 		if self.isTargetting then
 			Log.info("Target camera mode enabled.")
@@ -796,7 +788,6 @@ function DefaultCameraController:update(delta)
 
 		_CONF.targetCameraMode = self.isTargetting
 	end
-	self.isFocusDown = isFocusDown
 
  	if self.isTargetting and self.isFirstPerson <= 0 then
 		self:updateTargetDistance()

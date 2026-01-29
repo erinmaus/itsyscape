@@ -451,7 +451,11 @@ function UMap.isPassable(peep, goalPosition)
 			return movement:filter(...)
 		end)
 
-		return #collisions == 0
+		if #collisions > 0 then
+			return false, Vector(collisions[1].touch.x, 0, collisions[1].touch.z)
+		end
+
+		return true, goalPosition
 	end
 
 	return true

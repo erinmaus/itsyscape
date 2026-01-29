@@ -1975,7 +1975,7 @@ function Peep.getWalk(peep, ...)
 	if position.layer ~= args.layer then
 		Log.info(
 			"Peep '%s' is on a different map (on layer %d, can't move to layer %d).",
-			peep:getName(), position.layer, args.layer)
+			peep:getName(), (position.layer or -1), (args.layer or -1))
 		return false, "different map"
 	else
 		position = position.position

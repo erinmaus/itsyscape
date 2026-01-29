@@ -18,6 +18,7 @@ local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavio
 local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local Peep = require "ItsyScape.Peep.Peep"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -51,6 +52,9 @@ Weapon.BONUSES       = {
 	["Magic"]  = true,
 	["None"]   = true
 }
+
+Weapon.DODGE_BEHAVIOR_AVOID  = "avoid"
+Weapon.DODGE_BEHAVIOR_CHARGE = "charge"
 
 Weapon.DamageRoll = Class()
 
@@ -718,8 +722,32 @@ function Weapon:getDodgeCooldown(peep)
 	return self:getCooldown(peep)
 end
 
-function Weapon:adjustDodgeDirection(target, direction)
+function Weapon:adjustDodgeDirection(peep, target, direction)
+	if self:getDodgeBehavior() == Weapon.DODGE_BEHAVIOR_AVOID then
+		return -direction
+	end
+
 	return direction
+end
+
+function Weapon:getDodgeBehavior(peep, target)
+	return Weapon.DODGE_BEHAVIOR_AVOID
+end
+
+function Weapon:performDodge(peep, target, direction, speed, distance)
+	if self:getDodgeBehavior() == Weapon.DODGE_BEHAVIOR_CHARGE then
+		if Class.isCompatibleType(target, Peep) then
+			local targetRelativePosition = Utility.Peep.getRelativePosition(peep, target)
+			local distanceToTarget = Utility.Peep.getPosition(peep):distance(targetRelativePosition)
+			distance = math.min(distance, distanceToTarget)
+		end
+	end
+
+	local _, dodge = peep:addBehavior(CombatDodgeBehavior)
+	dodge.direction = direction
+	dodge.speed = speed
+	dodge.currentDistance = 0
+	dodge.maximumDistance = distance
 end
 
 function Weapon:dodge(peep, target)
@@ -728,10 +756,11 @@ function Weapon:dodge(peep, target)
 		return false
 	end
 
-	local direction, distance
+	local direction
 	if Class.isCompatibleType(target, Peep) then
+		print(">>> target is peep")
 		direction = Utility.Peep.getPosition(peep):direction(Utility.Peep.getRelativePosition(peep, target))
-		self:adjustDodgeDirection(target, direction)
+		direction = self:adjustDodgeDirection(peep, target, direction)
 	elseif Class.isCompatibleType(target, Vector) then
 		direction = Utility.Peep.getPosition(peep):direction(target)
 	else
@@ -743,11 +772,7 @@ function Weapon:dodge(peep, target)
 		return false
 	end
 
-	local _, dodge = peep:addBehavior(CombatDodgeBehavior)
-	dodge.direction = direction
-	dodge.speed = dodgeSpeed
-	dodge.currentDistance = 0
-	dodge.maximumDistance = self:getDodgeRange(peep, target)
+	self:performDodge(peep, target, direction, dodgeSpeed, self:getDodgeRange(peep, target))
 
 	self:applyDodgeCooldown(peep, target)
 	return true

@@ -468,6 +468,8 @@ function LocalPlayer:move(x, z)
 end
 
 function LocalPlayer:startDodge(target)
+	print("DODGE")
+
 	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
 		return
 	end

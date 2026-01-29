@@ -18,6 +18,10 @@ function Zweihander:getAttackRange()
 	return 2
 end
 
+function Zweihander:getDodgeRange()
+	return 4
+end
+
 function Zweihander:rollDamage(peep, purpose, target)
 	local roll = MeleeWeapon.rollDamage(self, peep, purpose, target)
 	roll:setMinHit(roll:getMinHit() + 1)

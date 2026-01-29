@@ -112,6 +112,62 @@ function ProxyXWeapon:perform(peep, target)
 	end
 end
 
+function ProxyXWeapon:applyDodgeCooldown(...)
+	if self.logic then
+		return self.logic:applyDodgeCooldown(...)
+	else
+		return Weapon.applyDodgeCooldown(self, ...)
+	end
+end
+
+function ProxyXWeapon:getDodgeRange(...)
+	if self.logic then
+		return self.logic:getDodgeRange(...)
+	else
+		return Weapon.getDodgeRange(self, ...)
+	end
+end
+
+function ProxyXWeapon:getDodgeCooldown(...)
+	if self.logic then
+		return self.logic:getDodgeCooldown(...)
+	else
+		return Weapon.getDodgeCooldown(self, ...)
+	end
+end
+
+function ProxyXWeapon:adjustDodgeDirection(...)
+	if self.logic then
+		return self.logic:adjustDodgeDirection(...)
+	else
+		return Weapon.adjustDodgeDirection(self, ...)
+	end
+end
+
+function ProxyXWeapon:getDodgeBehavior(...)
+	if self.logic then
+		return self.logic:getDodgeBehavior(...)
+	else
+		return Weapon.getDodgeBehavior(self, ...)
+	end
+end
+
+function ProxyXWeapon:performDodge(...)
+	if self.logic then
+		return self.logic:performDodge(...)
+	else
+		return Weapon.performDodge(self, ...)
+	end
+end
+
+function ProxyXWeapon:dodge(...)
+	if self.logic then
+		return self.logic:dodge(...)
+	else
+		return Weapon.dodge(self, ...)
+	end
+end
+
 function ProxyXWeapon:onAttackHit(...)
 	if self.patches.onAttackHit then
 		return self.patches.onAttackHit(self.logic, ...)

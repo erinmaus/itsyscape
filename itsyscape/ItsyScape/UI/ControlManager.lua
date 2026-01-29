@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
 local Config = require "ItsyScape.Game.Config"
 local Control = require "ItsyScape.UI.Control"
@@ -27,6 +28,9 @@ function ControlManager:new(uiView)
 
 	self.controls = {}
 	self.activeControls = {}
+
+	self.onControlDown = Callback(false)
+	self.onControlUp = Callback(false)
 
 	for _, controlName in ipairs(Controls) do
 		self:add(controlName)
@@ -154,12 +158,14 @@ function ControlManager:update()
 
 		if isActive and not isDown then
 			self.activeControls[control] = WAS_ACTIVE
+			self:onControlUp(control)
 			rootWidget:previewControlUp(control)
 			widget:controlUp(control)
 		elseif not isMaybeActive and isDown then
 			if not hasPriority then
 				self.activeControls[control] = WAS_ACTIVE
 			else
+				self:onControlDown(control)
 				rootWidget:previewControlDown(control)
 				widget:controlDown(control)
 				self.activeControls[control] = IS_ACTIVE

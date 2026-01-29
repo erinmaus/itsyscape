@@ -14,9 +14,8 @@ local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavio
 
 local MeleeWeapon = Class(Weapon)
 
-function MeleeWeapon:dodge(peep, target)
-	if Class.isCompatibleType(target, Vector) then
-	end
+function MeleeWeapon:getDodgeBehavior()
+	return Weapon.DODGE_BEHAVIOR_CHARGE
 end
 
 function MeleeWeapon:getAttackRange(peep)

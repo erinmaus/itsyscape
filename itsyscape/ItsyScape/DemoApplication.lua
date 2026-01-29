@@ -74,6 +74,11 @@ DemoApplication.GAMEPAD_TOGGLE_INTERFACES = {
 	"GamepadCombatHUD"
 }
 
+DemoApplication.MOCK_GAMEPAD_BUTTONS = {
+	["triggerleft"] = true,
+	["triggerright"] = true
+}
+
 DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE = function(color)
 	return {
 		color = { color:get() },
@@ -114,6 +119,10 @@ function DemoApplication:new()
 
 	self.previousFlickTime = love.timer.getTime()
 	self.currentDodgeDirection = Vector()
+	self.quickDodgeDirection = Vector(0, 0, -1)
+	self.currentQuickDodgeDirection = Vector()
+
+	self.mockGamepadButtons = {}
 
 	local relativePosition = Vector()
 	local positionA, directionA = Vector(), Vector()
@@ -297,6 +306,10 @@ function DemoApplication:new()
 	end
 
 	self:initTitleScreen()
+
+	local controls = self:getUIView():getControlManager()
+	controls.onControlDown:register(self.controlDown, self)
+	controls.onControlUp:register(self.controlUp, self)
 
 	collectgarbage("stop")
 end
@@ -1083,6 +1096,24 @@ function DemoApplication:gamepadAxis(joystick, axis, value)
 
 	local isUIActive = not not inputProvider:getFocusedWidget()
 	self.cameraController:gamepadAxis(isUIActive, axis, value)
+
+	if DemoApplication.MOCK_GAMEPAD_BUTTONS[axis] then
+		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
+
+		if math.abs(value) > axisSensitivity then
+			if not self.mockGamepadButtons[axis] then
+				self:gamepadPress(joystick, axis)
+			end
+
+			self.mockGamepadButtons[axis] = true
+		else
+			if self.mockGamepadButtons[axis] then
+				self:gamepadRelease(joystick, axis)
+			end
+
+			self.mockGamepadButtons[axis] = false
+		end
+	end
 end
 
 function DemoApplication:toggleUI(hud)
@@ -1101,39 +1132,65 @@ function DemoApplication:toggleUI(hud)
 	end
 end
 
-function DemoApplication:gamepadRelease(joystick, button)
+function DemoApplication:tryQuickDodge()
+	local player = self:getGame():getPlayer()
+	if not player then
+		return
+	end
+
+	local target = player:getTarget()
+	if target then
+		player:startDodge(target)
+		return
+	end
+
+	local x, _, z = self.quickDodgeDirection:get()
+
+	local rotation = self:getCamera():getLocalRotation()
+	local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
+	if forward.z < 0 then
+		x = -x
+		z = -z
+	end
+
+	self.currentQuickDodgeDirection:from(x, 0, z)
+	self.currentDodgeDirection:from(x, 0, z)
+
+	player:startDodge(self.currentQuickDodgeDirection)
+end
+
+function DemoApplication:controlDown(_, control)
+	-- Nothing.
+end
+
+function DemoApplication:controlUp(_, control)
 	local inputProvider = self:getUIView():getInputProvider()
 	local focusedWidget = inputProvider:getFocusedWidget()
 
-	Application.gamepadRelease(self, joystick, button)
-
-	if not inputProvider:isCurrentJoystick(joystick) then
-		return
-	end
-
-	local cycleTargetButton = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCycleTarget")
-	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
-	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
-
 	if not focusedWidget then
-		if button == cycleTargetButton then
+		if control:is("cycleTarget") then
 			self:nextShimmer()
-		elseif button == gamepadProbe then
+			return
+		elseif control:is("probeTarget") then
 			self:probeCurrentShimmer(false)
-		elseif button == gamepadAction then
+			return
+		elseif control:is("pokeTarget") then
 			self:probeCurrentShimmer(true)
+			return
 		end
 	end
 
-	local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
-	local ribbon = self:getUIView():getInterface("GamepadRibbon")
+	do
+		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+		local ribbon = self:getUIView():getInterface("GamepadRibbon")
 
-	if combatRing and combatRing:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenCombatRing") then
-		self:toggleUI("GamepadCombatHUD")
-		return
-	elseif ribbon and ribbon:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenRibbon") then
-		self:toggleUI("GamepadRibbon")
-		return
+		if combatRing and combatRing:getIsShowing() and control:is("openCombatRing") then
+			self:toggleUI("GamepadCombatHUD")
+			return
+		elseif ribbon and ribbon:getIsShowing() and control:is("openRibbon") then
+			self:toggleUI("GamepadRibbon")
+			return
+		end
 	end
 	
 	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
@@ -1142,20 +1199,87 @@ function DemoApplication:gamepadRelease(joystick, button)
 
 	focusedWidget = inputProvider:getFocusedWidget()
 	if focusedWidget and self:isInterfaceBlockingGamepadMovement(focusedWidget) then
-		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
 			return
 		end
 	end
 
-	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
+	if control:is("openCombatRing") then
 		self:toggleUI("GamepadCombatHUD")
-	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
+		return
+	end
+
+	if control:is("openRibbon") then
 		self:toggleUI("GamepadRibbon")
-	elseif button == inputProvider:getKeybind("gamepadToggleTargetCamera") then
+		return
+	end
+
+ 	if control:is("toggleTargetCamera") then
 		_CONF.targetCameraMode = not _CONF.targetCameraMode
+		return
+	end
+
+	if control:is("quickDodge") then
+		self:tryQuickDodge()
+		return
 	end
 end
+
+-- function DemoApplication:gamepadRelease(joystick, button)
+-- 	local inputProvider = self:getUIView():getInputProvider()
+-- 	local focusedWidget = inputProvider:getFocusedWidget()
+
+-- 	Application.gamepadRelease(self, joystick, button)
+
+-- 	if not inputProvider:isCurrentJoystick(joystick) then
+-- 		return
+-- 	end
+
+-- 	local cycleTargetButton = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCycleTarget")
+-- 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
+-- 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
+
+-- 	if not focusedWidget then
+-- 		if button == cycleTargetButton then
+-- 			self:nextShimmer()
+-- 		elseif button == gamepadProbe then
+-- 			self:probeCurrentShimmer(false)
+-- 		elseif button == gamepadAction then
+-- 			self:probeCurrentShimmer(true)
+-- 		end
+-- 	end
+
+-- 	local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+-- 	local ribbon = self:getUIView():getInterface("GamepadRibbon")
+
+-- 	if combatRing and combatRing:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenCombatRing") then
+-- 		self:toggleUI("GamepadCombatHUD")
+-- 		return
+-- 	elseif ribbon and ribbon:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenRibbon") then
+-- 		self:toggleUI("GamepadRibbon")
+-- 		return
+-- 	end
+	
+-- 	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
+-- 		return
+-- 	end
+
+-- 	focusedWidget = inputProvider:getFocusedWidget()
+-- 	if focusedWidget and self:isInterfaceBlockingGamepadMovement(focusedWidget) then
+-- 		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
+-- 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
+-- 			return
+-- 		end
+-- 	end
+
+-- 	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
+-- 		self:toggleUI("GamepadCombatHUD")
+-- 	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
+-- 		self:toggleUI("GamepadRibbon")
+--  	elseif button == inputProvider:getKeybind("gamepadToggleTargetCamera") then
+-- 		_CONF.targetCameraMode = not _CONF.targetCameraMode
+-- 	end
+-- end
 
 function DemoApplication:getTouches()
 	local result = {}
@@ -2522,6 +2646,8 @@ function DemoApplication:updatePlayerMovement()
 
 	local isMoving = math.abs(x) + math.abs(z) > 0
 	if isMoving then
+		self.quickDodgeDirection:from(x, 0, z)
+
 		local rotation = self:getCamera():getLocalRotation()
 		local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
 		if forward.z < 0 then
@@ -2533,20 +2659,25 @@ function DemoApplication:updatePlayerMovement()
 		if not focusedWidget or
 		   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
 		then
+			self.currentPlayerDirection = Vector(x, 0, z):getNormal():keep()
+
 			if isDodging then
 				self.previousFlickTime = love.timer.getTime()
 				self.currentDodgeDirection:from(x, 0, z)
 				player:startDodge(self.currentDodgeDirection)
 			else
-				local flickDuration = love.timer.getTime() - self.previousFlickTime
-				if flickDuration > flickInputStallIntervalSeconds then
-					if player:getIsDodging() then
-						player:stopDodge()
-					end
+				local dot = self.currentDodgeDirection:dot(self.currentPlayerDirection)
+				if not (player:getIsDodging() and dot > 0.5) then
+					local flickDuration = love.timer.getTime() - self.previousFlickTime
+					if flickDuration > flickInputStallIntervalSeconds then
+						if player:getIsDodging() then
+							player:stopDodge()
+						end
 
-					player:move(x, z)
-				else
-					player:move(0, 0)
+						player:move(x, z)
+					else
+						player:move(0, 0)
+					end
 				end
 			end
 
@@ -2554,8 +2685,6 @@ function DemoApplication:updatePlayerMovement()
 		else
 			player:move(0, 0)
 		end
-
-		self.currentPlayerDirection = Vector(x, 0, z):getNormal():keep()
 	else
 		player:move(0, 0)
 	end

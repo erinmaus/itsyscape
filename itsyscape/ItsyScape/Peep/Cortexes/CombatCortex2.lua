@@ -141,9 +141,9 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 		return false
 	end
 
-	local selfSize = Utility.Peep.getSize(selfPeep)
+	local selfSize = Utility.Peep.getSize(selfPeep) * Utility.Peep.getScale(selfPeep)
 	selfSize = math.max(selfSize.x, selfSize.z)
-	local targetSize = Utility.Peep.getSize(targetPeep)
+	local targetSize = Utility.Peep.getSize(targetPeep) * Utility.Peep.getScale(targetPeep)
 	targetSize = math.max(targetSize.x, targetSize.z)
 
 	local status = selfPeep:getBehavior(CombatStatusBehavior)
@@ -721,7 +721,7 @@ function CombatCortex:_onPeepWalkCalculated(peep, success, cancelled)
 	end
 end
 
-function CombatCortex:movePeep(peep, i, j, k)
+function CombatCortex:movePeep(peep, position)
 	local target = self:_getPeepTarget(peep)
 	local charge = peep:getBehavior(CombatChargeBehavior)
 
@@ -729,20 +729,30 @@ function CombatCortex:movePeep(peep, i, j, k)
 		return
 	end
 
+	local currentPosition = Utility.Peep.getRelativePosition(peep, target)
 	local currentI, currentJ = Utility.Peep.getRelativeTile(peep, target)
 	local currentK = Utility.Peep.getLayer(peep)
+
 	local previousI, previousJ, previousK = charge.i, charge.j, charge.k
 
-	local targetI = i or currentI
-	local targetJ = j or currentJ
-	local targetK = k or currentK
+	local targetI, targetJ, targetK
+	if position then
+		local map = Utility.Peep.getMap(peep)
+		local _, i, j = map:getTileAt(position.x, position.z)
+		targetI, targetJ = i, j
+		targetK = currentK
+	else
+		targetI = currentI
+		targetJ = currentJ
+		targetK = currentK
+	end
 
 	if targetI ~= previousI or targetJ ~= previousJ or targetK ~= previousK then
 		if charge.currentWalkID then
 			Utility.Peep.cancelWalk(charge.currentWalkID)
 		end
 
-		local callback, id = Utility.Peep.queueWalk(peep, targetI, targetJ, targetK, 0)
+		local callback, id = Utility.Peep.queueWalk(peep, position or currentPosition, targetK, 0)
 		charge.currentWalkID = id
 
 		callback:register(self._onPeepWalkCalculated, self, peep)
@@ -769,11 +779,13 @@ function CombatCortex:strafePeep(peep)
 		return
 	end
 
-	local targetI, targetJ, selfI, selfJ = Utility.Peep.getRelativeTile(peep, target)
+	local selfPosition = Utility.Peep.getPosition(peep)
+	local targetPosition = Utility.Peep.getRelativePosition(peep, target)
+	local targetI, targetJ = Utility.Peep.getRelativeTile(peep, target)
 
 	local bestSelfStrafeDistance = math.huge
 	local bestTargetStrafeDistance = 0
-	local bestI, bestJ, bestIsPassable
+	local bestPosition, bestIsPassable
 
 	local map = Utility.Peep.getMap(peep)
 	local tiles = math.max(math.floor(strafeDistance / map:getCellSize()), 1)
@@ -783,28 +795,26 @@ function CombatCortex:strafePeep(peep)
 		local i = directionI * tiles + targetI
 		local j = directionJ * tiles + targetJ
 
-		local isPassable, realI, realJ = map:lineOfSightPassable(selfI, selfJ, i, j, false)
-		local targetDistance = math.abs(realI - targetI) + math.abs(realJ - targetJ)
-		local selfDistance = math.abs(realI - selfI) + math.abs(realJ - selfJ)
+		local isPassable, realPosition = Utility.Map.isPassable(peep, map:getTileCenter(i, j))
+		local targetDistance = targetPosition:distance(realPosition)
+		local selfDistance = selfPosition:distance(realPosition)
 
 		if isPassable then
 			if selfDistance < bestSelfStrafeDistance then
-				bestI = i
-				bestJ = j
+				bestPosition = map:getTileCenter(i, j)
 				bestSelfStrafeDistance = selfDistance
 				bestIsPassable = true
 			end
 		elseif not bestIsPassable then
 			if targetDistance > bestTargetStrafeDistance then
-				bestI = realI
-				bestJ = realJ
+				bestPosition = realPosition
 				bestTargetStrafeDistance = targetDistance
 			end
 		end
 	end
 
-	if bestI and bestJ then
-		self:movePeep(peep, bestI, bestJ)
+	if bestPosition then
+		self:movePeep(peep, bestPosition)
 	else
 		peep:removeBehavior(CombatChargeBehavior)
 	end
@@ -867,7 +877,7 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
-	if peep:hasBehavior(CombatDodgeBehavior) then
+	if peep:hasBehavior(CombatDodgeBehavior) or peep:hasBehavior(CombatChargeBehavior) then
 		return
 	end
 

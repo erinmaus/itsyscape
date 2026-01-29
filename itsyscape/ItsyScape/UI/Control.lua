@@ -45,6 +45,7 @@ function Control:getName()
 end
 
 function Control:is(name)
+	assert(self.controlManager:has(self), "control not valid")
 	return self:isValid() and self.controlManager:has(self) and self.name == name
 end
 
@@ -67,6 +68,10 @@ end
 function Control:_overlaps(other)
 	local selfKeybind = self:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
 	local otherKeybind = other:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
+
+	if not (selfKeybind and otherKeybind) then
+		return false
+	end
 
 	for _, selfKey in ipairs(selfKeybind) do
 		local otherHasSelfKey = false
@@ -101,6 +106,10 @@ function Control:priority(other)
 
 	local selfKeybind = self:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
 	local otherKeybind = other:_getKeybind(InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD)
+
+	if not (selfKeybind and otherKeybind) then
+		return false
+	end
 
 	return self:overlaps(other) and #selfKeybind > #otherKeybind
 end
