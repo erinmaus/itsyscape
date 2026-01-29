@@ -8,15 +8,19 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local CurveConfig = require "ItsyScape.Game.CurveConfig"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
+local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
-local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Weapon = Class(Equipment)
@@ -644,7 +648,6 @@ function Weapon:getModifiedCooldown(peep, target)
 		return 0
 	end
 
-	local cooldown = self:getCooldown(peep)
 	do
 		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 			cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown)
@@ -660,11 +663,93 @@ function Weapon:getModifiedCooldown(peep, target)
 	return cooldown
 end
 
+function Weapon:getModifiedDodgeCooldown(peep, target)
+	local cooldown = self:getDodgeCooldown(peep)
+	if cooldown == 0 then
+		return 0
+	end
+
+	do
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			cooldown = effect:applyToSelfDodgeCooldown(peep, cooldown)
+		end
+
+		if target then
+			for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				cooldown = effect:applyToTargetDodgeCooldown(target, cooldown)
+			end
+		end
+	end
+
+	return cooldown
+end
+
 function Weapon:applyCooldown(peep, target)
 	local cooldown = self:getModifiedCooldown(peep, target)
 	local _, c = peep:addBehavior(AttackCooldownBehavior)
 	c.cooldown = math.max(c.cooldown, cooldown)
 	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
+end
+
+function Weapon:applyDodgeCooldown(peep)
+	local cooldown = self:getDodgeCooldown(peep)
+	local _, c = peep:addBehavior(DodgeCooldownBehavior)
+	c.cooldown = math.max(c.cooldown, cooldown)
+	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
+end
+
+function Weapon:getDodgeRange(peep, target)
+	local targetPosition
+	if Class.isCompatibleType(target, Peep) then
+		targetPosition = Utility.Peep.getRelativePosition(peep, target)
+	elseif Class.isCompatibleType(target, Vector) then
+		targetPosition = target
+	end
+
+	if not targetPosition then
+		return self:getAttackRange(peep)
+	end
+
+	return math.min(targetPosition:distance(Utility.Peep.getPosition(peep)), self:getAttackRange(peep))
+end
+
+function Weapon:getDodgeCooldown(peep)
+	return self:getCooldown(peep)
+end
+
+function Weapon:adjustDodgeDirection(target, direction)
+	return direction
+end
+
+function Weapon:dodge(peep, target)
+	local cooldown = peep:getBehavior(DodgeCooldownBehavior)
+	if cooldown and cooldown.cooldown > 0 then
+		return false
+	end
+
+	local direction, distance
+	if Class.isCompatibleType(target, Peep) then
+		direction = Utility.Peep.getPosition(peep):direction(Utility.Peep.getRelativePosition(peep, target))
+		self:adjustDodgeDirection(target, direction)
+	elseif Class.isCompatibleType(target, Vector) then
+		direction = Utility.Peep.getPosition(peep):direction(target)
+	else
+		return false
+	end
+
+	local dodgeSpeed = peep:hasBehavior(MovementBehavior) and peep:getBehavior(MovementBehavior).dodgeSpeed
+	if not dodgeSpeed or dodgeSpeed <= 0 then
+		return false
+	end
+
+	local _, dodge = peep:addBehavior(CombatDodgeBehavior)
+	dodge.direction = direction
+	dodge.speed = dodgeSpeed
+	dodge.currentDistance = 0
+	dodge.maximumDistance = self:getDodgeRange(peep, target)
+
+	self:applyDodgeCooldown(peep, target)
+	return true
 end
 
 function Weapon:perform(peep, target)
@@ -720,5 +805,7 @@ end
 function Weapon:getProjectile(peep)
 	return nil
 end
+
+Weapon.UNARMED = Weapon()
 
 return Weapon

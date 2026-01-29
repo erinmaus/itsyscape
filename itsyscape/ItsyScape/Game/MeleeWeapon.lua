@@ -8,9 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 
 local MeleeWeapon = Class(Weapon)
+
+function MeleeWeapon:dodge(peep, target)
+	if Class.isCompatibleType(target, Vector) then
+	end
+end
 
 function MeleeWeapon:getAttackRange(peep)
 	return 1

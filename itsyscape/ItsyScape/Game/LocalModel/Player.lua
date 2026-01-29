@@ -26,6 +26,7 @@ local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBeh
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -449,6 +450,11 @@ function LocalPlayer:move(x, z)
 				targetTile.pathNode:interrupt(peep)
 			end
 
+			local targetPosition = peep:getBehavior(TargetPositionBehavior)
+			if targetPosition and targetPosition.pathNode then
+				targetPosition.pathNode:interrupt(peep)
+			end
+
 			movement.velocity = movement.maxSpeed * direction
 			movement.isStopping = false
 
@@ -457,6 +463,47 @@ function LocalPlayer:move(x, z)
 			self.direction = direction
 			peep:poke('walk', { i = i, j = j, layer = k })
 		end
+	end
+end
+
+function LocalPlayer:dodge(target)
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
+		return
+	end
+
+	local peep = self:getActor():getPeep()
+
+	if not target then
+		local combatTarget = peep:getBehavior(CombatTargetBehavior)
+		target = combatTarget and combatTarget.actor
+	end
+
+	if Class.isCompatibleType(target, LocalActor) then
+		if not (self.instance and self.instance:hasActor(target, self)) then
+			Log.info(
+				"Player '%s' (%d) tried dodging actor '%s' (%d) in a different instance.",
+				self:getActor():getName(), self:getID(), target:getName(), target:getID())
+			return
+		end
+
+		target = target:getPeep()
+	elseif not Class.isCompatibleType(target, Vector) then
+		return
+	end
+
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon.UNARMED
+	if not Class.isCompatibleType(weapon, Weapon) then
+		return
+	end
+
+	if weapon:dodge(peep, target) then
+		Log.info(
+			"Player '%s' (%d) successfully dodged.",
+			self:getActor():getName(), self:getID())
+	else
+		Log.info(
+			"Player '%s' (%d) did NOT dodge.",
+			self:getActor():getName(), self:getID())
 	end
 end
 

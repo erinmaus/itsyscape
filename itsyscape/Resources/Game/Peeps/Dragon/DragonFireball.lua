@@ -13,6 +13,7 @@ local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 
 local DragonFireball = Class(PassableProp)
@@ -121,11 +122,19 @@ function DragonFireball:_tryExplode()
 			then
 				local y = map:getInterpolatedHeight(relativePosition.x, relativePosition.z)
 				if relativePosition.y <= y then
-					print(">>> hit", mapScript:getFilename())
 					self:_tryHit(self.currentRadius)
 
 					local stage = self:getDirector():getGameInstance():getStage()
 					stage:fireProjectile("CannonSplosionHit", Vector.ZERO, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
+
+					if self.currentTarget and not self.currentHits[self.currentTarget] then
+						local actor = self.currentTarget:getBehavior(ActorReferenceBehavior)
+						actor = actor and actor.actor
+
+						if actor then
+							actor:flash("Dodge", Vector(0))
+						end
+					end
 
 					Utility.Peep.poof(self)
 					return true

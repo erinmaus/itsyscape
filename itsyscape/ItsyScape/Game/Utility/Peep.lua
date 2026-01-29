@@ -1841,13 +1841,24 @@ function Peep.getTileAnchor(targetPeep, playerPeep, offsetI, offsetJ)
 	return position, Peep.getLayer(targetPeep)
 end
 
+function Peep.getRelativePosition(selfPeep, targetPeep)
+	local selfMap = Utility.Peep.getMap(selfPeep)
+	local selfWorldTransform = Utility.Peep.getParentTransform(selfPeep)
+
+	local selfPosition = Utility.Peep.getPosition(selfPeep)
+	local targetAbsolutePosition = Utility.Peep.getAbsolutePosition(targetPeep)
+	local targetRelativePosition = targetAbsolutePosition:inverseTransform(selfWorldTransform)
+
+	return targetRelativePosition
+end
+
 function Peep.getRelativeTile(selfPeep, targetPeep)
 	local selfMap = Utility.Peep.getMap(selfPeep)
 	local selfWorldTransform = Utility.Peep.getParentTransform(selfPeep)
 
 	local selfPosition = Utility.Peep.getPosition(selfPeep)
 	local targetAbsolutePosition = Utility.Peep.getAbsolutePosition(targetPeep)
-	local targetPosition = Vector(selfWorldTransform:inverseTransformPoint(targetAbsolutePosition:get()))
+	local targetPosition = targetAbsolutePosition:inverseTransform(selfWorldTransform)
 
 	local _, s, t = selfMap:getTileAt(targetPosition.x, targetPosition.z)
 	local _, u, v = selfMap:getTileAt(selfPosition.x, selfPosition.z)
@@ -2579,6 +2590,7 @@ function Peep.makeHuman(peep)
 		movement.velocityMultiplier = 1
 		movement.accelerationMultiplier = 1
 		movement.stoppingForce = 3
+		movement.dodgeSpeed = 8
 	end
 
 	peep:addPoke("trip")

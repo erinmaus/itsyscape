@@ -82,6 +82,7 @@ function One:new(...)
 	movement.velocityMultiplier = 1
 	movement.accelerationMultiplier = 1
 	movement.stoppingForce = 3
+	movement.dodgeSpeed = 16
 
 	local inventory = self:getBehavior(InventoryBehavior)
 	inventory.inventory = PlayerInventoryProvider(self)
