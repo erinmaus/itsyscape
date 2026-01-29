@@ -21,7 +21,6 @@ ProxyXWeapon.PATCH = {
 	"onAttackHit",
 	"onAttackMiss",
 	"getDelay",
-	"perform",
 	"dealtDamage",
 	"pokeRollAttack",
 	"pokeRollDamage",

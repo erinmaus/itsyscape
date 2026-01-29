@@ -366,7 +366,7 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 		return false
 	end
 
-	if not power:getIsInstant() and peep:hasBehavior(CombatDodgeBehavior) then
+	if not power:getIsInstant() and selfPeep:hasBehavior(CombatDodgeBehavior) then
 		return false
 	end
 

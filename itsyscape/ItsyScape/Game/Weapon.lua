@@ -758,7 +758,6 @@ function Weapon:dodge(peep, target)
 
 	local direction
 	if Class.isCompatibleType(target, Peep) then
-		print(">>> target is peep")
 		direction = Utility.Peep.getPosition(peep):direction(Utility.Peep.getRelativePosition(peep, target))
 		direction = self:adjustDodgeDirection(peep, target, direction)
 	elseif Class.isCompatibleType(target, Vector) then

@@ -125,12 +125,14 @@ function Ribbon:addButton(tab, iconID)
 	local button = Button()
 	button:setID('Ribbon-' .. tab)
 	button:setPosition(x, Ribbon.PADDING)
-	button.onClick:register(function()
+	button.onClick:register(function(button)
 		if self.activeButton ~= button then
 			self:sendPoke("open", nil, { tab = tab })
 		else
 			self:sendPoke("close", nil, {})
 		end
+
+		button:blur()
 	end)
 
 	if self.TOOL_TIPS[tab] then

@@ -23,7 +23,14 @@ Headshot.MAX_DAMAGE_MULTIPLIER  = 4
 function Headshot:previewAttackRoll(roll)
 	ProxyXWeapon.previewAttackRoll(self, roll)
 
-	roll:setMaxAttackRoll(roll:getMaxAttackRoll() * Headshot.ACCURACY_DEBUFF)
+	roll:setAttackLevel(roll:getAttackLevel() * Headshot.ACCURACY_DEBUFF)
+end
+
+function Headshot:onAttackHit(peep, target)
+	ProxyXWeapon.onAttackHit(self, peep, target)
+
+	local stage = target:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("Power_Decapitate", peep, target)
 end
 
 function Headshot:previewDamageRoll(roll)
