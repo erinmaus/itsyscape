@@ -28,6 +28,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
@@ -65,6 +66,36 @@ function Combat.disengage(peep)
 		aggressive.pendingTarget = false
 		aggressive.pendingResponseTime = 0
 	end
+end
+
+function Combat.knockback(target, aggressor, distance, direction, speed)
+	if not distance then
+		return false
+	end
+
+	direction = direction or (Utility.Peep.getAbsolutePosition(aggressor) * Vector.PLANE_XZ):direction(Utility.Peep.getAbsolutePosition(target) * Vector.PLANE_XZ)
+
+	if not speed then
+		local movement = target:getBehavior(MovementBehavior)
+		if not movement then
+			return false
+		end
+
+		speed = movement.dodgeSpeed
+	end
+
+	if speed <= 0 then
+		return false
+	end
+
+	local _, dodge = target:addBehavior(CombatDodgeBehavior)
+	dodge.direction = direction
+	dodge.speed = speed
+	dodge.currentDistance = 0
+	dodge.maximumDistance = distance
+	dodge.dodgeBehavior = Weapon.DODGE_BEHAVIOR_KNOCKBACK
+
+	return true
 end
 
 function Combat.dodgeSuccess(peep, aggressor)

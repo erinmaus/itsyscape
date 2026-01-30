@@ -22,6 +22,7 @@ local DragonFireball = Class(PassableProp)
 DragonFireball.DEFAULT_MOUTH_POSITION = Vector(0, 6, 14)
 
 DragonFireball.DEFAULT_EXPLOSION_RADIUS = 6
+DragonFireball.DEFAULT_KNOCKBACK = 8
 
 DragonFireball.DEFAULT_ACCELERATION_MAGNITUDE = 8
 DragonFireball.DEFAULT_VELOCITY_MAGNITUDE     = 12
@@ -61,6 +62,8 @@ function DragonFireball:onShoot(e)
 	self.currentVelocity = self.currentDirection * self.currentVelocityMagnitude
 	self.currentRadius = e.radius or self.DEFAULT_EXPLOSION_RADIUS
 
+	self.currentKnockback = e.knockback or self.DEFAULT_KNOCKBACK
+
 	Utility.Peep.setPosition(self, self.startPosition)
 
 	self.currentHits = {}
@@ -98,6 +101,7 @@ function DragonFireball:_tryHit(radius)
 				self.currentWeapon:perform(self.currentDragon, hit)
 
 				Utility.Combat.dodgeFailure(hit, self.currentDragon)
+				Utility.Combat.knockback(hit, self, self.currentKnockback)
 
 				self:poke("hit", hit)
 

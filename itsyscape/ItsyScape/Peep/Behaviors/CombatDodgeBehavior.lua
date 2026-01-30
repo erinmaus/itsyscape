@@ -19,6 +19,7 @@ function CombatDodgeBehavior:new()
 	self.speed = 0
 	self.currentDistance = 0
 	self.maximumDistance = 0
+	self.dodgeBehavior = false
 end
 
 return CombatDodgeBehavior

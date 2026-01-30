@@ -438,9 +438,14 @@ function LocalPlayer:move(x, z)
 		return false
 	end
 
+	local peep = self.actor:getPeep()
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		return
+	end
+
 	local direction = Vector(x, 0, z):getNormal()
 	local length = direction:getLength()
-	local peep = self.actor:getPeep()
 	local movement = peep:getBehavior(MovementBehavior)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
 		movement.isStopping = true
@@ -473,6 +478,10 @@ function LocalPlayer:startDodge(target)
 	end
 
 	local peep = self:getActor():getPeep()
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		return
+	end
 
 	if not target then
 		local combatTarget = peep:getBehavior(CombatTargetBehavior)
@@ -528,7 +537,7 @@ function LocalPlayer:getIsDodging()
 	end
 
 	local peep = self:getActor():getPeep()
-	return peep:hasBehavior(CombatDodgeBehavior)
+	return peep:hasBehavior(CombatDodgeBehavior) and peep:getBehavior(CombatDodgeBehavior).dodgeBehavior ~= Weapon.DODGE_BEHAVIOR_KNOCKBACK
 end
 
 function LocalPlayer:isPendingActionMovement()
@@ -545,7 +554,16 @@ end
 function LocalPlayer:tryPerformPoke()
 	local peep = self.actor:getPeep()
 
-	if not peep or peep:hasBehavior(DisabledBehavior) then
+	local isDisabled = peep and Utility.Peep.isDisabled(peep)
+	local hasKnockback = false
+
+	local dodge = peep and peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		hasKnockback = true
+	end
+
+	local canPerformAction = peep and not (hasKnockback or isDisabled)
+	if not canPerformAction then
 		self.nextObject = nil
 		self.nextActionID = nil
 		self.nextActionScope = nil
@@ -655,6 +673,12 @@ function LocalPlayer:walk(i, j, k)
 	if self.pendingWalkID then
 		Utility.Peep.cancelWalk(self.pendingWalkID)
 		self.pendingWalkID = nil
+	end
+
+	local peep = self.actor:getPeep()
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		return
 	end
 
 	local peep = self.actor:getPeep()

@@ -50,5 +50,7 @@
 		"world.dodgeAura.melee.outer": "a0602c",
 		"world.dodgeAura.magic.inner": "463779",
 		"world.dodgeAura.magic.outer": "d1a019",
+		"world.dodgeAura.knockback.inner": "999999",
+		"world.dodgeAura.knockback.outer": "ffffff",
 	}
 }

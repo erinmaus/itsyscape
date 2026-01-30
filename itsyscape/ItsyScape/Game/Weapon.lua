@@ -54,8 +54,9 @@ Weapon.BONUSES       = {
 	["None"]   = true
 }
 
-Weapon.DODGE_BEHAVIOR_AVOID  = "avoid"
-Weapon.DODGE_BEHAVIOR_CHARGE = "charge"
+Weapon.DODGE_BEHAVIOR_AVOID     = "avoid"
+Weapon.DODGE_BEHAVIOR_CHARGE    = "charge"
+Weapon.DODGE_BEHAVIOR_KNOCKBACK = "knockback"
 
 Weapon.DamageRoll = Class()
 
@@ -750,6 +751,7 @@ function Weapon:performDodge(peep, target, direction, speed, distance)
 	dodge.speed = speed
 	dodge.currentDistance = 0
 	dodge.maximumDistance = distance
+	dodge.dodgeBehavior = self:getDodgeBehavior()
 
 	self:pokeDodge(peep, target)
 end

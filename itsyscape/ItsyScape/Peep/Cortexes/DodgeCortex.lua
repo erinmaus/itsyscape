@@ -40,6 +40,7 @@ function DodgeCortex:new()
 	self:require(PositionBehavior)
 
 	self.aura = {}
+	self.dodgeBehavior = {}
 
 	self._filter = Callback.bind(self.filter, self)
 end
@@ -67,7 +68,10 @@ function DodgeCortex:showDodgeAura(peep)
 
 	local weapon = Utility.Peep.getEquippedWeapon(peep, true)
 	local innerColor, outerColor
-	if not weapon or Class.isCompatibleType(weapon, MeleeWeapon) then
+	if dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		innerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.knockback.inner"))
+		outerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.knockback.outer"))
+	elseif not weapon or Class.isCompatibleType(weapon, MeleeWeapon) then
 		innerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.melee.inner"))
 		outerColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.dodgeAura.melee.outer"))
 	elseif Class.isCompatibleType(weapon, MagicWeapon) then
@@ -83,6 +87,7 @@ function DodgeCortex:showDodgeAura(peep)
 	auraPeep:pushPoke("color", innerColor, outerColor)
 
 	self.aura[peep] = auraPeep
+	self.dodgeBehavior[peep] = dodge.dodgeBehavior
 end
 
 function DodgeCortex:hideDodgeAura(peep)
@@ -196,9 +201,22 @@ function DodgeCortex:updateDodge(peep, delta)
 end
 
 function DodgeCortex:updateAura(peep)
-	if not peep:hasBehavior(CombatDodgeBehavior) then
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if not dodge then
 		self:hideDodgeAura(peep)
 		return
+	end
+
+	local oldDodgeBehavior = self.dodgeBehavior[peep]
+	local currentDodgeBehavior = dodge.dodgeBehavior
+	if oldDodgeBehavior ~= currentDodgeBehavior then
+		if currentDodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+			self:hideDodgeAura(peep)
+			self:showDodgeAura(peep)
+			return
+		end
+
+		self.dodgeBehavior[peep] = currentDodgeBehavior
 	end
 
 	local aura = self.aura[peep]

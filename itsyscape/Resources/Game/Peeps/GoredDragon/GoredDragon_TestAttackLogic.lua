@@ -9,8 +9,12 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Utility = require "ItsyScape.Game.Utility"
 local Mashina = require "ItsyScape.Mashina"
+
+local COMBAT_TARGET = B.Reference("GoredDragon_TestAttackLogic", "COMBAT_TARGET")
 
 local Punished = Mashina.Step {
 	Mashina.Peep.OnPoke {
@@ -28,11 +32,13 @@ local Punished = Mashina.Step {
 	Mashina.Sequence {
 		Mashina.Success {
 			Mashina.Sequence {
-				Mashina.Peep.Interrupt {
-					everything = true,
+				Mashina.Peep.DisengageCombatTarget {
+					[COMBAT_TARGET] = B.Output.current_target
 				},
 
-				Mashina.Peep.DisengageCombatTarget
+				Mashina.Peep.Interrupt {
+					everything = true,
+				}
 			}
 		},
 
@@ -42,10 +48,33 @@ local Punished = Mashina.Step {
 		},
 	},
 
+	Mashina.Function {
+		func = function(mashina, state)
+			local position = Utility.Peep.getPosition(mashina)
+			local fireball = Utility.spawnPropAtPosition(mashina, "DragonFireball", position:get())
+			if not fireball then
+				return
+			end
+
+			fireball:getPeep():pushPoke("shoot", {
+				dragon = mashina,
+				peep = state[COMBAT_TARGET],
+				weapon = Utility.Peep.getXWeapon(mashina:getDirector():getGameInstance(), "Dragon_ChargedDragonfyreHit"),
+				position = Vector(0, -1, 0)
+			})
+		end
+	},
+
 	Mashina.Player.Enable,
 
 	Mashina.Peep.StopAnimation {
 		slot = "x-gored-dragon-stunned"
+	},
+
+	Mashina.Success {
+		Mashina.Peep.EngageCombatTarget {
+			peep = COMBAT_TARGET
+		}
 	}
 }
 

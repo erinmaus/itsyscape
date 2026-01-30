@@ -241,8 +241,17 @@ function HumanoidActorAnimatorCortex:getWalkAnimation(peep, weapon)
 end
 
 function HumanoidActorAnimatorCortex:getDodgeAnimation(peep, weapon)
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+
+	local prefix
+	if dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		prefix = "knockback"
+	else
+		prefix = "dodge"
+	end
+
 	local x = self:getPeepWeaponType(peep, weapon)
-	return self:getXAnimation(peep, "dodge", x)
+	return self:getXAnimation(peep, prefix, x)
 end
 
 function HumanoidActorAnimatorCortex:getXAnimation(peep, prefix, x)
