@@ -18,7 +18,7 @@ local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownB
 -- level 50 dexterity.
 local Shockwave = Class(ProxyXWeapon)
 
-function Shockwave:onAttackHit(peep, target)
+function Shockwave:onAttackHit(peep, target, ...)
 	local logic = self:getLogic()
 	if logic then
 		local roll = logic:rollDamage(peep, Weapon.PURPOSE_KILL, target)
@@ -47,7 +47,7 @@ function Shockwave:onAttackHit(peep, target)
 		cooldown.cooldown = cooldown.cooldown + additionalCooldown
 		cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 	else
-		return ProxyXWeapon.onAttackHit(self, peep, target)
+		return ProxyXWeapon.onAttackHit(self, peep, target, ...)
 	end
 end
 

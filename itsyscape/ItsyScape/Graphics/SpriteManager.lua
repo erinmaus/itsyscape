@@ -59,6 +59,10 @@ function SpriteManager:add(spriteID, node, offset, ...)
 		end
 	end
 
+	if type(offset) == "number" then
+		offset = Vector(0, offset, 0)
+	end
+
 	local sprite = Type(self, node, offset + numNodesOfType * Vector(0, 0.5, 0))
 	sprite:spawn(...)
 

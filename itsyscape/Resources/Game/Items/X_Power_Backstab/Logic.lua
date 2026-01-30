@@ -17,7 +17,7 @@ local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehav
 -- attacker.
 local Backstab = Class(ProxyXWeapon)
 
-function Backstab:onAttackHit(peep, target)
+function Backstab:onAttackHit(peep, target, ...)
 	local logic = self:getLogic()
 	local t = target:getBehavior(CombatTargetBehavior)
 	if logic and (not t or not t.target or t.target:getPeep() ~= target) then
@@ -45,7 +45,7 @@ function Backstab:onAttackHit(peep, target)
 		target:poke('receiveAttack', attack)
 		peep:poke('initiateAttack', attack)
 	else
-		return ProxyXWeapon.onAttackHit(self, peep, target)
+		return ProxyXWeapon.onAttackHit(self, peep, target, ...)
 	end
 end
 

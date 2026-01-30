@@ -13,19 +13,24 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local CurveConfig = require "ItsyScape.Game.CurveConfig"
 local Equipment = require "ItsyScape.Game.Equipment"
+local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
+local RangedWeapon = require "ItsyScape.Game.RangedWeapon"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local ZealPoke = require "ItsyScape.Game.ZealPoke"
 local Peep = require "ItsyScape.Peep.Peep"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
@@ -59,6 +64,47 @@ function Combat.disengage(peep)
 	if aggressive then
 		aggressive.pendingTarget = false
 		aggressive.pendingResponseTime = 0
+	end
+end
+
+function Combat.dodgeSuccess(peep, aggressor)
+	if peep:hasBehavior(CombatDodgeBehavior) or peep:hasBehavior(DodgeCooldownBehavior) then
+		peep:poke("dodgeSuccess", aggressor)
+
+		local size = Utility.Peep.getSize(peep)
+		Utility.Peep.flash(peep, "Dodge", 0.5, style)
+	end
+end
+
+function Combat.dodgeFailure(peep, aggressor)
+	if peep:hasBehavior(CombatDodgeBehavior) or peep:hasBehavior(DodgeCooldownBehavior) then
+		peep:poke("dodgeFailure", aggreessor)
+	end
+end
+
+function Combat.tryPunish(peep, aggressor)
+	if peep and peep:hasBehavior(SpecialAttackBehavior) then
+		peep:poke("punished", aggressor)
+
+		local size = Utility.Peep.getSize(peep)
+
+		local style
+		do
+			local weapon = Utility.Peep.getEquippedWeapon(aggressor, true)
+			if not weapon or Class.isCompatibleType(weapon, MeleeWeapon) then
+				style = "Attack"
+			elseif Class.isCompatibleType(weapon, MagicWeapon) then
+				style = "Magic"
+			elseif Class.isCompatibleType(weapon, RangedWeapon) then
+				style = "Archery"
+			end
+
+			if not style then
+				return
+			end
+		end
+
+		Utility.Peep.flash(peep, "Counter", 0.5, style)
 	end
 end
 

@@ -30,9 +30,11 @@ local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehav
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
@@ -68,10 +70,10 @@ end
 function CombatCortex:addPeep(peep)
 	Cortex.addPeep(self, peep)
 
-	local rollInfo = { rolledAttack = false, rolledDamage = false, initiateAttack = false, receiveAttack = false }
+	local rollInfo = {}
 	self.currentRoll[peep] = rollInfo
 
-	function rollInfo.onRollAttack(_, roll)
+	function onRollAttack(_, roll)
 		rollInfo.accuracyRoll = roll
 		rollInfo.accuracyBonus = roll:getAccuracyBonus()
 		rollInfo.defenseBonus = roll:getDefenseBonus()
@@ -79,31 +81,59 @@ function CombatCortex:addPeep(peep)
 		rollInfo.rolledAttack = true
 	end
 
-	function rollInfo.onRollDamage(_, roll)
+	function onRollDamage(_, roll)
 		rollInfo.damageRoll = roll
 		rollInfo.baseHit = roll:getBaseHit()
 		rollInfo.damageSkillLevel = roll:getLevel()
 		rollInfo.rolledDamage = true
 	end
 
-	function rollInfo.onInitiateAttack(_, attack, target)
+	function onInitiateAttack(_, attack, target)
 		rollInfo.damageAttackPoke = attack
 		rollInfo.attackTarget = target 
 		rollInfo.damageDealt = attack:getDamage()
 		rollInfo.initiateAttack = true
 	end
 
-	function rollInfo.onReceiveAttack(_, attack, peep)
+	function onReceiveAttack(_, attack, aggressor)
 		rollInfo.defendAttackPoke = attack
-		rollInfo.defendAggressor = peep
+		rollInfo.defendAggressor = aggressor
 		rollInfo.damageReceived = attack:getDamage()
 		rollInfo.receiveAttack = true
+
+		if peep:hasBehavior(PendingStrategyGradeBehavior) then
+			self:_gradePeep(peep, aggressor, attack)
+		end
 	end
+
+	function onDodgeSuccess(_, aggressor)
+		local grade = Config.get("Combat", "STRATEGY_PERFECT_GRADE")
+		self:_giveGradeZeal(peep, aggressor, grade)
+	end
+
+	function reset()
+		table.clear(rollInfo)
+
+		rollInfo.rolledAttack = false
+		rollInfo.rolledDamage = false
+		rollInfo.initiateAttack = false
+		rollInfo.receiveAttack = false
+
+		rollInfo.onRollAttack = onRollAttack
+		rollInfo.onRollDamage = onRollDamage
+		rollInfo.onInitiateAttack = onInitiateAttack
+		rollInfo.onReceiveAttack = onReceiveAttack
+		rollInfo.onDodgeSuccess = onDodgeSuccess
+		rollInfo.reset = reset
+	end
+
+	reset()
 
 	peep:listen("rollAttack", rollInfo.onRollAttack)
 	peep:listen("rollDamage", rollInfo.onRollDamage)
 	peep:listen("initiateAttack", rollInfo.onInitiateAttack)
 	peep:listen("receiveAttack", rollInfo.onReceiveAttack)
+	peep:listen("dodgeSuccess", rollInfo.onDodgeSuccess)
 end
 
 function CombatCortex:removePeep(peep)
@@ -115,6 +145,7 @@ function CombatCortex:removePeep(peep)
 		peep:silence("rollDamage", rollInfo.onRollDamage)
 		peep:silence("initiateAttack", rollInfo.onInitiateAttack)
 		peep:silence("receiveAttack", rollInfo.onInitiateAttack)
+		peep:silence("dodgeSuccess", rollInfo.onDodgeSuccess)
 	end
 
 	self.currentTarget[peep] = nil
@@ -589,6 +620,65 @@ function CombatCortex:_takeSpellZeal(peep, spell, weapon)
 	}))
 end
 
+function CombatCortex:_gradePeep(peep, aggressor, attack)
+	local damageRoll = attack:getDamageRoll()
+	if not damageRoll then
+		return
+	end
+
+	local maxHit = damageRoll:getMaxHit()
+	local damageReceived = attack:getDamage()
+
+	local minGrade = Config.get("Combat", "STRATEGY_DEFAULT_MIN_GRADE", "_", 0)
+	local maxGrade = Config.get("Combat", "STRATEGY_DEFAULT_MAX_GRADE", "_", 0)
+
+	local grade
+	if maxHit == 0 or damageReceived == 0 then
+		grade = maxGrade
+	else
+		local ratio = math.clamp(damageReceived / maxHit)
+		grade = math.lerp(minGrade, maxGrade, 1 - ratio)
+	end
+
+	self:_giveGradeZeal(peep, aggressor, grade)
+end
+
+function CombatCortex:_giveGradeZeal(peep, aggressor, grade)
+	local grades = Config.get("Combat", "STRATEGY_GRADES")
+	if not grades then
+		return
+	end
+
+	local currentGrade = grades[1], nextGrade
+	for i = 2, #grades do
+		local gradeInfo = grades[i]
+		if gradeInfo.grade > grade then
+			nextGrade = gradeInfo
+			break
+		end
+
+		currentGrade = gradeInfo
+	end
+
+	if not currentGrade then
+		return
+	end
+
+	Log.info("Peep '%s' passed strategy test from '%s' with '%d' grade.", peep:getName(), aggressor:getName(), grade)
+
+	local zeal
+	if currentGrade and nextGrade then
+		zeal = math.lerp(currentGrade.zeal, nextGrade.zeal, (grade - currentGrade.grade) / (nextGrade.grade - currentGrade.grade))
+	else
+		zeal = currentGrade.zeal
+	end
+
+	peep:poke("zeal", ZealPoke.onStrategy({
+		grade = grade,
+		zeal = zeal
+	}))
+end
+
 function CombatCortex:_updateAggressiveTarget(peep)
 	local rollInfo = self.currentRoll[peep]
 
@@ -882,16 +972,23 @@ function CombatCortex:tickPeep(delta, peep)
 	end
 
 	local rollInfo = self.currentRoll[peep]
-	rollInfo.rolledAttack = false
-	rollInfo.rolledDamage = false
-	rollInfo.hit = false
+	rollInfo.reset()
+
+	if peep:hasBehavior(SpecialAttackBehavior) then
+		local specialAttack = peep:getBehavior(SpecialAttackBehavior)
+		specialAttack.attackInterval = specialAttack.attackInterval - 1
+
+		if specialAttack.attackInterval <= 0 then
+			peep:removeBehavior(SpecialAttackBehavior)
+		end
+	end
 
 	local success = weapon:perform(peep, target)
 	self:_updateAggressiveTarget(peep)
 
 	if not success then
 		return
-	end 
+	end
 
 	local spell
 	if weapon:canCastSpells() then

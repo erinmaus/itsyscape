@@ -216,7 +216,7 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "Tornado"
 }
 
-ItsyScape.Resource.Power "Decapitate" {
+ItsyScape.Resource.Power "Earthquake" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Attack",
@@ -237,11 +237,54 @@ ItsyScape.Resource.Power "Decapitate" {
 
 ItsyScape.Meta.CombatPowerTier {
 	Tier = 3,
-	Resource = ItsyScape.Resource.Power "Decapitate"
+	Resource = ItsyScape.Resource.Power "Earthquake"
 }
 
 ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 10,
+	MaxLevel = 60,
+	Skill = ItsyScape.Resource.Skill "Attack",
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Earthquake",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Smash the ground, causing an earthquake around the target. The larger the target, the bigger the earthquake. Damages enemies near the target.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Earthquake"
+}
+
+ItsyScape.Resource.Power "Decapitate" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Attack",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Strength",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Decapitate"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	MinLevel = 20,
 	MaxLevel = 50,
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Resource = ItsyScape.Resource.Power "Decapitate"
@@ -263,17 +306,17 @@ ItsyScape.Resource.Power "Riposte" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Attack",
-			Count = ItsyScape.Utility.xpForLevel(20)
+			Count = ItsyScape.Utility.xpForLevel(30)
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Attack",
-			Count = ItsyScape.Utility.xpForResource(20)
+			Count = ItsyScape.Utility.xpForResource(21)
 		},
 
 		Output {
 			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForResource(20)
+			Count = ItsyScape.Utility.xpForResource(21)
 		}
 	}
 }
@@ -291,8 +334,8 @@ ItsyScape.Meta.CombatPowerTier {
 }
 
 ItsyScape.Meta.CombatPowerZealCost {
-	MinLevel = 20,
-	MaxLevel = 50,
+	MinLevel = 30,
+	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Attack",
 	Resource = ItsyScape.Resource.Power "Riposte"
 }
@@ -323,49 +366,6 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "You are ready to counter the next attack.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Effect "Power_Riposte"
-}
-
-ItsyScape.Resource.Power "Earthquake" {
-	ItsyScape.Action.Activate() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Attack",
-			Count = ItsyScape.Utility.xpForLevel(30)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Attack",
-			Count = ItsyScape.Utility.xpForResource(21)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Strength",
-			Count = ItsyScape.Utility.xpForResource(21)
-		}
-	}
-}
-
-ItsyScape.Meta.CombatPowerTier {
-	Tier = 3,
-	Resource = ItsyScape.Resource.Power "Earthquake"
-}
-
-ItsyScape.Meta.CombatPowerZealCost {
-	MinLevel = 30,
-	MaxLevel = 60,
-	Skill = ItsyScape.Resource.Skill "Attack",
-	Resource = ItsyScape.Resource.Power "Earthquake"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Earthquake",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "Earthquake"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Smash the ground, causing an earthquake around the target. The larger the target, the bigger the earthquake. Damages enemies near the target.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "Earthquake"
 }
 
 ItsyScape.Resource.Power "Counter" {

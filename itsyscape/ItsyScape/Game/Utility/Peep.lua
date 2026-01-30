@@ -257,6 +257,13 @@ function Peep.message(peep, sprite, message, ...)
 	end
 end
 
+function Peep.flash(peep, sprite, y, ...)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		actor.actor:flash(sprite, y, ...)
+	end
+end
+
 function Peep.getPlayerModel(peep)
 	local game = peep:getDirector():getGameInstance()
 
@@ -2535,6 +2542,10 @@ function Peep.makeAttackable(peep, retaliate)
 	peep:addPoke("switchStyle")
 	peep:addPoke("rollAttack")
 	peep:addPoke("rollDamage")
+	peep:addPoke("dodge")
+	peep:addPoke("dodgeSuccess")
+	peep:addPoke("dodgeFailure")
+	peep:addPoke("punished")
 
 	peep:listen("ready", Utility.Peep.Attackable.onReady)
 	peep:listen("postReady", Utility.Peep.Attackable.onPostReady)

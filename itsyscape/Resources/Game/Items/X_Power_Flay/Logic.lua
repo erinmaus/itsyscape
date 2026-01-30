@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Items/X_Power_Headshot/Logic.lua
+-- Resources/Game/Items/X_Power_Flay/Logic.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -16,24 +16,24 @@ local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBeh
 -- Less accurate shot (20% lower attack roll), but deals damage from 200% to 400%.
 -- An additional 100% against undead.
 -- Always hits following the foe using a special attack.
-local Headshot = Class(ProxyXWeapon)
-Headshot.ACCURACY_DEBUFF = 0.8
-Headshot.UNDEAD_DAMAGE_MODIFIER = 1
-Headshot.MIN_DAMAGE_MULTIPLIER  = 2
-Headshot.MAX_DAMAGE_MULTIPLIER  = 4
+local Flay = Class(ProxyXWeapon)
+Flay.ACCURACY_DEBUFF = 0.8
+Flay.UNDEAD_DAMAGE_MODIFIER = 1
+Flay.MIN_DAMAGE_MULTIPLIER  = 2
+Flay.MAX_DAMAGE_MULTIPLIER  = 4
 
-function Headshot:previewAttackRoll(roll)
+function Flay:previewAttackRoll(roll)
 	ProxyXWeapon.previewAttackRoll(self, roll)
 
 	local target = roll:getTarget()
 	if target and target:hasBehavior(SpecialAttackBehavior) then
 		roll:setAlwaysHits(true)
 	else
-		roll:setAttackLevel(math.floor(roll:getAttackLevel() * Decapitate.ACCURACY_DEBUFF + 0.5))
+		roll:setAttackLevel(math.floor(roll:getAttackLevel() * Flay.ACCURACY_DEBUFF + 0.5))
 	end
 end
 
-function Headshot:onAttackHit(peep, target, ...)
+function Flay:onAttackHit(peep, target, ...)
 	ProxyXWeapon.onAttackHit(self, peep, target, ...)
 
 	local stage = target:getDirector():getGameInstance():getStage()
@@ -42,7 +42,7 @@ function Headshot:onAttackHit(peep, target, ...)
 	Utility.Combat.tryPunish(target, peep)
 end
 
-function Headshot:previewDamageRoll(roll)
+function Flay:previewDamageRoll(roll)
 	ProxyXWeapon.previewDamageRoll(self, roll)
 
 	local isUndead = false
@@ -58,11 +58,11 @@ function Headshot:previewDamageRoll(roll)
 		end
 	end
 
-	local minDamageMultiplier = Headshot.MIN_DAMAGE_MULTIPLIER
-	local maxDamageMultiplier = Headshot.MAX_DAMAGE_MULTIPLIER
+	local minDamageMultiplier = Flay.MIN_DAMAGE_MULTIPLIER
+	local maxDamageMultiplier = Flay.MAX_DAMAGE_MULTIPLIER
 	if isUndead then
-		minDamageMultiplier = minDamageMultiplier + Headshot.UNDEAD_DAMAGE_MODIFIER
-		maxDamageMultiplier = maxDamageMultiplier + Headshot.UNDEAD_DAMAGE_MODIFIER
+		minDamageMultiplier = minDamageMultiplier + Flay.UNDEAD_DAMAGE_MODIFIER
+		maxDamageMultiplier = maxDamageMultiplier + Flay.UNDEAD_DAMAGE_MODIFIER
 		Log.info("Target '%s' is undead, dealing extra damage.", roll:getTarget():getName())
 	end
 
@@ -81,4 +81,4 @@ function Headshot:previewDamageRoll(roll)
 	roll:setMaxHit(roll:getMaxHit() * maxDamageMultiplier)
 end
 
-return Headshot
+return Flay

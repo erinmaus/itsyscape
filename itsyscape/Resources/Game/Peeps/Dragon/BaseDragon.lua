@@ -25,7 +25,7 @@ end
 function Dragon:ready(director, game)
 	Creep.ready(self, director, game)
 
-	Utility.Peep.setSize(self, Vector(16, 12, 16))
+	Utility.Peep.setSize(self, Vector(16, 6, 16))
 
 	Utility.Peep.Creep.setBody(self, "Dragon")
 

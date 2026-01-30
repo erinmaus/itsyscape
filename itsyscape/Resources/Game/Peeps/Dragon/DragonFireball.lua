@@ -14,6 +14,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Probe = require "ItsyScape.Peep.Probe"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
 
 local DragonFireball = Class(PassableProp)
@@ -93,7 +94,11 @@ function DragonFireball:_tryHit(radius)
 	for _, hit in ipairs(hits) do
 		if not self.currentHits[hit] then
 			if self.currentDragon and self.currentWeapon then
+				hit:addBehavior(PendingStrategyGradeBehavior)
 				self.currentWeapon:perform(self.currentDragon, hit)
+
+				Utility.Combat.dodgeFailure(hit, self.currentDragon)
+
 				self:poke("hit", hit)
 
 				Log.info("'%s' shot by '%s' hit peep '%s'.", self:getName(), self.currentDragon:getName(), hit:getName())
@@ -128,12 +133,7 @@ function DragonFireball:_tryExplode()
 					stage:fireProjectile("CannonSplosionHit", Vector.ZERO, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
 
 					if self.currentTarget and not self.currentHits[self.currentTarget] then
-						local actor = self.currentTarget:getBehavior(ActorReferenceBehavior)
-						actor = actor and actor.actor
-
-						if actor then
-							actor:flash("Dodge", Vector(0, 0.5, 0))
-						end
+						Utility.Combat.dodgeSuccess(self.currentTarget, self.currentDragon)
 					end
 
 					Utility.Peep.poof(self)

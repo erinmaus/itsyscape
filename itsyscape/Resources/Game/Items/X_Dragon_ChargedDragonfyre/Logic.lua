@@ -12,6 +12,7 @@ local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
 local MagicWeapon = require "ItsyScape.Game.MagicWeapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 
 local ChargedDragonfyre = Class(MagicWeapon)
 ChargedDragonfyre.DELAY = 1
@@ -37,6 +38,10 @@ function ChargedDragonfyre:perform(peep, target)
 	self:pokeInitiateAttack(peep, target, attack)
 
 	self:applyCooldown(peep, target)
+
+	local _, special = peep:addBehavior(SpecialAttackBehavior)
+	special.weapon = self
+	special.attackInterval = 2
 
 	return true
 end

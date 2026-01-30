@@ -20,6 +20,7 @@ local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local Peep = require "ItsyScape.Peep.Peep"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -583,26 +584,30 @@ function Weapon:pokeInitiateAttack(peep, target, attack)
 	peep:poke("initiateAttack", attack, target)
 end
 
-function Weapon:onAttackHit(peep, target)
-	local roll = self:rollDamage(peep, Weapon.PURPOSE_KILL, target)
+function Weapon:onAttackHit(peep, target, attackRoll, a, d)
+	local damageRoll = self:rollDamage(peep, Weapon.PURPOSE_KILL, target)
 	do
-		if roll:getSelf() then
-			for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-				effect:dealDamage(roll)
+		if damageRoll:getSelf() then
+			for effect in damageRoll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				effect:dealDamage(damageRoll)
 			end
 		end
 
-		if roll:getTarget() then
-			for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-				effect:receiveDamage(roll)
+		if damageRoll:getTarget() then
+			for effect in damageRoll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				effect:receiveDamage(damageRoll)
 			end
 		end
 	end
 
-	local damage = roll:roll()
+	local damage = damageRoll:roll()
 	local attack = AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
+		damageRoll = damageRoll,
+		attackRoll = attackRoll,
+		accuracyAttackRoll = a,
+		accuracyDefenseRoll = d,
 		damage = damage,
 		aggressor = peep,
 		delay = self:getDelay(peep, target)
@@ -615,7 +620,7 @@ function Weapon:onAttackHit(peep, target)
 		self:pokeInitiateAttack(peep, target, attack)
 	end
 
-	self:dealtDamage(peep, target, attack, roll)
+	self:dealtDamage(peep, target, attack, damageRoll)
 	self:applyCooldown(peep, target)
 
 	return attack
@@ -625,18 +630,23 @@ function Weapon:dealtDamage(peep, target, attack, roll)
 	-- Nothing.
 end
 
-function Weapon:getMissAttackPoke(peep, target)
+function Weapon:getMissAttackPoke(peep, target, attackRoll, a, d)
+	attackRoll = attackRoll or self:rollAttack(peep, target, self:getBonusForStance(peep))
+
 	return AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
+		attackRoll = attackRoll,
+		accuracyAttackRoll = a or 0,
+		accuracyDefenseRoll = d or 1,
 		damage = 0,
 		aggressor = peep,
 		delay = self:getDelay(peep, target)
 	})
 end
 
-function Weapon:onAttackMiss(peep, target)
-	local attack = self:getMissAttackPoke(peep, target)
+function Weapon:onAttackMiss(peep, target, attackRoll, a, d)
+	local attack = self:getMissAttackPoke(peep, target, attackRoll, a, d)
 
 	self:pokeReceiveAttack(peep, target, attack)
 	self:pokeInitiateAttack(peep, target, attack)
@@ -703,18 +713,6 @@ function Weapon:applyDodgeCooldown(peep)
 end
 
 function Weapon:getDodgeRange(peep, target)
-	-- local targetPosition
-	-- if Class.isCompatibleType(target, Peep) then
-	-- 	targetPosition = Utility.Peep.getRelativePosition(peep, target)
-	-- elseif Class.isCompatibleType(target, Vector) then
-	-- 	targetPosition = target
-	-- end
-
-	-- if not targetPosition then
-	-- 	return self:getAttackRange(peep)
-	-- end
-
-	-- return math.min(targetPosition:distance(Utility.Peep.getPosition(peep)), self:getAttackRange(peep))
 	return self:getAttackRange(peep)
 end
 
@@ -734,6 +732,10 @@ function Weapon:getDodgeBehavior(peep, target)
 	return Weapon.DODGE_BEHAVIOR_AVOID
 end
 
+function Weapon:pokeDodge(peep, target)
+	peep:poke("dodge", target)
+end
+
 function Weapon:performDodge(peep, target, direction, speed, distance)
 	if self:getDodgeBehavior() == Weapon.DODGE_BEHAVIOR_CHARGE then
 		if Class.isCompatibleType(target, Peep) then
@@ -748,6 +750,8 @@ function Weapon:performDodge(peep, target, direction, speed, distance)
 	dodge.speed = speed
 	dodge.currentDistance = 0
 	dodge.maximumDistance = distance
+
+	self:pokeDodge(peep, target)
 end
 
 function Weapon:dodge(peep, target)
@@ -782,9 +786,13 @@ function Weapon:perform(peep, target)
 
 	local s, a, d = roll:roll()
 	if s then
-		self:onAttackHit(peep, target, a, d)
+		self:onAttackHit(peep, target, roll, a, d)
 	else
-		self:onAttackMiss(peep, target, a, d)
+		self:onAttackMiss(peep, target, roll, a, d)
+	end
+
+	if target then
+		target:removeBehavior(PendingStrategyGradeBehavior)
 	end
 
 	return true

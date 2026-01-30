@@ -9,6 +9,7 @@
 		"STANCE_SWITCH_ZEAL_COST": ["baseStanceSwitchZealCost"],
 		"STANCE_SWITCH_ZEAL_COST_COOLDOWN_SECONDS": ["baseStanceSwitchZealCostCooldownSeconds"],
 		"TARGET_SWITCH_ZEAL_COST": ["baseTargetSwitchZealCost"],
+		"ZEAL_RECHARGE_MULTIPLIER": ["zealRechargeMultiplier"],
 		"TARGET_SWITCH_ZEAL_COST_COOLDOWN_SECONDS": ["baseTargetSwitchZealCostCooldownSeconds"],
 		"NO_TARGET_ZEAL_DRAIN_START_SECONDS": ["noTargetZealDrainStartSeconds"],
 		"NO_TARGET_ZEAL_DRAIN_RATE_PER_SECOND": ["noTargetZealDrainRatePerSecond"],
@@ -19,7 +20,11 @@
 		"CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER": ["criticalFluxZealMaxMultiplier"],
 		"CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER": ["criticalFluxZealMinMultiplier"],
 		"POWER_ZEAL_RECHARGE_INTERVAL_SECONDS": ["powerZealRechargeIntervalSeconds"],
-		"POWER_ZEAL_RECHARGE_PER_INTERVAL": ["powerZealRechargePerInterval"]
+		"POWER_ZEAL_RECHARGE_PER_INTERVAL": ["powerZealRechargePerInterval"],
+		"STRATEGY_DEFAULT_MIN_GRADE": ["strategy", "defaultMinGrade"],
+		"STRATEGY_DEFAULT_MAX_GRADE": ["strategy", "defaultMaxGrade"],
+		"STRATEGY_PERFECT_GRADE": ["strategy", "perfectGrade"],
+		"STRATEGY_GRADES": ["strategyFluxGrades"],
 	},
 
 	"loop": {
@@ -70,6 +75,8 @@
 
 	"powerZealRechargeIntervalSeconds": 1,
 	"powerZealRechargePerInterval": 0.01,
+
+	"zealRechargeMultiplier": 0.5,
 
 	"prowessFluxDamageIntervals": [
 		{
@@ -153,6 +160,13 @@
 	"criticalFluxZealMaxMultiplier": 2,
 	"criticalFluxZealMinMultiplier": 0.75,
 
+	"strategy": {
+		"defaultMaxGrade": 11,
+		"defaultMinGrade": 0,
+
+		"perfectGrade": 14
+	},
+
 	"strategyGrades": {
 		"F": {
 			"value": 0,
@@ -187,28 +201,28 @@
 
 	"strategyFluxGrades": [
 		{
-			"grade": 14,
-			"zeal": 0.3
-		},
-		{
-			"grade": 11,
-			"zeal": 0.15
-		},
-		{
-			"grade": 8,
-			"zeal": 0.1
-		},
-		{
-			"grade": 5,
-			"zeal": 0.05
+			"grade": 0,
+			"zeal": -0.2
 		},
 		{
 			"grade": 2,
 			"zeal": -0.1
 		},
 		{
-			"grade": 0,
-			"zeal": -0.2
+			"grade": 5,
+			"zeal": 0.05
+		},
+		{
+			"grade": 8,
+			"zeal": 0.1
+		},
+		{
+			"grade": 11,
+			"zeal": 0.15
+		},
+		{
+			"grade": 14,
+			"zeal": 0.3
 		}
 	],
 

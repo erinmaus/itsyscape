@@ -250,7 +250,7 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "Snipe"
 }
 
-ItsyScape.Resource.Power "TrickShot" {
+ItsyScape.Resource.Power "Headshot" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Archery",
@@ -270,43 +270,27 @@ ItsyScape.Resource.Power "TrickShot" {
 }
 
 ItsyScape.Meta.CombatPowerTier {
-	Tier = 1,
-	Resource = ItsyScape.Resource.Power "TrickShot"
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Headshot"
 }
 
 ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 20,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Resource = ItsyScape.Resource.Power "TrickShot"
-}
-
-ItsyScape.Resource.Effect "Power_TrickShotDaze" {
-	-- Nothing.
+	Resource = ItsyScape.Resource.Power "Headshot"
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Daze",
+	Value = "Headshot",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
+	Resource = ItsyScape.Resource.Power "Headshot"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Lowers your accuracy and damage by 10%.",
+	Value = "Aim for the head. Less accurate shot, but can deal massive damage. Increased effectiveness against the undead.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Trick Shot",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "TrickShot"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Take a trick shot, dazing the enemy. Always hits, but accuracy affects damage. A dazed enemy will have reduced accuracy and damage.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "TrickShot"
+	Resource = ItsyScape.Resource.Power "Headshot"
 }
 
 ItsyScape.Resource.Power "SoulStrike" {
@@ -352,7 +336,7 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "SoulStrike"
 }
 
-ItsyScape.Resource.Power "Headshot" {
+ItsyScape.Resource.Power "TrickShot" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Archery",
@@ -372,27 +356,43 @@ ItsyScape.Resource.Power "Headshot" {
 }
 
 ItsyScape.Meta.CombatPowerTier {
-	Tier = 2,
-	Resource = ItsyScape.Resource.Power "Headshot"
+	Tier = 1,
+	Resource = ItsyScape.Resource.Power "TrickShot"
 }
 
 ItsyScape.Meta.CombatPowerZealCost {
 	MinLevel = 40,
 	MaxLevel = 70,
 	Skill = ItsyScape.Resource.Skill "Archery",
-	Resource = ItsyScape.Resource.Power "Headshot"
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Resource.Effect "Power_TrickShotDaze" {
+	-- Nothing.
 }
 
 ItsyScape.Meta.ResourceName {
-	Value = "Headshot",
+	Value = "Daze",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "Headshot"
+	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Aim for the head. Less accurate shot, but can deal massive damage. Increased effectiveness against the undead.",
+	Value = "Lowers your accuracy and damage by 10%.",
 	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "Headshot"
+	Resource = ItsyScape.Resource.Effect "Power_TrickShotDaze"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Trick Shot",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "TrickShot"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Take a trick shot, dazing the enemy. Always hits, but accuracy affects damage. A dazed enemy will have reduced accuracy and damage.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "TrickShot"
 }
 
 ItsyScape.Resource.Power "Hesitate" {

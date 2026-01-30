@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Config = require "ItsyScape.Game.Config"
 local Utility = require "ItsyScape.Game.Utility"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
@@ -144,7 +145,8 @@ function Attackable:onZeal(p)
 				offset = offset + o
 			end
 
-			local recharge = math.clamp(p:getEffectiveZeal() * multiplier + offset, 0, 1)
+			local multiplier = Config.get("Combat", "ZEAL_RECHARGE_MULTIPLIER") or 1
+			local recharge = math.clamp((p:getEffectiveZeal() * multiplier + offset) * multiplier, 0, 1)
 			powerZeal = powerZeal - recharge
 
 			if powerZeal <= 0 then

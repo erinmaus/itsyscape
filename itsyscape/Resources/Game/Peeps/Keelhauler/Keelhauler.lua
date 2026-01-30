@@ -86,10 +86,11 @@ function Keelhauler:onDashCharge()
 	self.isChargingDash = true
 end
 
-function Keelhauler:onDashStart()
+function Keelhauler:onDashStart(target)
 	self.isDashing = true
 	self.isChargingDash = false
 	self.hits = {}
+	self.dashTarget = target or false
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = self.RUN_SPEED
@@ -104,6 +105,11 @@ function Keelhauler:onDashEnd()
 	movement.maxSpeed = self.WALK_SPEED
 
 	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Run")
+
+	if self.dashTarget and not self.hits[dashTarget] then
+		Utility.Combat.dodgeSuccess(self.dashTarget, self)
+		Utility.Peep.flash(self.dashTarget, "Dodge", Vector(0, 0.5, 0))
+	end
 end
 
 function Keelhauler:updateDash()

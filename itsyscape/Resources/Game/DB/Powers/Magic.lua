@@ -329,11 +329,58 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Power "Nirvana"
 }
 
-ItsyScape.Resource.Power "Hexagram" {
+ItsyScape.Resource.Power "Flay" {
 	ItsyScape.Action.Activate() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Magic",
 			Count = ItsyScape.Utility.xpForLevel(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(20)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(20)
+		}
+	}
+}
+
+ItsyScape.Meta.PowerSpec {
+	Resource = ItsyScape.Resource.Power "Flay"
+}
+
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "Flay"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	MinLevel = 20,
+	MaxLevel = 60,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "Flay"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Flay",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Flay"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Telepathically flay the foe's mind. Less accurate attack, but can deal massive damage. Increased effectiveness against the undead.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "Flay"
+}
+
+ItsyScape.Resource.Power "Hexagram" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(30)
 		},
 
 		Output {
@@ -392,65 +439,6 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Binds the foe to a hexagram, preventing them from moving outside of it.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "Hexagram"
-}
-
-ItsyScape.Resource.Power "IceBarrage" {
-	ItsyScape.Action.Activate() {
-		Requirement {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForLevel(30)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Magic",
-			Count = ItsyScape.Utility.xpForResource(21)
-		},
-
-		Output {
-			Resource = ItsyScape.Resource.Skill "Wisdom",
-			Count = ItsyScape.Utility.xpForResource(21)
-		}
-	}
-}
-
-ItsyScape.Meta.CombatPowerTier {
-	Tier = 2,
-	Resource = ItsyScape.Resource.Power "IceBarrage"
-}
-
-ItsyScape.Meta.CombatPowerZealCost {
-	MinLevel = 30,
-	MaxLevel = 70,
-	Skill = ItsyScape.Resource.Skill "Magic",
-	Resource = ItsyScape.Resource.Power "IceBarrage"
-}
-
-ItsyScape.Resource.Effect "Power_IceBarrage" {
-	-- Nothing.
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Ice Barrage",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Slows your movement speed by 50%.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
-}
-
-ItsyScape.Meta.ResourceName {
-	Value = "Ice Barrage",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "IceBarrage"
-}
-
-ItsyScape.Meta.ResourceDescription {
-	Value = "Unleash an incredibly damaging elemental attack, slowing the foe by 50%.",
-	Language = "en-US",
-	Resource = ItsyScape.Resource.Power "IceBarrage"
 }
 
 ItsyScape.Resource.Power "Gravity" {
@@ -537,5 +525,64 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "Bind the shadow of the foe to attack, dealing double your foe's damage against themselves.",
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Power "BindShadow"
+}
+
+ItsyScape.Resource.Power "IceBarrage" {
+	ItsyScape.Action.Activate() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForLevel(60)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Magic",
+			Count = ItsyScape.Utility.xpForResource(21)
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Wisdom",
+			Count = ItsyScape.Utility.xpForResource(21)
+		}
+	}
+}
+
+ItsyScape.Meta.CombatPowerTier {
+	Tier = 2,
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Meta.CombatPowerZealCost {
+	MinLevel = 30,
+	MaxLevel = 70,
+	Skill = ItsyScape.Resource.Skill "Magic",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Resource.Effect "Power_IceBarrage" {
+	-- Nothing.
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ice Barrage",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Slows your movement speed by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Effect "Power_IceBarrage"
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Ice Barrage",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Unleash an incredibly damaging elemental attack, slowing the foe by 50%.",
+	Language = "en-US",
+	Resource = ItsyScape.Resource.Power "IceBarrage"
 }
 

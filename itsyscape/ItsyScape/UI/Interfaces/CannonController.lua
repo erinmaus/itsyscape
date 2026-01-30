@@ -57,7 +57,7 @@ end
 function CannonController:fire(e)
 	self:updatePath()
 
-	self.cannon:poke("fire", self:getPeep(), "ItsyCannonball", self.currentPath, self.currentPathDuration)
+	self.cannon:poke("fire", self:getPeep(), nil, "ItsyCannonball", self.currentPath, self.currentPathDuration)
 	self:getPlayer():pokeCamera("shake", 0.5)
 
 	self:getGame():getUI():closeInstance(self)

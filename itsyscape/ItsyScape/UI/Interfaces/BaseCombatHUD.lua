@@ -1068,12 +1068,8 @@ function BaseCombatHUD:_updateDebug()
 	self.wasDebugKeydown = isDebugKeydown
 end
 
-function BaseCombatHUD:update(delta)
-	Interface.update(self, delta)
-
-	if not self.menu then
-		self:_createMenu()
-	end
+function BaseCombatHUD:tick()
+	Interface.tick(self)
 
 	self:updateEvents()
 
@@ -1104,6 +1100,15 @@ function BaseCombatHUD:update(delta)
 	self:toggleTargetInfo(showTarget)
 
 	self:updateThingies()
+end
+
+
+function BaseCombatHUD:update(delta)
+	Interface.update(self, delta)
+
+	if not self.menu then
+		self:_createMenu()
+	end
 end
 
 return BaseCombatHUD

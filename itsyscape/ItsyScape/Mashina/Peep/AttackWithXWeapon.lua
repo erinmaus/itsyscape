@@ -9,13 +9,19 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 
 local AttackWithXWeapon = B.Node("AttackWithXWeapon")
 AttackWithXWeapon.TARGET = B.Reference()
 AttackWithXWeapon.X_WEAPON = B.Reference()
 AttackWithXWeapon.PROXY_WEAPON = B.Reference()
+AttackWithXWeapon.IS_SPECIAL = B.Reference()
+AttackWithXWeapon.SPECIAL_ATTACK_INTERVAL = B.Reference()
 
 function AttackWithXWeapon:update(mashina, state, executor)
+	local isSpecial = state[self.IS_SPECIAL]
+	local specialAttackInterval = state[self.SPECIAL_ATTACK_INTERVAL]
+
 	local target = state[self.TARGET]
 	if not target then
 		return B.Status.Failure
@@ -30,6 +36,10 @@ function AttackWithXWeapon:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
+	if isSpecial then
+		target:addBehavior(PendingStrategyGradeBehavior)
+	end
+
 	local xWeapon = Utility.Peep.getXWeapon(
 		mashina:getDirector():getGameInstance(),
 		xWeaponName,
@@ -42,6 +52,12 @@ function AttackWithXWeapon:update(mashina, state, executor)
 	if xWeapon:getProjectile(mashina) then
 		local stage = target:getDirector():getGameInstance():getStage()
 		stage:fireProjectile(xWeapon:getProjectile(mashina), mashina, target)
+	end
+
+	if isSpecial then
+		local _, special = peep:addBehavior(SpecialAttackBehavior)
+		special.weapon = xWeapon
+		special.attackInterval = specialAttackInterval or 1
 	end
 
 	return B.Status.Success

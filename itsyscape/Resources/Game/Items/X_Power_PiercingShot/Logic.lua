@@ -45,7 +45,7 @@ function PiercingShot:onAttackHit(peep, target, ...)
 
 		self:hitOnPath(peep, target)
 	else
-		return ProxyXWeapon.onAttackHit(self, peep, target)
+		return ProxyXWeapon.onAttackHit(self, peep, target, ...)
 	end
 end
 

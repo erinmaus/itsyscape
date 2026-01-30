@@ -12,6 +12,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Equipment = require "ItsyScape.Game.Equipment"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 
 local RangedWeapon = Class(Weapon)
 RangedWeapon.AMMO_SLOT = Equipment.PLAYER_SLOT_QUIVER
@@ -106,6 +107,10 @@ function RangedWeapon:perform(peep, target)
 			}
 		}
 	})
+
+	if target then
+		target:removeBehavior(PendingStrategyGradeBehavior)
+	end
 
 	self:applyCooldown(peep, target)
 	peep:removeBehavior(CombatTargetBehavior)

@@ -19,6 +19,7 @@ ZealPoke.TYPE_LOST_POWER    = "LOST_POWER"
 ZealPoke.TYPE_CAST_SPELL    = "CAST_SPELL"
 ZealPoke.TYPE_ATTACK        = "ATTACK"
 ZealPoke.TYPE_DEFEND        = "DEFEND"
+ZealPoke.TYPE_STRATEGY      = "STRATEGY"
 
 function ZealPoke:new(zealPokeType)
 	self.type = zealPokeType
@@ -180,6 +181,20 @@ end
 
 function ZealPoke:getPower()
 	return self.power
+end
+
+function ZealPoke.onStrategy(t)
+	assert(type(t) == "table")
+
+	local event = ZealPoke(ZealPoke.TYPE_STRATEGY)
+	event.grade = t.grade or false
+	event.zeal = t.zeal or 0
+
+	return event
+end
+
+function ZealPoke:getGrade()
+	return self.grade
 end
 
 return ZealPoke

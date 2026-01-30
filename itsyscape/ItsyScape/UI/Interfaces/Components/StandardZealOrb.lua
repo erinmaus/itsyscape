@@ -23,6 +23,9 @@ local StandardZealOrb = Class(Drawable)
 StandardZealOrb.BORDER_ALPHA = 0.75
 StandardZealOrb.BORDER_THICKNESS = 4
 
+StandardZealOrb.ZEAL_EVENT_HEIGHT   = 24
+StandardZealOrb.ZEAL_EVENT_LIFETIME = 1
+
 function StandardZealOrb:new()
 	Drawable.new(self)
 
@@ -102,6 +105,7 @@ function StandardZealOrb:new()
 	self.currentZeal = 0
 	self.previousZeal = 0
 	self.maximumZeal = 1
+	self.zealEvents = {}
 	self.tier = 1
 
 	self.currentZealColor = false
@@ -138,11 +142,43 @@ function StandardZealOrb:_calculateRelativeValue(currentValue, maximumValue)
 	return currentValue / maximumValue
 end
 
+function StandardZealOrb:_addZealEvent(value)
+	if value == 0 then
+		return
+	end
+
+	local color
+	if value < 0 then
+		color = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.lose"))
+		value = string.format("%d%%", value * 100)
+	elseif value > 0 then
+		color = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.combat.zeal.gain"))
+		value = string.format("+%d%%", value * 100)
+	end
+
+	local maxY = 0
+	for _, zealEvent in ipairs(self.zealEvents) do
+		maxY = math.max(maxY, zealEvent.y)
+	end
+
+	table.insert(self.zealEvents, {
+		time = 0,
+		value = value,
+		color = color,
+		y = maxY + self.ZEAL_EVENT_HEIGHT
+	})
+end
+
 function StandardZealOrb:updateZeal(current, maximum)
 	current = current or 0
 	maximum = maximum or 1
 
 	current = math.min(current, maximum)
+
+	local difference = current - self.currentZeal
+	if difference ~= 0 then
+		self:_addZealEvent(difference)
+	end
 
 	self.currentZeal = current
 	self.maximumZeal = maximum
@@ -166,8 +202,23 @@ function StandardZealOrb:updateZealTier(tier)
 	self.tier = tier
 end
 
+function StandardZealOrb:_updateZealEvents(delta)
+	for i = #self.zealEvents, 1, -1 do
+		local zealEvent = self.zealEvents[i]
+
+		if zealEvent.time >= self.ZEAL_EVENT_LIFETIME then
+			table.remove(self.zealEvents, i)
+		else
+			zealEvent.time = math.min(zealEvent.time + delta, self.ZEAL_EVENT_LIFETIME)
+			zealEvent.y = zealEvent.y - delta * self.ZEAL_EVENT_HEIGHT
+		end
+	end
+end
+
 function StandardZealOrb:update(delta)
 	Drawable.update(self, delta)
+
+	self:_updateZealEvents(delta)
 
 	if self.previousZeal == 0 and self.currentZeal > 0 then
 		self.isFadingIn = true
@@ -287,8 +338,19 @@ function StandardZealOrb:drawBorder()
 	love.graphics.pop()
 end
 
+function StandardZealOrb:loadDynamic(resources)
+	if not self.font then
+		self.font = resources:load(
+			love.graphics.newFont,
+			"Resources/Renderers/Widget/Common/DefaultSansSerif/Bold.ttf",
+			self.ZEAL_EVENT_HEIGHT)
+	end
+end
+
 function StandardZealOrb:draw(resources, state)
 	Drawable.draw(self, resources, state)
+
+	self:loadDynamic(resources)
 
 	local width, height = self:getSize()
 	local radius = math.min(width, height) / 2
@@ -297,7 +359,16 @@ function StandardZealOrb:draw(resources, state)
 	love.graphics.setColor(color:get())
 	itsyrealm.graphics.circle("fill", width / 2, height / 2, radius)
 
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setFont(self.font)
+	for _, zealEvent in ipairs(self.zealEvents) do
+		local alpha = math.clamp(math.sin(math.clamp(zealEvent.time / self.ZEAL_EVENT_LIFETIME) * math.pi) * 2)
+
+		love.graphics.setColor(0, 0, 0, alpha)
+		itsyrealm.graphics.printf(zealEvent.value, 2, height + zealEvent.y + 2, width, "center")
+
+		love.graphics.setColor(zealEvent.color.r, zealEvent.color.g, zealEvent.color.b, alpha)
+		itsyrealm.graphics.printf(zealEvent.value, 0, height + zealEvent.y, width, "center")
+	end
 end
 
 return StandardZealOrb
