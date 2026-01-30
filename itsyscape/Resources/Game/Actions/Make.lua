@@ -325,10 +325,11 @@ function Make:spawnCraftedItem(player, prop)
 		return
 	end
 
-	local x, y, z = Utility.Peep.getPosition(prop):get()
-	local offsetY = Utility.Peep.getMakeOffset(prop)
+	local position = Utility.Peep.getPosition(prop)
+	local offset = Utility.Peep.getMakeOffset(prop)
+	local p = position + offset
 
-	local craftedItemProp = Utility.spawnPropAtPosition(Utility.Peep.getMapScript(prop), "CraftedItem", x, y + offsetY, z)
+	local craftedItemProp = Utility.spawnPropAtPosition(Utility.Peep.getMapScript(prop), "CraftedItem", p:get())
 	if craftedItemProp then
 		craftedItemProp:getPeep():pushPoke("make", {
 			player = player,

@@ -12,6 +12,37 @@ local GoredDragon = ItsyScape.Resource.Peep "GoredDragon" {
 	ItsyScape.Action.Attack()
 }
 
+local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
+ItsyScape.Meta.DelegatedActionTarget {
+	CategoryKey = "Metal",
+	ActionType = "Smelt",
+	Action = FurnaceAction
+}
+
+ItsyScape.Meta.ActionVerb {
+	Value = "Smelt",
+	XProgressive = "Smelting",
+	Language = "en-US",
+	Action = FurnaceAction
+}
+
+local GoredDragonStunned = ItsyScape.Resource.Peep "GoredDragon_Stunned" {
+	FurnaceAction
+}
+
+ItsyScape.Meta.PropAnchor {
+	OffsetI = 0,
+	OffsetJ = 0.25,
+	Resource = GoredDragonStunned
+}
+
+ItsyScape.Meta.MakeOffset {
+	OffsetX = -2,
+	OffsetY = 0.25,
+	OffsetZ = 0.75,
+	Resource = GoredDragonStunned
+}
+
 ItsyScape.Meta.PeepMashinaState {
 	State = "attack",
 	Tree = "Resources/Game/Peeps/GoredDragon/GoredDragon_TestAttackLogic.lua",
@@ -33,6 +64,18 @@ ItsyScape.Meta.ResourceDescription {
 	Value = "A royal dragon torn apart for access to its flame sack and kept alive in perpetual pain to ensure the flames burn hot.",
 	Language = "en-US",
 	Resource = GoredDragon
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gored royal dragon",
+	Language = "en-US",
+	Resource = GoredDragonStunned
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Hurry! Now that the gored dragon is stunned, you can smelt ores using its flame sack!",
+	Language = "en-US",
+	Resource = GoredDragonStunned
 }
 
 ItsyScape.Meta.PeepStat {

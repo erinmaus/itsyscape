@@ -140,7 +140,9 @@ Game "ItsyScape"
 	}
 
 	Meta "MakeOffset" {
-		OffsetY = Meta.TYPE_NUMBER,
+		OffsetX = Meta.TYPE_REAL,
+		OffsetY = Meta.TYPE_REAL,
+		OffsetZ = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
 

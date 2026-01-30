@@ -14,7 +14,8 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local BaseDragon = require "Resources.Game.Peeps.Dragon.BaseDragon"
 
 local GoredDragon = Class(BaseDragon)
-GoredDragon.EQUIPMENT_SLOT_BONES = "bones"
+GoredDragon.EQUIPMENT_SLOT_BONES      = "bones"
+GoredDragon.EQUIPMENT_SLOT_FLAME_SACK = "flame-sack"
 
 function GoredDragon:ready(director, game)
 	BaseDragon.ready(self, director, game)
@@ -24,6 +25,12 @@ function GoredDragon:ready(director, game)
 		self.EQUIPMENT_SLOT_BONES,
 		Equipment.SKIN_PRIORITY_BASE,
 		"GoredDragon/Bones.lua")
+
+	Utility.Peep.Creep.applySkin(
+		self,
+		self.EQUIPMENT_SLOT_FLAME_SACK,
+		Equipment.SKIN_PRIORITY_BASE,
+		"GoredDragon/FlameSack.lua")
 
 	Utility.Peep.equipXWeapon(self, "Dragon_ChargedDragonfyre")
 end

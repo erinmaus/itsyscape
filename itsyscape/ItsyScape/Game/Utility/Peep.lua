@@ -1677,7 +1677,7 @@ function Peep.queueWalk(peep, ...)
 end
 
 function Peep.getMakeOffset(peep)
-	local offsetY
+	local offsetX, offsetY, offsetZ
 	do
 		local mapObject = Peep.getMapObject(peep)
 		local resource = Peep.getResource(peep)
@@ -1689,7 +1689,9 @@ function Peep.getMakeOffset(peep)
 			})
 
 			if record then
+				offsetX = record:get("OffsetX")
 				offsetY = record:get("OffsetY")
+				offsetZ = record:get("OffsetZ")
 			end
 		end
 
@@ -1701,17 +1703,25 @@ function Peep.getMakeOffset(peep)
 			})
 
 			if record then
+				offsetX = record:get("OffsetX")
 				offsetY = record:get("OffsetY")
+				offsetZ = record:get("OffsetZ")
 			end
 		end
 	end
 
-	if not offsetY then
+	if not (offsetX and offsetY and offsetZ) then
 		local size = Peep.getSize(peep)
+		offsetX = 0
 		offsetY = size.y
+		offsetZ = 0
 	end
 
-	return offsetY or 0
+	local offset = Vector(offsetX, offsetY, offsetZ)
+	local scale = Utility.Peep.getScale(peep)
+	local rotation = Utility.Peep.getRotation(peep)
+
+	return rotation:transformVector(offset * scale)
 end
 
 function Peep.getRelativeTileAnchor(propPeep, playerPeep)
@@ -1794,7 +1804,10 @@ function Peep.getTileAnchor(targetPeep, playerPeep, offsetI, offsetJ)
 		end
 	end
 
-	if playerPeep and (not (offsetI and offsetJ) or (offsetI == 0 and offsetJ == 0)) then
+	if playerPeep and
+	   (not (offsetI and offsetJ) or (offsetI == 0 and offsetJ == 0)) and
+	   not targetPeep:hasBehavior(ActorReferenceBehavior)
+	then
 		local segments = {
 			targetRotation:transformVector(Vector(-targetHalfSize.x, 0, -targetHalfSize.y)) + targetPosition,
 			targetRotation:transformVector(Vector(targetHalfSize.x, 0, -targetHalfSize.y)) + targetPosition,
@@ -2176,13 +2189,16 @@ function Peep.applyCooldown(peep, time)
 	cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTick()
 end
 
-function Peep.interrupt(peep)
-	Utility.Combat.disengage(peep)
-
+function Peep.interruptActions(peep)
 	peep:removeBehavior(TargetPositionBehavior)
 	peep:removeBehavior(TargetTileBehavior)
 
 	peep:getCommandQueue():clear()
+end
+
+function Peep.interrupt(peep)
+	Utility.Combat.disengage(peep)
+	Peep.interruptActions(peep)
 end
 
 function Peep.attack(peep, other, distance)

@@ -95,6 +95,8 @@ function Combat.knockback(target, aggressor, distance, direction, speed)
 	dodge.maximumDistance = distance
 	dodge.dodgeBehavior = Weapon.DODGE_BEHAVIOR_KNOCKBACK
 
+	Utility.Peep.interruptActions(target)
+
 	return true
 end
 

@@ -1096,7 +1096,8 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 
 						table.insert(slot.particles, {
 							sceneNode = p,
-							attach = particles[i].attach
+							attach = particles[i].attach,
+							position = particles[i].position and Vector(unpack(particles[i].position)) or Vector()
 						})
 					end
 				end
@@ -1377,8 +1378,9 @@ function ActorView:draw()
 				local isReflective = material:getIsReflectiveOrRefractive()
 				local hasOverrideMaterial = not not slot.instance:getMaterial()
 				local isImmediate = self:getIsImmediate()
+				local texture = material:getTexture(1)
 
-				if hasTransform or isForward or isMultiTexture or isImmediate or isReflective or hasOverrideMaterial then
+				if hasTransform or isForward or isMultiTexture or isImmediate or isReflective or hasOverrideMaterial or not texture then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
@@ -1477,11 +1479,14 @@ function ActorView:getLocalBonePosition(boneName, position, rotation)
 		return Vector.ZERO
 	end
 
+	local inverseBindPoseTransform = bone:getInverseBindPose()
+
 	local composedTransform = love.math.newTransform()
 	composedTransform:applyQuaternion(rotation:get())
 	composedTransform:apply(boneTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
 
-	return Vector(composedTransform:transformPoint(position:get()))
+	return position:transform(composedTransform)
 end
 
 function ActorView:decomposeBoneLocalTransform(boneName)
@@ -1567,7 +1572,7 @@ function ActorView:updateAnimations(delta)
 				for j = 1, #slotNodes[i].particles do
 					local p = slotNodes[i].particles[j]
 					if p.attach then
-						local localPosition = self:getLocalBonePosition(p.attach)
+						local localPosition = self:getLocalBonePosition(p.attach, p.position)
 						p.sceneNode:updateLocalPosition(localPosition)
 					end
 				end

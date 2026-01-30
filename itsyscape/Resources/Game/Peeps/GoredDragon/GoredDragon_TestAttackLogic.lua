@@ -21,12 +21,19 @@ local Punished = Mashina.Step {
 		event = "punished"
 	},
 
+	Mashina.Peep.IsAlive,
+
 	Mashina.Player.Disable,
 
 	Mashina.Peep.PlayAnimation {
 		animation = "Dragon_Stunned",
 		slot = "x-gored-dragon-stunned",
 		priority = 10000
+	},
+
+	Mashina.Peep.SwapResource {
+		type = "Peep",
+		name = "GoredDragon_Stunned"
 	},
 
 	Mashina.Sequence {
@@ -43,8 +50,8 @@ local Punished = Mashina.Step {
 		},
 
 		Mashina.Peep.TimeOut {
-			min_duration = 6,
-			max_duration = 8
+			min_duration = 16,
+			max_duration = 20
 		},
 	},
 
@@ -63,6 +70,11 @@ local Punished = Mashina.Step {
 				position = Vector(0, -1, 0)
 			})
 		end
+	},
+
+	Mashina.Peep.SwapResource {
+		type = "Peep",
+		name = "GoredDragon"
 	},
 
 	Mashina.Player.Enable,
