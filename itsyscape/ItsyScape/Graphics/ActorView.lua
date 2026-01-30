@@ -901,6 +901,11 @@ end
 
 function ActorView:_stopAnimation(slot)
 	local animation = self.animations[slot]
+	if (animation and animation.definition and animation.definition:getFadesOut()) then
+		animation.next = false
+		return
+	end
+
 	if animation then
 		self.animatable:removePlayingAnimation(animation.id)
 	end

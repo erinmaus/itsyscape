@@ -13,9 +13,10 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 
 local Enable = B.Node("Enable")
 Enable.PLAYER = B.Reference()
+Enable.PEEP = B.Reference()
 
 function Enable:update(mashina, state, executor)
-	local player = state[self.PLAYER]
+	local player = state[self.PLAYER] or state[self.PEEP] or mashina
 	Utility.Peep.enable(player)
 
 	return B.Status.Success

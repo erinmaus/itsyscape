@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 
 local Dragon = Class(Creep)
 
@@ -24,6 +25,10 @@ end
 
 function Dragon:ready(director, game)
 	Creep.ready(self, director, game)
+
+	local _, dynamic = self:addBehavior(DynamicBehavior)
+	dynamic.radius = 8
+	dynamic.margin = 0.5
 
 	Utility.Peep.setSize(self, Vector(16, 6, 16))
 

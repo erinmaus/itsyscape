@@ -12,6 +12,12 @@ local GoredDragon = ItsyScape.Resource.Peep "GoredDragon" {
 	ItsyScape.Action.Attack()
 }
 
+ItsyScape.Meta.PeepMashinaState {
+	State = "attack",
+	Tree = "Resources/Game/Peeps/GoredDragon/GoredDragon_TestAttackLogic.lua",
+	Resource = GoredDragon
+}
+
 ItsyScape.Meta.PeepID {
 	Value = "Resources.Game.Peeps.GoredDragon.GoredDragon",
 	Resource = GoredDragon
