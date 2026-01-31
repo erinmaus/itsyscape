@@ -84,6 +84,35 @@ Peep.Inventory = require "ItsyScape.Game.Utility.Peep.Inventory"
 Peep.Mashina = require "ItsyScape.Game.Utility.Peep.Mashina"
 Peep.Stats = require "ItsyScape.Game.Utility.Peep.Stats"
 
+function Peep.getActions(peep, scope)
+	local prop = peep:getBehavior(PropReferenceBehavior)
+	if prop and prop.prop then
+		return prop.prop:getActions(scope)
+	end
+
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	if actor and actor.actor then
+		return actor.actor:getActions(scope)
+	end
+
+	return {}
+end
+
+function Peep.hasAction(peep, action, scope)
+	if not peep then
+		return false
+	end
+
+	local actions = Peep.getActions(peep, scope)
+	for _, a in ipairs(actions) do
+		if a.id == action.id.value then
+			return true
+		end
+	end
+
+	return false
+end
+
 function Peep.isEnabled(peep)
 	return not peep:hasBehavior(DisabledBehavior)
 end

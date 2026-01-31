@@ -20,4 +20,12 @@ function AbandonedMine:onLoad(...)
 	Utility.Map.spawnMap(self, "IsabelleIsland_AbandonedMineSkybox", Vector.ZERO, { isLayer = true })
 end
 
+function AbandonedMine:onPlayerEnter(player)
+	player:pokeCamera("unlockPosition")
+end
+
+function AbandonedMine:onPlayerLeave(player)
+	player:pokeCamera("unlockPosition")
+end
+
 return AbandonedMine
