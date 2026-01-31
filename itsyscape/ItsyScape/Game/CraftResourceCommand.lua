@@ -58,6 +58,10 @@ function CraftResourceCommand:step(peep)
 		self.isDone = true
 	end
 
+	if self.prop then
+		self.prop:poke("craft", self.action)
+	end
+
 	if not self.isDone then
 		self.progress = self.progress + 1
 	end

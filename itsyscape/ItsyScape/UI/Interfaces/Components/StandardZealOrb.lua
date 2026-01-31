@@ -369,6 +369,8 @@ function StandardZealOrb:draw(resources, state)
 		love.graphics.setColor(zealEvent.color.r, zealEvent.color.g, zealEvent.color.b, alpha)
 		itsyrealm.graphics.printf(zealEvent.value, 0, height + zealEvent.y, width, "center")
 	end
+
+	love.graphics.setColor(1, 1, 1, 1)
 end
 
 return StandardZealOrb

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Props/BasicAnvil.lua
+-- Resources/Game/Peeps/Props/BasicAnvil.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,26 +9,19 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Prop = require "ItsyScape.Peep.Peeps.Prop"
+local Utility = require "ItsyScape.Game.Utility"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local BasicArtisanStation = require "Resources.Game.Peeps.Props.BasicArtisanStation"
 
-local BasicAnvil = Class(Prop)
+local BasicAnvil = Class(BasicArtisanStation)
 
 function BasicAnvil:new(...)
-	Prop.new(self, ...)
+	BasicArtisanStation.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
-	size.size = Vector(1, 1, 1)
-end
+	size.size = Vector(1.5, 1, 1.5)
 
-function BasicAnvil:spawnOrPoofTile(tile, i, j, mode)
-	if mode == 'spawn' then
-		tile:pushFlag('impassable')
-		tile:pushFlag('shoot')
-	elseif mode == 'poof' then
-		tile:popFlag('impassable')
-		tile:popFlag('shoot')
-	end
+	self:addPoke("smith")
 end
 
 return BasicAnvil

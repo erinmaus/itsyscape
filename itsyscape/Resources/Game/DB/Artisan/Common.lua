@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Artisan/Smithing.lua
+-- Resources/Game/DB/Artisan/Common.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -8,8 +8,5 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt"
-ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt"
-ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt"
-
-ItsyScape.Resource.ArtisanProperty "SturdyAnvil_Smith"
+ItsyScape.Resource.ArtisanProperty "BasicHammer"
+ItsyScape.Resource.ArtisanProperty "BasicKnife"

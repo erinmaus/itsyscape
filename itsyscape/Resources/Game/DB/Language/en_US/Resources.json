@@ -4,5 +4,11 @@
 	"ArtisanProperty.NuclearHeat_Smelt.description": "Needs the heat of a nuclear reactor to smelt properly.",
 	"ArtisanProperty.NuclearHeat_Smelt.name": "Nuclear reactor heat",
 	"ArtisanProperty.DragonHeat_Smelt.description": "Takes the heat of a living dragon's flame sack to smelt.",
-	"ArtisanProperty.DragonHeat_Smelt.name": "Living dragon's heat"
+	"ArtisanProperty.DragonHeat_Smelt.name": "Living dragon's heat",
+	"ArtisanProperty.BasicHammer.description": "Requires any kind of hammer.",
+	"ArtisanProperty.BasicHammer.name": "Hammer",
+	"ArtisanProperty.BasicKnife.description": "Requires any kind of knife.",
+	"ArtisanProperty.BasicKnife.name": "Knife",
+	"ArtisanProperty.SturdyAnvil_Smith.description": "Needs to be hammered on a sturdy anvil.",
+	"ArtisanProperty.SturdyAnvil_Smith.name": "Sturdy anvil"
 }

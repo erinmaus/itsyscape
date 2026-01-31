@@ -326,7 +326,7 @@ function SkillGuideController:steal(e)
 		local outputType = brochure:getResourceTypeFromResource(outputResource)
 
 		if outputType.name == "Item" then
-			state:give("Item", inputResource.name, (output.count or 1) * count, { ['item-inventory'] = true, ['item-drop-excess'] = true })
+			state:give("Item", outputResource.name, (output.count or 1) * count, { ['item-inventory'] = true, ['item-drop-excess'] = true })
 		end
 	end
 end

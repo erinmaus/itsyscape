@@ -98,12 +98,17 @@ for gunName, gun in spairs(GUNS) do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Item "Hammer",
+				Resource = ItsyScape.Resource.ArtisanProperty "SturdyAnvil_Smith",
 				Count = 1
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Item "Knife",
+				Resource = ItsyScape.Resource.ArtisanProperty "BasicHammer",
+				Count = 1
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.ArtisanProperty "BasicKnife",
 				Count = 1
 			},
 
