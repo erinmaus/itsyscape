@@ -94,12 +94,12 @@ function ConstraintsPanel:performLayout()
 	self.layout:setWrapContents(true)
 	self.layout:setPadding(innerPadding, innerPadding)
 	self.layout:setPosition(outerPadding, self.titleHeight + outerPadding) 
-	self.layout:setSize(width, 0)
+	self.layout:setSize(width - outerPadding * 2, 0)
 	self.panel:addChild(self.layout)
 
 	local rowHeight = (self.config.constraintFontSize or 22) + 8
 	local leftWidth = rowHeight
-	local rightWidth = width - leftWidth - innerPadding * 3
+	local rightWidth = width - leftWidth - innerPadding * 5 - outerPadding * 2
 	for i = 1, #self.constraints do
 		local c = self.constraints[i]
 		local isBlacklisted = ConstraintsPanel.BLACKLIST[c.type:lower()]

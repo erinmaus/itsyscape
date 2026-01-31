@@ -129,7 +129,6 @@ function DumpResourceImagesApplication:dump()
 			local content = SkillGuideInfoContentTab(self.fakeInterface)
 			self.fakeInterface:addChild(content)
 
-			content:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
 			content:refresh(state)
 			content:expand()
 

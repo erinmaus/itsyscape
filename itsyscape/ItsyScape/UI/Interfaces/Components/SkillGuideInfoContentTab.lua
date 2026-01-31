@@ -204,7 +204,7 @@ function SkillGuideInfoContentTab:refresh(state)
 	local elementWidth = self.constraintsPanel:getSize()
 	Theme.layoutScrollablePanelWithGridLayout(
 		self.constraintsPanel,
-		elementWidth,
+		Theme.calculateInnerSize(Theme.DEFAULT_INNER_PADDING, elementWidth),
 		0)
 
 	self.constraintsPanel:getInnerPanel():setScroll(0, 0)
