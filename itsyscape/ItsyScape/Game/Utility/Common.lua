@@ -724,6 +724,22 @@ function Common.getActionConstraintResource(game, resource, count)
 	}
 end
 
+function Common.sortActionConstraintResources(a, b)
+	if a.type ~= b.type then
+		return a.type < b.type
+	end
+
+	if a.count ~= b.count then
+		return a.count > b.count
+	end
+
+	if a.resource ~= b.resource then
+		return a.resource < b.resource
+	end
+
+	return a.id < b.id
+end
+
 function Common.getActionConstraints(game, action)
 	local gameDB = game:getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -737,6 +753,8 @@ function Common.getActionConstraints(game, action)
 
 			table.insert(result.requirements, constraint)
 		end
+
+		table.sort(result.requirements, Common.sortActionConstraintResources)
 	end
 	do
 		result.inputs = {}
@@ -746,6 +764,8 @@ function Common.getActionConstraints(game, action)
 
 			table.insert(result.inputs, constraint)
 		end
+
+		table.sort(result.inputs, Common.sortActionConstraintResources)
 	end
 	do
 		result.outputs = {}
@@ -755,6 +775,8 @@ function Common.getActionConstraints(game, action)
 
 			table.insert(result.outputs, constraint)
 		end
+
+		table.sort(result.outputs, Common.sortActionConstraintResources)
 	end
 
 	return result

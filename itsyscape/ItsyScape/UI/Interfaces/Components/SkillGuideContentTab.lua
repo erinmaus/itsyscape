@@ -41,15 +41,18 @@ function SkillGuideContentTab:new(interface)
 	self.onSelectAction = Callback()
 
 	self.scrollableLayout = ScrollablePanel(GamepadGridLayout)
-	self.scrollableLayout:setSize(self:getSize())
+	self.scrollableLayout:setSize(
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH),
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.HEIGHT))
+	self.scrollableLayout:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
 
 	self.layout = self.scrollableLayout:getInnerPanel()
 	self.layout:setWrapContents(true)
-	self.layout:setSize(self:getSize(), 0)
-	self.layout:setPadding(self.PADDING, self.PADDING)
+	self.layout:setSize(self.scrollableLayout:getSize(), 0)
+	self.layout:setPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
 	self.layout:setUniformSize(
 		true,
-		self:getSize(),
+		self.scrollableLayout:getSize(),
 		Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
 	self.layout.onFocusChild:register(self._onFocusLayoutChild, self)
 	self.layout.onWrapFocus:register(self._onLayoutWrapFocus, self)
@@ -137,7 +140,7 @@ function SkillGuideContentTab:populate(count)
 
 	Theme.layoutScrollablePanelWithGridLayout(
 		self.scrollableLayout,
-		GamepadContentTab.WIDTH,
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH),
 		Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
 end
 

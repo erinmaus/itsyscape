@@ -54,7 +54,8 @@ function SkillGuideInfoContentTab:new(interface)
 
 	self.layout = GridLayout()
 	self.layout:setSize(self:getSize())
-	self.layout:setPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+	self.layout:setUniformSize(true, Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WIDTH), 0)
+	self.layout:setPadding(0, Theme.DEFAULT_OUTER_PADDING)
 	self:addChild(self.layout)
 
 	self.titleLabel = GridLayout()
@@ -71,7 +72,7 @@ function SkillGuideInfoContentTab:new(interface)
 	self.description = Panel()
 	self.description:setStyle(Theme.GROUP_PANEL_STYLE, PanelStyle)
 	self.description:setSize(
-		self.WIDTH,
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WIDTH),
 		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.HEIGHT, self.ICON_SIZE, self.CONSTRAINTS_HEIGHT))
 
 	local descriptionWidth, descriptionHeight = self.description:getSize()
@@ -121,6 +122,35 @@ function SkillGuideInfoContentTab:new(interface)
 	self.constraintsPanel:addChild(self.outputsPanel)
 
 	self.layout:setID("CraftItemInfo")
+end
+
+function SkillGuideInfoContentTab:expand()
+	local currentWidth, currentHeight = GamepadContentTab.WIDTH, GamepadContentTab.HEIGHT
+
+	local constraintsGroupWidth, constraintsGroupHeight = self.WIDTH, self.CONSTRAINTS_HEIGHT
+
+	self.constraintsPanel:getInnerPanel():setUniformSize(true, Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, constraintsGroupWidth), 0)
+	self.constraintsPanel:getInnerPanel():setSize(Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, constraintsGroupWidth), 0)
+	self.constraintsPanel:getInnerPanel():performLayout()
+
+	local constraintsWidth, constraintsHeight = self.constraintsPanel:getInnerPanel():getSize()
+
+	local constraintsGroup = self.constraintsPanel:getParent()
+	constraintsGroup:setSize(
+		constraintsGroupWidth,
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, constraintsHeight))
+
+	self.constraintsPanel:setSize(constraintsWidth, constraintsHeight)
+	self.constraintsPanel:setScrollSize(constraintsWidth, constraintsHeight)
+	self.constraintsPanel:performLayout()
+
+	self.layout:setWrapContents(true)
+	self.layout:setUniformSize(true, Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WIDTH), 0)
+	self.layout:performLayout()
+
+	self:setSize(
+		currentWidth,
+		currentHeight + (constraintsHeight - constraintsGroupHeight))
 end
 
 function SkillGuideInfoContentTab:gamepadScroll(x, y)

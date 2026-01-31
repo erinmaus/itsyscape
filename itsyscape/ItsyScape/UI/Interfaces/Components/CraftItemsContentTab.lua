@@ -25,32 +25,14 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
 local CraftItemsContentTab = Class(GamepadContentTab)
-CraftItemsContentTab.PADDING = 8
-CraftItemsContentTab.ICON_SIZE = 48
-CraftItemsContentTab.BUTTON_PADDING = 4
 
-CraftItemsContentTab.INACTIVE_BUTTON_STYLE = {
-	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
-	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
-	inactive = "Resources/Game/UI/Buttons/Button-Default.png"
-}
-
-CraftItemsContentTab.ACTIVE_BUTTON_STYLE = {
-	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
-	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
-	inactive = "Resources/Game/UI/Buttons/Button-Default.png"
-}
-
-CraftItemsContentTab.ITEM_NAME_LABEL_STYLE = {
-	color = { 1, 1, 1, 1 },
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 18,
-	center = true,
-	textShadow = true
-}
+CraftItemsContentTab.OVERRIDE_BUTTON_LABEL_STYLE = Theme.override(
+	Theme.BUTTON_LABEL_STYLE,
+	{ padding = Theme.DEFAULT_INNER_PADDING })
 
 function CraftItemsContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
@@ -58,17 +40,19 @@ function CraftItemsContentTab:new(interface)
 	self.onItemSelected = Callback()
 
 	self.scrollableLayout = ScrollablePanel(GamepadGridLayout)
-	self.scrollableLayout:setSize(self:getSize())
-	self.scrollableLayout:setScrollBarVisible(true)
+	self.scrollableLayout:setSize(
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WIDTH),
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.HEIGHT))
+	self.scrollableLayout:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
 
 	self.layout = self.scrollableLayout:getInnerPanel()
 	self.layout:setWrapContents(true)
-	self.layout:setSize(self:getSize() - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
-	self.layout:setPadding(self.PADDING, self.PADDING)
+	self.layout:setSize(self.scrollableLayout:getSize(), 0)
+	self.layout:setPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
 	self.layout:setUniformSize(
 		true,
-		self:getSize() - self.PADDING * 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE,
-		self.ICON_SIZE + self.BUTTON_PADDING * 2)
+		Theme.calculateInnerSize(Theme.DEFAULT_INNER_PADDING, self.scrollableLayout:getSize()),
+		Theme.calculateInnerSize(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_ICON_SIZE))
 	self.layout.onBlurChild:register(self._onBlurLayoutChild, self)
 	self.layout.onFocusChild:register(self._onFocusLayoutChild, self)
 	self.layout.onWrapFocus:register(self._onLayoutWrapFocus, self)
@@ -87,12 +71,12 @@ end
 function CraftItemsContentTab:setActiveItemIndex(value)
 	if self.activeItemIndex >= 1 and self.activeItemIndex <= self.layout:getNumChildren() then
 		local child = self.layout:getChildAt(self.activeItemIndex)
-		child:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
+		child:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
 	end
 
 	if value >= 1 and value <= self.layout:getNumChildren() then
 		local child = self.layout:getChildAt(value)
-		child:setStyle(self.ACTIVE_BUTTON_STYLE, ButtonStyle)
+		child:setStyle(Theme.DEFAULT_ACTIVE_BUTTON_STYLE, ButtonStyle)
 	end
 
 	self.activeItemIndex = value
@@ -140,7 +124,7 @@ function CraftItemsContentTab:_addItemButton()
 
 	local button = Button()
 	button:setData("index", index)
-	button:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
+	button:setStyle(Theme.DEFAULT_INACTIVE_BUTTON_STYLE, ButtonStyle)
 	button.onClick:register(self.activate, self, index)
 
 	local itemIcon = ItemIcon()
@@ -152,13 +136,9 @@ function CraftItemsContentTab:_addItemButton()
 	local _, width = self.layout:getUniformSize()
 
 	local itemNameLabel = Label()
-	itemNameLabel:setStyle(self.ITEM_NAME_LABEL_STYLE, LabelStyle)
-	itemNameLabel:setPosition(
-		self.ICON_SIZE + self.BUTTON_PADDING * 2,
-		0)
-	itemNameLabel:setSize(
-		width - self.ICON_SIZE - self.BUTTON_PADDING * 3,
-		self.BUTTON_PADDING * 2 + self.ICON_SIZE)
+	itemNameLabel:setStyle(self.OVERRIDE_BUTTON_LABEL_STYLE, LabelStyle)
+	itemNameLabel:setPosition(Theme.DEFAULT_ICON_SIZE, 0)
+	itemNameLabel:setSize(0, Theme.DEFAULT_BUTTON_SIZE)
 	button:addChild(itemNameLabel)
 	button:setData("name", itemNameLabel)
 
@@ -176,8 +156,10 @@ function CraftItemsContentTab:populate(count)
 		self:_addItemButton()
 	end
 
-	self.layout:performLayout()
-	self.scrollableLayout:setScrollSize(self.layout:getSize())
+	Theme.layoutScrollablePanelWithGridLayout(
+		self.scrollableLayout,
+		Theme.calculateInnerSize(Theme.DEFAULT_INNER_PADDING, self.scrollableLayout:getSize()),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_ICON_SIZE))
 
 	if isDifferentSize then
 		self:setActiveItemIndex(self.activeItemIndex)

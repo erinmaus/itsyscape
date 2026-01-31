@@ -405,7 +405,7 @@ end
 
 function Theme.calculateRemainingSizeWithPadding(padding, outerSize, ...)
 	local innerSize = Theme.calculateSizeWithPadding(padding, ...)
-	return math.floor(math.max(outerSize - innerSize - padding * 2, 0))
+	return math.floor(math.max(outerSize - innerSize - padding, 0))
 end
 
 Theme.DEFAULT_TEXT_INPUT_STYLE = {
