@@ -1774,6 +1774,8 @@ do
 	ActionType "Debug_Teleport"
 	ActionType "Debug_Navigate"
 	ActionType "Debug_Manipulate"
+	ActionType "Debug_Bank"
+	ActionType "Debug_Summon"
 	ActionType "Debug_Save"
 	ActionType "Debug_AntilogikaTeleport"
 	ActionType "Debug_AntilogikaWarp"
@@ -1790,6 +1792,8 @@ do
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
 	local navigateAction = ItsyScape.Action.Debug_Navigate()
 	local manipulateAction = ItsyScape.Action.Debug_Manipulate()
+	local bankAction = ItsyScape.Action.Debug_Bank()
+	local summonAction = ItsyScape.Action.Debug_Summon()
 	local saveAction = ItsyScape.Action.Debug_Save()
 	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
 	local antilogikaWarpAction = ItsyScape.Action.Debug_AntilogikaWarp()
@@ -1821,6 +1825,20 @@ do
 		Language = "en-US",
 		XProgressive = "Warping-Reality",
 		Action = manipulateAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Tele-Bank",
+		Language = "en-US",
+		XProgressive = "Tele-Banking",
+		Action = bankAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Manifest",
+		Language = "en-US",
+		XProgressive = "Manifesting",
+		Action = summonAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
@@ -1858,8 +1876,10 @@ do
 		teleportAction,
 		navigateAction,
 		manipulateAction,
-		antilogikaTeleportAction,
-		antilogikaWarpAction,
+		bankAction,
+		summonAction,
+		-- antilogikaTeleportAction,
+		-- antilogikaWarpAction,
 		antilogikaNoiseAction,
 		saveAction
 	}

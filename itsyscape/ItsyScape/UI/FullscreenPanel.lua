@@ -10,8 +10,18 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 
 local FullscreenPanel = Class(Panel)
+
+function FullscreenPanel:new()
+	Panel.new(self)
+
+	self:setStyle({
+		color = { 0, 0, 0, 0.5 },
+		radius = 0
+	}, PanelStyle)
+end
 
 function FullscreenPanel:performLayout()
 	Panel.performLayout(self)

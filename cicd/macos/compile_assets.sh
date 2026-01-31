@@ -2,6 +2,10 @@
 
 set -xe
 
+pushd ../..
+make LUAJIT="$(pwd)/cicd/macos/build/LuaJIT/src/luajit" all
+popd
+
 rm -rf ./staging/itsyrealm
 cp -r ../../itsyscape ./staging/itsyrealm
 cp -r ./staging/ext/B ./staging/itsyrealm/B
@@ -23,3 +27,6 @@ cd ../..
 
 cd ./staging/itsyrealm
 zip -0 -oXqr ../itsyrealm.love .
+
+cd ..
+rm -fr itsyrealm
