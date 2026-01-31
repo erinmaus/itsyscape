@@ -12,9 +12,45 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Utility = require "ItsyScape.Game.Utility"
+local Probe = require "ItsyScape.Peep.Probe"
 local Mashina = require "ItsyScape.Mashina"
 
 local COMBAT_TARGET = B.Reference("GoredDragon_TestAttackLogic", "COMBAT_TARGET")
+local PLAYER = B.Reference("GoredDragon_TestAttackLogic", "PLAYER")
+local SER_COMMANDER = B.Reference("GoredDragon_TestAttackLogic", "SER_COMMANDER")
+
+local GetPlayer = Mashina.Peep.GetPlayer {
+	[PLAYER] = B.Output.player
+}
+
+local GetSerCommander = Mashina.Peep.FindNearbyPeep {
+	filters = {
+		Probe.namedMapObject("SerCommander")
+	},
+
+	[SER_COMMANDER] = B.Output.result
+}
+
+local Talk = Mashina.Success {
+	Mashina.Step {
+		GetPlayer,
+		GetSerCommander,
+
+		Mashina.Player.Disable {
+			player = PLAYER
+		},
+
+		Mashina.Player.Dialog {
+			peep = SER_COMMANDER,
+			player = PLAYER,
+			main = "x_test_gored_dragon_stunned"
+		},
+
+		Mashina.Player.Enable {
+			player = PLAYER
+		}
+	}
+}
 
 local Punished = Mashina.Step {
 	Mashina.Peep.OnPoke {
@@ -49,10 +85,14 @@ local Punished = Mashina.Step {
 			}
 		},
 
-		Mashina.Peep.TimeOut {
-			min_duration = 16,
-			max_duration = 20
-		},
+		Mashina.Step {
+			Talk,
+
+			Mashina.Peep.TimeOut {
+				min_duration = 8,
+				max_duration = 8
+			},
+		}
 	},
 
 	Mashina.Function {

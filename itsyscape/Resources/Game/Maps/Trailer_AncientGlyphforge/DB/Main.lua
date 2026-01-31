@@ -104,23 +104,11 @@ do
 	}
 end
 
-M["Anchor_Peak"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 131,
-		PositionY = 16,
-		PositionZ = 79,
-		Name = "Anchor_Peak",
-		Map = M._MAP,
-		Resource = M["Anchor_Peak"]
-	}
-end
-
 M["GoredDragon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 33,
-		PositionY = 3,
+		PositionY = 0,
 		PositionZ = 33,
 		ScaleX = 0.5,
 		ScaleY = 0.5,
@@ -135,5 +123,56 @@ do
 		MapObject = M["GoredDragon"],
 		DoesNotDespawn = 1,
 		DoesNotRespawn = 1
+	}
+end
+
+M["SerCommander"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33,
+		PositionY = 0,
+		PositionZ = 33,
+		ScaleX = 0.5,
+		ScaleY = 0.5,
+		ScaleZ = 0.5,
+		Name = "SerCommander",
+		Map = M._MAP,
+		Resource = M["SerCommander"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "IsabelleIsland_KnightCommander",
+		MapObject = M["SerCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-follow-player",
+		IsDefault = 1,
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Orlando_FollowLogic.lua",
+		Resource = M["SerCommander"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "tutorial-general-attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_GeneralAttackLogic.lua",
+		Resource = M["SerCommander"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "VizierRockKnight",
+		Main = "x_test_gored_dragon_stunned",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["SerCommander"],
+		Name = "VizierRockKnight",
+		Action = TalkAction
+	}
+
+	M["SerCommander"] {
+		TalkAction
 	}
 end

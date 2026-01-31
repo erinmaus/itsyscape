@@ -40,7 +40,7 @@ local Tree = BTreeBuilder.Node() {
 			[CommonLogic.PLAYER] = B.Output.player
 		},
 
-		Mashina.Sequence {
+		Mashina.ParallelSequence {
 			Mashina.ParallelTry {
 				CommonLogic.IsAttacking,
 				CommonLogic.AttackPlayerTarget,
