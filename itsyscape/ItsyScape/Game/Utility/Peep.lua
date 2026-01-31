@@ -2607,6 +2607,17 @@ function Peep.makePlayer(peep)
 		movement.maxSpeed = 10
 		movement.maxAcceleration = 6
 	end
+
+	peep:addPoke("consumeItem")
+	peep:addPoke("destroyItem")
+	peep:addPoke("noteItem")
+	peep:addPoke("unnoteItem")
+	peep:addPoke("spawnItem")
+	peep:addPoke("transferItemTo")
+	peep:addPoke("transferItemFrom")
+	peep:addPoke("equipItem")
+	peep:addPoke("spawnEquipment")
+	peep:addPoke("dequipItem")
 end
 
 function Peep.makeHuman(peep)
