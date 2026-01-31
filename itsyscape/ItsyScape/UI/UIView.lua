@@ -1236,6 +1236,7 @@ function UIView:new(gameView)
 	ui.onOpen:register(self.open, self)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
+	ui.onRefresh:register(self.refresh, self)
 
 	self.controlManager = ControlManager(self)
 
@@ -1408,10 +1409,6 @@ function UIView:pull(interfaceID, interfaceIndex)
 		interfaces[interfaceIndex] = state
 	end
 
-	if not state then
-		print("???", interfaceID, interfaceIndex)
-	end
-
 	return state or {}
 end
 
@@ -1523,6 +1520,13 @@ function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 		actionIndex = actionIndex,
 		e = e
 	})
+end
+
+function UIView:refresh(ui, interfaceID, index)
+	local interface = self:getInterface(interfaceID, index)
+	if interface then
+		interface:refresh(self:pull(interfaceID, index))
+	end
 end
 
 function UIView:keyDown(...)

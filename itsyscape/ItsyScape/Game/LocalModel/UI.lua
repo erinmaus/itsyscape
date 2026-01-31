@@ -178,6 +178,7 @@ function LocalUI:_open(peep, interfaceID, blocking, ...)
 
 	self.onPush(self, interfaceID, i.n, state, controller:getPlayer())
 	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
+	self:onRefresh(interfaceID, i.n)
 
 	peep:poke("openInterface", interfaceID, i.n, blocking)
 	Analytics:openedInterface(peep, interfaceID, blocking)
@@ -255,7 +256,8 @@ function LocalUI:update(delta)
 			local state = self.pullDebugStats:measure(interface)
 			if not RPCState.deepEquals(self.uiStates[interface], state) then
 				self.uiStates[interface] = state
-				self.onPush(self, id, n, self.pullDebugStats:measure(interface))
+				self:onPush(id, n, state)
+				self:onRefresh(id, n)
 			end
 		end
 	end

@@ -51,6 +51,10 @@ function Interface:getIndex()
 	return self.index
 end
 
+function Interface:refresh(state)
+	-- Nothing.
+end
+
 function Interface:tick()
 	-- Nothing.
 end
