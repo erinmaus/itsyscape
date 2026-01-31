@@ -824,6 +824,7 @@ end
 
 function BaseCombatHUD:refreshState()
 	self.wasRefreshed = true
+	self:updateQuickHeal()
 	self:refreshThingies()
 end
 
