@@ -111,6 +111,7 @@ function WidgetInputProvider:_focusWidget(widget)
 	local current = self:getFocusedWidget()
 	if current then
 		self:onBlur(current)
+		self.previousFocusedWidget = current
 	end
 
 	self.focusedWidget = widget or false
@@ -137,6 +138,7 @@ function WidgetInputProvider:getFocusedWidget()
 	if self.focusedWidget then
 		if not self.focusedWidget:getIsFocused() or not self.focusedWidget:hasParent(self.root) then
 			self:onBlur(self.focusedWidget)
+			self.previousFocusedWidget = self.focusedWidget
 			self.focusedWidget = false
 		end
 	end
@@ -631,7 +633,13 @@ function WidgetInputProvider:_updateGamepad(delta)
 	end
 end
 
+function WidgetInputProvider:getIsFocusTaken()
+	return not not (self:getFocusedWidget() or self.previousFocusedWidget)
+end
+
 function WidgetInputProvider:update(delta)
+	self.previousFocusedWidget = false
+
 	self:_updateGamepad(delta)
 end
 

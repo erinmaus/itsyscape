@@ -1165,9 +1165,8 @@ end
 
 function DemoApplication:controlUp(_, control)
 	local inputProvider = self:getUIView():getInputProvider()
-	local focusedWidget = inputProvider:getFocusedWidget()
 
-	if not focusedWidget then
+	if not inputProvider:getIsFocusTaken() then
 		if control:is("cycleTarget") then
 			self:nextShimmer()
 			return
@@ -1192,7 +1191,8 @@ function DemoApplication:controlUp(_, control)
 			return
 		end
 	end
-	
+
+	local focusedWidget = inputProvider:getFocusedWidget()
 	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
 		return
 	end
@@ -1224,62 +1224,6 @@ function DemoApplication:controlUp(_, control)
 		return
 	end
 end
-
--- function DemoApplication:gamepadRelease(joystick, button)
--- 	local inputProvider = self:getUIView():getInputProvider()
--- 	local focusedWidget = inputProvider:getFocusedWidget()
-
--- 	Application.gamepadRelease(self, joystick, button)
-
--- 	if not inputProvider:isCurrentJoystick(joystick) then
--- 		return
--- 	end
-
--- 	local cycleTargetButton = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCycleTarget")
--- 	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
--- 	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
-
--- 	if not focusedWidget then
--- 		if button == cycleTargetButton then
--- 			self:nextShimmer()
--- 		elseif button == gamepadProbe then
--- 			self:probeCurrentShimmer(false)
--- 		elseif button == gamepadAction then
--- 			self:probeCurrentShimmer(true)
--- 		end
--- 	end
-
--- 	local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
--- 	local ribbon = self:getUIView():getInterface("GamepadRibbon")
-
--- 	if combatRing and combatRing:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenCombatRing") then
--- 		self:toggleUI("GamepadCombatHUD")
--- 		return
--- 	elseif ribbon and ribbon:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenRibbon") then
--- 		self:toggleUI("GamepadRibbon")
--- 		return
--- 	end
-	
--- 	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
--- 		return
--- 	end
-
--- 	focusedWidget = inputProvider:getFocusedWidget()
--- 	if focusedWidget and self:isInterfaceBlockingGamepadMovement(focusedWidget) then
--- 		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
--- 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
--- 			return
--- 		end
--- 	end
-
--- 	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
--- 		self:toggleUI("GamepadCombatHUD")
--- 	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
--- 		self:toggleUI("GamepadRibbon")
---  	elseif button == inputProvider:getKeybind("gamepadToggleTargetCamera") then
--- 		_CONF.targetCameraMode = not _CONF.targetCameraMode
--- 	end
--- end
 
 function DemoApplication:getTouches()
 	local result = {}
@@ -2254,7 +2198,7 @@ function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 
 	local nextIndex = math.wrapIndex(currentIndex, 1, #shimmerCandidates)
 	local candidate = shimmerCandidates[nextIndex]
-	if candidate and not (candidate.objectID == pendingObjectID and candidate.objectType == pendingObjectType ) then
+	if candidate and not (candidate.objectID == pendingObjectID and candidate.objectType == pendingObjectType) then
 		return candidate.objectID, candidate.objectType
 	end
 

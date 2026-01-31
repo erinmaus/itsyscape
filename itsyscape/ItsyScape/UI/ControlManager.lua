@@ -194,6 +194,10 @@ function ControlManager:update()
 						self.activeControls[active] = nil
 					end
 				end
+
+				if not isActive then
+					self.activeControls[control] = nil
+				end
 			else
 				self.activeControls[control] = NOT_ACTIVE
 			end

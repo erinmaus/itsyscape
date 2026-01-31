@@ -1973,6 +1973,7 @@ function UIView:tick()
 end
 
 function UIView:update(delta)
+	self.controlManager:update()
 	self.inputProvider:update(delta)
 
 	if self.pendingPokeMenu then
