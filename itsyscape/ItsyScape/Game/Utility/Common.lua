@@ -716,6 +716,7 @@ function Common.getActionConstraintResource(game, resource, count)
 
 	return {
 		type = resourceType.name,
+		id = resource.id.value,
 		resource = resource.name,
 		name = Common.getName(resource, gameDB) or resource.name,
 		description = Common.getDescription(resource, gameDB, nil, 1),
@@ -800,7 +801,7 @@ function Common.getName(resource, gameDB, lang)
 	if nameRecord then
 		return nameRecord:get("Value")
 	else
-		return false
+		return Utility.Text.getResourceName(resource, gameDB, lang)
 	end
 end
 
@@ -815,6 +816,11 @@ function Common.getDescription(resource, gameDB, lang, index)
 	if descriptionRecord and #descriptionRecord > 0 then
 		return descriptionRecord[math.min(index or 1, #descriptionRecord) or love.math.random(#descriptionRecord)]:get("Value")
 	else
+		local value = Utility.Text.getResourceDescription(resource, gameDB, lang)
+		if value then
+			return value
+		end
+
 		local name = Common.getName(resource, gameDB) or ("*" .. resource.name)
 		return string.format("It's %s, as if you didn't know.", name)
 	end

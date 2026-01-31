@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local json = require "json"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
@@ -963,6 +964,80 @@ function Text.prettyNumber(value)
 	int = int:reverse():gsub("(%d%d%d)", "%1,")
 
 	return minus .. int:reverse():gsub("^,", "") .. fraction
+end
+
+-- TODO: use https://github.com/kikito/i18n.lua under the hood
+Text.TRANSLATIONS = {}
+function Text.getTranslations(language)
+	language = language or "en_US"
+	if Text.TRANSLATIONS[language] then
+		return Text.TRANSLATIONS[language]
+	end
+
+	local result = {}
+
+	local folder = string.format("Resources/Game/DB/Language/%s", language)
+	for _, translation in ipairs(love.filesystem.getDirectoryItems(folder)) do
+		local filename = string.format("%s/%s", folder, translation)
+		local values = json.decode(love.filesystem.read(filename))
+
+		for key, value in pairs(values) do
+			if result[key] ~= nil then
+				error(string.format("repeat key '%s'", key))
+			end
+
+			result[key] = value
+		end
+	end
+
+	Text.TRANSLATIONS[language] = result
+	return result
+end
+
+function Text.get(language, key, values)
+	local translations = Text.getTranslations(language)
+	return translations[key]
+end
+
+Text.RESOURCES = {}
+local function _get(resource, gameDB, language, suffix)
+	language = language or "en_US"
+
+	if Text.RESOURCES[language] and Text.RESOURCES[language][resource.id.value] and Text.RESOURCES[language][resource.id.value][suffix] ~= nil then
+		return Text.RESOURCES[language][resource.id.value][suffix]
+	end
+
+	local key
+	local resourceType = gameDB:getBrochure():getResourceTypeFromResource(resource)
+	if resourceType.name == "MapObject" then
+		local mapObjectReference = gameDB:getRecord("MapObjectLocation", { Resource = resource }) or gameDB:getRecord("MapObjectReference", { Resource = resource })
+		if mapObjectReference then
+			key = string.format("MapObject@%s.%s", mapObjectReference:get("Map").name, mapObjectReference:get("Name"))
+		end
+	else
+		key = string.format("%s.%s", resourceType.name, resource.name)
+	end
+
+	if not key then
+		Text.RESOURCES[language][resource.id.value][suffix] = false
+		return false
+	end
+
+	key = string.format("%s.%s", key, suffix)
+	local value = Text.get(language, key) or false
+	Text.RESOURCES[language] = Text.RESOURCES[language] or {}
+	Text.RESOURCES[language][resource.id.value] = Text.RESOURCES[language][resource.id.value] or {}
+	Text.RESOURCES[language][resource.id.value][suffix] = value
+
+	return value
+end
+
+function Text.getResourceName(resource, gameDB, lang)
+	return _get(resource, gameDB, language, "name")
+end
+
+function Text.getResourceDescription(resource, gameDB, lang)
+	return _get(resource, gameDB, language, "description")
 end
 
 return Text
