@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local State = require "ItsyScape.Game.State"
 local StateProvider = require "ItsyScape.Game.StateProvider"
 local ActiveArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ActiveArtisanStationBehavior"
@@ -40,7 +41,7 @@ function ArtisanStationStateProvider:give(name, count, flags)
 end
 
 function ArtisanStationStateProvider:count(name, flags)
-	local selfCount = Utility.Artisan.countProperty(self, name)
+	local selfCount = Utility.Artisan.countProperty(self.peep, name)
 	local stationCount = Utility.Artisan.countProperty(self:getActiveArtisanStation(), name)
 
 	return (selfCount == math.huge or stationCount == math.huge) and math.huge or (selfCount + stationCount)

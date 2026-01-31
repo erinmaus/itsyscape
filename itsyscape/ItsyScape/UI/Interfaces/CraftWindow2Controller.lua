@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local ArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ArtisanStationBehavior"
+local ActiveArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ActiveArtisanStationBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local CraftWindowController = Class(Controller)
@@ -22,6 +23,11 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	actionTypeFilter = actionTypeFilter or ""
 
 	Controller.new(self, peep, director)
+
+	if prop then
+		local _, active = peep:addBehavior(ActiveArtisanStationBehavior)
+		active.target = prop
+	end
 
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
@@ -254,6 +260,7 @@ function CraftWindowController:poke(actionID, actionIndex, e)
 	end
 end
 
+
 function CraftWindowController:pull()
 	return self.state
 end
@@ -279,6 +286,12 @@ function CraftWindowController:select(e)
 	assert(self.actionsByID[e.id] ~= nil, "action with ID not found")
 
 	self.currentAction = self.actionsByID[e.id]
+end
+
+function CraftWindowController:close()
+	Controller.close(self)
+
+	self.peep:removeBehavior(ActiveArtisanStationBehavior)
 end
 
 return CraftWindowController

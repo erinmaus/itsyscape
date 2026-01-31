@@ -22,11 +22,11 @@ local DragonFireball = Class(PassableProp)
 DragonFireball.DEFAULT_MOUTH_POSITION = Vector(0, 6, 14)
 
 DragonFireball.DEFAULT_PROJECTILE_RADIUS = 2
-DragonFireball.DEFAULT_EXPLOSION_RADIUS = 8
+DragonFireball.DEFAULT_EXPLOSION_RADIUS = 4
 DragonFireball.DEFAULT_KNOCKBACK = 8
 
-DragonFireball.DEFAULT_ACCELERATION_MAGNITUDE = 8
-DragonFireball.DEFAULT_VELOCITY_MAGNITUDE     = 12
+DragonFireball.DEFAULT_ACCELERATION_MAGNITUDE = 6
+DragonFireball.DEFAULT_VELOCITY_MAGNITUDE     = 8
 
 function DragonFireball:new(...)
 	PassableProp.new(self, ...)

@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local ArtisanStationStateProvider = require "ItsyScape.Game.ArtisanStationStateProvider"
 local Utility = require "ItsyScape.Game.Utility"
 local ArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ArtisanStationBehavior"
 local ActiveArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ActiveArtisanStationBehavior"
@@ -55,7 +56,7 @@ function Artisan.takeProperty(peep, property, value)
 end
 
 function Artisan.countProperty(peep, property)
-	if not peep then
+	if not (peep and peep:getIsReady()) then
 		return 0
 	end
 
@@ -140,8 +141,15 @@ function Artisan.Peep:onAddItem(e)
 	end
 end
 
+function Artisan.Peep:onFinalize()
+	local artisanState = ArtisanStationStateProvider(self)
+	self:getState():addProvider("ArtisanProperty", artisanState)
+end
+
 function Artisan.makeArtisan(peep)
 	peep:addBehavior(ArtisanStationBehavior)
+
+	peep:listen("finalize", Artisan.Peep.onFinalize)
 
 	peep:listen("consumeItem", Artisan.Peep.onRemoveItem)
 	peep:listen("destroyItem", Artisan.Peep.onRemoveItem)

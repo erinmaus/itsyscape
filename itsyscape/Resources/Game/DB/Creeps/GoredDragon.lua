@@ -14,6 +14,18 @@ local GoredDragon = ItsyScape.Resource.Peep "GoredDragon" {
 
 ItsyScape.Meta.ArtisanProperty {
 	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
+	Resource = GoredDragon
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt",
+	Resource = GoredDragon
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
 	Property = ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt",
 	Resource = GoredDragon
 }

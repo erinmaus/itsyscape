@@ -9,4 +9,5 @@
 --------------------------------------------------------------------------------
 
 ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt"
+ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt"
 ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt"

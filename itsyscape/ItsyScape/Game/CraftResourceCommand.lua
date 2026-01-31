@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Command = require "ItsyScape.Peep.Command"
 local Utility = require "ItsyScape.Game.Utility"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local ActiveArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ActiveArtisanStationBehavior"
 
 local CraftResourceCommand = Class(Command)
 
@@ -42,6 +43,11 @@ function CraftResourceCommand:step(peep)
 		return
 	end
 
+	if self.prop then
+		local _, active = peep:addBehavior(ActiveArtisanStationBehavior)
+		active.target = self.prop
+	end
+
 	local canStep = self.action:canPerform(peep:getState()) and self.action:canTransfer(peep:getState())
 	if not canStep then
 		self.isDone = true
@@ -63,6 +69,8 @@ function CraftResourceCommand:step(peep)
 	if self.isInterfaceOpen and self.interfaceController then
 		self.interfaceController:updateProgress(self.progress, self.count)
 	end
+
+	peep:removeBehavior(ActiveArtisanStationBehavior)
 end
 
 function CraftResourceCommand:onBegin(peep)
