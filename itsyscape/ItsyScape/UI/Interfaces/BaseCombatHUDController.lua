@@ -1566,7 +1566,7 @@ function BaseCombatHUDController:getQuickHeal()
 end
 
 function BaseCombatHUDController:sendRefresh()
-	self:send("refresh")
+	self:send("refreshState")
 end
 
 function BaseCombatHUDController:close()

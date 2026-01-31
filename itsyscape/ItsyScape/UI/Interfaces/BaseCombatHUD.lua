@@ -822,7 +822,7 @@ function BaseCombatHUD:updateThingies()
 	self:_updateStanceThingies()
 end
 
-function BaseCombatHUD:refresh()
+function BaseCombatHUD:refreshState()
 	self.wasRefreshed = true
 	self:refreshThingies()
 end
