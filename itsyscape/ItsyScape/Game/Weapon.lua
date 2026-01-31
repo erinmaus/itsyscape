@@ -718,7 +718,7 @@ function Weapon:getDodgeRange(peep, target)
 end
 
 function Weapon:getDodgeCooldown(peep)
-	return self:getCooldown(peep)
+	return 1
 end
 
 function Weapon:adjustDodgeDirection(peep, target, direction)

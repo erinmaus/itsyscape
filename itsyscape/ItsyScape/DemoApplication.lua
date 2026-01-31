@@ -122,6 +122,9 @@ function DemoApplication:new()
 	self.quickDodgeDirection = Vector(0, 0, -1)
 	self.currentQuickDodgeDirection = Vector()
 
+	self.wasPlayerMoving = false
+	self.isPlayerMoving = false
+
 	self.mockGamepadButtons = {}
 
 	local relativePosition = Vector()
@@ -1139,7 +1142,7 @@ function DemoApplication:tryQuickDodge()
 	end
 
 	local target = player:getTarget()
-	if target then
+	if target and not self.wasPlayerMoving then
 		player:startDodge(target)
 		return
 	end
@@ -2632,6 +2635,9 @@ function DemoApplication:updatePlayerMovement()
 	else
 		player:move(0, 0)
 	end
+
+	self.wasPlayerMoving = self.isPlayerMoving
+	self.isPlayerMoving = isMoving
 end
 
 function DemoApplication:hideToolTip()
