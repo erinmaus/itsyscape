@@ -296,6 +296,14 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "ArtisanProperty"
+
+	Meta "ArtisanProperty" {
+		Count = Meta.TYPE_REAL,
+		Property = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Gatherable"
 
 	Meta "GatherableScene" {

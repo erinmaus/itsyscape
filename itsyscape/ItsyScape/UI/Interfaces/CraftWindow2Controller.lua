@@ -13,6 +13,7 @@ local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local ArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ArtisanStationBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local CraftWindowController = Class(Controller)
@@ -25,6 +26,15 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
+
+	local station = prop and prop:getBehavior(ArtisanStationBehavior)
+	local traits = {}
+	if station then
+		for resourceName, count in pairs(station.properties) do
+			table.insert(traits, Utility.getActionConstraintResource(game, gameDB:getResource(resourceName, "ArtisanProperty"), count))
+		end
+		table.sort(traits, function(a, b) return a.id < b.id end)
+	end
 
 	local resources = gameDB:getRecords("ResourceCategory", {
 		Key = categoryKey,
@@ -86,6 +96,8 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	end
 
 	self.state = {
+		traits = traits,
+
 		action = {
 			verb = verb,
 			categoryKey = categoryKey,

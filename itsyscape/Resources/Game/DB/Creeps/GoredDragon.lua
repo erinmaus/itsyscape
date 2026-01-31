@@ -12,6 +12,12 @@ local GoredDragon = ItsyScape.Resource.Peep "GoredDragon" {
 	ItsyScape.Action.Attack()
 }
 
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt",
+	Resource = GoredDragon
+}
+
 local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
 ItsyScape.Meta.DelegatedActionTarget {
 	CategoryKey = "Metal",

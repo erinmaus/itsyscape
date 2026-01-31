@@ -74,6 +74,15 @@ local BARS = {
 		tier = 55,
 		weight = 12,
 		{ name = "GoldOre", count = 1 }
+	},
+
+	["Azatite"] = {
+		tier = 60,
+		weight = 100,
+		traits = {
+			"DragonHeat_Smelt"
+		},
+		{ name = "AzatiteOre", count = 1 }
 	}
 }
 
@@ -107,6 +116,17 @@ for name, bar in spairs(BARS) do
 			Count = ItsyScape.Utility.xpForResource(math.max(bar.tier, 1)) * #bar
 		}
 	}
+
+	if bar.traits then
+		for _, trait in ipairs(bar.traits) do
+			SmeltAction {
+				Requirement {
+					Resource = ItsyScape.Resource.ArtisanProperty(trait),
+					Count = 1
+				}
+			}
+		end
+	end
 
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(bar.tier + 1),

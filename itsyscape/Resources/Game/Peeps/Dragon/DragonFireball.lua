@@ -21,7 +21,8 @@ local DragonFireball = Class(PassableProp)
 
 DragonFireball.DEFAULT_MOUTH_POSITION = Vector(0, 6, 14)
 
-DragonFireball.DEFAULT_EXPLOSION_RADIUS = 4
+DragonFireball.DEFAULT_PROJECTILE_RADIUS = 2
+DragonFireball.DEFAULT_EXPLOSION_RADIUS = 8
 DragonFireball.DEFAULT_KNOCKBACK = 8
 
 DragonFireball.DEFAULT_ACCELERATION_MAGNITUDE = 8
@@ -60,7 +61,8 @@ function DragonFireball:onShoot(e)
 	self.currentDirection = self.startPosition:direction(self.targetPosition)
 	self.currentAcceleration = self.currentDirection * self.currentAccelerationMagnitude
 	self.currentVelocity = self.currentDirection * self.currentVelocityMagnitude
-	self.currentRadius = e.radius or self.DEFAULT_EXPLOSION_RADIUS
+	self.currentExplosionRadius = e.explosionRadius or self.DEFAULT_EXPLOSION_RADIUS
+	self.currentProjectileRadius = e.projectileRadius or self.DEFAULT_PROJECTILE_RADIUS
 
 	self.currentKnockback = e.knockback or self.DEFAULT_KNOCKBACK
 
@@ -131,7 +133,7 @@ function DragonFireball:_tryExplode()
 			then
 				local y = map:getInterpolatedHeight(relativePosition.x, relativePosition.z)
 				if relativePosition.y <= y then
-					self:_tryHit(self.currentRadius)
+					self:_tryHit(self.currentExplosionRadius)
 
 					local stage = self:getDirector():getGameInstance():getStage()
 					stage:fireProjectile("CannonSplosionHit", Vector.ZERO, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))

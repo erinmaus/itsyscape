@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
@@ -16,6 +17,8 @@ local BasicFurnace = Class(Prop)
 
 function BasicFurnace:new(...)
 	Prop.new(self, ...)
+
+	Utility.Peep.makeArtisanStation(self)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(4.5, 4, 3.5)

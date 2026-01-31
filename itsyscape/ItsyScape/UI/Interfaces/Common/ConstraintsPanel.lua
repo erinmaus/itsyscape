@@ -24,7 +24,7 @@ ConstraintsPanel.DEFAULT_WIDTH = 240
 ConstraintsPanel.DEFAULT_PADDING = 4
 ConstraintsPanel.TITLE_SIZE = 24
 ConstraintsPanel.BLACKLIST = {
-	['prop'] = true
+	["prop"] = true
 }
 
 function ConstraintsPanel:new(view, config)
@@ -78,12 +78,8 @@ function ConstraintsPanel:getConstraints()
 	return self.constraints
 end
 
-function ConstraintsPanel:performLayout(doLogic)
+function ConstraintsPanel:performLayout()
 	Widget.performLayout(self)
-
-	if not doLogic then
-		return
-	end
 
 	if self.layout then
 		self.panel:removeChild(self.layout)
@@ -110,16 +106,19 @@ function ConstraintsPanel:performLayout(doLogic)
 
 		if not isBlacklisted then
 			local left
-			if c.type:lower() == 'skill' then
+			if c.type:lower() == "skill" then
 				left = Icon()
 				left:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", c.resource))
-			elseif c.type:lower() == 'item' or c.type:lower() == 'ingredient' then
+			elseif c.type:lower() == "artisanproperty" then
+				left = Icon()
+				left:setIcon(string.format("Resources/Game/ArtisanProperties/%s/Icon.png", c.resource))
+			elseif c.type:lower() == "item" or c.type:lower() == "ingredient" then
 				left = ItemIcon()
 				left:setItemID(c.resource)
-			elseif c.type:lower() == 'quest' then
+			elseif c.type:lower() == "quest" then
 				left = Icon()
 				left:setIcon("Resources/Game/UI/Icons/Things/Compass.png")
-			elseif c.type:lower() == 'sailingitem' then
+			elseif c.type:lower() == "sailingitem" then
 				left = Icon()
 				left:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", c.resource))
 			else
@@ -134,8 +133,8 @@ function ConstraintsPanel:performLayout(doLogic)
 				textShadow = self.config.constraintShadow == nil or false,
 				width = rightWidth
 			}, self.view:getResources()))
-			if c.type:lower() == 'skill' then
-				if self:getData('skillAsLevel', false) then
+			if c.type:lower() == "skill" then
+				if self:getData("skillAsLevel", false) then
 					local level = Curve.XP_CURVE:getLevel(c.count, 120)
 					local text = string.format("Lvl %d %s", level, c.name)
 					right:setText(text)
@@ -143,7 +142,7 @@ function ConstraintsPanel:performLayout(doLogic)
 					local text = string.format("+%s %s XP", Utility.Text.prettyNumber(math.floor(c.count)), c.name)
 					right:setText(text)
 				end
-			elseif c.type:lower() == 'item' then
+			elseif c.type:lower() == "item" then
 				local text
 				if c.count <= 1 then
 					text = c.name
@@ -151,7 +150,20 @@ function ConstraintsPanel:performLayout(doLogic)
 					text = string.format("%s %s", Utility.Text.prettyNumber(math.floor(c.count)), c.name)
 				end
 				right:setText(text)
-			elseif c.type:lower() == 'keyitem' then
+			elseif c.type:lower() == "artisanproperty" then
+				local t
+				if self.config.artisanPropertiesAsTraits then
+					t = c.name
+				else
+					t = string.format("%s: %s", c.name, c.description)
+				end
+
+				if c.count <= 1 then
+					right:setText(t)
+				else
+					text = string.format("%s %s", Utility.Text.prettyNumber(math.floor(c.count)), t)
+				end
+			elseif c.type:lower() == "keyitem" then
 				right:setText(c.description or c.name)
 			elseif c.type:lower() == "boss" then
 				if c.count > 1 then

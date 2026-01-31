@@ -28,8 +28,8 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 1.5,
-	SizeY = 2,
-	SizeZ = 1.5,
+	SizeX = 0.5,
+	SizeY = 0.5,
+	SizeZ = 0.5,
 	MapObject = DragonFireball
 }

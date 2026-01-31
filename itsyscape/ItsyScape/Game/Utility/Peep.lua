@@ -2597,6 +2597,14 @@ function Peep.makeSkiller(peep)
 	peep:addPoke('resourceObtained')
 end
 
+function Peep.makeArtisanStation(peep)
+	Utility.Artisan.makeArtisanStation(peep)
+end
+
+function Peep.makeArtisan(peep)
+	Utility.Artisan.makeArtisan(peep)
+end
+
 function Peep.makeDummy(peep)
 	peep:listen('finalize', Utility.Peep.Dummy.onFinalize)
 end

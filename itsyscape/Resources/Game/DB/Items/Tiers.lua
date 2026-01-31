@@ -117,6 +117,15 @@ do
 		Name = "Gold",
 		Tier = 55
 	}
+
+	ItsyScape.Meta.ResourceCategoryGroup {
+		Icon = ItsyScape.Resource.Item "AzatiteBar",
+		Key = "Metal",
+		Value = "Azatite",
+		Language = "en-US",
+		Name = "Azatite",
+		Tier = 60
+	}
 end
 
 -- Woods

@@ -17,6 +17,12 @@ local GoredDragon = Class(BaseDragon)
 GoredDragon.EQUIPMENT_SLOT_BONES      = "bones"
 GoredDragon.EQUIPMENT_SLOT_FLAME_SACK = "flame-sack"
 
+function GoredDragon:new(...)
+	BaseDragon.new(self, ...)
+
+	Utility.Peep.makeArtisanStation(self)
+end
+
 function GoredDragon:ready(director, game)
 	BaseDragon.ready(self, director, game)
 

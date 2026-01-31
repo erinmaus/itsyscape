@@ -85,7 +85,7 @@ function MakeContentTab:new(interface)
 	self.makeLayout = GamepadGridLayout()
 	self.makeLayout:setPadding(self.PADDING, (self.MAKE_ROW_HEIGHT - self.MAKE_INPUT_HEIGHT) / 2)
 	self.makeLayout:setEdgePadding(false, true)
-	self.makeLayout:setSize(self.WIDTH - self.PADDING * 2, self.MAKE_ROW_HEIGHT)
+	self.makeLayout:setSize(self.WIDTH, self.MAKE_ROW_HEIGHT)
 	self.layout:addChild(self.makeLayout)
 
 	self.makeInput = GamepadNumberInput()
@@ -93,7 +93,7 @@ function MakeContentTab:new(interface)
 	self.makeInput:setNumDigits(2)
 	self.makeInput:setValue(1)
 	self.makeInput:setSize(
-		self.WIDTH - self.MAKE_INPUT_HEIGHT * 2 - self.PADDING * 3,
+		self.WIDTH - self.MAKE_INPUT_HEIGHT * 2 - self.PADDING,
 		self.MAKE_INPUT_HEIGHT)
 	self.makeInput:setZDepth(100)
 	self.makeInput.onSubmit:register(self.onMakeInputSubmit, self)
@@ -109,7 +109,7 @@ function MakeContentTab:new(interface)
 
 	local constraintsGroup = Panel()
 	constraintsGroup:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
-	constraintsGroup:setSize(self.WIDTH - self.PADDING * 2, self.HEIGHT - self.MAKE_ROW_HEIGHT - self.PADDING * 3)
+	constraintsGroup:setSize(self.WIDTH, self.HEIGHT - self.MAKE_ROW_HEIGHT - self.PADDING * 3)
 	self.layout:addChild(constraintsGroup)
 
 	local constraintsGroupWidth, constraintsGroupHeight = constraintsGroup:getSize()

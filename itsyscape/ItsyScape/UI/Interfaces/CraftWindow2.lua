@@ -10,9 +10,6 @@
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
-local SceneNode = require "ItsyScape.Graphics.SceneNode"
-local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
-local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Button = require "ItsyScape.UI.Button"
 local CloseButton = require "ItsyScape.UI.CloseButton"
 local Icon = require "ItsyScape.UI.Icon"
@@ -24,7 +21,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
-local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
+local ArtisanInfoContentTab = require "ItsyScape.UI.Interfaces.Components.ArtisanInfoContentTab"
 local CraftCategoriesContentTab = require "ItsyScape.UI.Interfaces.Components.CraftCategoriesContentTab"
 local CraftItemsContentTab = require "ItsyScape.UI.Interfaces.Components.CraftItemsContentTab"
 local CraftInfoContentTab = require "ItsyScape.UI.Interfaces.Components.CraftInfoContentTab"
@@ -43,7 +40,7 @@ CraftWindow.BACK_BUTTON_ICON_SIZE = 24
 CraftWindow.CONTENT_WIDTH = GamepadContentTab.WIDTH * 2 + CraftWindow.PADDING * 3
 CraftWindow.CONTENT_HEIGHT = GamepadContentTab.HEIGHT + CraftWindow.PADDING * 2
 
-CraftWindow.CONTENT_LAYOUT_WIDTH = GamepadContentTab.WIDTH * 4 + CraftWindow.PADDING * 5 * 2
+CraftWindow.CONTENT_LAYOUT_WIDTH = GamepadContentTab.WIDTH * 5 + CraftWindow.PADDING * 6
 
 CraftWindow.WIDTH = CraftWindow.CONTENT_WIDTH
 CraftWindow.HEIGHT = CraftWindow.TITLE_HEIGHT + CraftWindow.PADDING + CraftWindow.CONTENT_HEIGHT
@@ -77,25 +74,6 @@ function CraftWindow:new(id, index, ui)
 	self.titlePanel:setStyle(self.TITLE_PANEL_STYLE, PanelStyle)
 	self:addChild(self.titlePanel)
 
-	self.propSnippet = SceneSnippet()
-	self.propSnippet:setSize(
-		self.TITLE_HEIGHT - self.PADDING * 2,
-		self.TITLE_HEIGHT - self.PADDING * 2)
-	self.propSnippet:setPosition(
-		self.PADDING,
-		self.PADDING)
-
-	local parentNode = SceneNode()
-	local ambientLight = AmbientLightSceneNode()
-	ambientLight:setAmbience(1)
-	ambientLight:setParent(parentNode)
-
-	self.propSnippet:setParentNode(parentNode)
-	self.propSnippet:setRoot(parentNode)
-
-	self.camera = ThirdPersonCamera()
-	self.propSnippet:setCamera(self.camera)
-
 	self.titleLabel = Label()
 	self.titleLabel:setStyle(self.TITLE_LABEL_STYLE, LabelStyle)
 	self.titleLabel:setPosition(self.PADDING, self.PADDING / 2)
@@ -111,14 +89,21 @@ function CraftWindow:new(id, index, ui)
 
 	self.contentLayout = GridLayout()
 	self.contentLayout:setSize(self.CONTENT_LAYOUT_WIDTH, self.CONTENT_HEIGHT)
-	self.contentLayout:setPadding(self.PADDING * 2, 0)
+	self.contentLayout:setPadding(self.PADDING, 0)
 	self.contentLayout:setEdgePadding(false, false)
 	self.contentLayout:setUniformSize(true, GamepadContentTab.WIDTH, GamepadContentTab.HEIGHT)
 	self.contentLayout:setPosition((self.WIDTH - self.CONTENT_WIDTH) / 2, self.PADDING)
 	self.contentPanel:addChild(self.contentLayout)
 
+	self.artisanInfoContentTab = ArtisanInfoContentTab(self)
+
 	self.craftCategoriesContentTab = CraftCategoriesContentTab(self)
 	self.craftCategoriesContentTab.onCategorySelected:register(self.onSelectCategory, self)
+	self.craftCategoriesContentTab.onGamepadScroll:register(self._propagateScrollArtisanInfo, self)
+	self.craftCategoriesContentTab.onGamepadRelease:register(
+		self.onBack,
+		self,
+		self.artisanInfoContentTab)
 
 	self.craftItemsContentTab = CraftItemsContentTab(self)
 	self.craftItemsContentTab.onGamepadRelease:register(
@@ -126,7 +111,7 @@ function CraftWindow:new(id, index, ui)
 		self,
 		self.craftCategoriesContentTab)
 	self.craftItemsContentTab.onItemSelected:register(self.selectItem, self)
-	self.craftItemsContentTab.onGamepadScroll:register(self._propagateScroll, self)
+	self.craftItemsContentTab.onGamepadScroll:register(self._propagateScrollCraftInfo, self)
 
 	self.craftInfoContentTab = CraftInfoContentTab(self)
 	self.makeContentTab = MakeContentTab(self)
@@ -135,6 +120,7 @@ function CraftWindow:new(id, index, ui)
 		self,
 		self.craftItemsContentTab)
 
+	self.contentLayout:addChild(self.artisanInfoContentTab)
 	self.contentLayout:addChild(self.craftCategoriesContentTab)
 	self.contentLayout:addChild(self.craftItemsContentTab)
 	self.contentLayout:addChild(self.craftInfoContentTab)
@@ -144,7 +130,7 @@ function CraftWindow:new(id, index, ui)
 
 	self.contentTabScrollYDirection = 0
 	self.contentLayoutTargetScrollX = 0
-	self.currentContentTarget = self.craftCategoriesContentTab
+	self.currentContentTarget = self.artisanInfoContentTab
 
 	self.closeButton = CloseButton()
 	self.closeButton:setPosition(self.WIDTH - self.PADDING - CloseButton.DEFAULT_SIZE, self.PADDING)
@@ -190,7 +176,11 @@ function CraftWindow:close()
 end
 
 function CraftWindow:restoreFocus()
-	self:focusChild(self.currentContentTarget)
+	if self.currentContentTarget == self.artisanInfoContentTab then
+		self:focusChild(self.craftCategoriesContentTab)
+	else
+		self:focusChild(self.currentContentTarget)
+	end
 end
 
 function CraftWindow:gamepadRelease(joystick, button)
@@ -247,7 +237,10 @@ function CraftWindow:onCloseButtonClicked(_, index)
 end
 
 function CraftWindow:onBackButtonPress()
-	if self.currentContentTarget == self.craftItemsContentTab then
+	if self.currentContentTarget == self.craftCategoriesContentTab then
+		self:setFocusedTab(self.artisanInfoContentTab)
+		self:focusChild(self.craftCategoriesContentTab)
+	elseif self.currentContentTarget == self.craftItemsContentTab then
 		self:setFocusedTab(self.craftCategoriesContentTab)
 	elseif self.currentContentTarget == self.makeContentTab then
 		self:setFocusedTab(self.craftItemsContentTab)
@@ -272,6 +265,12 @@ function CraftWindow:performLayout()
 	self:setPosition((width - selfWidth) / 2, (height - selfHeight) / 2)
 end
 
+function CraftWindow:refresh(state)
+	Interface.refresh(self, state)
+
+	self.artisanInfoContentTab:refresh(state)
+end
+
 function CraftWindow:tick()
 	Interface.tick(self)
 
@@ -281,62 +280,6 @@ function CraftWindow:tick()
 		index = self.craftCategoriesContentTab:getCurrentCategoryIndex(),
 		group = state.groups[self.craftCategoriesContentTab:getCurrentCategoryIndex()] or {}
 	})
-end
-
-function CraftWindow:updateTitleScene()
-	local gameView = self:getView():getGameView()
-
-	local state = self:getState()
-
-	local targetType
-	local targetID
-	if not state.target or state.target.type == "none" then
-		targetType = "actor"
-		targetID = gameView:getGame():getPlayer():getActor():getID()
-	else
-		targetType = state.target.type
-		targetID = state.target.id
-	end
-
-	local node, min, max
-	if targetType == "actor" then
-		local actor = gameView:getActorByID(targetID)
-		local actorView = actor and gameView:getActor(actor)
-
-		node = actorView and actorView:getSceneNode()
-		if actor then
-			min, max = actor:getBounds()
-		end
-	elseif targetType == "prop" then
-		local prop = gameView:getPropByID(targetID)
-		local propView = prop and gameView:getProp(prop)
-
-		node = propView and propView:getRoot()
-		if prop then
-			min, max = prop:getBounds()
-		end
-	end
-
-	if not node then
-		if self.propSnippet:getParent() then
-			self.propSnippet:getParent():removeChild(self.propSnippet)
-		end
-
-		return
-	end
-
-	if self.propSnippet:getParent() ~= self.titlePanel then
-		self.titlePanel:addChild(self.propSnippet)
-	end
-
-	local offset = Vector.UNIT_Y
-	local distance = math.max(max.x - min.x, max.y - min.y, max.z - min.z)
-
-	self.propSnippet:setChildNode(node)
-	self.camera:copy(gameView:getCamera())
-	self.camera:setPosition(Vector.ZERO:transform(node:getTransform():getGlobalTransform(_APP:getFrameDelta())) + offset)
-	self.camera:setDistance(distance * 2 + 2)
-	self.camera:setRotation(self.camera:getRotation() * -node:getTransform():getLocalRotation())
 end
 
 function CraftWindow:updateControls()
@@ -353,7 +296,7 @@ function CraftWindow:updateControls()
 			self.backKeybindInfo:getParent():removeChild(self.backKeybindInfo)
 		end
 
-		if self.currentContentTarget ~= self.craftCategoriesContentTab then
+		if self.currentContentTarget ~= self.artisanInfoContentTab then
 			if self.backButton:getParent() ~= self.titlePanel then
 				self.titlePanel:addChild(self.backButton)
 			end
@@ -379,7 +322,11 @@ function CraftWindow:updateControls()
 	end
 end
 
-function CraftWindow:_propagateScroll(_, x, y)
+function CraftWindow:_propagateScrollArtisanInfo(_, x, y)
+	self.artisanInfoContentTab:gamepadScroll(x, y)
+end
+
+function CraftWindow:_propagateScrollCraftInfo(_, x, y)
 	self.craftInfoContentTab:gamepadScroll(x, y)
 end
 
@@ -410,7 +357,6 @@ function CraftWindow:update(delta)
 		end
 	end
 
-	self:updateTitleScene()
 	self:updateControls()
 end
 
