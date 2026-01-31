@@ -21,7 +21,8 @@ local Widget = require "ItsyScape.UI.Widget"
 
 local ConstraintsPanel = Class(Widget)
 ConstraintsPanel.DEFAULT_WIDTH = 240
-ConstraintsPanel.DEFAULT_PADDING = 4
+ConstraintsPanel.DEFAULT_INNER_PADDING = 4
+ConstraintsPanel.DEFAULT_OUTER_PADDING = 8
 ConstraintsPanel.TITLE_SIZE = 24
 ConstraintsPanel.BLACKLIST = {
 	["prop"] = true
@@ -32,15 +33,13 @@ function ConstraintsPanel:new(view, config)
 
 	self.view = view
 	self.config = config or {}
-
-	self.padding = self.config.padding or ConstraintsPanel.DEFAULT_PADDING
 	self.constraints = {}
 
 	self.panel = Panel()
 	self.panel:setStyle(PanelStyle({ image = false }, view:getResources()))
 	self.panel:setSize(
 		ConstraintsPanel.DEFAULT_WIDTH,
-		(self.config.headerFontSize or ConstraintsPanel.TITLE_SIZE) + ConstraintsPanel.DEFAULT_PADDING)
+		(self.config.headerFontSize or ConstraintsPanel.TITLE_SIZE) + ConstraintsPanel.DEFAULT_OUTER_PADDING)
 
 	self.titleLabel = Label()
 	self.titleLabel:setStyle(LabelStyle({
@@ -64,9 +63,7 @@ function ConstraintsPanel:setText(...)
 end
 
 function ConstraintsPanel:setPadding(value)
-	self.padding = padding or value
-	self.layout:setPadding(value)
-	self:performLayout(true)
+	Log.warnOnce("ConstraintsPanel:setPadding is deprecated.")
 end
 
 function ConstraintsPanel:setConstraints(value)
@@ -90,16 +87,19 @@ function ConstraintsPanel:performLayout()
 	local _, titleLines = self.titleLabel:getStyle().font:getWrap(self.titleLabel:getText(), self:getSize())
 	self.titleHeight = self.titleLabel:getStyle().font:getHeight() * #titleLines
 
+	local innerPadding = self.config.innerPadding or self.DEFAULT_INNER_PADDING
+	local outerPadding = self.config.outerPadding or self.DEFAULT_INNER_PADDING
+
 	self.layout = GridLayout()
 	self.layout:setWrapContents(true)
-	self.layout:setPadding(self.padding)
-	self.layout:setPosition(self.padding, self.padding + self.titleHeight)
+	self.layout:setPadding(innerPadding, innerPadding)
+	self.layout:setPosition(outerPadding, self.titleHeight + outerPadding) 
 	self.layout:setSize(width, 0)
 	self.panel:addChild(self.layout)
 
 	local rowHeight = (self.config.constraintFontSize or 22) + 8
 	local leftWidth = rowHeight
-	local rightWidth = width - leftWidth - self.padding * 7
+	local rightWidth = width - leftWidth - innerPadding * 3
 	for i = 1, #self.constraints do
 		local c = self.constraints[i]
 		local isBlacklisted = ConstraintsPanel.BLACKLIST[c.type:lower()]
@@ -152,7 +152,7 @@ function ConstraintsPanel:performLayout()
 				right:setText(text)
 			elseif c.type:lower() == "artisanproperty" then
 				local t
-				if self.config.artisanPropertiesAsTraits then
+				if self:getData("artisanPropertiesAsTraits", false) then
 					t = c.name
 				else
 					t = string.format("%s: %s", c.name, c.description)
@@ -194,7 +194,7 @@ function ConstraintsPanel:performLayout()
 
 	do
 		local layoutWidth, layoutHeight = self.layout:getSize()
-		self:setSize(layoutWidth, layoutHeight + self.titleHeight + self.padding)
+		self:setSize(layoutWidth, layoutHeight + self.titleHeight + outerPadding * 2)
 		self.panel:setSize(self:getSize())
 	end
 end

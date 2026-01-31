@@ -33,6 +33,9 @@ local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadCon
 
 local ArtisanInfoContentTab = Class(GamepadContentTab)
 
+ArtisanInfoContentTab.STATION_SNIPPET_WIDTH  = Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH)
+ArtisanInfoContentTab.STATION_SNIPPET_HEIGHT = GamepadContentTab.WIDTH / 2
+
 function ArtisanInfoContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
 
@@ -43,8 +46,8 @@ function ArtisanInfoContentTab:new(interface)
 
 	self.stationSnippet = SceneSnippet()
 	self.stationSnippet:setSize(
-		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH),
-		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH))
+		self.STATION_SNIPPET_WIDTH,
+		self.STATION_SNIPPET_HEIGHT)
 	self.layout:addChild(self.stationSnippet)
 
 	local parentNode = SceneNode()
@@ -69,7 +72,7 @@ function ArtisanInfoContentTab:new(interface)
 	constraintsGroup:setStyle(Theme.GROUP_PANEL_STYLE, PanelStyle)
 	constraintsGroup:setSize(
 		self.WIDTH,
-		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.HEIGHT, Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH), Theme.DEFAULT_ICON_SIZE))
+		Theme.calculateRemainingSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.HEIGHT, self.STATION_SNIPPET_HEIGHT, Theme.DEFAULT_ICON_SIZE))
 	self.layout:addChild(constraintsGroup)
 
 	local constraintsGroupWidth, constraintsGroupHeight = constraintsGroup:getSize()
@@ -85,16 +88,10 @@ function ArtisanInfoContentTab:new(interface)
 		Theme.DEFAULT_OUTER_PADDING)
 	constraintsGroup:addChild(self.constraintsPanel)
 
-	local constraintsConfig = {
-		headerFontSize = 16,
-		constraintFontSize = 16,
-		artisanPropertiesAsTraits = true,
-		padding = 0
-	}
-
-	self.traitsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.traitsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.traitsPanel:setText("Traits")
 	self.traitsPanel:setData("skillAsLevel", true)
+	self.traitsPanel:setData("artisanPropertiesAsTraits", true)
 	self.constraintsPanel:addChild(self.traitsPanel)
 end
 

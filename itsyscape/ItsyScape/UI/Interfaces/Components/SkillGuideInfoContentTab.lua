@@ -96,31 +96,26 @@ function SkillGuideInfoContentTab:new(interface)
 	self.constraintsPanel:getInnerPanel():setPadding(0, 0)
 	self.constraintsPanel:setSize(
 		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WIDTH),
-		self.CONSTRAINTS_HEIGHT)
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.CONSTRAINTS_HEIGHT))
 	self.constraintsPanel:setPosition(
 		Theme.DEFAULT_OUTER_PADDING,
 		Theme.DEFAULT_OUTER_PADDING)
 	constraintsGroup:addChild(self.constraintsPanel)
 
 	local constraintsPanelWidth = Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WIDTH)
-	local constraintsConfig = {
-		headerFontSize = 16,
-		constraintFontSize = 16,
-		padding = 0
-	}
 
-	self.requirementsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.requirementsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.requirementsPanel:setText("Requirements")
 	self.requirementsPanel:setData("skillAsLevel", true)
 	self.requirementsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.requirementsPanel)
 
-	self.inputsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.inputsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.inputsPanel:setText("Ingredients")
 	self.inputsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.inputsPanel)
 
-	self.outputsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.outputsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.outputsPanel:setText("Products")
 	self.outputsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.outputsPanel)

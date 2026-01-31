@@ -102,6 +102,17 @@ Theme.WINDOW_TITLE_LABEL_STYLE = {
 	textShadow = true
 }
 
+Theme.STANDARD_CONSTRAINTS_CONFIG = {
+	headerFontSize = 18,
+	headerColor = { 1, 1, 1, 1 },
+	headerShadow = true,
+	constraintFontSize = 16,
+	constraintColor = { 1, 1, 1, 1 },
+	constraintShadow = true,
+	outerPadding = Theme.DEFAULT_INNER_PADDING,
+	innerPadding = Theme.DEFAULT_INNER_PADDING
+}
+
 function Theme.override(a, b, e)
 	e = e or {}
 	assert(not (e[a] or e[b]), "cyclic table")
