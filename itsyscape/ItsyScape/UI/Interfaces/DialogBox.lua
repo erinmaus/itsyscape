@@ -143,8 +143,7 @@ function DialogBox:new(id, index, ui)
 	self.stopTalking:setHasBackground(false)
 	self.stopTalking:setText("Stop talking")
 	self.stopTalking:setIsSelfClickThrough(true)
-	self.stopTalking:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadBack")
-	self.stopTalking:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "keyboard_escape")
+	self.stopTalking:setControl("back")
 
 	self.inputBox = TextInput()
 	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)
@@ -188,25 +187,13 @@ function DialogBox:new(id, index, ui)
 
 	self.onClose:register(self.close, self)
 
-	self._onRootGamepadRelease = function(_, joystick, button)
-		local inputProvider = self:getInputProvider()
-		if inputProvider and inputProvider:isCurrentJoystick(joystick) then
-			if button == inputProvider:getKeybind("gamepadBack") then
-				self:sendPoke("close", nil, {})
-			end
-		end
-	end
-
-	self._onRootKeyDown = function(_, _, scan)
-		if scan == "escape" then
-			self:sendPoke("close", nil, {})
-		end
-	end
-
-	self:getView():getRoot().onGamepadRelease:register(self._onRootGamepadRelease)
-	self:getView():getRoot().onKeyDown:register(self._onRootKeyDown)
-
 	self:next()
+end
+
+function DialogBox:previewControlUp(control)
+	if control:is("back") then
+		self:sendPoke("close", nil, {})
+	end
 end
 
 function DialogBox:restoreFocus()

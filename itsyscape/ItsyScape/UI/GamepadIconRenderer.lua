@@ -81,6 +81,7 @@ GamepadIconRenderer.GAMEPAD_BUTTON_OVERRIDE = {
 		["7"] = "keyboard_7",
 		["8"] = "keyboard_8",
 		["9"] = "keyboard_9",
+		["escape"] = "keyboard_escape",
 		["space"] = "keyboard_space",
 		["!"] = "keyboard_exclamation",
 		["\""] = "keyboard_quote",

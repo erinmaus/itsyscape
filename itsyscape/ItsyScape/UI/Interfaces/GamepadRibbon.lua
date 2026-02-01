@@ -21,6 +21,7 @@ local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Interface = require "ItsyScape.UI.Interface"
+local InputScheme = require "ItsyScape.UI.InputScheme"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
@@ -193,17 +194,19 @@ function GamepadRibbon:new(id, index, ui)
 
 	self.ribbonKeybindInfo = GamepadToolTip()
 	self.ribbonKeybindInfo:setHasBackground(false)
-	self.ribbonKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadOpenRibbon")
+	self.ribbonKeybindInfo:setControl("openRibbon")
 	self.ribbonKeybindInfo:setText("Close")
 	self.container:addChild(self.ribbonKeybindInfo)
 
 	self.secondaryKeybindInfo = GamepadToolTip()
 	self.secondaryKeybindInfo:setHasBackground(false)
 	self.secondaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadSecondaryAction")
+	self.secondaryKeybindInfo:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, false)
 
 	self.tertiaryKeybindInfo = GamepadToolTip()
 	self.tertiaryKeybindInfo:setHasBackground(false)
 	self.tertiaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadTertiaryAction")
+	self.tertiaryKeybindInfo:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, false)
 
 	self:performLayout()
 	self.isDirty = false
@@ -422,7 +425,7 @@ function GamepadRibbon:_setKeybindInfo(secondary, tertiary, secondaryButton, ter
 	tertiaryButton = tertiaryButton or "gamepadTertiaryAction"
 
 	if secondary then
-		self.secondaryKeybindInfo:setText(secondary)
+		self.secondaryKeybindInfo:setMessage(GamepadToolTip.INPUT_SCHEME_GAMEPAD, secondary)
 		self.secondaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, secondaryButton)
 
 		if self.secondaryKeybindInfo:getParent() ~= self.container then
@@ -437,7 +440,7 @@ function GamepadRibbon:_setKeybindInfo(secondary, tertiary, secondaryButton, ter
 	end
 
 	if tertiary then
-		self.tertiaryKeybindInfo:setText(tertiary)
+		self.tertiaryKeybindInfo:setMessage(GamepadToolTip.INPUT_SCHEME_GAMEPAD, tertiary)
 		self.tertiaryKeybindInfo:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, tertiaryButton)
 
 		if self.tertiaryKeybindInfo:getParent() ~= self.container then

@@ -40,6 +40,7 @@ function ActionCommandController:poke(actionID, actionIndex, e)
 	elseif actionID == "key" then
 		self:key(e)
 	elseif actionID == "close" then
+		self:getPeep():getCommandQueue():clear()
 		self:getGame():getUI():closeInstance(self)
 	else
 		Controller.poke(self, actionID, actionIndex, e)

@@ -14,6 +14,7 @@ local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
+local CloseButton = require "ItsyScape.UI.CloseButton"
 local Drawable = require "ItsyScape.UI.Drawable"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
@@ -151,8 +152,22 @@ function ActionCommand:new(...)
 	self.root.onMousePress:register(self.mousePressOverRoot, self)
 	self.root.onMouseRelease:register(self.mouseReleaseOverRoot, self)
 
+	self.closeToolTip = GamepadToolTip()
+	self.closeToolTip:setControl("back")
+	self.closeToolTip:setText("Close")
+	self.closeToolTip:setRowSize(math.huge, CloseButton.DEFAULT_SIZE)
+
+	self.closeButton = CloseButton()
+	self.closeButton.onClick:register(self._onClose, self)
+
 	self.sceneSnippets = {}
 	self.glyphs = {}
+end
+
+function ActionCommand:_onClose(_, index)
+	if index == 1 then
+		self:sendPoke("close", nil, {})
+	end
 end
 
 function ActionCommand:getOverflow()
@@ -300,7 +315,7 @@ function ActionCommand:attach()
 
 	local inputProvider = self:getInputProvider()
 	if inputProvider then
-		inputProvider:setFocusedWidget(self, "open")
+		inputProvider:setFocusedWidget(self.root, "open")
 	end
 end
 
@@ -319,8 +334,10 @@ function ActionCommand:tick()
 	self.root:setSize(self.actionCommandRoot:getSize())
 
 	self:performLayout()
+end
 
-	self:_addProgressBar()
+function ActionCommand:restoreFocus()
+	self:focusChild(self.root)
 end
 
 function ActionCommand:performLayout()
@@ -332,6 +349,21 @@ function ActionCommand:performLayout()
 	self.root:setPosition(
 		(screenWidth - rootWidth) / 2,
 		(screenHeight - rootHeight) / 2)
+
+	self:_addProgressBar()
+
+	local rootX, rootY = self.root:getPosition() 
+	local progessBarX, progressBarY = self.progressBar:getPosition()
+	self.closeButton:setPosition(
+		rootX + rootWidth + Theme.DEFAULT_OUTER_PADDING,
+		progressBarY - CloseButton.DEFAULT_SIZE - Theme.DEFAULT_OUTER_PADDING)
+	self:addChild(self.closeButton)
+
+	local closeButtonX, closeButtonY = self.closeButton:getPosition()
+	self.closeToolTip:setPosition(
+		closeButtonX + CloseButton.DEFAULT_SIZE + Theme.DEFAULT_OUTER_PADDING,
+		closeButtonY)
+	self:addChild(self.closeToolTip)
 end
 
 function ActionCommand:mouseMoveOverRoot(_, x, y)
@@ -375,10 +407,12 @@ function ActionCommand:gamepadDirection(directionX, directionY)
 end
 
 function ActionCommand:mousePressOverRoot(_, x, y, button)
+	self:focusChild(self.root)
 	self:sendPoke("button", nil, { controller = "mouse", type = "down", value = button })
 end
 
 function ActionCommand:mouseReleaseOverRoot(_, x, y, button)
+	self:focusChild(self.root)
 	self:sendPoke("button", nil, { controller = "mouse", type = "up", value = button })
 end
 
@@ -390,6 +424,14 @@ end
 function ActionCommand:gamepadRelease(x, y, button)
 	Interface.gamepadRelease(self, joystick, button)
 	self:sendPoke("button", nil, { controller = "gamepad", type = "up", value = button })
+end
+
+function ActionCommand:controlUp(control)
+	Interface.controlUp(self, control)
+
+	if control:is("back") then
+		self:sendPoke("close", nil, {})
+	end
 end
 
 return ActionCommand

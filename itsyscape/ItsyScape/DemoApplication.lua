@@ -1193,14 +1193,16 @@ function DemoApplication:controlUp(_, control)
 		end
 	end
 
-	if control:is("openCombatRing") then
-		self:toggleUI("GamepadCombatHUD")
-		return
-	end
+	if not isFocusTaken then
+		if control:is("openCombatRing") then
+			self:toggleUI("GamepadCombatHUD")
+			return
+		end
 
-	if control:is("openRibbon") then
-		self:toggleUI("GamepadRibbon")
-		return
+		if control:is("openRibbon") then
+			self:toggleUI("GamepadRibbon")
+			return
+		end
 	end
 
  	if control:is("toggleTargetCamera") then

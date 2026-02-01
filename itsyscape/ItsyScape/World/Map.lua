@@ -126,12 +126,12 @@ end
 -- i and j are not clamped.
 --
 -- Returns a Vector with the center of the tile in world space.
-function Map:getTileCenter(i, j)
+function Map:getTileCenter(i, j, result)
 	local x = (math.floor(i + 0.5) - 0.5) * self.cellSize
 	local z = (math.floor(j + 0.5) - 0.5) * self.cellSize
 	local y = self:getInterpolatedHeight(x, z)
 
-	return Vector(x, y, z)
+	return (result or Vector()):from(x, y, z)
 end
 
 -- Gets the interpolated height at (x, z).
