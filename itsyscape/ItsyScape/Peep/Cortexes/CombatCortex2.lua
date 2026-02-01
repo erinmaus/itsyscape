@@ -177,6 +177,10 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local targetSize = Utility.Peep.getSize(targetPeep) * Utility.Peep.getScale(targetPeep)
 	targetSize = math.max(targetSize.x, targetSize.z)
 
+	local selfMovement = selfPeep:getBehavior(MovementBehavior)
+	local targetMovement = targetPeep:getBehavior(MovementBehavior)
+	local canMove = selfMovement and selfMovement.maxSpeed > 0 and targetMovement and targetMovement.maxSpeed > 0 
+
 	local status = selfPeep:getBehavior(CombatStatusBehavior)
 
 	local map = Utility.Peep.getMap(selfPeep)
@@ -185,7 +189,7 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
 	local canReachTarget = distance <= worldWeaponRange
 	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
-	local isTooClose = distance <= 0
+	local isTooClose = canMove and distance <= 0
 	return canReachTarget, isTooFar, isTooClose
 end
 
