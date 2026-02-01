@@ -155,7 +155,7 @@ function ActionCommand:new(...)
 	self.closeToolTip = GamepadToolTip()
 	self.closeToolTip:setControl("back")
 	self.closeToolTip:setText("Close")
-	self.closeToolTip:setRowSize(math.huge, CloseButton.DEFAULT_SIZE)
+	self.closeToolTip:setRowSize(math.huge, Theme.calculateInnerSize(GamepadToolTip.PADDING, CloseButton.DEFAULT_SIZE))
 
 	self.closeButton = CloseButton()
 	self.closeButton.onClick:register(self._onClose, self)
