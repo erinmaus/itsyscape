@@ -1392,7 +1392,13 @@ end
 function UIView:setCurrentInputScheme(value)
 	if self:isInputSchemeValid(value) then
 		self:enableInputScheme(value)
+
+		local previousInputScheme = self.currentInputScheme
 		self.currentInputScheme = value
+
+		if previousInputScheme ~= self.currentInputScheme then
+			self.root:inputSchemeChanged(self.currentInputScheme, previousInputScheme)
+		end
 	end
 end
 

@@ -65,6 +65,12 @@ function Widget:new()
 	self.isVisible = true
 end
 
+function Widget:inputSchemeChanged()
+	for _, child in self:iterate() do
+		child:inputSchemeChanged()
+	end
+end
+
 function Widget:getRootParent()
 	local current = self
 	while current:getParent() do
