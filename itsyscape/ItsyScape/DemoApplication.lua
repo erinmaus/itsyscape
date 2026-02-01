@@ -1154,7 +1154,7 @@ function DemoApplication:controlUp(_, control)
 	local inputProvider = self:getUIView():getInputProvider()
 	local isFocusTaken = inputProvider:getIsFocusTaken()
 
-	if isFocusTaken then
+	if not isFocusTaken then
 		if control:is("cycleTarget") then
 			self.lastShimmerCycle = love.timer.getTime()
 			self:nextShimmer()

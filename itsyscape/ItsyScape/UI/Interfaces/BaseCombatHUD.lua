@@ -1049,17 +1049,6 @@ function BaseCombatHUD:updateTurnOrder()
 	end
 end
 
-function BaseCombatHUD:tick()
-	Interface.tick(self)
-
-	if self.dirtyState.quickHeal then
-		self:updateQuickHeal()
-	end
-	table.clear(self.dirtyState)
-
-	self:updateTurnOrder()
-end
-
 function BaseCombatHUD:_updateDebug()
 	local isDebugKeydown = love.keyboard.isDown("f7")
 	if self.wasDebugKeydown ~= isDebugKeydown and isDebugKeydown then
@@ -1071,6 +1060,13 @@ end
 
 function BaseCombatHUD:tick()
 	Interface.tick(self)
+
+	if self.dirtyState.quickHeal or self.dirtyState.food then
+		self:updateQuickHeal()
+	end
+	table.clear(self.dirtyState)
+
+	self:updateTurnOrder()
 
 	self:updateEvents()
 
