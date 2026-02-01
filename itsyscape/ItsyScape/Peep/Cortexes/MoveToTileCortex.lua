@@ -37,7 +37,8 @@ function MoveToTileCortex:addPeep(peep)
 
 	local map = Utility.Peep.getMap(peep)
 	if map then
-		self.previousTileCenter[peep] = self.previousTileCenter[peep] or map:getTileCenter(Utility.Peep.getTile(peep))
+		local i, j = Utility.Peep.getTile(peep)
+		self.previousTileCenter[peep] = self.previousTileCenter[peep] or map:getTileCenter(i, j)
 	end
 end
 
