@@ -80,6 +80,10 @@ function GatherResourceCommand:onBegin(peep)
 end
 
 function GatherResourceCommand:showTool(peep)
+	if Utility.Peep.getEquippedWeapon(peep) == self.tool then
+		return
+	end
+
 	if self.skin then
 		local currentWeapon = Utility.Peep.getEquippedWeapon(peep)
 		if currentWeapon then
@@ -115,6 +119,10 @@ function GatherResourceCommand:showTool(peep)
 end
 
 function GatherResourceCommand:hideTool(peep)
+	if Utility.Peep.getEquippedWeapon(peep) == self.tool then
+		return
+	end
+
 	if self.slot then
 		local actor = peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
