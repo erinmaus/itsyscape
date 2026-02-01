@@ -92,6 +92,7 @@ ActorProxy.stopAnimation:link(
 	Event.Argument("priority"),
 	Event.Argument("force"))
 
+ActorProxy.getTarget = Property()
 
 ActorProxy.damage = Event.ServerToClientRPC(Event.Arguments())
 ActorProxy.damage:link("onDamage", Event.Arguments())

@@ -121,6 +121,7 @@ function DemoApplication:new()
 	self.currentDodgeDirection = Vector()
 	self.quickDodgeDirection = Vector(0, 0, -1)
 	self.currentQuickDodgeDirection = Vector()
+	self.lastShimmerCycle = love.timer.getTime()
 
 	self.wasPlayerMoving = false
 	self.isPlayerMoving = false
@@ -141,14 +142,18 @@ function DemoApplication:new()
 			end
 		end
 
-		local nodeA = self:_getShimmerNodeObject(a)
-		local nodeB = self:_getShimmerNodeObject(b)
-		local player = self:getGame():getPlayer()
 
+		local nodeA, objectA = self:_getShimmerNodeObject(a)
+		local nodeB, objectB = self:_getShimmerNodeObject(b)
+
+		local player = self:getGame():getPlayer()
+		local playerActor = player and player:getActor()
 		if nodeA and nodeB then
 			if a.objectType == "actor" and b.objectType == "actor" then
 				local aHasAttackAction = false
 				local bHasAttackAction = false
+				local aIsAttackingPlayer = playerActor and objectA:getTarget() == playerActor
+				local bIsAttackingPlayer = playerActor and objectB:getTarget() == playerActor
 
 				for _, action in ipairs(a.actions) do
 					if action.type == "Attack" then
@@ -164,46 +169,25 @@ function DemoApplication:new()
 					end
 				end
 
-				if aHasAttackAction ~= bHasAttackAction then
+				if aIsAttackingPlayer ~= bIsAttackingPlayer then
+					if aIsAttackingPlayer then
+						return true
+					end
+
+					return false
+				elseif aHasAttackAction ~= bHasAttackAction then
 					if aHasAttackAction then
 						return true
 					end
 
 					return false
-				else
-					local aIsAgressor = false
-					local bIsAggressor = false
-
-					local combatHUD = self:getUIView():getInterface("GamepadCombatHUD")
-					local state = combatHUD and combatHUD:getState()
-					if state and #state.combatants > 1 then
-						for _, combatant in ipairs(state.combatants) do
-							if combatant.targetID == player:getActor():getID() and combatant.id == a.objectID then
-								aIsAgressor = true
-							end
-
-							if combatant.targetID == player:getActor():getID() and combatant.id == b.objectID then
-								bIsAgressor = true
-							end
-						end
-					end
-
-					if aIsAgressor ~= bIsAgressor then
-						if aIsAgressor then
-							return true
-						end
-
-						return false
-					end
 				end
 			end
 
 			do
-				player = player and player:getActor()
-				player = player and self:getGameView():getActor(player)
-
-				if player then
-					Vector.ZERO:transform(player:getSceneNode():getTransform():getGlobalDeltaTransform(0), relativePosition)
+				local playerActorView = playerActor and self:getGameView():getActor(playerActor)
+				if playerActorView then
+					Vector.ZERO:transform(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0), relativePosition)
 				else
 					relativePosition:from(0)
 				end
@@ -1168,9 +1152,11 @@ end
 
 function DemoApplication:controlUp(_, control)
 	local inputProvider = self:getUIView():getInputProvider()
+	local isFocusTaken = inputProvider:getIsFocusTaken()
 
-	if not inputProvider:getIsFocusTaken() then
+	if isFocusTaken then
 		if control:is("cycleTarget") then
+			self.lastShimmerCycle = love.timer.getTime()
 			self:nextShimmer()
 			return
 		elseif control:is("probeTarget") then
@@ -2069,7 +2055,7 @@ function DemoApplication:updatePositionProbe()
 		return
 	end
 
-	local i, j, layer = playerActor:getTile()
+	local playerI, playerJ, layer = playerActor:getTile()
 	local position = Vector.ZERO:transform(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0))
 	local direction = self.currentPlayerDirection
 
@@ -2086,10 +2072,55 @@ function DemoApplication:updatePositionProbe()
 		probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
 	end
 
-	probe:setTile(i, j, layer)
+	probe:setTile(playerI, playerJ, layer)
 	probe:run()
 
 	local results = probe:toArray()
+
+	local playerMap = gameView:getMap(layer)
+	if playerMap then
+		local playerMapSceneNode = gameView:getMapSceneNode(layer)
+		local playerMapTransform = playerMapSceneNode:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+
+		local currentObjectPosition = Vector()
+		for i = #results, 1, -1 do
+			local result = results[i]
+			local objectI, objectJ, objectLayer
+			if result.objectType == "actor" then
+				local actor = gameView:getActorByID(result.objectID)
+				if actor then
+					objectI, objectJ, objectLayer = actor:getTile()
+				end
+			elseif result.objectType == "prop" then
+				local prop = gameView:getPropByID(result.objectID)
+				if prop then
+					objectI, objectJ, objectLayer = prop:getTile()
+				end
+			elseif result.objectType == "item" then
+				local item = self:getGame():getStage():getItem(result.objectID)
+				if item and item.tile then
+					objectI = item.tile.i
+					objectJ = item.tile.j
+					objectLayer = item.tile.layer
+				end
+			end
+
+			if objectI and objectJ and objectLayer then
+				local objectMap = gameView:getMap(objectLayer)
+				local objectMapSceneNode = gameView:getMapSceneNode(objectLayer)
+				local objectMapTransform = objectMapSceneNode:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+
+				objectMap:getTileCenter(objectI, objectJ, currentObjectPosition)
+				currentObjectPosition:transform(objectMapTransform, currentObjectPosition)
+				currentObjectPosition:inverseTransform(playerMapTransform, currentObjectPosition)
+
+				local _, relativeI, relativeJ = playerMap:getTileAt(currentObjectPosition.x, currentObjectPosition.z)
+				if not playerMap:lineOfSightPassable(playerI, playerJ, relativeI, relativeJ) then
+					table.remove(results, i)
+				end
+			end
+		end
+	end
 
 	for _, shimmeringObject in ipairs(self.shimmeringObjects) do
 		shimmeringObject.isPending = true
@@ -2144,15 +2175,42 @@ function DemoApplication:updatePositionProbe()
 	table.sort(self.shimmeringObjects, self._sortShimmerObjects)
 
 	if self.pendingObjectID and self.pendingObjectType then
+		local shimmerActiveCycleDuration = Config.get("Input", "KEYBIND", "type", "world", "name", "shimmerActiveCycleDurationMS") / 1000
+		local shouldTakeAttackTarget = (love.timer.getTime() - self.lastShimmerCycle) > shimmerActiveCycleDuration
+
 		local hasPendingObject = false
+		local pendingObjectCanAttack = false
 		for _, shimmeringObject in ipairs(self.shimmeringObjects) do
 			if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType and shimmeringObject.isActive then
 				hasPendingObject = true
+
+				for _, action in ipairs(shimmeringObject.actions) do
+					if action.type == "Attack" then
+						pendingObjectCanAttack = true
+						break
+					end
+				end
+
 				break
 			end
 		end
 
-		if not hasPendingObject then
+		local isFirstObjectAttackingPlayer = false
+		if playerActor then
+			local shimmeringObject = self.shimmeringObjects[1]
+			if shimmeringObject and shimmeringObject.objectType == "actor" then
+				local _, object = self:_getShimmerNodeObject(shimmeringObject)
+				if object:getTarget() == playerActor then
+					isFirstObjectAttackingPlayer = true					
+				end
+			end
+		end
+
+		if isFirstObjectAttackingPlayer and shouldTakeAttackTarget and not pendingObjectCanAttack then
+			local shimmeringObject = self.shimmeringObjects[1]
+			self.pendingObjectID = shimmeringObject.objectID
+			self.pendingObjectType = shimmeringObject.objectType
+		elseif not hasPendingObject then
 			self:nextShimmer()
 		end
 	end

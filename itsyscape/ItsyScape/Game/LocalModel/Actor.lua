@@ -17,6 +17,7 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
@@ -232,6 +233,15 @@ function LocalActor:getScale()
 	else
 		return Vector.ONE
 	end
+end
+
+function LocalActor:getTarget()
+	if not self.peep then
+		return nil
+	end
+
+	local target = self.peep:getBehavior(CombatTargetBehavior)
+	return target and target.actor or nil
 end
 
 -- Gets the current hitpoints of the Actor.

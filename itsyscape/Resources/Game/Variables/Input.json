@@ -112,6 +112,8 @@
 			"maxFlickIntervalMS": 250,
 			"flickInputStallIntervalMS": 250,
 
+			"shimmerActiveCycleDurationMS": 2000,
+
 			"gamepadToggleTargetCamera": "triggerleft",
 			"keyboardToggleTargetCamera": ["lshift", "tab"],
 
