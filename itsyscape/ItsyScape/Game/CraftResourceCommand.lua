@@ -53,12 +53,12 @@ function CraftResourceCommand:step(peep)
 		self.isDone = true
 	end
 
-	local didPerform = self.action:perform(peep:getState(), peep, self.prop)
+	local didPerform = canStep and self.action:perform(peep:getState(), peep, self.prop)
 	if not didPerform then
 		self.isDone = true
 	end
 
-	if self.prop then
+	if self.prop and didPerform then
 		self.prop:poke("craft", self.action)
 	end
 

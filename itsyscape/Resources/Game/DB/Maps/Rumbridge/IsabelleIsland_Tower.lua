@@ -982,6 +982,24 @@ do
 		ItsyScape.Action.UseCraftWindow()
 	}
 
+	ItsyScape.Meta.ArtisanProperty {
+		Count = 1,
+		Property = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ArtisanProperty {
+		Count = 1,
+		Property = ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ArtisanProperty {
+		Count = 1,
+		Property = ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BasicFurnace",
 		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
