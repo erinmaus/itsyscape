@@ -53,8 +53,8 @@ do
 		DefenseSlash = -1000,
 		DefenseMagic = -1000,
 		DefenseRanged = -1000,
-		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(75),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(75),
+		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(50),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(50),
 		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Yenderling
 	}
