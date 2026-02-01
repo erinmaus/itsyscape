@@ -1775,6 +1775,7 @@ do
 	ActionType "Debug_Navigate"
 	ActionType "Debug_Manipulate"
 	ActionType "Debug_Bank"
+	ActionType "Debug_Customization"
 	ActionType "Debug_Summon"
 	ActionType "Debug_Save"
 	ActionType "Debug_AntilogikaTeleport"
@@ -1793,6 +1794,7 @@ do
 	local navigateAction = ItsyScape.Action.Debug_Navigate()
 	local manipulateAction = ItsyScape.Action.Debug_Manipulate()
 	local bankAction = ItsyScape.Action.Debug_Bank()
+	local customizeAction = ItsyScape.Action.Debug_Customization()
 	local summonAction = ItsyScape.Action.Debug_Summon()
 	local saveAction = ItsyScape.Action.Debug_Save()
 	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
@@ -1825,6 +1827,13 @@ do
 		Language = "en-US",
 		XProgressive = "Warping-Reality",
 		Action = manipulateAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Shapeshift",
+		Language = "en-US",
+		XProgressive = "Shapeshifting",
+		Action = customizeAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
@@ -1877,6 +1886,7 @@ do
 		navigateAction,
 		manipulateAction,
 		bankAction,
+		customizeAction,
 		summonAction,
 		-- antilogikaTeleportAction,
 		-- antilogikaWarpAction,
