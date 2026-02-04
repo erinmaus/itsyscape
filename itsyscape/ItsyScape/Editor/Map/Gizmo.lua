@@ -378,7 +378,7 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 		local snappedXYZ = (currentXYZ * self.axis / self.STEP_ANGLE):floor() * self.STEP_ANGLE
 		currentRotation = Quaternion.fromEulerXYZ((invertAxis * currentXYZ + snappedXYZ):get())
 	else
-		currentRotation = transform:getLocalRotation() * rotation
+		currentRotation = rotation * transform:getLocalRotation()
 	end
 
 	transform:setLocalRotation(currentRotation:getNormal())
