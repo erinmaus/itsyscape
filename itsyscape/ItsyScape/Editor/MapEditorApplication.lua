@@ -397,6 +397,12 @@ function MapEditorApplication:setTool(tool)
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
 		self.terrainToolPanel:open()
 		self.terrainToolPanel:setToolSize(0)
+
+		if love.keyboard.isDown("lalt", "ralt") then
+			for layer in pairs(self.meta) do
+				self:getGameView():bendMap(layer)
+			end			
+		end
 	elseif tool == MapEditorApplication.TOOL_PAINT then
 		self.currentTool = MapEditorApplication.TOOL_PAINT
 		self.tileSetPalette:open()
