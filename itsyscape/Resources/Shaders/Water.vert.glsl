@@ -1,3 +1,4 @@
+#include "Resources/Shaders/MapCurve.common.glsl"
 #include "Resources/Shaders/Wind.common.glsl"
 
 uniform float scape_YOffset;
@@ -5,6 +6,7 @@ uniform float scape_WindSpeedMultiplier;
 uniform vec3 scape_WindPatternMultiplier;
 
 varying vec2 frag_ScreenPosition;
+varying vec2 frag_RelativeTexture;
 
 void performTransform(
 	mat4 modelViewProjectionMatrix,
@@ -67,11 +69,15 @@ void performTransform(
 	normal = normalize(normal);
 
 	localPosition = (scape_InverseWorldMatrix * vec4(worldPosition, 1.0)).xyz;
+	transformPointByCurves(localPosition, normal);
+
 	projectedPosition = modelViewProjectionMatrix * vec4(localPosition, 1.0);
+	frag_Normal = normal;
 
 	vec2 screenPosition = projectedPosition.xy / vec2(projectedPosition.w);
 	screenPosition += vec2(1.0);
 	screenPosition /= vec2(2.0);
 
 	frag_ScreenPosition = screenPosition;
+	frag_RelativeTexture = clamp(position.xz / scape_MapSize, vec2(0.0), vec2(1.0));
 }

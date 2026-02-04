@@ -151,7 +151,7 @@ function PropView:updateTransform()
 	local scale = self.prop:getScale()
 
 	local curves = self.gameView:getMapCurves(layer)
-	if curves then
+	if curves and (self.PROP_VIEW_BEND or self.PROP_VIEW_BEND == nil) then
 		position, rotation = MapCurve.transformAll(position, rotation, curves)
 	end
 

@@ -725,6 +725,7 @@ function ActorView:new(actor, actorID)
 	self.combinedModelSceneNodes = {}
 
 	self.layer = false
+	self.previousPosition = Vector(0)
 	self.position = Vector(0)
 	self.rotation = Quaternion():keep()
 
@@ -1239,13 +1240,19 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	self.skins[slot] = slotNodes
 end
 
+function ActorView:getCurrentMapPosition(delta, result)
+	result = result or Vector()
+	self.previousPosition:lerp(self.position, delta, result)
+	return result
+end
+
 function ActorView:_getPosition(position, layer)
 	position = position or self.position or Vector.ZERO
 	layer = layer or self.layer or 1
 
 	local curves = self.game:getMapCurves(layer)
 	if curves then
-		return MapCurve.transformAll(position, curves)
+		return MapCurve.transformAll(position, nil, curves)
 	end
 
 	return position
@@ -1267,18 +1274,18 @@ end
 
 function ActorView:move(position, layer, instant)
 	local previousLayer = self.layer
-	local previousPosition = self.position
 
-	self.position = position:keep(self.position)
+	self.previousPosition:from(self.position:get())
+	self.position:from(position:get())
 	self.layer = layer
 
 	local parent = self.game:getMapSceneNode(layer)
-	if previousPosition and previousLayer ~= layer then
+	if previousLayer and layer and previousLayer ~= layer then
 		local previousParent = self.game:getMapSceneNode(previousLayer)
 		local previousTransform = previousParent and previousParent:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local currentTransform = parent and parent:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 
-		local absolutePosition = previousPosition:transform(previousTransform)
+		local absolutePosition = self.previousPosition:transform(previousTransform)
 		local localPosition = absolutePosition:inverseTransform(currentTransform)
 		self.sceneNode:getTransform():setPreviousTransform(localPosition)
 	end
@@ -1286,6 +1293,7 @@ function ActorView:move(position, layer, instant)
 	if instant then
 		local currentPosition = self:_getPosition(position, layer)
 		self.sceneNode:getTransform():setPreviousTransform(currentPosition)
+		self.previousPosition:from(self.position:get())
 	end
 
 	if parent ~= self.sceneNode:getParent() then

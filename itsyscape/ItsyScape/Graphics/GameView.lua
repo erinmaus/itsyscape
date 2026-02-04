@@ -1441,7 +1441,7 @@ function GameView:updateMeta(layer, meta)
 
 	m.meta = RPCState.merge(meta, m.meta)
 	self:_updatePolygonMask(m)
-	self:_updateWindMeta()
+	self:_updateWindMeta(m)
 
 	if meta and meta.curve then
 		self:bendMap(m.layer, meta.curve)
@@ -1481,6 +1481,7 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 		end
 
 		m.parentLayer = parentLayer or false
+		m.hidden = not not disabled
 	end
 
 	local m = self.mapMeshes[layer]
@@ -1665,7 +1666,7 @@ do
 	local previousAmbientColor = Color()
 	local currentAmbientColor = Color()
 	function GameView:_updateMapWater(m, delta)
-		if not (m.currentSkyProperties and m.previousSkyProperties) then
+		if not (m.currentSkyProperties and m.currentSkyProperties.currentAmbientColor and m.previousSkyProperties and m.previousSkyProperties.currentAmbientColor) then
 			waterRimColor:from(1, 1, 1, 1)
 		else
 			previousAmbientColor:from(unpack(m.previousSkyProperties.currentAmbientColor))
@@ -1686,8 +1687,25 @@ do
 			material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
 			material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
 			material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+
+			if water.mask and m.polygonMask then
+				material:send(Material.UNIFORM_FLOAT, "scape_MapSize", m.map:getWidth() * m.map:getCellSize(), m.map:getHeight() * m.map:getCellSize())
+				material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", m.polygonMask)
+			else
+				material:send(Material.UNIFORM_TEXTURE, "scape_PolygonMaskTexture", self.whiteTexture:getResource())
+			end
 		end
 	end
+end
+
+function GameView:updateNodeCurve(layer, node)
+	local m = self.mapMeshes[layer]
+	if m then
+		self:_updateMapNode(m, node)
+		return true
+	end
+
+	return false
 end
 
 function GameView:_updateMapNode(m, node)
@@ -1813,6 +1831,12 @@ function GameView:bendMap(layer, ...)
 				self:_updateMapNode(m, sceneNode)
 				sceneNode:getHandle():updateBounds(nativeCurve)
 			end
+		end
+	end
+
+	for _, water in ipairs(m.water) do
+		if water.bend then
+			self:_updateMapNode(m, water.node)
 		end
 	end
 
@@ -2547,14 +2571,17 @@ function GameView:flood(key, water, layer)
 		node:getMaterial():setOutlineThreshold(-1.0)
 	end
 
-
-	local w = { node = node, layer = layer or 1 }
+	local w = { node = node, layer = layer or 1, mask = not not water.mask, bend = not not water.bend }
 
 	self.water[key] = w
 
 	local m = self.mapMeshes[layer]
 	if m then
 		table.insert(m.water, w)
+	end
+
+	if w.bend then
+		self:_updateMapNode(m, node)
 	end
 end
 
@@ -2979,7 +3006,16 @@ function GameView:updateMaps(delta)
 	self.forceDirtyWallHack = layer ~= self.currentPlayerLayer
 	self.currentPlayerLayer = layer
 
-	for _, m in pairs(self.mapMeshes) do
+	for otherLayer, m in pairs(self.mapMeshes) do
+		if m.hidden then
+			if otherLayer == layer then
+				local parentNode = m.parentLayer and self:getMapSceneNode(m.parentLayer) or self.scene
+				m.node:setParent(parentNode)
+			else
+				m.node:setParent()
+			end
+		end
+
 		self:_updateMapNodeWallHack(m, delta)
 		self:_updateMapWater(m, delta)
 	end
@@ -3023,10 +3059,7 @@ do
 			return
 		end
 
-		local transform = actorView:getSceneNode():getTransform()
-		local currentTranslation = transform:getLocalTranslation()
-		local previousTranslation = transform:getPreviousTransform()
-		previousTranslation:lerp(currentTranslation, delta, position)
+		actorView:getCurrentMapPosition(delta, position)
 
 		inverseMapSize:from(1 / (m.map:getWidth() * m.map:getCellSize()), 1, 1 / (m.map:getHeight() * m.map:getCellSize()))
 		position:product(inverseMapSize, relativePosition)
@@ -3171,9 +3204,26 @@ function GameView:draw(delta, width, height)
 
 	self:_updateActorCanvases(delta)
 	self:_updatePlayerMapNode()
+
+	local player = self.game:getPlayer()
+	local playerActor = player and player:getActor()
+
+	local drawSkybox
+	if not playerActor then
+		drawSkybox = true
+	else
+		local _, _, layer = playerActor:getTile()
+		local m = self.mapMeshes[layer]
+		local skyProperties = m and m.currentSkyProperties
+		if not skyProperties or skyProperties.hasSkybox ~= false then
+			drawSkybox = true
+		else
+			drawSkybox = false
+		end
+	end
 	
 	local skybox = next(self.skyboxes)
-	if skybox then
+	if drawSkybox and skybox then
 		local info = self.skyboxes[skybox]
 		
 		self.renderer:setClearColor(info.color)
@@ -3201,21 +3251,52 @@ function GameView:preTick(frameDelta)
 	end
 end
 
-function GameView:addOrUpdateProbe(object)
-	local objectView = self.views[object]
-	if Class.isCompatibleType(objectView, PropView) then
-		local node = objectView:getRoot()
-		local nodeHandle = node and node:getHandle() or nil
-		local id = objectView:getProp():getID()
-		local min, max = objectView:getProp():getBounds()
+do
+	local size = Vector()
+	local bendMin, bendMax = Vector(), Vector()
+	local TWO = Vector(2)
+	local rotation = Quaternion()
 
-		self.probe:addOrUpdate("ItsyScape.Game.Model.Prop", object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getProp():getName())
-	elseif Class.isCompatibleType(objectView, ActorView) then
-		local node = objectView:getSceneNode()
-		local nodeHandle = node and node:getHandle() or nil
-		local id = objectView:getActor():getID()
-		local min, max = objectView:getActor():getBounds()
-		self.probe:addOrUpdate("ItsyScape.Game.Model.Actor", object:getID(), nodeHandle, min.x, min.y, min.z, max.x, max.y, max.z, objectView:getActor():getName())
+	function GameView:addOrUpdateProbe(object)
+		local objectView = self.views[object]
+
+		if Class.isCompatibleType(objectView, PropView) then
+			local node = objectView:getRoot()
+			local nodeHandle = node and node:getHandle() or nil
+			local id = objectView:getProp():getID()
+			local min, max = objectView:getProp():getBounds()
+			local i, j, layer = object:getTile()
+			local m = self.mapMeshes[layer]
+			if m.curves and (objectView.PROP_VIEW_BEND or objectView.PROP_VIEW_BEND == nil) then
+				max:subtract(min, size):divide(TWO, size)
+				local position = MapCurve.transformAll(object:getPosition(), rotation, m.curves)
+				position:subtract(size, bendMin)
+				position:add(size, bendMax)
+			else
+				bendMin:from(min:get())
+				bendMax:from(max:get())
+			end
+
+			self.probe:addOrUpdate("ItsyScape.Game.Model.Prop", object:getID(), nodeHandle, bendMin.x, bendMin.y, bendMin.z, bendMax.x, bendMax.y, bendMax.z, objectView:getProp():getName())
+		elseif Class.isCompatibleType(objectView, ActorView) then
+			local node = objectView:getSceneNode()
+			local nodeHandle = node and node:getHandle() or nil
+			local id = objectView:getActor():getID()
+			local min, max = objectView:getActor():getBounds()
+			local i, j, layer = object:getTile()
+			local m = self.mapMeshes[layer]
+			if m.curves then
+				max:subtract(min, size):divide(TWO, size)
+				local position = MapCurve.transformAll(object:getPosition(), rotation, m.curves)
+				position:subtract(size, bendMin)
+				position:add(size, bendMax)
+			else
+				bendMin:from(min:get())
+				bendMax:from(max:get())
+			end
+
+			self.probe:addOrUpdate("ItsyScape.Game.Model.Actor", object:getID(), nodeHandle, bendMin.x, bendMin.y, bendMin.z, bendMax.x, bendMax.y, bendMax.z, objectView:getActor():getName())
+		end
 	end
 end
 

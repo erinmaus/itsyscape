@@ -3,6 +3,8 @@
 #include "Resources/Shaders/Blend.common.glsl"
 #include "Resources/Shaders/Color.common.glsl"
 
+ uniform Image scape_PolygonMaskTexture;
+
 uniform vec4 scape_SkyColor;
 
 uniform vec2 scape_NearFoamDepth;
@@ -22,6 +24,7 @@ uniform Image scape_DepthTexture;
 uniform vec2 scape_TextureScale;
 
 varying vec2 frag_ScreenPosition;
+varying vec2 frag_RelativeTexture;
 
 void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular)
 {
@@ -48,6 +51,9 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 	vec3 waterColor = mix(shallowWaterColor.rgb, scape_DeepWaterColor.rgb, delta);
 	float waterAlpha = mix(shallowWaterColor.a, scape_DeepWaterColor.a, delta);
 	color *= alphaBlend(alphaBlend(vec4(waterColor, waterAlpha), foamColor), colorSample);
+
+	float polygonMaskAlpha = Texel(scape_PolygonMaskTexture, frag_RelativeTexture).r;
+	color.a *= polygonMaskAlpha;
 }
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
