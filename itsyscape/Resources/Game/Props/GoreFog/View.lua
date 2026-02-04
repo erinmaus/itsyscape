@@ -18,6 +18,8 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local GroundFog = Class(PropView)
 
+GroundFog.PROP_VIEW_BEND = false
+
 GroundFog.SHADER = ShaderResource()
 do
 	GroundFog.SHADER:loadFromFile("Resources/Shaders/GroundFog")
@@ -128,10 +130,8 @@ function GroundFog:_build()
 		for i = 1, map:getWidth() do
 			for j = 1, map:getHeight() do
 				local tile = map:getTile(i, j)
-				if not tile:hasFlag("building") then
-					self.particles:updateLocalPosition(map:getTileCenter(i, j))
-					self.particles:emit(love.math.random(3, 5))
-				end
+				self.particles:updateLocalPosition(map:getTileCenter(i, j))
+				self.particles:emit(love.math.random(3, 5))
 			end
 
 			coroutine.yield()

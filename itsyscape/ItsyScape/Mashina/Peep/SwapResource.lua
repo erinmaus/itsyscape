@@ -21,13 +21,11 @@ function SwapResource:update(mashina, state, executor)
 	local type = state[self.TYPE]
 	local name = state[self.NAME]
 	if not (type and name) then
-		print(">>> type and name missing")
 		return B.Status.Failure
 	end
 
 	local newResource = mashina:getDirector():getGameDB():getResource(name, type)
 	if not newResource then
-		print(">>> not found", type, name)
 		return B.Status.Failure
 	end
 

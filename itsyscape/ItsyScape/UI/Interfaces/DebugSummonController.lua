@@ -27,7 +27,6 @@ function DebugSummonController:poke(actionID, actionIndex, e)
 end
 
 function DebugSummonController:summon(e)
-	print(">>> E", Log.dump(e))
 	assert(type(e.count) == "number", "count must be number")
 	assert(type(e.resourceName) == "string", "resource name must be number")
 	assert(type(e.resourceType) == "string", "resource type must be number")

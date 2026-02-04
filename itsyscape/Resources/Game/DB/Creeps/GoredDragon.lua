@@ -9,25 +9,8 @@
 --------------------------------------------------------------------------------
 
 local GoredDragon = ItsyScape.Resource.Peep "GoredDragon" {
-	ItsyScape.Action.Attack()
-}
-
-ItsyScape.Meta.ArtisanProperty {
-	Count = 1,
-	Property = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
-	Resource = GoredDragon
-}
-
-ItsyScape.Meta.ArtisanProperty {
-	Count = 1,
-	Property = ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt",
-	Resource = GoredDragon
-}
-
-ItsyScape.Meta.ArtisanProperty {
-	Count = 1,
-	Property = ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt",
-	Resource = GoredDragon
+	ItsyScape.Action.Attack(),
+	ItsyScape.Action.Travel()
 }
 
 local FurnaceAction = ItsyScape.Action.OpenCraftWindow()
@@ -44,21 +27,85 @@ ItsyScape.Meta.ActionVerb {
 	Action = FurnaceAction
 }
 
-local GoredDragonStunned = ItsyScape.Resource.Peep "GoredDragon_Stunned" {
+local Intestines = ItsyScape.Resource.Prop "GoredDragonIntestines" {
+	ItsyScape.Action.Travel()
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gored royal dragon intestines",
+	Language = "en-US",
+	Resource = Intestines
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "Try not to think about it!",
+	Language = "en-US",
+	Resource = Intestines
+}
+
+ItsyScape.Meta.PeepID {
+	Value = "ItsyScape.Peep.Peeps.Prop",
+	Resource = Intestines
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 2,
+	SizeZ = 0.5,
+	MapObject = Intestines
+}
+
+local FlameSac = ItsyScape.Resource.Prop "GoredDragonFlameSac" {
 	FurnaceAction
 }
 
-ItsyScape.Meta.PropAnchor {
-	OffsetI = 0,
-	OffsetJ = 0.25,
-	Resource = GoredDragonStunned
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.BasicFurnace",
+	Resource = FlameSac
+}
+
+ItsyScape.Meta.ResourceName {
+	Value = "Gored royal dragon flame sac",
+	Language = "en-US",
+	Resource = FlameSac
+}
+
+ItsyScape.Meta.ResourceDescription {
+	Value = "A dragon's flame sac creates the hottest flames on the Realm, capable of smelting all known metals. But perhaps there are flames even hotter for metals even tougher...",
+	Language = "en-US",
+	Resource = FlameSac
 }
 
 ItsyScape.Meta.MakeOffset {
-	OffsetX = -2,
-	OffsetY = 0.25,
-	OffsetZ = 0.75,
-	Resource = GoredDragonStunned
+	OffsetX = 1,
+	OffsetY = 2,
+	OffsetZ = 0,
+	Resource = FlameSac
+}
+
+ItsyScape.Meta.MapObjectSize {
+	SizeX = 2,
+	SizeY = 4,
+	SizeZ = 0.5,
+	MapObject = FlameSac
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
+	Resource = FlameSac
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt",
+	Resource = FlameSac
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt",
+	Resource = FlameSac
 }
 
 ItsyScape.Meta.PeepMashinaState {
@@ -79,9 +126,13 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "A royal dragon torn apart for access to its flame sack and kept alive in perpetual pain to ensure the flames burn hot.",
+	Value = "A royal dragon torn apart for access to its flame sac and kept alive in perpetual pain to ensure the flames burn hot.",
 	Language = "en-US",
 	Resource = GoredDragon
+}
+
+local GoredDragonStunned = ItsyScape.Resource.Peep "GoredDragon_Stunned" {
+	ItsyScape.Action.Travel()
 }
 
 ItsyScape.Meta.ResourceName {
@@ -91,7 +142,7 @@ ItsyScape.Meta.ResourceName {
 }
 
 ItsyScape.Meta.ResourceDescription {
-	Value = "Hurry! Now that the gored dragon is stunned, you can smelt ores using its flame sack!",
+	Value = "Hurry! Now that the gored dragon is stunned, you can smelt ores using its flame sac!",
 	Language = "en-US",
 	Resource = GoredDragonStunned
 }

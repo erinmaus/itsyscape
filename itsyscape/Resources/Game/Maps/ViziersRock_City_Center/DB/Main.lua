@@ -118,6 +118,13 @@ do
 		Prop = ItsyScape.Resource.Prop "GroundFog",
 		MapObject = M["GroundFog"]
 	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["GroundFog"]
+	}
 end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()

@@ -12,7 +12,16 @@ do
 	local GroundFog = ItsyScape.Resource.Prop "GroundFog"
 
 	ItsyScape.Meta.PeepID {
-		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Value = "Resources.Game.Peeps.Props.BasicLight",
 		Resource = GroundFog
+	}
+end
+
+do
+	local GoreFog = ItsyScape.Resource.Prop "GoreFog"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicLight",
+		Resource = GoreFog
 	}
 end

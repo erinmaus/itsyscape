@@ -17,7 +17,7 @@ local AbandonedMine = Class(Map)
 function AbandonedMine:onLoad(...)
 	Map.onLoad(self, ...)
 
-	Utility.Map.spawnMap(self, "IsabelleIsland_AbandonedMineSkybox", Vector.ZERO, { isLayer = true })
+	Utility.Map.spawnMap(self, "IsabelleIsland_AbandonedMineSkybox", Vector.ZERO)
 end
 
 function AbandonedMine:onPlayerEnter(player)

@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Map = require "ItsyScape.World.Map"
+local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 
 local UMap = {}
 
@@ -499,6 +500,28 @@ function UMap.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, .
 	until #m == 0 
 
 	return nil, nil
+end
+
+function UMap.setTeleportal(peep, mapScript, anchor)
+	local map = Utility.Peep.getMap(mapScript)
+
+	local tile, i, j
+	if type(anchor) == "string" then
+		local mapResource = Utility.Peep.getResource(mapScript)
+		local x, _, z = UMap.getAnchorPosition(
+			peep:getDirector():getGameInstance(),
+			mapResource,
+			anchor)
+
+		tile, i, j = map:getTileAt(x, z)
+	else
+		tile, i, j = map:getTileAt(anchor.x, anchor.z)
+	end
+
+	local _, teleportal = peep:addBehavior(TeleportalBehavior)
+	teleportal.i = i
+	teleportal.j = j
+	teleportal.layer = Utility.Peep.getLayer(mapScript)
 end
 
 -- Gets a random position within the line of sight of position no more than 'distance' units away (Euclidean)
