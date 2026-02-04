@@ -849,11 +849,17 @@ function LocalStage:updateMapMeta(layer, meta)
 	self:onMapMetaUpdated(layer, meta)
 end
 
-function LocalStage:updateSky(instance, properties)
-	if not RPCState.deepEquals(self.skies[instance], properties) then
-		self.skies[instance] = properties
+function LocalStage:updateSky(instance, group, properties)
+	local skies = self.skies[instance]
+	if not skies then
+		skies = {}
+		self.skies[instance] = skies
+	end
 
-		for _, layer in instance:iterateLayers() do
+	if not RPCState.deepEquals(skies[group], properties) then
+		skies[group] = properties
+
+		for _, layer in instance:iterateMapGroup(group) do
 			self:onMapSkyUpdated(layer, properties)
 		end
 	end
@@ -1330,11 +1336,14 @@ function LocalStage:loadMapResource(instance, filename, args)
 	do
 		local waterDirectoryPath = directoryPath .. "/Water"
 		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
+			local localLayer = item:match(".*@(%d+)%.[^%.@]*$")
+			local layer = instance:getGlobalLayerFromLocalLayer(group, tonumber(localLayer) or 1)
+
 			local data = "return " .. (love.filesystem.read(waterDirectoryPath .. "/" .. item) or "")
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
-			self.onWaterFlood(self, item, water, baseLayer)
+			self.onWaterFlood(self, item, water, layer)
 		end
 	end
 

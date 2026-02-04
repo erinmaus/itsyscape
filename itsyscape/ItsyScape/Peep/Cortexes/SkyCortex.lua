@@ -406,7 +406,7 @@ function SkyCortex:update(delta)
 			}
 
 			local instance = Utility.Peep.getInstance(peep)
-			self:getDirector():getGameInstance():getStage():updateSky(instance, properties)
+			self:getDirector():getGameInstance():getStage():updateSky(instance, 1, properties)
 		end
 	end
 end
