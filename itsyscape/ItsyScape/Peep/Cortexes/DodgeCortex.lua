@@ -25,6 +25,7 @@ local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBeh
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
