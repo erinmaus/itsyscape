@@ -1537,7 +1537,7 @@ do
 		wallHackEnabled = wallHackEnabled and self:_isPlayerInBuilding()
 		wallHackEnabled = wallHackEnabled and self:getCamera():getIsWallHackEnabled()
 
-		local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear = 4, 4, 4, 2, 0
+		local wallHackLeft, wallHackRight, wallHackTop, wallHackBottom, wallHackNear, wallHackFar = 4, 4, 4, 2, 0, 0
 		local isMapWallhackEnabled = false
 		if wallHackEnabled and not self:_getIsMapEditor() then
 			if m.meta and type(m.meta.wallHack) == "table" then
@@ -1546,6 +1546,7 @@ do
 				wallHackTop = m.meta.wallHack.top or wallHackTop
 				wallHackBottom = m.meta.wallHack.bottom or wallHackBottom
 				wallHackNear = m.meta.wallHack.near or wallHackNear
+				wallHackFar = m.meta.wallHack.far or wallHackFar
 				isMapWallhackEnabled = not not m.meta.wallHack.map
 			end
 		end
@@ -1588,7 +1589,8 @@ do
 		if not wallHackParameters or m.wallHackDirty or self.forceDirtyWallHack or
 		   wallHackParameters.left ~= wallHackLeft or wallHackParameters.right ~= wallHackRight or
 		   wallHackParameters.top ~= wallHackTop or wallHackParameters.bottom ~= wallHackBottom or
-		   wallHackParameters.near ~= wallHackNear or wallHackParameters.up ~= up or
+		   wallHackParameters.near ~= wallHackNear or wallHackParameters.far ~= wallHackFar or
+		   wallHackParameters.up ~= up or
 		   wallHackParameters.time ~= time or
 		   wallHackParameters.enabled ~= wallHackEnabled
 		then
@@ -1602,6 +1604,7 @@ do
 			wallHackParameters.top = wallHackTop
 			wallHackParameters.bottom = wallHackBottom
 			wallHackParameters.near = wallHackNear
+			wallHackParameters.far = wallHackFar
 			wallHackParameters.up = up
 			wallHackParameters.time = time
 			wallHackParameters.enabled = wallHackEnabled
@@ -1612,6 +1615,7 @@ do
 				wallHackTop = 0
 				wallHackBottom = 0
 				wallHackNear = 0
+				wallHackFar = 0
 			end
 
 			local mu = Tween.sineEaseOut(time / self.WALL_HACK_EXPAND_DURATION)
@@ -1624,6 +1628,7 @@ do
 			local currentWallHackTop = math.lerp(0, wallHackTop, mu)
 			local currentWallHackBottom = math.lerp(0, wallHackBottom, mu)
 			local currentWallHackNear = math.lerp(0, wallHackNear, mu)
+			local currentWallHackFar = math.lerp(0, wallHackFar, mu)
 
 			m.wallHackParameters = wallHackParameters
 			m.wallHackDirty = false
@@ -1639,6 +1644,7 @@ do
 						local material = part.node:getMaterial()
 						material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
 						material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackFar", currentWallHackFar)
 						material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 					end
 				else
@@ -1646,6 +1652,7 @@ do
 						local material = part.node:getMaterial()
 						material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", 0, 0, 0, 0)
 						material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", 0)
+						material:send(Material.UNIFORM_FLOAT, "scape_WallHackFar", 0)
 						material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", 0, 1, 0)
 					end
 				end
@@ -1655,6 +1662,7 @@ do
 				local material = decoration:getMaterial()
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackWindow", currentWallHackLeft, currentWallHackRight, currentWallHackTop, currentWallHackBottom)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackNear", currentWallHackNear)
+				material:send(Material.UNIFORM_FLOAT, "scape_WallHackFar", currentWallHackFar)
 				material:send(Material.UNIFORM_FLOAT, "scape_WallHackUp", up:get())
 			end
 		end
