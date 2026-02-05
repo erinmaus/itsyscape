@@ -25,7 +25,9 @@ function Intestines:new(...)
 			texture = "Resources/Game/Props/GoredDragonIntestines/Texture.png",
 
 			uniforms = {
-				scape_NumCurves = { "integer", 0 }
+				scape_NumCurves = { "integer", 0 },
+				scape_WallHackWindow = { "float", 0, 0, 0, 0 },
+				scape_WallHackNear = { "float", 0 }
 			}
 		})
 	})

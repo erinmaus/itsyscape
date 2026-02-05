@@ -77,15 +77,15 @@ ItsyScape.Meta.ResourceDescription {
 }
 
 ItsyScape.Meta.MakeOffset {
-	OffsetX = 1,
-	OffsetY = 2,
-	OffsetZ = 0,
+	OffsetX = 0,
+	OffsetY = 0.25,
+	OffsetZ = -0.25,
 	Resource = FlameSac
 }
 
 ItsyScape.Meta.MapObjectSize {
 	SizeX = 2,
-	SizeY = 4,
+	SizeY = 5,
 	SizeZ = 0.5,
 	MapObject = FlameSac
 }

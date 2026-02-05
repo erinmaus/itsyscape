@@ -22,21 +22,21 @@ local FlameSac = Class(PropView)
 FlameSac.ACTIVE_DURATION_SECONDS = 1
 
 FlameSac.SMALL_FLAME_IDLE = {
-	FLAME_SCALE = Vector(1),
+	FLAME_SCALE = Vector(2),
 	FLAME_HEIGHT = 0.25,
 	INNER_FLAME_SPEED = 0.1,
 	OUTER_FLAME_SPEED = 0.2
 }
 
 FlameSac.BIG_FLAME_IDLE = {
-	FLAME_SCALE = Vector(1.5),
+	FLAME_SCALE = Vector(3),
 	FLAME_HEIGHT = 0.5,
 	INNER_FLAME_SPEED = 0.2,
 	OUTER_FLAME_SPEED = 0.3
 }
 
 FlameSac.SMOKE_IDLE = {
-	SMOKE_SCALE = Vector(1),
+	SMOKE_SCALE = Vector(2),
 	SMOKE_SPEED = 0.5,
 	SMOKE_HEIGHT = 0
 }
@@ -54,21 +54,21 @@ FlameSac.FLICKER_IDLE = {
 }
 
 FlameSac.SMALL_FLAME_ACTIVE = {
-	FLAME_SCALE = Vector(1.5),
+	FLAME_SCALE = Vector(3),
 	FLAME_HEIGHT = 1,
 	INNER_FLAME_SPEED = 0.5,
 	OUTER_FLAME_SPEED = 0.7
 }
 
 FlameSac.BIG_FLAME_ACTIVE = {
-	FLAME_SCALE = Vector(1.5),
+	FLAME_SCALE = Vector(3),
 	FLAME_HEIGHT = 1.5,
 	INNER_FLAME_SPEED = 1,
 	OUTER_FLAME_SPEED = 1.2
 }
 
 FlameSac.SMOKE_ACTIVE = {
-	SMOKE_SCALE = Vector(1.5),
+	SMOKE_SCALE = Vector(3),
 	SMOKE_SPEED = 0.5,
 	SMOKE_HEIGHT = 0
 }
@@ -80,8 +80,8 @@ FlameSac.FLICKER_ACTIVE = {
 	MIN_COLOR_BRIGHTNESS = 0.9,
 	MIN_COLOR_BRIGHTNESS = 1,
 
-	MIN_ATTENUATION = 12,
-	MAX_ATTENUATION = 14,
+	MIN_ATTENUATION = 8,
+	MAX_ATTENUATION = 12,
 	COLORS = {
 		Color.fromHexString("ffd52a")
 	}
@@ -92,19 +92,19 @@ function FlameSac:new(...)
 
 	self.smallFlames = {
 		self:addGreeble(FlameGreeble, self.SMALL_FLAME_IDLE, {
-			translation = Vector(1, 2, 0)
+			translation = Vector(0, 0, 0.5)
 		})
 	}
 
 	self.bigFlames = {
 		self:addGreeble(FlameGreeble, self.BIG_FLAME_IDLE, {
-			translation = Vector(1, 2, 0)
+			translation = Vector(0, 0, 0.5)
 		})
 	}
 
 	self.smoke = {
 		self:addGreeble(SmokeGreeble, self.SMOKE_IDLE, {
-			translation = Vector(1, 2, 0)
+			translation = Vector(0, 0, 0.5)
 		})
 	}
 
@@ -122,7 +122,9 @@ function FlameSac:new(...)
 			texture = "Resources/Game/Props/GoredDragonFlameSac/Texture.png",
 
 			uniforms = {
-				scape_NumCurves = { "integer", 0 }
+				scape_NumCurves = { "integer", 0 },
+				scape_WallHackWindow = { "float", 0, 0, 0, 0 },
+				scape_WallHackNear = { "float", 0 }
 			}
 		})
 	})
