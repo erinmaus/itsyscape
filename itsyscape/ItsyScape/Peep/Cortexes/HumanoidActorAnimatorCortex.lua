@@ -167,7 +167,17 @@ function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
 	end
 
 	if not resource then
-		resource = peep:getResource(
+		if direction == MovementBehavior.FACING_LEFT then
+			resource = peep:getResource(
+				"animation-defend-left",
+				"ItsyScape.Graphics.AnimationResource")
+		elseif direction == MovementBehavior.FACING_RIGHT then
+			resource = peep:getResource(
+				"animation-defend-right",
+				"ItsyScape.Graphics.AnimationResource")
+		end
+
+		resource = resource or peep:getResource(
 			"animation-defend",
 			"ItsyScape.Graphics.AnimationResource")
 	end
@@ -300,9 +310,24 @@ end
 
 function HumanoidActorAnimatorCortex:onActionPerformed(peep, p)
 	local actionName = p.action:getName():lower()
-	local resource = peep:getResource(
-		string.format("animation-action-%s", actionName),
+	local baseName = string.format("animation-action-%s", actionName)
+	local resource
+
+	local direction = peep:getBehavior(MovementBehavior).facing
+	if direction == MovementBehavior.FACING_LEFT then
+		resource = peep:getResource(
+			string.format("%s-left", baseName),
+			"ItsyScape.Graphics.AnimationResource")
+	elseif direction == MovementBehavior.FACING_RIGHT then
+		resource = peep:getResource(
+			string.format("%s-right", baseName),
+			"ItsyScape.Graphics.AnimationResource")
+	end
+
+	resource = resource or peep:getResource(
+		baseName,
 		"ItsyScape.Graphics.AnimationResource")
+
 	if resource then
 		self:playSkillAnimation(
 			peep,
