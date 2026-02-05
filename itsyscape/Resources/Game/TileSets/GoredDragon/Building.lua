@@ -13,7 +13,7 @@
 					scape_TriplanarOffset = { "float", 0 },
 					scape_TriplanarScale = { "float", -0.75 },
 					scape_Wiggle = { "float", 1.17 },
-					scape_NoiseScale = { "float", 3.3, 4.87, 2.7 },
+					scape_NoiseScale = { "float", 13.2, 19.48, 10.8 },
 					scape_NoiseOffset = { "float", 516.34, 473.65, 158.87 },
 					scape_NoiseThreshold = { "float", 0.5 },
 					scape_TriplanarTexture = { "texture", "Resources/Game/Skins/GoredDragon/ScalesTexture.lua" },
@@ -21,7 +21,8 @@
 				},
 
 				properties = {
-					outlineThreshold = -0.01
+					outlineThreshold = -0.01,
+					isShadowCaster = false
 				}
 			}
 		},
