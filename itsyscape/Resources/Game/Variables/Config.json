@@ -10,6 +10,10 @@
 
 	"colors": {
 		"ui.text": "ffffff",
+		"ui.gamepadCircleCursor.active": "f26722",
+		"ui.gamepadCircleCursor.inactive": "6b4da0",
+		"ui.gamepadZap.from": "ffcc00",
+		"ui.gamepadZap.to": "6b4da0",
 		"ui.combat.bar.text": "ffffff",
 		"ui.combat.bar.textShadow": "000000",
 		"ui.combat.health.damage": "8c2726",

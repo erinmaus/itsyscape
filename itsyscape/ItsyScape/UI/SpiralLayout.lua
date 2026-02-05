@@ -32,10 +32,8 @@ function SpiralLayout:new()
 
 	self.innerPanelWrapper = SpiralLayout.InnerPanelWrapper()
 	self.innerPanel = SpiralLayout.InnerPanelWrapper()
-	self.cursor = SpiralLayout.InnerPanelWrapper()
 
 	self.innerPanelWrapper:addChild(self.innerPanel)
-	self.innerPanelWrapper:addChild(self.cursor)
 
 	self.onChildSelected = Callback()
 	self.onChildVisible = Callback()
@@ -59,6 +57,7 @@ function SpiralLayout:new()
 	self.targetAngle = 0
 	self.currentAngle = 0
 
+	self.cursorAngle = 0
 	self.currentXAxisValue = 0
 	self.currentYAxisValue = 0
 	self.previousXAxisValue = 0
@@ -70,6 +69,10 @@ end
 
 function SpiralLayout:getInnerPanel()
 	return self.innerPanel
+end
+
+function SpiralLayout:getCursor()
+	return self.cursor
 end
 
 function SpiralLayout:setRadius(innerValue, outerValue)
@@ -108,12 +111,20 @@ function SpiralLayout:getFocusedOptionIndex()
 	return self.nextFocusedChildIndex or self.currentFocusedChildIndex
 end
 
+function SpiralLayout:getFocusedOptionAngle()
+	local index = self.currentFocusedChildIndex or 1
+	local delta = (index - 1) / (self:getNumOptions() - 1)
+	local maxAngle = (self:getNumOptions() - 1) / self.numVisibleOptions * (math.pi * 2)
+	local angle = delta * maxAngle
+	return angle
+end
+
 function SpiralLayout:setFocusedOptionIndex(value)
 	value = math.clamp(value or self.currentFocusedChildIndex, 1, self:getNumOptions())
 	if value == self.currentFocusedChildIndex then
 		return
 	end
-
+ 
 	local child = self:getOptionAt(value)
 	if not child then
 		return
@@ -144,6 +155,10 @@ end
 
 function SpiralLayout:setCurrentAngle(value)
 	self:_setAngle(value, true)
+end
+
+function SpiralLayout:getCursorAngle()
+	return self.cursorAngle
 end
 
 function SpiralLayout:focus(reason)
@@ -306,8 +321,8 @@ function SpiralLayout:performLayout()
 		local y = math.sin(angle) * radius
 
 		local w, h = widget:getSize()
-		x = x + w / 2
-		y = y + h / 2
+		x = x + w / 4
+		y = y + h / 4
 
 		widget:setPosition(x, y)
 
@@ -345,6 +360,10 @@ function SpiralLayout:gamepadAxis(joystick, axis, value)
 	self.hasAxisInput = math.abs(xAxisValue) > axisSensitivity or math.abs(yAxisValue) > axisSensitivity
 	self.currentXAxisValue = xAxisValue
 	self.currentYAxisValue = yAxisValue
+
+	if self.hasAxisInput then
+		self.cursorAngle = math.atan2(self.currentYAxisValue, self.currentXAxisValue)
+	end
 end
 
 function SpiralLayout:_updateInput()

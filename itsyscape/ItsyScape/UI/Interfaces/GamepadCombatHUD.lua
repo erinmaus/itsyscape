@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Config = require "ItsyScape.Game.Config"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
@@ -27,6 +28,7 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local BaseCombatHUD = require "ItsyScape.UI.Interfaces.BaseCombatHUD"
 local GamepadCirclePanel = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanel"
+local GamepadCircleCursor = require "ItsyScape.UI.Interfaces.Components.GamepadCircleCursor"
 local GamepadCirclePanelZap = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanelZap"
 local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowerIcon"
 local RechargingPowerBar = require "ItsyScape.UI.Interfaces.Components.RechargingPowerBar"
@@ -39,10 +41,15 @@ function GamepadCombatHUD.StandardInterfaceContainer:getOverflow()
 	return true
 end
 
-GamepadCombatHUD.SPIRAL_OFFSET             = 32
+GamepadCombatHUD.SPIRAL_OFFSET_X           = 32
+GamepadCombatHUD.SPIRAL_OFFSET_Y           = 0
 GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 192
 GamepadCombatHUD.SPIRAL_INNER_RADIUS       = 144
 GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 144
+
+GamepadCombatHUD.SPIRAL_INNER_RADIUS_OPEN  = 96
+GamepadCombatHUD.SPIRAL_OUTER_RADIUS_OPEN  = 64
+GamepadCombatHUD.SPIRAL_OPEN_DURATION      = 1 / 2
 
 GamepadCombatHUD.SELECTED_BUTTON_SIZE = 68
 GamepadCombatHUD.DEFAULT_BUTTON_SIZE  = 52
@@ -52,6 +59,9 @@ GamepadCombatHUD.SELECTED_ICON_SIZE = 64
 GamepadCombatHUD.DEFAULT_ICON_SIZE  = 48
 GamepadCombatHUD.MINIMUM_ICON_SIZE  = 24
 GamepadCombatHUD.ICON_OFFSET        = 2
+
+GamepadCombatHUD.MINIMUM_BUTTON_SIZE_OPEN = 48
+GamepadCombatHUD.MINIMUM_ICON_SIZE_OPEN   = 48
 
 GamepadCombatHUD.MIN_ICON_ALPHA     = 0.25
 GamepadCombatHUD.MAX_ICON_ALPHA     = 1
@@ -171,6 +181,10 @@ function GamepadCombatHUD:new(...)
 	self.thingiesAngles = {}
 	self.thingiesStack = {}
 	self.thingiesProperties = {}
+
+	self.minimumButtonSize = self.MINIMUM_BUTTON_SIZE
+	self.minimumIconSize = self.MINIMUM_ICON_SIZE
+	self.currentThingiesOpenElapsedTime = 0
 
 	BaseCombatHUD.new(self, ...)
 
@@ -328,6 +342,9 @@ function GamepadCombatHUD:openThingies(name, targetWidget)
 
 		self:addChild(thingiesWidget)
 		self:focusChild(thingiesWidget)
+
+		self.currentThingiesOpenElapsedTime = 0
+		self.lastOpenedThingiesMenu = thingiesWidget
 	end
 
 	return didOpen
@@ -354,6 +371,9 @@ function GamepadCombatHUD:openMenu()
 
 		self:layoutSpiralMenu(menu)
 		self:updateStandardThingiesInterface(menu)
+
+		self.currentThingiesOpenElapsedTime = 0
+		self.lastOpenedThingiesMenu = menu
 	end
 end
 
@@ -427,8 +447,8 @@ function GamepadCombatHUD:layoutSpiralMenu(spiralMenu)
 
 	local _, outerRadius = spiralMenu:getRadius()
 	spiralMenu:setPosition(
-		width / 2 + outerRadius / 2 + self.SPIRAL_OFFSET,
-		height / 2 + outerRadius / 2 + self.SPIRAL_OFFSET)
+		width / 2 + outerRadius / 2 + self.SPIRAL_OFFSET_X,
+		height / 2 + outerRadius / 2 + self.SPIRAL_OFFSET_Y)
 end
 
 function GamepadCombatHUD:openSpiralMenu(spiralMenu)
@@ -494,6 +514,13 @@ function GamepadCombatHUD:addSpiralMenuRichTextLabel(menu)
 	local innerPanel = menu:getInnerPanel()
 	innerPanel:setData("label", label)
 	innerPanel:addChild(label)
+end
+
+function GamepadCombatHUD:addSpiralMenuCursor(menu)
+	local cursor = GamepadCircleCursor()
+	cursor:setTargetLayout(menu)
+
+	menu:getInnerPanel():addChild(cursor)
 end
 
 function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
@@ -610,6 +637,8 @@ function GamepadCombatHUD:newSpiralMenu(name)
 
 	spiralMenu.onGamepadRelease:register(self.onSpiralMenuGamepadButtonRelease, self, name)
 
+	self:addSpiralMenuCursor(spiralMenu)
+
 	return spiralMenu
 end
 
@@ -662,12 +691,12 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 	local buttonSize, iconSize, alpha
 	if button:getIsFocused() then
 		alpha = 1
-		buttonSize = math.lerp(self.MINIMUM_BUTTON_SIZE, self.SELECTED_BUTTON_SIZE, delta)
-		iconSize = math.lerp(self.MINIMUM_ICON_SIZE, self.SELECTED_ICON_SIZE, delta)
+		buttonSize = math.lerp(self.minimumButtonSize, self.SELECTED_BUTTON_SIZE, delta)
+		iconSize = math.lerp(self.minimumIconSize, self.SELECTED_ICON_SIZE, delta)
 	else
 		alpha = 1
-		buttonSize = math.lerp(self.MINIMUM_BUTTON_SIZE, self.DEFAULT_BUTTON_SIZE, delta)
-		iconSize = math.lerp(self.MINIMUM_ICON_SIZE, self.DEFAULT_ICON_SIZE, delta)
+		buttonSize = math.lerp(self.minimumButtonSize, self.DEFAULT_BUTTON_SIZE, delta)
+		iconSize = math.lerp(self.minimumIconSize, self.DEFAULT_ICON_SIZE, delta)
 	end
 
 	local panel = button:getData("panel")
@@ -1144,6 +1173,23 @@ end
 
 function GamepadCombatHUD:update(delta)
 	BaseCombatHUD.update(self, delta)
+
+	local previousTime = self.currentThingiesOpenElapsedTime
+	self.currentThingiesOpenElapsedTime = math.min(self.currentThingiesOpenElapsedTime + delta, self.SPIRAL_OPEN_DURATION)
+	if previousTime < self.currentThingiesOpenElapsedTime then
+		if self.lastOpenedThingiesMenu then
+			local delta = Tween.bounceOut(math.clamp(self.currentThingiesOpenElapsedTime / self.SPIRAL_OPEN_DURATION))
+			self.minimumButtonSize = math.lerp(self.MINIMUM_BUTTON_SIZE_OPEN, self.MINIMUM_BUTTON_SIZE, delta)
+			self.minimumIconSize = math.lerp(self.MINIMUM_ICON_SIZE_OPEN, self.MINIMUM_ICON_SIZE, delta)
+
+			self.lastOpenedThingiesMenu:setRadius(
+				math.lerp(self.SPIRAL_INNER_RADIUS_OPEN, self.SPIRAL_INNER_RADIUS, delta),
+				math.lerp(self.SPIRAL_OUTER_RADIUS_OPEN, self.SPIRAL_OUTER_RADIUS, delta))
+		end
+	else
+		self.minimumButtonSize = self.MINIMUM_BUTTON_SIZE
+		self.minimumIconSize = self.MINIMUM_ICON_SIZE
+	end
 end
 
 return GamepadCombatHUD

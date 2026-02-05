@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
+local Config = require "ItsyScape.Game.Config"
 local Utility = require "ItsyScape.Game.Utility"
 local Particles = require "ItsyScape.UI.Particles"
 local Widget = require "ItsyScape.UI.Widget"
@@ -35,20 +36,25 @@ function GamepadCirclePanelZap:new()
 
 	self.duration = 0
 
+	local fromColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.gamepadZap.from"))
+	local fr, fg, fb = fromColor:get()
+	local toColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.gamepadZap.to"))
+	local tr, tg, tb = toColor:get()
+
 	self._particles = Particles()
 	self._particles:updateParticleSystemProperties({
 		EmissionArea = { "ellipse", 64, 64, math.rad(360), true },
-		ParticleLifetime = { 0.25, 0.5 },
-		Sizes = { 0.25, 1, 0.25 },
-		Speed = { 64, 96 },
+		ParticleLifetime = { 0.4, 0.6 },
+		Sizes = { 0.25, 1.25, 0.25 },
+		Speed = { 96, 128 },
 		Rotation = { math.rad(0), math.rad(360) },
-		SizeVariation = { 0.25 },
+		LinearAcceleration = { 0, -32, 0, -32 },
+		SizeVariation = { 0.5 },
 		Colors = {
-			{ 1, 1, 1, 0 },
-			{ 1, 1, 1, 1 },
-			{ 1, 1, 1, 1 },
-			{ 1, 1, 1, 1 },
-			{ 1, 1, 1, 0 },
+			{ fr, fg, fb, 0 },
+			{ fr, fg, fb, 1 },
+			{ tr, tg, tb, 1 },
+			{ tr, tg, tb, 0 }
 		},
 		Quads = {
 			love.graphics.newQuad(0, 0, 64, 64, 128, 128),
@@ -60,9 +66,8 @@ function GamepadCirclePanelZap:new()
 			32, 32
 		}
 	})
-	self._particles:emit(10, 20)
+	self._particles:emit(20, 35)
 	self._particles:setTexture("Resources/Game/UI/Particles/Combat/Zap.png")
-	self._particles:setTintColor(Color.fromHexString("ffcc00"))
 	self:addChild(self._particles)
 
 	self:setIsSelfClickThrough(true)
