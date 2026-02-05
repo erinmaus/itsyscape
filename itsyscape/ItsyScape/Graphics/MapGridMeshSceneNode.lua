@@ -28,6 +28,7 @@ function MapGridMeshSceneNode:new()
 	self:getMaterial():setIsFullLit(true)
 	self:getMaterial():setShader(MapGridMeshSceneNode.DEFAULT_SHADER)
 	self:getMaterial():setOutlineThreshold(-1)
+	self:getMaterial():setIsZWriteDisabled(true)
 
 	self.lineWidth = 2
 end

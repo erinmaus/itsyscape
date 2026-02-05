@@ -832,7 +832,19 @@ function MapEditorApplication:paint()
 	end
 end
 
-function MapEditorApplication:makeMotionEvent(x, y, button, layer)
+function MapEditorApplication:getMotionEventE(e)
+	e = e or {}
+
+	if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
+		return {
+			step = e.step or self.terrainToolPanel.toolDistance
+		}
+	end
+
+	return {}
+end
+
+function MapEditorApplication:makeMotionEvent(x, y, button, layer, e)
 	layer = layer or self.motionLayer or self.currentLayer
 
 	local ray = self:shoot(x, y)
@@ -845,7 +857,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		ray = Ray(origin1, direction)
 	end
 
-	return {
+	local result = {
 		x = x or 0,
 		y = y or 0,
 		button = button or 1,
@@ -857,6 +869,12 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		camera = self:getCamera(),
 		transform = mapSceneNode:getTransform():getGlobalDeltaTransform(0)
 	}
+
+	for k, v in pairs(self:getMotionEventE(e)) do
+		result[k] = v
+	end
+
+	return result
 end
 
 function MapEditorApplication:makeMotion(x, y, button)
@@ -935,7 +953,7 @@ function MapEditorApplication:mousePress(x, y, button)
 						self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
 						self.currentToolNode:fromMap(
 							self:getGame():getStage():getMap(self.motionLayer),
-							motion,
+							self.motion,
 							i, i, j, j)
 					end
 				end)
@@ -1459,6 +1477,12 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				self:makeCurrentToolNode()
 			end
 
+			local motion = self.motion
+			if not motion then
+				motion = MapMotion(self:getGame():getStage():getMap(self.currentLayer))
+				motion:onMousePressed(self:makeMotionEvent(x, y, 1))
+			end
+
 			local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
 			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
 			self.currentToolNode:fromMap(
@@ -1861,6 +1885,22 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 
 						local nextMap = table.remove(previousMaps.next, #previousMaps.next)
 						self:getGame():getStage():updateMap(layer, nextMap)
+					end
+				elseif key == "c" then
+					local map = self:getGame():getStage():getMap(self.currentLayer)
+					local tile = map:getTile(self.currentI, self.currentJ)
+					self.currentTileCopy = Tile(tile:serialize())
+				elseif key == "v" then
+					if self.currentTileCopy then
+						local map = self:getGame():getStage():getMap(self.currentLayer)
+						local tile = map:getTile(self.currentI, self.currentJ)
+
+						tile.topLeft = self.currentTileCopy.topLeft
+						tile.topRight = self.currentTileCopy.topRight
+						tile.bottomLeft = self.currentTileCopy.bottomLeft
+						tile.bottomRight = self.currentTileCopy.bottomRight
+
+						self:getGame():getStage():updateMap(self.currentLayer, nil, i, j, w, h)self:getGame():getStage():updateMap(self.currentLayer, nil, self.currentI, self.currentJ, 1, 1)
 					end
 				end
 			end

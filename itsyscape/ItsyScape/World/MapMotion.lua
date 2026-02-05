@@ -166,12 +166,13 @@ function MapMotion:onMouseMoved(e)
 		local y = self:getReferenceY(e)
 		local center = self.map:getTileCenter(self.tileI, self.tileJ)
 		local distance = y - center.y
+		local step = e.step or 1
 
-		if math.abs(distance) >= 1 then
+		if math.abs(distance) >= step then
 			local d = math.abs(distance)
-			while d >= 1 do
-				self:perform(e, math.sign(distance))
-				d = d - 1
+			while d >= e.step  do
+				self:perform(e, math.sign(distance) * e.step)
+				d = d - e.step
 			end
 
 			return true
@@ -192,7 +193,7 @@ function MapMotion:perform(e, distance)
 
 	for i = 1, #self.corners do
 		local corner = cornerOffset[self.corners[i]]
-		self.tile:setCorner(corner.s, corner.t, self.tile:getCorner(corner.s, corner.t) + distance)
+		self.tile:setCorner(corner.s, corner.t, self.tile:getCorner(corner.s, corner.t) + distance, math.abs(distance) == 1)
 		--self.tile[self.corners[i]] = self.tile[self.corners[i]] + distance
 	end
 end
