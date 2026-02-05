@@ -42,6 +42,7 @@ function CraftedItem:_loadItemGreebles(items, offset)
 			numParticles = 100,
 			columns = 2,
 			rows = 2,
+			soft = true,
 
 			emitters = {
 				{
