@@ -451,11 +451,13 @@ public:
 
 	int update(float delta)
 	{
+		bool is_running = running();
+
 		nbunny::ParticleEmissionStrategy::update(delta);
 
 		int count = 0;
 
-		if (running())
+		if (is_running)
 		{
 			current_delay -= delta;
 			if (current_delay <= 0.0f)
