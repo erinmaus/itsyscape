@@ -220,7 +220,6 @@ function ResourceManager:update()
 		self.wasPending = true
 	end
 
-	local _LOG_WRITE_ALL = true
 	local isEditor = _LOG_WRITE_ALL
 	do
 		local index = 1
