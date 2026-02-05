@@ -67,6 +67,36 @@
 			"$type": "world",
 			"gamepad": ["world", "gamepadAction"],
 			"mouse/keyboard": []
+		},
+
+		"debug1": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug1"]
+		},
+
+		"debug2": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug2"]
+		},
+
+		"debug3": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug3"]
+		},
+
+		"debug4": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug4"]
+		},
+
+		"debug5": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug5"]
 		}
 	},
 
@@ -119,6 +149,14 @@
 
 			"keyboardQuickDodge": ["q"],
 			"gamepadQuickDodge": "triggerright"
+		},
+
+		"debug": {
+			"debug1": ["lalt", "1"],
+			"debug2": ["lalt", "2"],
+			"debug3": ["lalt", "3"],
+			"debug4": ["lalt", "4"],
+			"debug5": ["lalt", "5"],
 		}
 	}
 }

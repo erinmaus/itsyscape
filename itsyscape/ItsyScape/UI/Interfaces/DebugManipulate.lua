@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local utf8 = require "utf8"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -355,6 +356,43 @@ function DebugManipulate.ChangeSkinAction:_changeSkin(_, _, form)
 			filename = form.Filename,
 			slot = form.Slot,
 			priority = form.Priority
+		})
+
+	self:getInterface():stopAction()
+end
+
+DebugManipulate.SetMashinaState = Class(DebugManipulate.Action)
+
+function DebugManipulate.SetMashinaState:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.SetMashinaState:start()
+	DebugManipulate.Action.start(self)
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._spawn, self)
+	propertiesPrompt.onCancel:register(self.close, self)
+	propertiesPrompt:setText("Set Mashina State")
+	propertiesPrompt:setProperties({
+		PropertiesPrompt.Property("state", "State", "string", "idle"),
+		PropertiesPrompt.Property("filename", "Filename (Optional)", "string", ""),
+	})
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate.SetMashinaState:_spawn(_, properties, form)
+	local actorID = Class.isCompatibleType(self:getObject(), Actor) and self:getObject():getID()
+
+	local _, _, layer = self:getObject():getTile()
+	local x, y, z = self:getObject()
+	self:getInterface():sendPoke(
+		"setMashinaState",
+		nil, {
+			actorID = actorID,
+			state = form["State"],
+			filename = form["Filename (Optional)"]:gsub("^%s*(.-)%s*$", "%1")
 		})
 
 	self:getInterface():stopAction()
@@ -912,10 +950,24 @@ DebugManipulate.ThirdsFacade = Class(Drawable)
 function DebugManipulate.ThirdsFacade:new()
 	Drawable.new(self)
 
+	self.isVisible = true
+
 	self:setIsSelfClickThrough(true)
 end
 
-function DebugManipulate.ThirdsFacade:draw()
+function DebugManipulate.ThirdsFacade:previewControlUp(control)
+	if control:is("debug1") then
+		self.isVisible = not self.isVisible
+	end
+end
+
+function DebugManipulate.ThirdsFacade:draw(...)
+	Drawable.draw(self, ...)
+
+	if not self.isVisible then
+		return
+	end
+
 	local width, height = self:getSize()
 
 	love.graphics.setLineWidth(2)
@@ -1508,7 +1560,7 @@ function DebugManipulate:populatePresets(presets)
 
 		local label = Label()
 		label:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
-		label:setText(string.format("%s@%d", presetInfo.resource, presetInfo.id))
+		label:setText(presetInfo.name or string.format("%s@%d", presetInfo.resource, presetInfo.id))
 		button:addChild(label)
 		button:setData("preset", presetInfo)
 
@@ -1549,6 +1601,14 @@ function DebugManipulate:probePreset(presetInfo, button)
 			object = object,
 			callback = function()
 				self:selectPreset(presetInfo, button, 1)
+			end
+		},
+		{
+			id = 1,
+			verb = "Rename",
+			object = object,
+			callback = function()
+				self:renamePreset(presetInfo)
 			end
 		},
 		{
@@ -1632,6 +1692,41 @@ function DebugManipulate:deletePreset(presetInfo)
 
 		self:showPreset(nil, nil)
 	end
+end
+
+function DebugManipulate:renamePreset(presetInfo)
+	local properties = {
+		PropertiesPrompt.Property("name", "Name", "string", presetInfo.name or ""),
+	}
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._onRenamePreset, self, presetInfo, preset)
+	propertiesPrompt.onCancel:register(self._onCancelRenamePreset, self, presetInfo, preset)
+	propertiesPrompt:setText("Rename Preset")
+	propertiesPrompt:setProperties(properties)
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate:_onRenamePreset(presetInfo, preset, popup, properties, form)
+	local name
+	if form["Name"] == "" then
+		name = false
+	else
+		name = form["Name"]
+	end
+
+	self:sendPoke("rename", nil, {
+		resource = presetInfo.resource,
+		id = presetInfo.id,
+		name = name
+	})
+
+	self:removePopup(popup)
+end
+
+function DebugManipulate:_onCancelRenamePreset(presetInfo, preset, popup)
+	self:removePopup(popup)
 end
 
 function DebugManipulate:hide()
@@ -2143,6 +2238,13 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 	})
 
 	self:buildActorAction(actions, object, {
+		verb = "Set-Mashina-State",
+		callback = function()
+			self:beginAction(DebugManipulate.SetMashinaState, object, hit)
+		end
+	})
+
+	self:buildActorAction(actions, object, {
 		verb = "Transform",
 		callback = function()
 			self:beginAction(DebugManipulate.TransformAction, object, hit)
@@ -2305,7 +2407,31 @@ function DebugManipulate:stopAction()
 	end
 end
 
-function DebugManipulate:record(presetInfo, _, index)
+function DebugManipulate:record(presetInfo, button, index)
+	if index == 2 then
+		local object = string.format("%s@%d", presetInfo.resource, presetInfo.id)
+		local actions = {
+			{
+				id = 1,
+				verb = "Record",
+				object = object,
+				callback = Function(self.startRecording, self, presetInfo)
+			},
+			{
+				id = 2,
+				verb = "Record-With-Thirds",
+				object = object,
+				callback = Function(self.startRecordingWithThirds, self, presetInfo)
+			}
+		}
+
+		local ui = self:getView()
+		local centerX, centerY = button:getAbsoluteCenter()
+		ui:probe(actions, centerX, centerY)
+
+		return
+	end
+
 	if index ~= 1 then
 		return
 	end
@@ -2323,6 +2449,15 @@ function DebugManipulate:startRecording(presetInfo, index)
 
 	self:hide()
 	self:sendPoke("startRecording", nil, { resource = presetInfo.resource, id = presetInfo.id, index = index })
+end
+
+function DebugManipulate:startRecordingWithThirds(presetInfo)
+	self.thirdsFacade = DebugManipulate.ThirdsFacade()
+
+	self:getView():getRoot():addChild(self.thirdsFacade)
+	self.thirdsFacade:performLayout()
+
+	self:startRecording(presetInfo)
 end
 
 function DebugManipulate:stopRecordOrReplay()
@@ -2365,6 +2500,11 @@ function DebugManipulate:finishReplay(presetInfo)
 end
 
 function DebugManipulate:finishRecording(presetInfo)
+	if self.thirdsFacade then
+		self:getView():getRoot():removeChild(self.thirdsFacade)
+		self.thirdsFacade = nil
+	end
+
 	self:show()
 	self:sendPoke("select", nil, { resource = presetInfo.resource, id = presetInfo.id })
 end

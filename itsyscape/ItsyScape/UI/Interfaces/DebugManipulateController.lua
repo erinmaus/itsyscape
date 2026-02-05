@@ -23,6 +23,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
@@ -167,6 +168,101 @@ function DebugManipulateController.REPLAYED_ACTIONS:changeSkin(action)
 				action.event.filename)
 
 			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
+local function _getMashinaTreeFilename(peep, filename)
+	if not filename or filename == "" then
+		return nil
+	end
+
+	local resource = Utility.Peep.getResource(peep)
+	if not resource then
+		return love.filesystem.getInfo(filename) and filename
+	end
+
+	local potentialFilenames = { filename }
+
+	local instance = Utility.Peep.getInstance(peep)
+	local mapScript = instance:getMapScriptByLayer(layer)
+	local map = mapScript and Utility.Peep.getResource(mapScript)
+
+	local mapObjectName, mapObjectNameRecord = Utility.Peep.getMapObjectName(peep)
+	if mapObjectName then
+		local otherMap = mapObjectNameRecord:get("Map")
+
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%s_%s.lua", otherMap.name, resource.name, filename))
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%s_%sLogic.lua", otherMap.name, resource.name, filename))
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%s.lua", otherMap.name, filename))
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%sLogic.lua", otherMap.name, filename))
+	end
+
+	if map then
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%s_%s.lua", map.name, resource.name, filename))
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%s_%sLogic.lua", map.name, resource.name, filename))
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%s.lua", map.name, filename))
+		table.insert(potentialFilenames, string.format("Resources/Game/Maps/%s/Scripts/%sLogic.lua", map.name, filename))
+	end
+
+	local peepID = peep:getDirector():getGameDB():getRecord("PeepID", {
+		Resource = resource
+	})
+
+	if peepID then
+		local potentialBaseFilename = peepID:get("Value"):gsub("%.", "/")
+		local potentialDirectory = potentialBaseFilename:match("(.*)/.*$") or potentialBaseFilename
+
+
+		table.insert(potentialFilenames, string.format("%s/%s_%sLogic.lua", potentialDirectory, resource.name, filename))
+		table.insert(potentialFilenames, string.format("%s/%s_%s.lua", potentialDirectory, resource.name, filename))
+		table.insert(potentialFilenames, string.format("%s/%s.lua", potentialDirectory, filename))
+		table.insert(potentialFilenames, string.format("%s/%sLogic.lua", potentialDirectory, filename))
+		table.insert(potentialFilenames, string.format("%s_%s.lua", potentialBaseFilename, filename))
+		table.insert(potentialFilenames, string.format("%s_%sLogic.lua", potentialBaseFilename, filename))
+	end
+
+	Log.info("Potential filenames: %s", Log.dump(potentialFilenames))
+
+	for i, potentialFilename in ipairs(potentialFilenames) do
+		if love.filesystem.getInfo(potentialFilename) then
+			Log.info(
+				"Found BMASHINA behavior tree file '%s' (candidate %d) (peep = '%s', resource = %s).",
+				potentialFilename,
+				i,
+				peep:getName(),
+				resource.name)
+
+			return potentialFilename
+		else
+			Log.info(
+				"Did NOT find BMASHINA behavior tree file '%s' (candidate %d) (peep = '%s', resource = %s).",
+				potentialFilename,
+				i,
+				peep:getName(),
+				resource.name)
+		end
+	end
+
+	return nil
+end
+
+function DebugManipulateController.REPLAYED_ACTIONS:setMashinaState(action)
+	return function()
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		if peep then
+			local filename = _getMashinaTreeFilename(peep, action.event.filename)
+			if filename then
+				local code = love.filesystem.load(filename)
+
+				local _, mashina = peep:addBehavior(MashinaBehavior)
+				mashina.states[action.event.state] = code()
+			end
+
+			Utility.Peep.setMashinaState(peep, action.event.state)
 		end
 
 		return DebugManipulateController.ACTION_COMPLETE
@@ -620,7 +716,8 @@ function DebugManipulateController:populate()
 				local preset = {
 					resource = resource.name,
 					index = i,
-					id = presetStorage:get("id")
+					id = presetStorage:get("id"),
+					name = presetStorage:get("name")
 				}
 
 				table.insert(self.presets, preset)
@@ -664,6 +761,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:newPreset(e)
 	elseif actionID == "delete" then
 		self:deletePreset(e)
+	elseif actionID == "rename" then
+		self:renamePreset(e)
 	elseif actionID == "spawnActor" then
 		self:spawnActor(e)
 	elseif actionID == "spawnProp" then
@@ -674,6 +773,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:playAnimation(e)
 	elseif actionID == "changeSkin" then
 		self:changeSkin(e)
+	elseif actionID == "setMashinaState" then
+		self:setMashinaState(e)
 	elseif actionID == "talk" then
 		self:talk(e)
 	elseif actionID == "transform" then
@@ -856,6 +957,21 @@ function DebugManipulateController:deletePreset(e)
 	self:populate()
 end
 
+function DebugManipulateController:renamePreset(e)
+	if self.isRecording then
+		self:stopRecording()
+	end
+
+	local preset = self:getPresetStorage(e.resource, e.id)
+	if not e.name then
+		preset:unset("name", e.name)
+	else
+		preset:set("name", e.name)
+	end
+
+	self:populate()
+end
+
 function DebugManipulateController:selectPreset(e)
 	if self.isRecording then
 		self:stopRecording()
@@ -868,7 +984,8 @@ function DebugManipulateController:selectPreset(e)
 		self:send("showPreset", {
 			resource = e.resource,
 			index = index,
-			id = e.id
+			id = e.id,
+			name = presetStorage:get("name")
 		}, presetStorage:get())
 	end
 end
@@ -1022,12 +1139,13 @@ function DebugManipulateController:commitRecord(action)
 end
 
 function DebugManipulateController:updateClientRecords()
-	local result, index
+	local result, index, name
 	do
 		local p, i = self:getPresetStorage(self.recordingMapResource, self.recordingID)
 		if p and i then
 			result = p:get()
 			index = i
+			name = p:get("name")
 		end
 
 		result = result or {}
@@ -1039,7 +1157,8 @@ function DebugManipulateController:updateClientRecords()
 	self:send("showPreset", {
 		resource = self.recordingMapResource,
 		index = index,
-		id = self.recordingID
+		id = self.recordingID,
+		name = name
 	}, result)
 end
 
@@ -1205,6 +1324,36 @@ function DebugManipulateController:changeSkin(e)
 		self:record(Utility.Peep.getLayer(actor:getPeep()), actor:getPeep(), "changeSkin", {
 			slot = e.slot,
 			priority = e.priority,
+			filename = e.filename
+		})
+	end
+end
+
+function DebugManipulateController:setMashinaState(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	if not actor then
+		return
+	end
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local otherInstance = Utility.Peep.getInstance(actor:getPeep())
+
+	if selfInstance ~= otherInstance then
+		return
+	end
+
+	local filename = _getMashinaTreeFilename(actor:getPeep(), e.filename)
+	if filename then
+		local code = love.filesystem.load(filename)
+		local _, mashina = actor:getPeep():addBehavior(MashinaBehavior)
+		mashina.states[e.state] = code()
+	end
+
+	Utility.Peep.setMashinaState(actor:getPeep(), e.state)
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(actor:getPeep()), actor:getPeep(), "setMashinaState", {
+			state = e.state,
 			filename = e.filename
 		})
 	end

@@ -174,7 +174,7 @@ end
 
 function DebugManipulateCameraController:getActorTransforms(actor)
 	local actorView = self:getGameView():getView(actor)
-	local transform = actorView and actorView:getSceneNode():getTransform():getGlobalDeltaTransform(1) or love.math.newTransform()
+	local transform = actorView and actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta()) or love.math.newTransform()
 	local translation, rotation = MathCommon.decomposeTransform(transform)
 	rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
 

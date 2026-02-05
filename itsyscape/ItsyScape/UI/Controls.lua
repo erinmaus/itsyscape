@@ -17,7 +17,12 @@ local Controls = {
 	"probeTarget",
 	"pokeTarget",
 	"back",
-	"quickHeal"
+	"quickHeal",
+	"debug1",
+	"debug2",
+	"debug3",
+	"debug4",
+	"debug5"
 }
 
 return Controls

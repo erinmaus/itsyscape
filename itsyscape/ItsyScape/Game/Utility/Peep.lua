@@ -2312,6 +2312,26 @@ function Peep.getMapObject(peep)
 	end
 end
 
+function Peep.getMapObjectName(peep)
+	local mapObject = peep:getBehavior(MapObjectBehavior)
+	if not (mapObject and mapObject.mapObject) then
+		return false, nil
+	end
+
+	local gameDB = peep:getDirector():getGameDB()
+	local nameRecord = gameDB:getRecord("MapObjectLocation", {
+		Resource = mapObject.mapObject
+	}) or gameDB:getRecord("MapObjectReference", {
+		Resource = mapObject.mapObject
+	})
+
+	if not nameRecord then
+		return false, nil
+	end
+
+	return nameRecord:get("Name"), nameRecord
+end
+
 function Peep.setMapObject(peep, mapObject)
 	if mapObject == false then
 		peep:removeBehavior(MapObjectBehavior)
