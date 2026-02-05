@@ -29,8 +29,7 @@ DecorationMaterial.PROPERTIES = {
 	"reflectionPower",
 	"reflectionDistance",
 	"roughness",
-	"isShaderCaster",
-	"glassThickness",
+	"isShadowCaster",
 	"glassThickness",
 	"zBias",
 	"isZWriteDisabled"
@@ -49,7 +48,7 @@ function DecorationMaterial:new(d)
 		reflectionPower = 1,
 		reflectionDistance = 2,
 		roughness = 0,
-		isShaderCaster = false,
+		isShadowCaster = false,
 		glassThickness = -1,
 		zBias = 0,
 		isZWriteDisabled = false
