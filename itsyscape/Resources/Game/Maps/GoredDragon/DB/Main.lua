@@ -24,7 +24,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.5,
+		Ambience = 0.4,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -49,8 +49,8 @@ do
 		ColorRed = 160,
 		ColorGreen = 44,
 		ColorBlue = 75,
-		NearDistance = 20,
-		FarDistance = 35,
+		NearDistance = 35,
+		FarDistance = 50,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -87,39 +87,39 @@ do
 	}
 end
 
-M["GoreFog"] = ItsyScape.Resource.MapObject.Unique()
+M["GroundFog"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 0,
 		PositionY = 0,
 		PositionZ = 0,
-		Name = "GoreFog",
+		Name = "GroundFog",
 		Map = M._MAP,
-		Resource = M["GoreFog"]
+		Resource = M["GroundFog"]
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "GoreFog",
-		MapObject = M["GoreFog"]
+		Prop = ItsyScape.Resource.Prop "GroundFog",
+		MapObject = M["GroundFog"]
 	}
 
 	ItsyScape.Meta.Light {
 		ColorRed = 149,
 		ColorGreen = 80,
 		ColorBlue = 99,
-		Resource = M["GoreFog"]
+		Resource = M["GroundFog"]
 	}
 end
 
 M["GoredDragonIntestines"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 7,
-		PositionY = -2,
-		PositionZ = 7,
-		ScaleX = 4,
-		ScaleY = 4,
-		ScaleZ = 4,
+		PositionX = 15,
+		PositionY = -4,
+		PositionZ = 13,
+		ScaleX = 6,
+		ScaleY = 6,
+		ScaleZ = 6,
 		Name = "GoredDragonIntestines",
 		Map = M._MAP,
 		Resource = M["GoredDragonIntestines"]
@@ -134,12 +134,12 @@ end
 M["GoredDragonFlameSac"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 7,
-		PositionY = -4,
-		PositionZ = 29,
-		ScaleX = 2,
-		ScaleY = 2,
-		ScaleZ = 2,
+		PositionX = 15,
+		PositionY = -8,
+		PositionZ = 57,
+		ScaleX = 3,
+		ScaleY = 3,
+		ScaleZ = 3,
 		Name = "GoredDragonFlameSac",
 		Map = M._MAP,
 		Resource = M["GoredDragonFlameSac"]
@@ -154,9 +154,9 @@ end
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 7,
-		PositionY = -1.5,
-		PositionZ = 9,
+		PositionX = 15,
+		PositionY = -4,
+		PositionZ = 15,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
