@@ -29,7 +29,7 @@ do
 	}
 
 	ItsyScape.Meta.AmbientLight {
-		Ambience = 0.3,
+		Ambience = 0.4,
 		Resource = M["Light_Ambient"]
 	}
 end
@@ -77,18 +77,51 @@ do
 	}
 
 	ItsyScape.Meta.Light {
-		ColorRed = 130,
-		ColorGreen = 130,
-		ColorBlue = 130,
+		ColorRed = 180,
+		ColorGreen = 180,
+		ColorBlue = 180,
 		CastsShadows = 1,
 		Resource = M["Light_Sun"]
 	}
 
 	ItsyScape.Meta.DirectionalLight {
-		DirectionX = 4,
+		DirectionX = -4,
+		DirectionY = 2,
+		DirectionZ = 4,
+		Resource = M["Light_Sun"]
+	}
+end
+
+M["Light_Soft"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Soft",
+		Map = M._MAP,
+		Resource = M["Light_Soft"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "DirectionalLight_Default",
+		MapObject = M["Light_Soft"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 100,
+		ColorGreen = 100,
+		ColorBlue = 100,
+		CastsShadows = 1,
+		Resource = M["Light_Soft"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = -4,
 		DirectionY = 8,
 		DirectionZ = -4,
-		Resource = M["Light_Sun"]
+		CastsShadows = 0,
+		Resource = M["Light_Soft"]
 	}
 end
 

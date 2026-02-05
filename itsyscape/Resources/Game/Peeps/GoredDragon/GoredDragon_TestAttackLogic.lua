@@ -9,140 +9,40 @@
 --------------------------------------------------------------------------------
 local B = require "B"
 local BTreeBuilder = require "B.TreeBuilder"
-local Vector = require "ItsyScape.Common.Math.Vector"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Utility = require "ItsyScape.Game.Utility"
-local Probe = require "ItsyScape.Peep.Probe"
 local Mashina = require "ItsyScape.Mashina"
 
-local COMBAT_TARGET = B.Reference("GoredDragon_TestAttackLogic", "COMBAT_TARGET")
-local PLAYER = B.Reference("GoredDragon_TestAttackLogic", "PLAYER")
-local SER_COMMANDER = B.Reference("GoredDragon_TestAttackLogic", "SER_COMMANDER")
+local PLAYER = B.Reference("GoredDragon_TestDragonfyreLogic", "PLAYER")
 
 local GetPlayer = Mashina.Peep.GetPlayer {
 	[PLAYER] = B.Output.player
 }
 
-local GetSerCommander = Mashina.Peep.FindNearbyPeep {
-	filters = {
-		Probe.namedMapObject("SerCommander")
-	},
+local AttackPlayer = Mashina.Sequence {
+	GetPlayer,
 
-	[SER_COMMANDER] = B.Output.result
-}
-
-local Talk = Mashina.Success {
-	Mashina.Step {
-		GetPlayer,
-		GetSerCommander,
-
-		Mashina.Player.Disable {
-			player = PLAYER
-		},
-
-		Mashina.Player.Dialog {
-			peep = SER_COMMANDER,
-			player = PLAYER,
-			main = "x_test_gored_dragon_stunned"
-		},
-
-		Mashina.Player.Enable {
-			player = PLAYER
-		}
+	Mashina.Peep.EngageCombatTarget {
+		peep = PLAYER
 	}
 }
 
-local Punished = Mashina.Step {
-	Mashina.Peep.OnPoke {
-		event = "punished"
+local PrepareForCombat = Mashina.Sequence {
+	Mashina.Peep.SetStance {
+		stance = Weapon.STANCE_CONTROLLED
 	},
 
-	Mashina.Peep.IsAlive,
-
-	Mashina.Player.Disable,
-
-	Mashina.Peep.PlayAnimation {
-		animation = "Dragon_Stunned",
-		slot = "x-gored-dragon-stunned",
-		priority = 10000
+	Mashina.Peep.EquipXWeapon {
+		x_weapon = "Dragon_Dragonfyre",
 	},
-
-	Mashina.Peep.SwapResource {
-		type = "Peep",
-		name = "GoredDragon_Stunned"
-	},
-
-	Mashina.Sequence {
-		Mashina.Success {
-			Mashina.Sequence {
-				Mashina.Peep.DisengageCombatTarget {
-					[COMBAT_TARGET] = B.Output.current_target
-				},
-
-				Mashina.Peep.Interrupt {
-					everything = true,
-				}
-			}
-		},
-
-		Mashina.Step {
-			Talk,
-
-			Mashina.Peep.TimeOut {
-				min_duration = 8,
-				max_duration = 8
-			},
-		}
-	},
-
-	Mashina.Function {
-		func = function(mashina, state)
-			local position = Utility.Peep.getPosition(mashina)
-			local fireball = Utility.spawnPropAtPosition(mashina, "DragonFireball", position:get())
-			if not fireball then
-				return
-			end
-
-			fireball:getPeep():pushPoke("shoot", {
-				dragon = mashina,
-				peep = state[COMBAT_TARGET],
-				weapon = Utility.Peep.getXWeapon(mashina:getDirector():getGameInstance(), "Dragon_ChargedDragonfyreHit"),
-				position = Vector(0, -1, 0)
-			})
-		end
-	},
-
-	Mashina.Peep.SwapResource {
-		type = "Peep",
-		name = "GoredDragon"
-	},
-
-	Mashina.Player.Enable,
-
-	Mashina.Peep.StopAnimation {
-		slot = "x-gored-dragon-stunned"
-	},
-
-	Mashina.Success {
-		Mashina.Peep.EngageCombatTarget {
-			peep = COMBAT_TARGET
-		}
-	}
 }
 
 local Tree = BTreeBuilder.Node() {
-	Mashina.Sequence {
-		Mashina.Peep.SetStance {
-			stance = Weapon.STANCE_CONTROLLED
-		},
-
-		Mashina.Peep.EquipXWeapon {
-			x_weapon = "Dragon_ChargedDragonfyre",
-		},
+	Mashina.Step {
+		AttackPlayer,
 
 		Mashina.Repeat {
 			Mashina.Success {
-				Punished
+				PrepareForCombat
 			}
 		}
 	}

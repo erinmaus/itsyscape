@@ -217,3 +217,9 @@ ItsyScape.Meta.XWeaponBoost {
 	AlwaysHits = 1,
 	Resource = ItsyScape.Resource.Item "X_Dragon_ChargedDragonfyreHit"
 }
+
+ItsyScape.Meta.XWeaponBoost {
+	AccuracyBonus = 50,
+	StrengthBonus = 25,
+	Resource = ItsyScape.Resource.Item "X_Dragon_Dragonfyre"
+}
