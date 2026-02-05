@@ -29,7 +29,7 @@ function Headshot:previewAttackRoll(roll)
 	if target and target:hasBehavior(SpecialAttackBehavior) then
 		roll:setAlwaysHits(true)
 	else
-		roll:setAttackLevel(math.floor(roll:getAttackLevel() * Decapitate.ACCURACY_DEBUFF + 0.5))
+		roll:setAttackLevel(math.floor(roll:getAttackLevel() * Headshot.ACCURACY_DEBUFF + 0.5))
 	end
 end
 
