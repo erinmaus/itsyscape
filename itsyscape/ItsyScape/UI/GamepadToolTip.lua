@@ -251,7 +251,7 @@ function GamepadToolTip:_applyVariant()
 		end
 
 		if variant.message then
-			self:setText(variant.message)
+			self.label:setText(variant.message)
 		end
 
 		if variant.speed then
