@@ -1,6 +1,7 @@
 #define SCAPE_WALL_HACK_DO_NOT_CLAMP_TO_XZ
 
 #include "Resources/Shaders/Triplanar.common.glsl"
+#include "Resources/Shaders/WallHack.common.glsl"
 
 #define MAX_TEXTURES 8
 
@@ -17,6 +18,7 @@ uniform int scape_NumLayers;
 
 void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular)
 {
+	float alpha = getWallHackAlpha(position);
 	TriplanarTextureCoordinates triplanarTextureCoordinates = triplanarMap(frag_Position, frag_Normal);
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
@@ -43,10 +45,12 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 
 	specular = specularSample.r * specularSample.a + 0.2;
 	color *= diffuseSample * resultSample * vec4(mix(vec3(specularSample), vec3(1.0), mix(1.0 - specularSample.a, 1.0, scape_SpecularWeight)), 1.0);
+	color.a *= alpha;
 }
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
+	float alpha = getWallHackAlpha(frag_Position);
 	TriplanarTextureCoordinates triplanarTextureCoordinates = triplanarMap(frag_Position, frag_Normal);
 
 	textureCoordinate.t = 1.0 - textureCoordinate.t;
@@ -70,6 +74,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate)
 	diffuseSample *= resultSample;
 #endif
 
+	diffuseSample.a *= alpha;
 	return diffuseSample;
 }
 
