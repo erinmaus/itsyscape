@@ -1,0 +1,134 @@
+{
+	{
+		autoMask = true,
+		maskID =
+		{
+			default = true,
+		},
+		tileSetID = "YendorianJungle2",
+	},
+	{
+		transform =
+		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				68,
+				4.500000,
+				64,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+		},
+		tileSetID = "Draft",
+	},
+	{
+		transform =
+		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				68,
+				9,
+				64,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+		},
+		tileSetID = "Draft",
+	},
+	{
+		transform =
+		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				68,
+				13.500000,
+				64,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+		},
+		tileSetID = "Draft",
+	},
+	{
+		transform =
+		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				68,
+				18,
+				64,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+		},
+		tileSetID = "Draft",
+	},
+}
