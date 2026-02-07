@@ -156,6 +156,10 @@ function ResourceManager:new()
 	end
 end
 
+function ResourceManager:_getIsEditor()
+	return Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication")
+end
+
 function ResourceManager:getMaxTimeForSyncResource()
 	return self.maxTimeForSyncResource
 end
@@ -311,6 +315,10 @@ function ResourceManager:update()
 					Log.debug("Ran async event '%s'; took %f ms.", pending.callback, (after - before) * 1000)
 					Log.debug("Current async event stack: %s", debug.traceback(callback))
 				end
+			end
+
+			if index > #self.pendingAsyncEvents and self:_getIsEditor() then
+				index = 1
 			end
 
 			currentTime = love.timer.getTime()

@@ -33,6 +33,7 @@ local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local GameView = require "ItsyScape.Graphics.GameView"
+local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local MapGridMeshSceneNode = require "ItsyScape.Graphics.MapGridMeshSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
@@ -135,7 +136,10 @@ function MapEditorApplication:new()
 
 	self:getGameView():getRenderer():setClearColor(self:getGameView():getRenderer():getClearColor() * 0.7)
 
-	self:getGameView():getResourceManager():setFrameDuration(1)
+	local resourceManager = self:getGameView():getResourceManager()
+	resourceManager:setFrameDuration(1)
+	resourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME = 1
+	resourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = 1
 end
 
 function MapEditorApplication:makeCurveCircle(layer)
