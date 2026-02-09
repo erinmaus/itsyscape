@@ -27,7 +27,7 @@ function GlyphManager:new(t, gameView)
 	self.maxDepth = 3
 	self.rotationSpeed = math.pi / 32
 
-	self.radius = math.max(self:getDimensions())
+	self.radius = math.max(self:getDimensions()) * 0.75
 	self.transform = love.math.newTransform()
 
 	self.glyphs = {}
