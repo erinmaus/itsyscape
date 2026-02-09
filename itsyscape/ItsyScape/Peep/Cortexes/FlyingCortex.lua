@@ -39,16 +39,27 @@ function FlyingCortex:updateCurrentElevation(peep, delta)
 	end
 
 	local secondsToMaxElevation = flying.maxElevation / movement.maxSpeed
+	print(">>>", "secondsToMaxElevation", secondsToMaxElevation)
+
 	local secondsToCurrentElevation = flying.currentElevation / movement.maxSpeed
+	print(">>>", "secondsToCurrentElevation", secondsToCurrentElevation)
+
 	local currentTime = secondsToCurrentElevation
+	print(">>>", "currentTime", currentTime, "delta", delta)
+
 	if flying.isFlying then
 		currentTime = currentTime + delta
 	else
 		currentTime = currentTime - delta
 	end
+	print(">>>", "currentTime", "after", currentTime)
 
 	local delta = math.clamp(currentTime / secondsToMaxElevation)
-	local mu = Tween.powerEaseInOut(delta)
+	print(">>>", "delta", delta)
+
+	local mu = Tween.linear(delta)
+	print(">>>", "mu", mu)
+
 
 	local nextElevation = mu * flying.maxElevation
 	flying.currentElevation = nextElevation

@@ -37,8 +37,8 @@ function BaseTinkerer:ready(director, game)
 	status.maxChaseDistance = math.huge
 
 	local _, flying = self:addBehavior(FlyingBehavior)
-	flying.range = 2.5
-	flying.maxElevation = 5
+	flying.range = 4
+	flying.maxElevation = 3
 
 	Utility.Peep.Creep.setBody(self, "Tinkerer")
 
