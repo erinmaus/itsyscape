@@ -22,6 +22,10 @@ function MeleeWeapon:getAttackRange(peep)
 	return 1
 end
 
+function MeleeWeapon:getDodgeRange()
+	return 6
+end
+
 function MeleeWeapon:getStyle()
 	return Weapon.STYLE_MELEE
 end

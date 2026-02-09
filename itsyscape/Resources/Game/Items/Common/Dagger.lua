@@ -18,7 +18,7 @@ function Dagger:getDodgeBehavior()
 end
 
 function Dagger:getDodgeRange(peep, target)
-	return 6
+	return 16
 end
 
 function Dagger:getBonusForStance(peep)

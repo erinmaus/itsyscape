@@ -34,6 +34,7 @@ local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
 local Face3DBehavior = require "ItsyScape.Peep.Behaviors.Face3DBehavior"
+local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local InstancedBehavior = require "ItsyScape.Peep.Behaviors.InstancedBehavior"
 local InstancedInventoryBehavior = require "ItsyScape.Peep.Behaviors.InstancedInventoryBehavior"
@@ -149,6 +150,11 @@ function Peep.enable(peep)
 	end
 
 	return false
+end
+
+function Peep.isFlying(peep)
+	local flying = peep:getBehavior(FlyingBehavior)
+	return flying and flying.isFlying
 end
 
 function Peep.dialog(peep, obj, target, overrideEntryPoint)

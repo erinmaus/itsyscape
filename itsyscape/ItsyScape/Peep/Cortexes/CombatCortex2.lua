@@ -197,7 +197,8 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local canReachTarget = distance <= worldWeaponRange and worldWeaponRange > 0
 	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange) or worldWeaponRange < 0
 	local isTooClose = canMove and distance <= 0
-	return canReachTarget, isTooFar, isTooClose
+	local maybeCanReach = (isTooClose or isTooFar) and worldWeaponRange > 0
+	return canReachTarget, isTooFar, isTooClose, maybeCanReach
 end
 
 function CombatCortex:_getPeepSpell(peep, weapon)
@@ -234,16 +235,16 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	local equippedWeapon = self:_getPeepWeapon(selfPeep)
 	local weaponRange = equippedWeapon:getAttackRange(selfPeep)
 
-	local canReachTarget, isTooFar, isTooClose = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
-	if not canReachTarget then
-		return false, isTooFar, isTooClose
+	local canReachTarget, isTooFar, isTooClose, maybeCanReach = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
+	if not canReachTarget and maybeCanReach then
+		return false, isTooFar, isTooClose, maybeCanReach
 	end
 
 	if not Utility.Combat.canSeeTarget(selfPeep, targetPeep) then
-		return false, isTooFar, isTooClose
+		return false, isTooFar, isTooClose, maybeCanReach
 	end
 
-	return true, isTooFar, isTooClose
+	return true, isTooFar, isTooClose, maybeCanReach
 end
 
 function CombatCortex:updatePeepRecharge(delta, peep)
@@ -940,11 +941,25 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
-	local isWithinRange, isTooFar, isTooClose = self:_isPeepWithinRange(peep, target)
+	local isWithinRange, isTooFar, isTooClose, maybeCanReach = self:_isPeepWithinRange(peep, target)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
 	if not isAttackable or isTooFar then
-		peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
-		peep:removeBehavior(CombatTargetBehavior)
+		if peep:hasBehavior(PlayerBehavior) then
+			if not peep:hasBehavior(AttackCooldownBehavior) then
+				if not maybeCanReach and Utility.Peep.isFlying(target) then
+					Utility.Peep.notify(peep, "ui.notification.combat.targetFlyingAndOutOfRange")
+				else
+					Utility.Peep.notify(peep, "ui.notification.combat.targetOutOfRange")
+				end
+
+				local weapon = self:_getPeepWeapon(peep)
+				weapon:applyCooldown(peep, target)
+			end
+		else
+			peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
+			peep:removeBehavior(CombatTargetBehavior)
+		end
+
 		return
 	elseif not isWithinRange then
 		peep:addBehavior(CombatChargeBehavior)

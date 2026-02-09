@@ -19,7 +19,7 @@ function Zweihander:getAttackRange()
 end
 
 function Zweihander:getDodgeRange()
-	return 4
+	return 8
 end
 
 function Zweihander:rollDamage(peep, purpose, target)
