@@ -14,7 +14,7 @@ local FontResource = require "ItsyScape.Graphics.FontResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
 local Counter = Class(Sprite)
-Counter.DURATION = 0.75
+Counter.DURATION = 1.5
 Counter.SLIDE_IN_OUT_DISTANCE = 32
 Counter.BACKGROUND_PADDING = 8
 Counter.SCALE = 1
@@ -35,6 +35,18 @@ function Counter:new(...)
 		function(background)
 			self.background = background
 		end)
+	resources:queue(
+		TextureResource,
+		"Resources/Game/UI/Icons/Concepts/Off.png",
+		function(icon)
+			self.negateIcon = icon
+		end)
+	resources:queue(
+		TextureResource,
+		"Resources/Game/UI/Icons/Concepts/Powers.png",
+		function(icon)
+			self.riteIcon = icon
+		end)
 
 	self.ready = false
 end
@@ -42,18 +54,11 @@ end
 function Counter:spawn(combatSkill)
 	local resources = self:getSpriteManager():getResources()
 
-	resources:queue(
-		TextureResource,
-		string.format("Resources/Game/UI/Icons/Skills/%s.png", combatSkill),
-		function(icon)
-			self.icon = icon
-		end)
-
 	resources:queueEvent(function()
 		self.ready = true
 	end)
 
-	self.text = "punished"
+	self.text = itsyrealm.language.get("sprite.counter")
 end
 
 function Counter:isDone(time)
@@ -61,7 +66,7 @@ function Counter:isDone(time)
 end
 
 function Counter:draw(position, time)
-	if not self.ready or not self.icon then
+	if not self.ready then
 		return
 	end
 
@@ -80,16 +85,19 @@ function Counter:draw(position, time)
 	local oldFont = love.graphics.getFont()
 
 	local font = self.font:getResource()
-	local icon = self.icon:getResource()
+	local negateIcon = self.negateIcon:getResource()
+	local riteIcon = self.riteIcon:getResource()
 	local background = self.background:getResource()
-	icon:setFilter('linear', 'linear')
+
+	negateIcon:setFilter('linear', 'linear')
+	riteIcon:setFilter('linear', 'linear')
+	background:setFilter('linear', 'linear')
 
 	love.graphics.setFont(font)
-	local text = string.format("%s!", self.text:upper())
-	local textWidth = font:getWidth(text)
+	local textWidth = font:getWidth(self.text)
 
-	local iconHalfWidth = icon:getWidth() / 2
-	local iconHalfHeight = icon:getHeight() / 2
+	local iconHalfWidth = negateIcon:getWidth() / 2
+	local iconHalfHeight = negateIcon:getHeight() / 2
 
 	love.graphics.setColor(1, 1, 1, alpha)
 	love.graphics.draw(
@@ -103,7 +111,17 @@ function Counter:draw(position, time)
 		background:getHeight() / 2)
 
 	love.graphics.draw(
-		icon,
+		riteIcon,
+		position.x - iconHalfWidth * 2 - textWidth / 2,
+		position.y + iconHalfHeight,
+		0,
+		Counter.SCALE,
+		Counter.SCALE,
+		iconHalfWidth,
+		iconHalfHeight)
+
+	love.graphics.draw(
+		negateIcon,
 		position.x - iconHalfWidth * 2 - textWidth / 2,
 		position.y + iconHalfHeight,
 		0,
@@ -115,10 +133,10 @@ function Counter:draw(position, time)
 	do
 		love.graphics.setColor(0, 0, 0, alpha)
 		love.graphics.printf(
-			text,
+			self.text,
 			position.x + 1 + textOffsetX,
 			position.y + 1,
-			font:getWidth(text),
+			font:getWidth(self.text),
 			'center',
 			0,
 			Counter.SCALE,
@@ -130,10 +148,10 @@ function Counter:draw(position, time)
 	do
 		love.graphics.setColor(1, 1, 1, alpha)
 		love.graphics.printf(
-			text,
+			self.text,
 			position.x + textOffsetX,
 			position.y,
-			font:getWidth(text),
+			font:getWidth(self.text),
 			'center',
 			0,
 			Counter.SCALE,

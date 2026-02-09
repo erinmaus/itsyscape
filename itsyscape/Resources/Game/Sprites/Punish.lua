@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Sprites/Dodge.lua
+-- Resources/Game/Sprites/Punish.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -13,13 +13,13 @@ local Sprite = require "ItsyScape.Graphics.Sprite"
 local FontResource = require "ItsyScape.Graphics.FontResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 
-local Dodge = Class(Sprite)
-Dodge.DURATION = 1.5
-Dodge.SLIDE_IN_OUT_DISTANCE = 32
-Dodge.BACKGROUND_PADDING = 8
-Dodge.SCALE = 1
+local Punish = Class(Sprite)
+Punish.DURATION = 1.5
+Punish.SLIDE_IN_OUT_DISTANCE = 32
+Punish.BACKGROUND_PADDING = 8
+Punish.SCALE = 1
 
-function Dodge:new(...)
+function Punish:new(...)
 	Sprite.new(self, ...)
 
 	local resources = self:getSpriteManager():getResources()
@@ -31,13 +31,7 @@ function Dodge:new(...)
 		end)
 	resources:queue(
 		TextureResource,
-		"Resources/Game/UI/Icons/Skills/Defense.png",
-		function(icon)
-			self.icon = icon
-		end)
-	resources:queue(
-		TextureResource,
-		"Resources/Game/Sprites/Dodge/Dodge.png",
+		"Resources/Game/Sprites/Punish/Punish.png",
 		function(background)
 			self.background = background
 		end)
@@ -45,21 +39,28 @@ function Dodge:new(...)
 	self.ready = false
 end
 
-function Dodge:spawn()
+function Punish:spawn(combatSkill)
 	local resources = self:getSpriteManager():getResources()
+
+	resources:queue(
+		TextureResource,
+		string.format("Resources/Game/UI/Icons/Skills/%s.png", combatSkill),
+		function(icon)
+			self.icon = icon
+		end)
 
 	resources:queueEvent(function()
 		self.ready = true
 	end)
 
-	self.text = itsyrealm.language.get("sprite.dodge")
+	self.text = itsyrealm.language.get("sprite.punish")
 end
 
-function Dodge:isDone(time)
-	return time > Dodge.DURATION
+function Punish:isDone(time)
+	return time > Punish.DURATION
 end
 
-function Dodge:draw(position, time)
+function Punish:draw(position, time)
 	if not self.ready or not self.icon then
 		return
 	end
@@ -96,8 +97,8 @@ function Dodge:draw(position, time)
 		position.x,
 		position.y + iconHalfHeight,
 		0,
-		Dodge.SCALE + 0.75,
-		Dodge.SCALE + 0.75,
+		Punish.SCALE + 0.75,
+		Punish.SCALE + 0.75,
 		background:getWidth() / 2,
 		background:getHeight() / 2)
 
@@ -106,8 +107,8 @@ function Dodge:draw(position, time)
 		position.x - iconHalfWidth * 2 - textWidth / 2,
 		position.y + iconHalfHeight,
 		0,
-		Dodge.SCALE,
-		Dodge.SCALE,
+		Punish.SCALE,
+		Punish.SCALE,
 		iconHalfWidth,
 		iconHalfHeight)
 
@@ -120,8 +121,8 @@ function Dodge:draw(position, time)
 			font:getWidth(self.text),
 			'center',
 			0,
-			Dodge.SCALE,
-			Dodge.SCALE,
+			Punish.SCALE,
+			Punish.SCALE,
 			textWidth / 2,
 			0)
 	end
@@ -135,8 +136,8 @@ function Dodge:draw(position, time)
 			font:getWidth(self.text),
 			'center',
 			0,
-			Dodge.SCALE,
-			Dodge.SCALE,
+			Punish.SCALE,
+			Punish.SCALE,
 			textWidth / 2,
 			0)
 	end
@@ -145,4 +146,4 @@ function Dodge:draw(position, time)
 	love.graphics.setFont(oldFont)
 end
 
-return Dodge
+return Punish

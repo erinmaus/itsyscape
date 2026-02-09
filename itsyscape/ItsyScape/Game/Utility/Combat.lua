@@ -137,7 +137,7 @@ function Combat.tryPunish(peep, aggressor)
 			end
 		end
 
-		Utility.Peep.flash(peep, "Counter", 0.5, style)
+		Utility.Peep.flash(peep, "Punish", 0.5, style)
 	end
 end
 
@@ -238,6 +238,8 @@ function Combat.deflectPendingPower(power, activator, target)
 			})
 
 			target:removeBehavior(PendingPowerBehavior)
+
+			Utility.Peep.flash(target, "Counter", 0.5)
 
 			return pendingPower.power
 		end

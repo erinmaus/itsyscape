@@ -848,6 +848,26 @@ function Common.getDescription(resource, gameDB, lang, index)
 	end
 end
 
+function Common.getOldOneDescription(resource, gameDB)
+	if not resource then
+		return nil
+	end
+
+	lang = lang or "en-US"
+
+	local descriptionRecord = gameDB:getRecord("OldOneDescription", { Resource = resource })
+	if descriptionRecord then
+		return descriptionRecord:get("Value")
+	else
+		local value = Utility.Text.getResourceOldOneDescription(resource, gameDB, "en-US")
+		if value then
+			return value
+		end
+
+		return Common.getDescription(resource, gameDB, "en-US", 1)
+	end
+end
+
 function Common.guessTier(action, gameDB)
 	local brochure = gameDB:getBrochure()
 	local tier = 0

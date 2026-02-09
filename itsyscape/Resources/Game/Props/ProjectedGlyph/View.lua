@@ -130,15 +130,8 @@ function ProjectedGlyph:tick()
 
 	if self.mapMesh then
 		local yOffset = Vector(0, state.elevation or 0, 0)
-		local translation = self:getRoot():getTransform():getLocalTranslation()
-		translation = -Vector(translation.x, 0, translation.y) + self.mapMeshCenter + yOffset
 
-		local rotation = self:getRoot():getTransform():getLocalRotation()
-		local scale = self:getRoot():getTransform():getLocalScale()
-
-		self.mapMesh:getTransform():setLocalTranslation(translation)
-		self.mapMesh:getTransform():setLocalRotation(rotation)
-		self.mapMesh:getTransform():setLocalScale(scale)
+		self.mapMesh:getTransform():setLocalTranslation(yOffset)
 		self.mapMesh:getTransform():tick(1)
 	end
 

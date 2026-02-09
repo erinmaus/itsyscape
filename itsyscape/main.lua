@@ -26,6 +26,16 @@ end
 itsyrealm.graphics = { impl = {} }
 itsyrealm.mouse = {}
 
+do
+	local Utility = require "ItsyScape.Game.Utility"
+
+	function itsyrealm.language.get(key, values)
+		return Utility.Text.get(itsyrealm.language.getLocale(), key, values) or
+		       Utility.Text.get("en-US", key, values) or
+		       key
+	end
+end
+
 local _GAME_THREAD_ERROR = false
 
 do

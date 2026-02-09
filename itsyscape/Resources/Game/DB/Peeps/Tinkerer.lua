@@ -486,20 +486,82 @@ do
 	}
 
 	ItsyScape.Meta.PeepStat {
-		Skill = ItsyScape.Resource.Skill "Constitution",
-		Value = ItsyScape.Utility.xpForLevel(500),
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(90),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(90),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(80),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(120),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(90),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(120),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(90),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(120),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 1000,
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 0.4),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.1),
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(50),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1.1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
 		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
-		Prayer = 30,
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(50),
+		StrengthArchery = ItsyScape.Utility.strengthBonusForWeapon(60),
 		Resource = MedicalTinkerer
 	}
 end

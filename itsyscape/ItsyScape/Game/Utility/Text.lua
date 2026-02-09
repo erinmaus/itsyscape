@@ -1047,12 +1047,16 @@ local function _get(resource, gameDB, language, suffix)
 	return value
 end
 
-function Text.getResourceName(resource, gameDB, lang)
+function Text.getResourceName(resource, gameDB, language)
 	return _get(resource, gameDB, language, "name")
 end
 
-function Text.getResourceDescription(resource, gameDB, lang)
+function Text.getResourceDescription(resource, gameDB, language)
 	return _get(resource, gameDB, language, "description")
+end
+
+function Text.getResourceOldOneDescription(resource, gameDB, language)
+	return _get(resource, gameDB, language, "oldOneDescription") or Text.getResourceDescription(resource, gameDB, lang)
 end
 
 return Text

@@ -1353,6 +1353,9 @@ end
 
 function Peep.toggleEffect(peep, resource, onOrOff, ...)
 	local gameDB = peep:getDirector():getGameDB()
+	if type(resource) == 'string' then
+		resource = gameDB:getResource(resource, "Effect")
+	end
 
 	local EffectType = Peep.getEffectType(resource, gameDB)
 
