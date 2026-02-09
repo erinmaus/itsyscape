@@ -2328,6 +2328,7 @@ end
 
 function DemoApplication:updateNearbyShimmer(delta)
 	local isShimmerEnabled = self:getUIView():getCurrentInputScheme() == UIView.INPUT_SCHEME_GAMEPAD
+	isShimmerEnabled = isShimmerEnabled and not self:getUIView():getInterface("DebugManipulate")
 
 	local playerActorID = self:getGame():getPlayer()
 	playerActorID = playerActorID and playerActorID:getActor()
