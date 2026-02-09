@@ -5,7 +5,7 @@
 		{
 			default = true,
 		},
-		tileSetID = "YendorianJungle2",
+		tileSetID = "OldGinsville1",
 	},
 	{
 		transform =
@@ -15,6 +15,12 @@
 				1,
 				1,
 				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
 			},
 			rotation =
 			{
@@ -29,12 +35,6 @@
 				4.500000,
 				64,
 			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
 		},
 		tileSetID = "Draft",
 	},
@@ -46,6 +46,12 @@
 				1,
 				1,
 				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
 			},
 			rotation =
 			{
@@ -60,12 +66,6 @@
 				9,
 				64,
 			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
 		},
 		tileSetID = "Draft",
 	},
@@ -77,6 +77,12 @@
 				1,
 				1,
 				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
 			},
 			rotation =
 			{
@@ -91,12 +97,6 @@
 				13.500000,
 				64,
 			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
 		},
 		tileSetID = "Draft",
 	},
@@ -108,6 +108,12 @@
 				1,
 				1,
 				1,
+			},
+			origin =
+			{
+				0,
+				0,
+				0,
 			},
 			rotation =
 			{
@@ -121,12 +127,6 @@
 				68,
 				18,
 				64,
-			},
-			origin =
-			{
-				0,
-				0,
-				0,
 			},
 		},
 		tileSetID = "Draft",
