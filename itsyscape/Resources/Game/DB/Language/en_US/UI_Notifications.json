@@ -1,0 +1,5 @@
+{
+	"ui.notification.default": "Lorem ipsum...",
+	"ui.notification.combat.targetOutOfRange": "The foe is out of range! Get closer.",
+	"ui.notification.combat.targetFlyingAndOutOfRange": "The foe is flying and out of range of your weapon!"
+}

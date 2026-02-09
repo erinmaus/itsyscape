@@ -23,6 +23,9 @@ if _MOBILE then
 	end
 end
 
+itsyrealm.graphics = { impl = {} }
+itsyrealm.mouse = {}
+
 local _GAME_THREAD_ERROR = false
 
 do
@@ -173,14 +176,6 @@ end
 
 -- 	os.exit(0)
 -- end
-
-itsyrealm = {
-	graphics = {
-		impl = {}
-	},
-
-	mouse = {}
-}
 
 _ARGS = {}
 

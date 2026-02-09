@@ -28,6 +28,10 @@ function Interface:new(id, index, view)
 	self:setID(id)
 end
 
+function Interface:T(...)
+	return self.view:T(...)
+end
+
 function Interface:attach()
 	-- Nothing.
 end

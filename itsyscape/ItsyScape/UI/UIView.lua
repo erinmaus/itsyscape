@@ -1797,6 +1797,12 @@ function UIView:playItemSoundEffect(itemState, itemActionState)
 	return false
 end
 
+function UIView:T(key, values)
+	return Utility.Text.get(itsyrealm.language.getLocale(), key, values) or
+	       Utility.Text.get("en-US", key, values) or
+	       key
+end
+
 function UIView:examine(a, b, w)
 	local object, description
 	if a and b then

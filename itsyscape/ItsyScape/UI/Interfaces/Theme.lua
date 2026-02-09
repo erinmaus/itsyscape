@@ -464,6 +464,20 @@ end
 
 Theme.DEFAULT_TEXT_INPUT_HEIGHT = 48
 
+Theme.ERROR_NOTIFICATION_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/Notification.png"
+}
+
+Theme.ERROR_NOTIFICATION_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
+	fontSize = 18,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	center = true,
+	spaceLines = true,
+	padding = Theme.DEFAULT_OUTER_PADDING
+}
+
 local _action = { id = { value = 1 } }
 function Theme.getIconLabelForAction(action, gameDB)
 	local brochure = gameDB:getBrochure()

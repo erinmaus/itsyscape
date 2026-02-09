@@ -8,10 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local json = require "json"
+local Class = require "ItsyScape.Common.Class"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
+local Peep = require "ItsyScape.Peep.Peep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local LanguageBehavior = require "ItsyScape.Peep.Behaviors.LanguageBehavior"
 local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local utf8 = require("utf8")
@@ -995,8 +998,20 @@ function Text.getTranslations(language)
 end
 
 function Text.get(language, key, values)
+	if Class.isCompatibleType(language, Peep) then
+		local l = language:getBehavior(language)
+		language = l and l.language
+	end
+	language = language or itsyrealm.language.getLocale()
+
 	local translations = Text.getTranslations(language)
 	return translations[key]
+end
+
+function Text.t(language)
+	return function(key, values)
+		return Text.getTranslations(language, key, values)
+	end
 end
 
 Text.RESOURCES = {}

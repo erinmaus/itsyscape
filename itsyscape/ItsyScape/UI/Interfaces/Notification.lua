@@ -9,56 +9,45 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Interface = require "ItsyScape.UI.Interface"
+local InputScheme = require "ItsyScape.UI.InputScheme"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local GridLayout = require "ItsyScape.UI.GridLayout"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 
 local Notification = Class(Interface)
 Notification.WIDTH = 240
 Notification.MAX_HEIGHT = 480
-Notification.PADDING = 4
-Notification.BOTTOM = 16
 
 function Notification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	local w, h = love.graphics.getScaledMode()
-	local x, y
-	if self:getView():getInputProvider():getCurrentJoystick() then
-		x = (w - Notification.WIDTH) / 2
-		y = h / 2 + h / 4
-	else
-		x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
-	end
-
 	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/Notification.9.png"
-	}, self:getView():getResources()))
+	self.panel:setStyle(Theme.ERROR_NOTIFICATION_PANEL_STYLE, PanelStyle)
 	self:addChild(self.panel)
 
 	local state = self:getState()
 
-	local requirements = ConstraintsPanel(self:getView())
+	local requirements = ConstraintsPanel(self:getView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	requirements:setText("Requirements")
 	requirements:setData("skillAsLevel", true)
-	requirements:setSize(Notification.WIDTH + Notification.PADDING * 2)
+	requirements:setSize(Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.WIDTH))
 	requirements:setConstraints(state.requirements)
 
-	local inputs = ConstraintsPanel(self:getView())
+	local inputs = ConstraintsPanel(self:getView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	inputs:setText("Inputs")
 	inputs:setConstraints(state.inputs)
-	inputs:setSize(Notification.WIDTH + Notification.PADDING * 2)
+	inputs:setSize(Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.WIDTH))
 	inputs:setConstraints(state.inputs)
 
 	local innerPannel = ScrollablePanel(GridLayout)
 	innerPannel:getInnerPanel():setPadding(0, 0)
 	innerPannel:getInnerPanel():setWrapContents(true)
 	innerPannel:setSize(Notification.WIDTH, 0)
-	innerPannel:setPosition(Notification.PADDING, Notification.PADDING)
+	innerPannel:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
 	self:addChild(innerPannel)
 
 	local width, height = 0, 0
@@ -68,34 +57,51 @@ function Notification:new(id, index, ui)
 
 		if #state.requirements > 0 then
 			innerPannel:addChild(requirements)
-			requirements:setPosition(Notification.PADDING, Notification.PADDING)
-			requirements:setSize(w1, h1 + Notification.PADDING)
-			height = h1 + Notification.PADDING
+			requirements:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+			requirements:setSize(w1, h1 + Theme.DEFAULT_OUTER_PADDING)
+			height = h1 + Theme.DEFAULT_OUTER_PADDING
 		end
 
 		if #state.inputs > 0 then
 			innerPannel:addChild(inputs)
-			inputs:setPosition(Notification.PADDING, h1 + Notification.PADDING * 2)
-			inputs:setSize(w1, h2 + Notification.PADDING)
-			height = height + h2 + Notification.PADDING
+			inputs:setPosition(Theme.DEFAULT_OUTER_PADDING, h1 + Theme.DEFAULT_OUTER_PADDING * 2)
+			inputs:setSize(w1, h2 + Theme.DEFAULT_OUTER_PADDING)
+			height = height + h2 + Theme.DEFAULT_OUTER_PADDING
 		end
 
 		width = Notification.WIDTH
-		height = math.min(height, Notification.MAX_HEIGHT)
+		height = math.min(height + Theme.DEFAULT_OUTER_PADDING, Notification.MAX_HEIGHT)
 
 		innerPannel:setSize(width, height)
 	end
 
-	self:setSize(width, height + Notification.BOTTOM)
+	self:setSize(width, height)
 	self.panel:setSize(self:getSize())
 
+	self:setIsSelfClickThrough(true)
+	self:setAreChildrenClickThrough(true)
+end
+
+function Notification:attach()
+	Interface.attach(self)
+	self:performLayout()
+end
+
+function Notification:performLayout()
+	local x, y
+	if self:getView():getCurrentInputScheme() == InputScheme.INPUT_SCHEME_GAMEPAD then
+		local screenWidth, screenHeight = love.graphics.getScaledMode()
+		x = (screenWidth - Notification.WIDTH) / 2
+		y = screenHeight / 2 + screenHeight / 4
+	else
+		x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
+	end
+
+	local width, height = self:getSize()
 	self:setPosition(
-		x + Notification.PADDING,
-		y - Notification.PADDING - height - Notification.BOTTOM)
-
+		x + Theme.DEFAULT_OUTER_PADDING,
+		y - Theme.DEFAULT_OUTER_PADDING - height)
 	self:push()
-
-	self:setSize(0, 0)
 end
 
 function Notification:push()
@@ -104,27 +110,23 @@ function Notification:push()
 
 	local screenWidth, screenHeight = love.graphics.getScaledMode()
 
-	if x < Notification.PADDING then
-		x = Notification.PADDING
+	if x < Theme.DEFAULT_OUTER_PADDING then
+		x = Theme.DEFAULT_OUTER_PADDING
 	end
 
-	if y < Notification.PADDING then
-		y = Notification.PADDING
+	if y < Theme.DEFAULT_OUTER_PADDING then
+		y = Theme.DEFAULT_OUTER_PADDING
 	end
 
 	if x + width > screenWidth then
-		x = screenWidth - width - Notification.PADDING
+		x = screenWidth - width - Theme.DEFAULT_OUTER_PADDING
 	end
 
 	if y + height > screenHeight then
-		y = screenHeight - height - Notification.PADDING
+		y = screenHeight - height - Theme.DEFAULT_OUTER_PADDING
 	end
 
 	self:setPosition(x, y)
-end
-
-function Notification:getOverflow()
-	return true
 end
 
 return Notification

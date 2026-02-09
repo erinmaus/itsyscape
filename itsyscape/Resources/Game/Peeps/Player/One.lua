@@ -40,6 +40,7 @@ local GenderBehavior = require "ItsyScape.Peep.Behaviors.GenderBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local HumanPlayerBehavior = require "ItsyScape.Peep.Behaviors.HumanPlayerBehavior"
 local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
+local LanguageBehavior = require "ItsyScape.Peep.Behaviors.LanguageBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
@@ -58,20 +59,22 @@ function One:new(...)
 	Peep.new(self, 'Player', ...)
 
 	self:addBehavior(ActorReferenceBehavior)
+	self:addBehavior(CombatStatusBehavior)
+	self:addBehavior(DynamicBehavior)
 	self:addBehavior(EquipmentBehavior)
 	self:addBehavior(GenderBehavior)
 	self:addBehavior(HumanoidBehavior)
 	self:addBehavior(HumanPlayerBehavior)
-	self:addBehavior(MovementBehavior)
 	self:addBehavior(InventoryBehavior)
+	self:addBehavior(LanguageBehavior)
+	self:addBehavior(MovementBehavior)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
 	self:addBehavior(StanceBehavior)
 	self:addBehavior(StatsBehavior)
-	self:addBehavior(CombatStatusBehavior)
 	self:addBehavior(TeamBehavior)
 	self:addBehavior(TeamsBehavior)
-	self:addBehavior(DynamicBehavior)
+	self:addBehavior(TeamsBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 2, 1)

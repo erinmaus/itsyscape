@@ -115,7 +115,7 @@ function ShopWindowController:buy(e)
 			Utility.UI.notifyFailure(
 				player,
 				"Don't have enough currency to buy even a single item!")
-		elseif result == action.ERROR_INVENTROY_SPACE then
+		elseif result == action.ERROR_INVENTORY_SPACE then
 			Utility.UI.notifyFailure(
 				player,
 				"No inventory space for item(s)!")

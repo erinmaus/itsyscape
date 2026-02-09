@@ -36,6 +36,18 @@ _ITSYREALM_META = {
 	debug = _ITSYREALM_DEBUG
 }
 
+itsyrealm = { language = {} }
+do
+	local locale = "en-US"
+	function itsyrealm.language.setLocale(locale)
+		locale = locale or "en-US"
+	end
+
+	function itsyrealm.language.getLocale(locale)
+		return locale
+	end
+end
+
 math.randomseed(os.time())
 
 _MOBILE = love.system.getOS() == "iOS" or love.system.getOS() == "Android"
