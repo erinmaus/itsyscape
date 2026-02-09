@@ -91,6 +91,25 @@ do
 	}
 end
 
+M["MedicalTinkerer"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79,
+		PositionY = 0,
+		PositionZ = 91,
+		Name = "MedicalTinkerer",
+		Map = M._MAP,
+		Resource = M["MedicalTinkerer"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "MedicalTinkerer",
+		MapObject = M["MedicalTinkerer"],
+		DoesNotDespawn = 1,
+		DoesNotRespawn = 1
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

@@ -48,11 +48,6 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 
 		const auto& node_type = visible_scene_node->get_type();
 
-		if (node_type == ParticleSceneNode::type_pointer)
-		{
-			continue;
-		}
-
 		if (node_type == AmbientLightSceneNode::type_pointer ||
 		    node_type == PointLightSceneNode::type_pointer ||
 		    node_type == FogSceneNode::type_pointer)

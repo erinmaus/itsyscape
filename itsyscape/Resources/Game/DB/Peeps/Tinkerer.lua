@@ -462,3 +462,44 @@ do
 		Resource = FleshyPillar
 	}
 end
+
+do
+	local MedicalTinkerer = ItsyScape.Resource.Peep "MedicalTinkerer" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Tinkerer.MedicalTinkerer",
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Tinkerer medic",
+		Language = "en-US",
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Performs experiments on adventurers.",
+		Language = "en-US",
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Constitution",
+		Value = ItsyScape.Utility.xpForLevel(500),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(50),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(30, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(30, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(30, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
+		Prayer = 30,
+		Resource = MedicalTinkerer
+	}
+end

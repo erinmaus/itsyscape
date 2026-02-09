@@ -49,6 +49,7 @@ function ParticlesInstance:play(animatable, time)
 		local rotation = Quaternion[self.command:getRotation()]
 		local reverseRotation = Quaternion[self.command:getReverseRotation()]
 		local direction = self.command:getDirection()
+		local position = self.command:getPosition()
 		local scale = self.command:getScale()
 		if attach then
 			local transform = love.math.newTransform()
@@ -61,6 +62,7 @@ function ParticlesInstance:play(animatable, time)
 				transform:applyQuaternion(rotation:get())
 			end
 
+
 			transform:scale(scale:get())
 
 			animatable:getPostComposedTransform(attach, function(otherTransform)
@@ -69,7 +71,7 @@ function ParticlesInstance:play(animatable, time)
 				combinedTransform:apply(transform)
 				combinedTransform:apply(otherTransform)
 
-				local localPosition = Vector(combinedTransform:transformPoint(0, 0, 0)) * Vector(1, 1, 1)
+				local localPosition = position:transform(combinedTransform)
 				self.sceneNode:updateLocalPosition(localPosition)
 
 				if direction:getLength() > 0 then

@@ -22,9 +22,11 @@ local FlyingBehavior = Behavior("Flying")
 --              Higher values 
 function FlyingBehavior:new()
 	Behavior.Type.new(self)
-	
-	self.range = 1
-	self.elevation = 1
+
+	self.isFlying = false
+	self.range = 2
+	self.maxElevation = 4
+	self.currentElevation = 0
 end
 
 return FlyingBehavior

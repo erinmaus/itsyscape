@@ -28,6 +28,7 @@ local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehav
 local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
@@ -177,6 +178,12 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local targetSize = Utility.Peep.getSize(targetPeep) * Utility.Peep.getScale(targetPeep)
 	targetSize = math.max(targetSize.x, targetSize.z)
 
+	local adjustWeaponedRange = weaponRange
+	local flying = targetPeep:getBehavior(FlyingBehavior)
+	if flying and flying.isFlying then
+		adjustWeaponedRange = weaponRange - flying.range
+	end
+
 	local selfMovement = selfPeep:getBehavior(MovementBehavior)
 	local targetMovement = targetPeep:getBehavior(MovementBehavior)
 	local canMove = selfMovement and selfMovement.maxSpeed > 0 and targetMovement and targetMovement.maxSpeed > 0 
@@ -184,11 +191,11 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local status = selfPeep:getBehavior(CombatStatusBehavior)
 
 	local map = Utility.Peep.getMap(selfPeep)
-	local worldWeaponRange = self.TILE_TO_WORLD * (weaponRange + 1)
+	local worldWeaponRange = self.TILE_TO_WORLD * (adjustWeaponedRange + 1)
 
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
-	local canReachTarget = distance <= worldWeaponRange
-	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
+	local canReachTarget = distance <= worldWeaponRange and worldWeaponRange > 0
+	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange) or worldWeaponRange < 0
 	local isTooClose = canMove and distance <= 0
 	return canReachTarget, isTooFar, isTooClose
 end

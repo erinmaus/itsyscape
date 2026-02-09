@@ -15,6 +15,7 @@ local Equipment = require "ItsyScape.Game.Equipment"
 local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseTinkerer = Class(Creep)
@@ -35,37 +36,25 @@ function BaseTinkerer:ready(director, game)
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
 
-	local body = CacheRef(
-		"ItsyScape.Game.Body",
-		"Resources/Game/Bodies/Tinkerer.lskel")
-	actor:setBody(body)
+	local _, flying = self:addBehavior(FlyingBehavior)
+	flying.range = 2.5
+	flying.maxElevation = 5
 
-	local idleAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Tinkerer_Idle/Script.lua")
-	self:addResource("animation-idle", idleAnimation)
+	Utility.Peep.Creep.setBody(self, "Tinkerer")
 
-	local walkAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Tinkerer_Walk/Script.lua")
-	self:addResource("animation-walk", walkAnimation)
+	Utility.Peep.Creep.addAnimation(self, "animation-idle", "Tinkerer_Idle")
+	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Tinkerer_Walk")
+	Utility.Peep.Creep.addAnimation(self, "animation-die", "Tinkerer_Die")
+	Utility.Peep.Creep.addAnimation(self, "animation-attack", "Tinkerer_Attack")
+	Utility.Peep.Creep.addAnimation(self, "animation-fly", "Tinkerer_Fly")
 
-	local dieAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Tinkerer_Die/Script.lua")
-	self:addResource("animation-die", dieAnimation)
+	Utility.Peep.Creep.applySkin(
+		self,
+		Equipment.PLAYER_SLOT_BODY,
+		Equipment.SKIN_PRIORITY_BASE,
+		"Tinkerer/Tinkerer.lua")
 
-	local attackAnimation = CacheRef(
-		"ItsyScape.Graphics.AnimationResource",
-		"Resources/Game/Animations/Tinkerer_Attack/Script.lua")
-	self:addResource("animation-attack", attackAnimation)
-
-	local body = CacheRef(
-		"ItsyScape.Game.Skin.ModelSkin",
-		"Resources/Game/Skins/Tinkerer/Tinkerer.lua")
-	actor:setSkin(Equipment.PLAYER_SLOT_BODY, 0, body)
-
-	Utility.Peep.equipXWeapon(self, "Tinkerer_Attack_Magic")
+	Utility.Peep.equipXWeapon(self, "Tinkerer_Attack_MedicalSaw")
 
 	Creep.ready(self, director, game)
 end
