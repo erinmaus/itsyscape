@@ -959,6 +959,14 @@ function GameView:updateGroundDecorations(m)
 					local fullFilename = string.format("%s/%s", cachedGroundDecorationDirectory, filename)
 					local decoration = Decoration(buffer.decode(love.filesystem.read(fullFilename)))
 
+					local materials
+					do
+						local materialsFilename = string.format("%s/_x_GroundDecorations_%d_%s@%d.lmaterial.cache")
+						if love.filesystem.getInfo(materialsFilename) then
+							materials = buffer.decode(love.filesystem.read(materialsFilename))
+						end
+					end
+
 					local groupLayers = groups[layer]
 					if not groupLayers then
 						groupLayers = {}
@@ -1028,9 +1036,10 @@ function GameView:updateGroundDecorations(m)
 					local ground = GroundType()
 					self.resourceManager:queueAsyncEvent(function()
 						ground:emitAll(m.tileSet, m.map)
+						local materials = ground:generateMaterials()
 
 						for i = 1, ground:getDecorationCount() do
-							local decoration, group = ground:getDecorationAtIndex(i)
+							local decoration, group, material = ground:getDecorationAtIndex(i)
 							local groupName = string.format("_x_GroundDecorations_%d_%s@%d", i, tileSetID, m.layer)
 
 							decoration:setUniform("_x_Group", group)
@@ -1041,7 +1050,7 @@ function GameView:updateGroundDecorations(m)
 								decoration:setIsWall(false)
 							end
 
-							self:decorate(groupName, decoration, m.layer, nil, updateDecorationMaterial)
+							self:decorate(groupName, decoration, m.layer, materials, updateDecorationMaterial)
 						end
 					end)
 				end
@@ -2300,6 +2309,15 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 		end
 	end
 
+	local dynamicMaterials
+	if materials then
+		dynamicMaterials = {}
+
+		for k, v in pairs(materials) do
+			dynamicMaterials[k] = DecorationMaterial(v)
+		end
+	end
+
 	if decoration and isValid then
 		local d = { root = SceneNode(), sceneNodes = {}, alphaSceneNodes = {} }
 		d.root:setParent(map)
@@ -2435,7 +2453,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 				end
 
 				local material = baseMaterials and baseMaterials[materialName]
-				material = material or (materials and materials[materialName])
+				material = material or (dynamicMaterials and dynamicMaterials[materialName])
 
 				if material then
 					material:apply(sceneNode, self.resourceManager)
@@ -2479,7 +2497,7 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 		d.group = decoration:getUniform("_x_Group") or false
 		d.name = group
 		d.layer = layer
-		d.materials = materials
+		d.materials = dynamicMaterials
 
 		self.decorations[groupName] = d
 	end

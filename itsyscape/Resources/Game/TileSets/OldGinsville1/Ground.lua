@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local GroundDecorations = require "ItsyScape.World.GroundDecorationsV2"
 local Block = require "ItsyScape.World.GroundDecorations.Block"
 local WoodBlock = require "ItsyScape.World.GroundDecorations.WoodBlockV2"
@@ -84,7 +85,7 @@ function OldGinsvilleGround:new()
 	})
 
 	self:registerTile("moss", GrassBlock:Bind(self) {
-		DIRT_THRESHOLD = 0.2,
+		DIRT_THRESHOLD = 0,
 
 		SATURATION = 3,
 
@@ -161,8 +162,22 @@ function OldGinsvilleGround:new()
 		}
 	})
 
+	self:registerMaterial("stone", DecorationMaterial({
+		shader = "Resources/Shaders/DetailDecorationSpecularMultiTriplanar",
+		texture = "Resources/Game/TileSets/OldGinsville1/Texture.png",
+		uniforms = {
+			scape_NumLayers = { "integer", 1 },
+			scape_TriplanarScale = { "float", -0.75 },
+			scape_TriplanarOffset = { "float", 0 },
+			scape_TriplanarOffsetExponent = { "float", 0 },
+			scape_TriplanarTexture = { "texture", "Resources/Game/TileSets/OldGinsville1/Stone.lua" },
+			scape_TriplanarSpecularTexture = { "texture", "Resources/Game/TileSets/OldGinsville1/SpecularStone.lua" },
+		},
+	}))
+
 	self:registerTile("stone", RandomBlock:Bind(self) {
 		GROUP = Block.GROUP_SHINY,
+		MATERIAL = "stone",
 
 		FEATURE_THRESHOLD = 0,
 		SATURATION = 1,

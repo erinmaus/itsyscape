@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Decoration = require "ItsyScape.Graphics.Decoration"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local MultiTileSet = require "ItsyScape.World.MultiTileSet"
 
 local GroundDecorationsV2 = Class()
@@ -21,6 +22,7 @@ GroundDecorationsV2.CELL_DEPTH = 8
 function GroundDecorationsV2:new(id)
 	self.decorationsByGroup = {}
 	self.decorations = {}
+	self.decorationMaterials = {}
 
 	self.tileSetID = id
 	self.tileFunctions = {}
@@ -37,6 +39,16 @@ function GroundDecorationsV2:getDecorationAtIndex(index)
 
 	local decoration = self.decorations[index]
 	return decoration.decoration, decoration.name
+end
+
+function GroundDecorationsV2:generateMaterials()
+	local materials = {}
+	for name, material in pairs(self.decorationMaterials) do
+		materials[name] = material:serialize()
+	end
+
+	materials.default = { shader = false, texture = false }
+	return materials
 end
 
 function GroundDecorationsV2:_getDecoration(group, position)
@@ -66,14 +78,18 @@ function GroundDecorationsV2:_getDecoration(group, position)
 	return decoration
 end
 
-function GroundDecorationsV2:addFeature(group, id, position, rotation, scale, color, texture)
-	local decoration = self:_getDecoration(group, position)
-	return decoration.decoration:add(id, position, rotation, scale, color, texture)
+function GroundDecorationsV2:addFeature(group, id, position, rotation, scale, color, texture, material)
+	local decoration = self:_getDecoration(group, position, material)
+	return decoration.decoration:add(id, position, rotation, scale, color, texture, material)
 end
 
 function GroundDecorationsV2:registerTile(name, func, ...)
 	self.tileFunctions[name] = self.tileFunctions[name] or Callback()
 	self.tileFunctions[name]:register(func, self, ...)
+end
+
+function GroundDecorationsV2:registerMaterial(name, material)
+	self.decorationMaterials[name] = material
 end
 
 function GroundDecorationsV2:emit(method, tileSet, map, i, j)

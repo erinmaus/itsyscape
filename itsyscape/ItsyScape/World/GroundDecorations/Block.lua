@@ -17,6 +17,8 @@ Block.GROUP_SHINY  = "shiny"
 
 Block.GROUP = Block.GROUP_STATIC
 
+Block.MATERIAL = "default"
+
 function Block.Bind(Type, groundDecorations)
 	return function(t)
 		local block = Type(groundDecorations)
@@ -47,8 +49,8 @@ function Block:getGroundDecorations()
 	return self.groundDecorations
 end
 
-function Block:addFeature(id, position, rotation, scale, color)
-	self.groundDecorations:addFeature(self.GROUP, id, position, rotation, scale, color)
+function Block:addFeature(id, position, rotation, scale, color, texture, material)
+	self.groundDecorations:addFeature(self.GROUP, id, position, rotation, scale, color, texture, material or self.MATERIAL)
 end
 
 function Block:bind()
