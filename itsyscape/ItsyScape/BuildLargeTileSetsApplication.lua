@@ -83,11 +83,22 @@ function BuildLargeTileSetsApplication:saveMap(layer, map, filename, meta)
 	local groundDecorationsDirectory = string.format("%s/GroundDecorationsCache", baseFilename, map)
 	love.filesystem.createDirectory(groundDecorationsDirectory)
 
+	local serializedMaterials = {}
 	for name, groundDecoration in pairs(gameView:getDecorations()) do
 		local outputFilename = string.format("%s/%s.ldeco.cache", groundDecorationsDirectory, name)
 		love.filesystem.write(outputFilename, buffer.encode(groundDecoration:serialize()))
 		Log.info("Saved ground decoration '%s' to '%s'.", name, outputFilename)
+
+		local materials = gameView:getDecorationMaterials(groundDecoration)
+		if materials then
+			for name, material in pairs(materials) do
+				serializedMaterials[name] = material:serialize()
+			end
+		end
 	end
+
+	local materialsFilename = string.format("%s/GroundDecorations.lmaterial.cache", baseFilename)
+	love.filesystem.write(materialsFilename, buffer.encode(serializedMaterials))
 
 	self:getGame():getStage():unloadMap(layer)
 

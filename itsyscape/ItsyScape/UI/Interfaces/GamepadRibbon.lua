@@ -477,7 +477,7 @@ function GamepadRibbon:_updateInventoryTab()
 	if item then
 		local slot
 		if item.slot == Equipment.PLAYER_SLOT_TWO_HANDED then
-			slot = Equipment.PLAYER_SLOT_RIGHT_HANDED
+			slot = Equipment.PLAYER_SLOT_RIGHT_HAND
 		else
 			slot = item.slot
 		end

@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -36,6 +37,8 @@ function Dequip:perform(state, peep, item, target)
 	transaction:transfer(inventory, item, nil, 'dequip')
 	local s, r = transaction:commit()
 	if not s then
+		Utility.Peep.notify(peep, "ui.notification.inventory.dequipItemInventoryFull")
+
 		io.stderr:write("error: ", r, "\n")
 		return false, "transaction failed"
 	end

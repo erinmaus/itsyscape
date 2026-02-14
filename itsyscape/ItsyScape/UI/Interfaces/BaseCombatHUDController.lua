@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local sort = require "batteries.sort"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Config = require "ItsyScape.Game.Config"
@@ -60,11 +61,22 @@ BaseCombatHUDController.COMBAT_SKILLS = {
 	"Faith"
 }
 
+BaseCombatHUDController.STYLE_TO_STORAGE = {
+	[Weapon.STYLE_MAGIC] = "Magic",
+	[Weapon.STYLE_ARCHERY] = "Archery",
+	[Weapon.STYLE_MELEE] = "Melee",
+}
+
 local CONFIG = Variables.load("Resources/Game/Variables/Combat.json")
 local BASE_COST_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "baseCost")
 
 function BaseCombatHUDController:new(peep, director)
 	Controller.new(self, peep, director)
+
+	self._onPeepEquipGear = Function(self.onPeepEquipGear, self)
+	self._onPeepDequipGear = Function(self.onPeepDequipGear, self)
+	peep:listen("equipItem", self._onPeepEquipGear)
+	peep:listen("dequipItem", self._onPeepDequipGear)
 
 	self:bindToPlayer(peep)
 	self.isDirty = true
@@ -92,6 +104,19 @@ function BaseCombatHUDController:new(peep, director)
 	self.currentOpenedThingies = {}
 
 	self.updateDebugStats = UpdateDebugStats()
+
+	local weapon = Utility.Peep.getEquippedWeapon(peep)
+	self.previousLoadoutStyle = weapon and weapon:getStyle() or false
+	self.currentLoadoutStyle = weapon and weapon:getStyle() or false
+	self.isSwappingGear = false
+end
+
+function BaseCombatHUDController:close()
+	Controller.close(self)
+
+	local peep = self:getPeep()
+	peep:silence("equipItem", self._onPeepEquipGear)
+	peep:silence("dequipItem", self._onPeepDequipGear)
 end
 
 function BaseCombatHUDController:bindToPlayer(peep)
@@ -1306,6 +1331,142 @@ function BaseCombatHUDController:getAvailablePowers()
 	return offensivePowers, defensivePowers
 end
 
+function BaseCombatHUDController:onPeepEquipGear(_, e)
+	if e.slot == Equipment.PLAYER_SLOT_TWO_HANDED or e.slot == Equipment.PLAYER_SLOT_RIGHT_HAND then
+		local logic = e.logic
+		if logic and Class.isCompatibleType(logic, Weapon) then
+			self.previousLoadoutStyle = self.currentLoadoutStyle
+			self.currentLoadoutStyle = logic:getStyle()
+			return
+		end
+	end
+
+	if e.item and e.slot then
+		self:updateGear(e.item, e.slot, "equip")
+	end
+end
+
+function BaseCombatHUDController:onPeepDequipGear(_, e)
+	if e.slot == Equipment.PLAYER_SLOT_TWO_HANDED or e.slot == Equipment.PLAYER_SLOT_RIGHT_HAND then
+		return
+	end
+
+	if e.item and e.slot then
+		self:updateGear(e.item, e.slot, "dequip")
+	end
+end
+
+function BaseCombatHUDController:updateGear(item, slot, mode)
+	if self.isSwappingGear then
+		return
+	end
+
+	if not self.currentLoadoutStyle then
+		return
+	end
+
+	local loadoutSectionKey = self.STYLE_TO_STORAGE[self.currentLoadoutStyle]
+	if not loadoutSectionKey then
+		return
+	end
+
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotStorage = equipmentStorage:getSection(loadoutSectionKey)
+	local itemsStorage = slotStorage:getSection("items")
+
+	local peep = self:getPeep()
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+
+	if not equipment then
+		return
+	end
+
+	local broker = equipment:getBroker()
+	if not broker then
+		return
+	end
+
+	local hasSlot = false
+	for i = 1, itemsStorage:length() do
+		local itemStorage = itemsStorage:getSection(i)
+		if itemStorage:get("slot") == slot then
+			hasSlot = true
+
+			if mode == "equip" then
+				itemStorage:set("id", item:getID())
+			elseif mode == "dequip" and itemStorage:get("id") == item:getID() then
+				itemsStorage:removeSection(i)
+			end
+
+			break
+		end
+	end
+
+	if not hasSlot and mode == "equip" then
+		itemsStorage:set(itemsStorage:length() + 1, {
+			id = item:getID(),
+			slot = slot
+		})
+	end
+end
+
+function BaseCombatHUDController:equipGear()
+	if not self.currentLoadoutStyle then
+		return
+	end
+
+	local loadoutSectionKey = self.STYLE_TO_STORAGE[self.currentLoadoutStyle]
+	if not loadoutSectionKey then
+		return
+	end
+
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotStorage = equipmentStorage:getSection(loadoutSectionKey)
+	local itemsStorage = slotStorage:getSection("items")
+
+	local peep = self:getPeep()
+	local gameDB = self:getDirector():getGameDB()
+
+	local equipItems = {}
+	local dequipSlots = {}
+	local canEquipAllItems = true
+	for _, item in itemsStorage:iterateSections() do
+		local itemID = item:get("id")
+		local slot = item:get("slot")
+
+		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
+		local itemResource = gameDB:getResource(itemID, "Item")
+
+		if itemInstance and itemResource then
+			local actions = Utility.getActions(
+				self:getDirector():getGameInstance(),
+				itemResource,
+				'inventory')
+
+			for i = 1, #actions do
+				local actionInstance = actions[i].instance
+				if actionInstance:is("equip") then
+					if actionInstance:canPerform(peep:getState()) then
+						table.insert(equipItems, itemInstance)
+					else
+						table.insert(dequipItems, Utility.Peep.getEquippedItem(slot))
+						canEquipAllItems = false
+					end
+
+					break
+				end
+			end
+		end
+	end
+
+	if not Utility.Item.equipMany(peep, equipItems, dequipItems) then
+		Utility.Peep.notify(peep, "ui.notification.combat.switchClassLoadoutInventoryFull")
+	elseif not canEquipAllItems then
+		Utility.Peep.notify(peep, "ui.notification.combat.switchClassLoadoutEquipActionFailed")
+	end
+end
+
 function BaseCombatHUDController:updateStyle()
 	local peep = self:getPeep()
 
@@ -1342,6 +1503,17 @@ function BaseCombatHUDController:updateStyle()
 
 	local stance = peep:getBehavior(StanceBehavior)
 	self.stance = stance and stance.stance or Weapon.STANCE_NONE
+
+	if self.previousLoadoutStyle ~= self.currentLoadoutStyle then
+		self.isSwappingGear = true
+		local s, e = xpcall(self.equipGear, debug.traceback, self)
+		if not s then
+			Log.info("Couldn't swap gear: %s", e)
+		end
+
+		self.previousLoadoutStyle = self.currentLoadoutStyle
+		self.isSwappingGear = false
+	end
 end
 
 function BaseCombatHUDController:_updatePowersRecharge(powers)

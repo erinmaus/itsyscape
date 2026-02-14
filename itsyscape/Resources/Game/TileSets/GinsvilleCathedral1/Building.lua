@@ -26,7 +26,7 @@
 				texture = "Resources/Game/TileSets/GinsvilleCathedral1/Texture.png",
 				uniforms = {
 					scape_NumLayers = { "integer", 3 },
-					scape_TriplanarScale = { "float", 0, -0.75, -0.5 },
+					scape_TriplanarScale = { "float", -0.5, -0.75, -0.5 },
 					scape_TriplanarOffset = { "float", 0, 0, 0 },
 					scape_TriplanarOffsetExponent = { "float", 0, 0, 0 },
 					scape_TriplanarTexture = { "texture", "Resources/Game/TileSets/GinsvilleCathedral1/InteriorStone.lua" },

@@ -1626,8 +1626,8 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 		end
 
 		if targetItem then
-			local path = player:findPath(i, j, layer)
-			if path then
+			local walkStep = Utility.Peep.getWalk(player:getActor():getPeep(), i, j, layer)
+			if walkStep then
 				local queue = player:getActor():getPeep():getCommandQueue()
 				local function condition()
 					if not broker:hasItem(targetItem) then
@@ -1651,14 +1651,14 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 						targetItem:getID(), ref,
 						i, j, layer)
 
-					local walkStep = ExecutePathCommand(path)
 					local takeStep = TransferItemCommand(
 						broker,
 						targetItem,
 						playerInventory,
 						targetItem:getCount(),
 						'take',
-						true)
+						true,
+						"ui.notification.inventory.pickUpItemInventoryFull")
 
 					if peep:hasBehavior(PlayerBehavior) then
 						local playerModel = Utility.Peep.getPlayerModel(peep)

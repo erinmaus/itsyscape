@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local EquipmentInventoryProvider = require "ItsyScape.Game.EquipmentInventoryProvider"
 local Utility = require "ItsyScape.Game.Utility"
+local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
 
 local Item = {}
@@ -382,6 +383,153 @@ function Item.getItemsInPeepInventory(peep, itemID)
 	end
 
 	return result
+end
+
+function Item.equipMany(peep, equipItems, dequipItems)
+	equipItems = equipItems or {}
+	dequipItems = dequipItems or {}
+
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+
+	local inventory = peep:getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+
+	if not (equipment and inventory) then
+		return false
+	end
+
+	local director = peep:getDirector()
+	local gameDB = director:getGameDB()
+	local broker = director:getItemBroker()
+
+	local transaction = broker:createTransaction()
+	transaction:addParty(equipment)
+	transaction:addParty(inventory)
+
+	local dequipped = {}
+	for _, item in ipairs(equipItems) do
+		local itemKeyInInventory = broker:getItemKey(item)
+		transaction:transfer(equipment, item, nil, 'equip')
+
+		local leftHandItem, rightHandItem, twoHandedItem, equippedItem
+		local slot
+		do
+			local resource = gameDB:getResource(item:getID(), "Item")
+			if resource then
+				local equipmentRecord = gameDB:getRecords(
+					"Equipment", { Resource = resource }, 1)[1]
+				if equipmentRecord then
+					slot = equipmentRecord:get("EquipSlot")
+					if slot == Equipment.PLAYER_SLOT_TWO_HANDED then
+						leftHandItem = equipment:getEquipped(Equipment.PLAYER_SLOT_LEFT_HAND)
+						rightHandItem = equipment:getEquipped(Equipment.PLAYER_SLOT_RIGHT_HAND)
+						twoHandedItem = equipment:getEquipped(Equipment.PLAYER_SLOT_TWO_HANDED)
+
+						if leftHandItem then
+							transaction:transfer(inventory, leftHandItem, nil, 'equip')
+						end
+
+						if rightHandItem then
+							transaction:transfer(inventory, rightHandItem, nil, 'equip')
+						end
+
+						if twoHandedItem then
+							transaction:transfer(inventory, twoHandedItem, nil, 'equip')
+						end
+					else
+						if slot == Equipment.PLAYER_SLOT_RIGHT_HAND or
+						   slot == Equipment.PLAYER_SLOT_LEFT_HAND
+						then
+							twoHandedItem = equipment:getEquipped(Equipment.PLAYER_SLOT_TWO_HANDED)
+							if twoHandedItem then
+								transaction:transfer(inventory, twoHandedItem)
+							end
+						end
+
+						equippedItem = equipment:getEquipped(slot)
+						if equippedItem and not (equippedItem:isStackable() and equippedItem:getID() == item:getID()) then
+							transaction:transfer(inventory, equippedItem)
+						else
+							equippedItem = nil
+						end
+					end
+				end
+			end
+		end
+
+		if slot then
+			dequipped[item] = {
+				itemKeyInInventory = itemKeyInInventory,
+				leftHandItem = leftHandItem,
+				rightHandItem = rightHandItem,
+				twoHandedItem = twoHandedItem,
+				equippedItem = equippedItem
+			}
+		end
+	end
+
+	for _, item in ipairs(dequipItems) do
+		transaction:transfer(inventory, item, nil, 'equip')
+	end
+
+	if not transaction:commit() then
+		return false
+	end
+
+	for item, e in pairs(equipItems) do
+		local itemKeyInInventory = e.itemKeyInInventory
+		local leftHandItem = e.leftHandItem
+		local rightHandItem = e.rightHandItem
+		local twoHandedItem = e.twoHandedItem
+		local equippedItem = e.equippedItem
+
+		if not equippedItem then
+			if leftHandItem or rightHandItem or twoHandedItem then
+				if slot == Equipment.PLAYER_SLOT_LEFT_HAND then
+					equippedItem = leftHandItem or twoHandedItem
+				elseif slot == Equipment.PLAYER_SLOT_RIGHT_HAND then
+					equippedItem = rightHandItem or twoHandedItem
+				elseif slot == Equipment.PLAYER_SLOT_TWO_HANDED then
+					equippedItem = rightHandItem or leftHandItem or twoHandedItem
+				end
+			end
+		end
+
+		if equippedItem then
+			Log.info(
+				"Dequipped item '%s' was in slot '%s'; trying to ensure equipped item goes to key (aka inventory slot) '%d'.",
+				equippedItem:getID(), Equipment.PLAYER_SLOT_NAMES[slot], itemKeyInInventory)
+
+			local key = broker:getItemKey(equippedItem)
+			if key ~= itemKeyInInventory and itemKeyInInventory then
+				Log.info("Dequipped item '%s' has key %d, want %d.", equippedItem:getID(), key, itemKeyInInventory)
+
+				local existingItemAtKey
+				for item in broker:iterateItemsByKey(inventory, itemKeyInInventory) do
+					existingItemAtKey = item
+					break
+				end
+
+				if existingItemAtKey then
+					Log.info("Existing item '%s' at slot %d; temporarily unassigning key.", existingItemAtKey:getID(), itemKeyInInventory)
+					broker:setItemKey(existingItemAtKey, nil)
+				end
+
+				Log.info("Setting dequipped item key to %d.", itemKeyInInventory)
+				broker:setItemKey(equippedItem, itemKeyInInventory)
+				broker:setItemZ(equippedItem, itemKeyInInventory)
+
+				if existingItemAtKey then
+					Log.info("Re-assigning blocking item '%s' to a different slot.", existingItemAtKey:getID())
+					inventory:assignKey(existingItemAtKey)
+					Log.info("Reassigned blocking item '%s' to key %d.", existingItemAtKey:getID(), broker:getItemKey(existingItemAtKey) or -1)
+				end
+			end
+		end
+	end
+
+	return true
 end
 
 return Item
