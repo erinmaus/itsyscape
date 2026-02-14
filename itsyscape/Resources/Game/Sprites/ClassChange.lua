@@ -524,6 +524,7 @@ function ClassChange:draw(position, time)
 	local r, g, b = self.BACKGROUND_COLOR:get()
 	love.graphics.setColor(r, g, b, alpha)
 
+	love.graphics.setBlendMode("add")
 	love.graphics.draw(
 		background,
 		position.x,
@@ -533,6 +534,7 @@ function ClassChange:draw(position, time)
 		2 * self.SCALE,
 		background:getWidth() / 2,
 		background:getHeight() / 2)
+	love.graphics.setBlendMode("alpha")
 
 	love.graphics.setColor(1, 1, 1, alpha)
 
@@ -552,8 +554,8 @@ function ClassChange:draw(position, time)
 			font:getWidth(self.text),
 			"center",
 			0,
-			1,
-			1,
+			self.SCALE,
+			self.SCALE,
 			textWidth / 2,
 			font:getHeight() / 2)
 	end
@@ -568,8 +570,8 @@ function ClassChange:draw(position, time)
 			font:getWidth(self.text),
 			"center",
 			0,
-			1,
-			1,
+			self.SCALE,
+			self.SCALE,
 			textWidth / 2,
 			font:getHeight() / 2)
 	end
