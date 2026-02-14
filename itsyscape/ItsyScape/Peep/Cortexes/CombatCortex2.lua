@@ -66,6 +66,7 @@ function CombatCortex:new()
 	self.nextTarget = {}
 	self.currentStance = {}
 	self.currentRoll = {}
+	self.previousCombatStyle = {}
 end
 
 function CombatCortex:addPeep(peep)
@@ -152,6 +153,7 @@ function CombatCortex:removePeep(peep)
 	self.currentTarget[peep] = nil
 	self.currentStance[peep] = nil
 	self.currentRoll[peep] = nil
+	self.previousCombatStyle[peep] = nil
 end
 
 function CombatCortex:_getPeepTarget(peep)
@@ -245,6 +247,25 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	end
 
 	return true, isTooFar, isTooClose, maybeCanReach
+end
+
+function CombatCortex:updatePeepCombatStyle(peep)
+	local weapon = self:_getPeepWeapon(peep)
+	if weapon == self.defaultWeapon then
+		return
+	end
+
+	local currentCombatStyle = weapon:getStyle()
+	local previousCombatStyle = self.previousCombatStyle[peep]
+	if previousCombatStyle == currentCombatStyle then
+		return
+	end
+
+	if previousCombatStyle then
+		Utility.Peep.flash(peep, "ClassChange", 0, currentCombatStyle)
+	end
+
+	self.previousCombatStyle[peep] = currentCombatStyle
 end
 
 function CombatCortex:updatePeepRecharge(delta, peep)
@@ -1045,6 +1066,7 @@ end
 function CombatCortex:tick(delta)
 	for peep in self:iterate() do
 		if Utility.Peep.isEnabled(peep) then
+			self:updatePeepCombatStyle(peep)
 			self:updatePeepRecharge(delta, peep)
 			self:updatePeepTarget(delta, peep)
 			self:updatePeepStance(delta, peep)
