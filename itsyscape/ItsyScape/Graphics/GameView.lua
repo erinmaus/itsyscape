@@ -907,10 +907,12 @@ function GameView:updateGroundDecorations(m)
 				self:_updateWind(m.layer, sceneNode)
 			end
 
-			local shader = self.resourceManager:load(
-				ShaderResource,
-				shaderFilename)
-			sceneNode:getMaterial():setShader(shader)
+			if group ~= Block.GROUP_CUSTOM then
+				local shader = self.resourceManager:load(
+					ShaderResource,
+					shaderFilename)
+				sceneNode:getMaterial():setShader(shader)
+			end
 
 			if group == Block.GROUP_BENDY then
 				table.insert(m.dynamicGroundDecorations, d)
@@ -959,14 +961,6 @@ function GameView:updateGroundDecorations(m)
 					local fullFilename = string.format("%s/%s", cachedGroundDecorationDirectory, filename)
 					local decoration = Decoration(buffer.decode(love.filesystem.read(fullFilename)))
 
-					local materials
-					do
-						local materialsFilename = string.format("%s/_x_GroundDecorations_%d_%s@%d.lmaterial.cache")
-						if love.filesystem.getInfo(materialsFilename) then
-							materials = buffer.decode(love.filesystem.read(materialsFilename))
-						end
-					end
-
 					local groupLayers = groups[layer]
 					if not groupLayers then
 						groupLayers = {}
@@ -997,22 +991,36 @@ function GameView:updateGroundDecorations(m)
 
 					for i = 1, decoration:getNumFeatures() do
 						local f = decoration:getFeatureByIndex(i)
+						if f:getMaterial() ~= "default" then
+							print(">>> material", i, f:getMaterial())
+						end
 						parentDecoration:add(
 							f:getID(),
 							f:getPosition(),
 							f:getRotation(),
 							f:getScale(),
 							f:getColor(),
-							f:getTexture())
+							f:getTexture(),
+							f:getMaterial())
 					end
 				end
 			end
 
 			for layer, parentLayers in pairs(groups) do
+				local materials = nil
+				do
+					local materialsFilename = string.format("%s@%d.lmaterial.cache", cachedGroundDecorationDirectory, layer)
+					if love.filesystem.getInfo(materialsFilename) then
+						materials = buffer.decode(love.filesystem.read(materialsFilename))
+					end
+
+					print(">>> materials", Log.dump(materials))
+				end
+
 				for groupName, parentGroups in pairs(parentLayers) do
 					for tileSetID, decoration in pairs(parentGroups) do
 						local decorationName = string.format("_x_GroundDecorations_%s_%s@%d", groupName, tileSetID, layer)
-						self:decorate(decorationName, decoration, m.layer, nil, updateDecorationMaterial)
+						self:decorate(decorationName, decoration, m.layer, materials, updateDecorationMaterial)
 					end
 				end
 			end

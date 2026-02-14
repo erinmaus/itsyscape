@@ -173,10 +173,17 @@ function OldGinsvilleGround:new()
 			scape_TriplanarTexture = { "texture", "Resources/Game/TileSets/OldGinsville1/Stone.lua" },
 			scape_TriplanarSpecularTexture = { "texture", "Resources/Game/TileSets/OldGinsville1/SpecularStone.lua" },
 		},
+
+		properties = {
+			isReflectiveOrRefractive = true,
+			reflectionPower = 0.5,
+			reflectionDistance = 1,
+			roughness = 1
+		}
 	}))
 
 	self:registerTile("stone", RandomBlock:Bind(self) {
-		GROUP = Block.GROUP_SHINY,
+		GROUP = Block.GROUP_CUSTOM,
 		MATERIAL = "stone",
 
 		FEATURE_THRESHOLD = 0,

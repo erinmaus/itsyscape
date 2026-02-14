@@ -97,7 +97,7 @@ function BuildLargeTileSetsApplication:saveMap(layer, map, filename, meta)
 		end
 	end
 
-	local materialsFilename = string.format("%s/GroundDecorations.lmaterial.cache", baseFilename)
+	local materialsFilename = string.format("%s/GroundDecorationsCache@%d.lmaterial.cache", baseFilename, layer)
 	love.filesystem.write(materialsFilename, buffer.encode(serializedMaterials))
 
 	self:getGame():getStage():unloadMap(layer)

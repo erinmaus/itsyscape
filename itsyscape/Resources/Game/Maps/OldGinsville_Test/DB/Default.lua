@@ -122,6 +122,30 @@ do
 	}
 end
 
+M["YewTree_Default11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 72.500000,
+		PositionY = 0.000000,
+		PositionZ = 55.500000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YewTree_Default11",
+		Map = M._MAP,
+		Resource = M["YewTree_Default11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YewTree_Default1",
+		MapObject = M["YewTree_Default11"]
+	}
+end
+
 M["YewTree_Default12"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -167,6 +191,54 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "YewTree_Default1",
 		MapObject = M["YewTree_Default13"]
+	}
+end
+
+M["YewTree_Default14"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 87.544042,
+		PositionY = 0.000000,
+		PositionZ = 55.750000,
+		RotationX = 0.000000,
+		RotationY = 0.737966,
+		RotationZ = 0.000000,
+		RotationW = -0.674838,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YewTree_Default14",
+		Map = M._MAP,
+		Resource = M["YewTree_Default14"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YewTree_Default1",
+		MapObject = M["YewTree_Default14"]
+	}
+end
+
+M["YewTree_Default15"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79.500000,
+		PositionY = 0.000000,
+		PositionZ = 45.750000,
+		RotationX = 0.000000,
+		RotationY = 0.957296,
+		RotationZ = 0.000000,
+		RotationW = -0.289109,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YewTree_Default15",
+		Map = M._MAP,
+		Resource = M["YewTree_Default15"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YewTree_Default1",
+		MapObject = M["YewTree_Default15"]
 	}
 end
 
