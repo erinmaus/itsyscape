@@ -21,6 +21,7 @@ ClassChange.SLIDE_IN_OUT_DISTANCE = 32
 ClassChange.BACKGROUND_PADDING = 8
 ClassChange.BACKGROUND_COLOR = Color.fromHexString("463779")
 ClassChange.TEXT_COLOR = Color.fromHexString("faa92b")
+ClassChange.SCALE = 0.75
 
 ClassChange.STYLES = {
 	[Weapon.STYLE_MAGIC] = {
@@ -487,8 +488,8 @@ function ClassChange:_drawPart(drawable, animation, position, time)
 		position.x + positionX,
 		position.y + positionY,
 		rotation,
-		scaleX,
-		scaleY,
+		scaleX * self.SCALE,
+		scaleY * self.SCALE,
 		offsetX,
 		offsetY)
 
@@ -528,8 +529,8 @@ function ClassChange:draw(position, time)
 		position.x,
 		position.y,
 		0,
-		2,
-		2,
+		2 * self.SCALE,
+		2 * self.SCALE,
 		background:getWidth() / 2,
 		background:getHeight() / 2)
 

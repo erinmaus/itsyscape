@@ -991,9 +991,6 @@ function GameView:updateGroundDecorations(m)
 
 					for i = 1, decoration:getNumFeatures() do
 						local f = decoration:getFeatureByIndex(i)
-						if f:getMaterial() ~= "default" then
-							print(">>> material", i, f:getMaterial())
-						end
 						parentDecoration:add(
 							f:getID(),
 							f:getPosition(),
@@ -1013,8 +1010,6 @@ function GameView:updateGroundDecorations(m)
 					if love.filesystem.getInfo(materialsFilename) then
 						materials = buffer.decode(love.filesystem.read(materialsFilename))
 					end
-
-					print(">>> materials", Log.dump(materials))
 				end
 
 				for groupName, parentGroups in pairs(parentLayers) do
