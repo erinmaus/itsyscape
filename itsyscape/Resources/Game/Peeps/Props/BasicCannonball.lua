@@ -47,7 +47,7 @@ function BasicCannonball:onLaunch(peep, target, cannon, path, duration)
 end
 
 function BasicCannonball:_tryMove(delta)
-	local delta = game:getDelta()
+	local delta = self:getDirector():getGameInstance():getDelta()
 	self.currentTime = math.min(self.currentTime + delta, self.currentDuration)
 
 	local percent = self.currentTime / self.currentDuration
@@ -138,6 +138,7 @@ end
 
 function BasicCannonball:_tryExplode()
 	local stage = self:getDirector():getGameInstance():getStage()
+	local position = Utility.Peep.getAbsolutePosition(self)
 
 	local instance = Utility.Peep.getInstance(self)
 	for _, layer in instance:iterateLayers() do
