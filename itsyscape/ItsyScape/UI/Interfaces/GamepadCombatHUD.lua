@@ -335,13 +335,14 @@ function GamepadCombatHUD:openThingies(name, targetWidget)
 	local didOpen = BaseCombatHUD.openThingies(self, name, targetWidget)
 	if didOpen then
 		local thingiesWidget = self:getThingiesWidget(name)
+
+		self:addChild(thingiesWidget)
+		self:focusChild(thingiesWidget)
+
 		local angle = self.thingiesAngles[name]
 		if angle then
 			thingiesWidget:setCurrentAngle(angle)
 		end
-
-		self:addChild(thingiesWidget)
-		self:focusChild(thingiesWidget)
 
 		self.currentThingiesOpenElapsedTime = 0
 		self.lastOpenedThingiesMenu = thingiesWidget
