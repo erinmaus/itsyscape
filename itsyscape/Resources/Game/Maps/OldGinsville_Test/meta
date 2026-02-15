@@ -5,9 +5,14 @@
 			default = true,
 		},
 		autoMask = true,
-		tileSetID = "OldGinsville1",
 		transform =
 		{
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
 			scale =
 			{
 				1,
@@ -27,18 +32,18 @@
 				0,
 				0,
 			},
+		},
+		tileSetID = "OldGinsville1",
+	},
+	{
+		transform =
+		{
 			origin =
 			{
 				0,
 				0,
 				0,
 			},
-		},
-	},
-	{
-		tileSetID = "Draft",
-		transform =
-		{
 			scale =
 			{
 				1,
@@ -58,18 +63,18 @@
 				4.500000,
 				64,
 			},
+		},
+		tileSetID = "Draft",
+	},
+	{
+		transform =
+		{
 			origin =
 			{
 				0,
 				0,
 				0,
 			},
-		},
-	},
-	{
-		tileSetID = "Draft",
-		transform =
-		{
 			scale =
 			{
 				1,
@@ -89,18 +94,18 @@
 				9,
 				64,
 			},
+		},
+		tileSetID = "Draft",
+	},
+	{
+		transform =
+		{
 			origin =
 			{
 				0,
 				0,
 				0,
 			},
-		},
-	},
-	{
-		tileSetID = "Draft",
-		transform =
-		{
 			scale =
 			{
 				1,
@@ -120,18 +125,18 @@
 				13.500000,
 				64,
 			},
+		},
+		tileSetID = "Draft",
+	},
+	{
+		transform =
+		{
 			origin =
 			{
 				0,
 				0,
 				0,
 			},
-		},
-	},
-	{
-		tileSetID = "Draft",
-		transform =
-		{
 			scale =
 			{
 				1,
@@ -151,12 +156,7 @@
 				18,
 				64,
 			},
-			origin =
-			{
-				0,
-				0,
-				0,
-			},
 		},
+		tileSetID = "Draft",
 	},
 }

@@ -1713,6 +1713,7 @@ include "Resources/Game/DB/Props/Drakkenson.lua"
 include "Resources/Game/DB/Props/ColorfulFire.lua"
 include "Resources/Game/DB/Props/DragonFireball.lua"
 include "Resources/Game/DB/Props/Dodge.lua"
+include "Resources/Game/DB/Props/OldGinsville.lua"
 
 -- Clutter.
 include "Resources/Game/DB/Clutter/Religious.lua"

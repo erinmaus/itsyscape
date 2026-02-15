@@ -146,6 +146,54 @@ do
 	}
 end
 
+M["Art_Rage_Fire6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71.279635,
+		PositionY = 0.000000,
+		PositionZ = 89.610321,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 8.000000,
+		ScaleY = 8.000000,
+		ScaleZ = 8.000000,
+		Name = "Art_Rage_Fire6",
+		Map = M._MAP,
+		Resource = M["Art_Rage_Fire6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["Art_Rage_Fire6"]
+	}
+end
+
+M["Art_Rage_Fire7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 70.985222,
+		PositionY = 0.000000,
+		PositionZ = 92.317536,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 5.250000,
+		ScaleY = 5.250000,
+		ScaleZ = 5.250000,
+		Name = "Art_Rage_Fire7",
+		Map = M._MAP,
+		Resource = M["Art_Rage_Fire7"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["Art_Rage_Fire7"]
+	}
+end
+
 M["Clutter_Candles_Bastiel11"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -215,6 +263,150 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Clutter_Symbol_Bastiel1",
 		MapObject = M["Clutter_Symbol_Bastiel11"]
+	}
+end
+
+M["Pew_OldGinsville12"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 75.000000,
+		PositionY = 0.000000,
+		PositionZ = 79.000000,
+		RotationX = 0.000000,
+		RotationY = -0.991776,
+		RotationZ = 0.000000,
+		RotationW = -0.127987,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Pew_OldGinsville12",
+		Map = M._MAP,
+		Resource = M["Pew_OldGinsville12"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Pew_OldGinsville1",
+		MapObject = M["Pew_OldGinsville12"]
+	}
+end
+
+M["Pew_OldGinsville13"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 83.000000,
+		PositionY = 0.000000,
+		PositionZ = 79.000000,
+		RotationX = 0.000000,
+		RotationY = -0.941618,
+		RotationZ = 0.000000,
+		RotationW = 0.336683,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Pew_OldGinsville13",
+		Map = M._MAP,
+		Resource = M["Pew_OldGinsville13"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Pew_OldGinsville1",
+		MapObject = M["Pew_OldGinsville13"]
+	}
+end
+
+M["Pew_OldGinsville15"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71.013173,
+		PositionY = 1.178006,
+		PositionZ = 87.782030,
+		RotationX = 0.312825,
+		RotationY = 0.936241,
+		RotationZ = 0.096107,
+		RotationW = 0.127893,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Pew_OldGinsville15",
+		Map = M._MAP,
+		Resource = M["Pew_OldGinsville15"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Pew_OldGinsville1",
+		MapObject = M["Pew_OldGinsville15"]
+	}
+end
+
+M["Pew_OldGinsville16"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 70.120543,
+		PositionY = 0.000000,
+		PositionZ = 89.537068,
+		RotationX = 0.000000,
+		RotationY = 0.877220,
+		RotationZ = 0.000000,
+		RotationW = 0.480088,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Pew_OldGinsville16",
+		Map = M._MAP,
+		Resource = M["Pew_OldGinsville16"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Pew_OldGinsville1",
+		MapObject = M["Pew_OldGinsville16"]
+	}
+end
+
+M["Pew_OldGinsville17"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 86.932018,
+		PositionY = 0.325477,
+		PositionZ = 87.000000,
+		RotationX = 0.188009,
+		RotationY = 0.697302,
+		RotationZ = 0.180063,
+		RotationW = -0.667832,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Pew_OldGinsville17",
+		Map = M._MAP,
+		Resource = M["Pew_OldGinsville17"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Pew_OldGinsville1",
+		MapObject = M["Pew_OldGinsville17"]
+	}
+end
+
+M["Pew_OldGinsville18"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 86.016139,
+		PositionY = 1.341369,
+		PositionZ = 93.665005,
+		RotationX = 0.898370,
+		RotationY = 0.081566,
+		RotationZ = -0.185945,
+		RotationW = 0.389491,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Pew_OldGinsville18",
+		Map = M._MAP,
+		Resource = M["Pew_OldGinsville18"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Pew_OldGinsville1",
+		MapObject = M["Pew_OldGinsville18"]
 	}
 end
 

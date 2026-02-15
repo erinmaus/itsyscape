@@ -26,7 +26,7 @@ CandleView.COLORS = {
 	Color(1)
 }
 
-CandleView.FLAME_SCALE = 0.25
+CandleView.FLAME_SCALE = 0.5
 
 CandleView.INNER_FLAME_COLORS = {
 	{ unpack(FlameGreeble.INNER_FLAME_COLORS) }
@@ -48,10 +48,10 @@ CandleView.DECORATION_RADIUS = 0.3
 CandleView.DECORATION_HEIGHT = 0.5
 
 CandleView.MAX_XZ_SCALE = 1
-CandleView.MIN_XZ_SCALE = 0.5
+CandleView.MIN_XZ_SCALE = 0.75
 
-CandleView.MIN_Y_SCALE  = 0.25
-CandleView.MAX_Y_SCALE  = 1
+CandleView.MIN_Y_SCALE  = 1
+CandleView.MAX_Y_SCALE  = 1.5
 
 CandleView.MIN_CANDLES = 1
 CandleView.MAX_CANDLES = 5
