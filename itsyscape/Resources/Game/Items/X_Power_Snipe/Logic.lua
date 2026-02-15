@@ -10,9 +10,12 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
+local Utility = require "ItsyScape.Game.Utility"
 local Weapon = require "ItsyScape.Game.Weapon"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local HumanoidActorAnimatorCortex = require "ItsyScape.Peep.Cortexes.HumanoidActorAnimatorCortex"
 
 -- Always hits, dealing 90%-180% damage, capping at level 50 dexterity.
 local Snipe = Class(ProxyXWeapon)
@@ -46,9 +49,28 @@ function Snipe:perform(peep, target)
 
 		target:poke('receiveAttack', attack)
 		peep:poke('initiateAttack', attack)
+
+		self:performAnimation(peep)
 	else
 		return ProxyXWeapon.perform(self, peep, target)
 	end
+end
+
+function Snipe:performAnimation(peep)
+	if not peep:hasBehavior(HumanoidBehavior) then
+		return
+	end
+
+	local weaponType = self:getWeaponType()
+	if not (weaponType == "bow" or weaponType == "longbow") then
+		return
+	end
+
+	Utility.Peep.playAnimation(
+		peep,
+		"combat-attack",
+		HumanoidActorAnimatorCortex.ATTACK_PRIORITY + 1,
+		"Human_AttackBowRanged_Snipe")
 end
 
 return Snipe

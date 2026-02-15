@@ -8,11 +8,29 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local Projectile = require "ItsyScape.Graphics.Projectile"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
+local DecorationSceneNode = require "ItsyScape.Graphics.DecorationSceneNode"
+local Material = require "ItsyScape.Graphics.Material"
 local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
+local StaticMeshResource = require "ItsyScape.Graphics.StaticMeshResource"
 
 local Splosion = Class(Projectile)
+
+Splosion.SPLOSION_MATERIAL = DecorationMaterial({
+	shader = "Resources/Shaders/WarpedAlphaCutoff",
+	texture = "Resources/Game/Projectiles/Power_Decapitate/Splosion.png",
+
+	properties = {
+		isFullLit = true,
+		isTranslucent = true,
+		glassThickness = 1,
+		color = "cc3333"
+	}
+})
 
 Splosion.PARTICLE_SYSTEM = {
 	numParticles = 50,
@@ -69,7 +87,10 @@ Splosion.PARTICLE_SYSTEM = {
 	}
 }
 
-Splosion.DURATION = 1.5
+Splosion.DURATION = 2
+
+Splosion.FROM_SCALE = Vector(0.5)
+Splosion.TO_SCALE   = Vector(12)
 
 function Splosion:load()
 	Projectile.load(self)
@@ -80,6 +101,17 @@ function Splosion:load()
 	self.particleSystem = ParticleSceneNode()
 	self.particleSystem:setParent(root)
 	self.particleSystem:initParticleSystemFromDef(Splosion.PARTICLE_SYSTEM, resources)
+
+	local model = resources:queue(
+		StaticMeshResource,
+		"Resources/Game/Projectiles/Power_Decapitate/Splosion.lstatic",
+		function(mesh)
+			self.splosionSceneNode = DecorationSceneNode()
+			self.splosionSceneNode:fromGroup(mesh:getResource(), "splosion")
+			self.splosionSceneNode:setParent(root)
+
+			self.SPLOSION_MATERIAL:apply(self.splosionSceneNode, resources)
+		end)
 end
 
 function Splosion:getDuration()
@@ -100,6 +132,17 @@ function Splosion:update(elapsed)
 		root:getTransform():setLocalTranslation(self.spawnPosition)
 
 		self:ready()
+	end
+
+	if self.splosionSceneNode then
+		local delta = Tween.sineEaseOut(math.clamp(self:getDelta()))
+
+		local transform = self.splosionSceneNode:getTransform()
+		transform:setLocalScale(self.FROM_SCALE:lerp(self.TO_SCALE, delta))
+
+		local material = self.splosionSceneNode:getMaterial()
+		material:send(Material.UNIFORM_FLOAT, "scape_AlphaCutoff", delta)
+		material:setAlpha(math.clamp(math.sin(delta * math.pi) * 2))
 	end
 end
 
