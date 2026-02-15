@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/DB/Props/ChemistTable.lua
+-- Resources/Game/DB/Props/Altars.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -44,3 +44,31 @@ ItsyScape.Meta.ResourceDescription {
 	Language = "en-US",
 	Resource = ItsyScape.Resource.Prop "Altar_Bastiel1"
 }
+
+do
+	local Altar = ItsyScape.Resource.Prop "Altar_Bastiel2"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Altar
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = Altar
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Bastiliean altar",
+		Language = "en-US",
+		Resource = Altar
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An altar to the Old One, Bastiel. He is said to bring order and justice to the world, but He has been banished for over a thousand years... But is it true?",
+		Language = "en-US",
+		Resource = Altar
+	}
+end

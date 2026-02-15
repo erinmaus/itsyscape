@@ -1,13 +1,19 @@
 {
 	{
-		tileSetID = "OldGinsville1",
-		autoMask = true,
 		maskID =
 		{
 			default = true,
 		},
+		autoMask = true,
+		tileSetID = "OldGinsville1",
 		transform =
 		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			rotation =
 			{
 				0,
@@ -27,18 +33,18 @@
 				0,
 				0,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
 	},
 	{
 		tileSetID = "Draft",
 		transform =
 		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			rotation =
 			{
 				0,
@@ -58,18 +64,18 @@
 				0,
 				0,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
 	},
 	{
 		tileSetID = "Draft",
 		transform =
 		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			rotation =
 			{
 				0,
@@ -89,18 +95,18 @@
 				0,
 				0,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
 	},
 	{
 		tileSetID = "Draft",
 		transform =
 		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			rotation =
 			{
 				0,
@@ -120,18 +126,18 @@
 				0,
 				0,
 			},
-			scale =
-			{
-				1,
-				1,
-				1,
-			},
 		},
 	},
 	{
 		tileSetID = "Draft",
 		transform =
 		{
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 			rotation =
 			{
 				0,
@@ -150,12 +156,6 @@
 				0,
 				0,
 				0,
-			},
-			scale =
-			{
-				1,
-				1,
-				1,
 			},
 		},
 	},

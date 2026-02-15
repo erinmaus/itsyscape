@@ -2,6 +2,30 @@ local M = {}
 
 M._MAP = ItsyScape.Resource.Map "OldGinsville_Test"
 
+M["Altar_Bastiel24"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79.000000,
+		PositionY = 0.000000,
+		PositionZ = 71.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Altar_Bastiel24",
+		Map = M._MAP,
+		Resource = M["Altar_Bastiel24"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Altar_Bastiel2",
+		MapObject = M["Altar_Bastiel24"]
+	}
+end
+
 M["Art_Rage_Fire1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -119,6 +143,78 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
 		MapObject = M["Art_Rage_Fire5"]
+	}
+end
+
+M["Clutter_Candles_Bastiel11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 76.750000,
+		PositionY = 2.000000,
+		PositionZ = 71.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Clutter_Candles_Bastiel11",
+		Map = M._MAP,
+		Resource = M["Clutter_Candles_Bastiel11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Clutter_Candles_Bastiel1",
+		MapObject = M["Clutter_Candles_Bastiel11"]
+	}
+end
+
+M["Clutter_Candles_Bastiel12"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 81.250000,
+		PositionY = 2.000000,
+		PositionZ = 71.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Clutter_Candles_Bastiel12",
+		Map = M._MAP,
+		Resource = M["Clutter_Candles_Bastiel12"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Clutter_Candles_Bastiel1",
+		MapObject = M["Clutter_Candles_Bastiel12"]
+	}
+end
+
+M["Clutter_Symbol_Bastiel11"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 79.000000,
+		PositionY = 2.000000,
+		PositionZ = 71.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Clutter_Symbol_Bastiel11",
+		Map = M._MAP,
+		Resource = M["Clutter_Symbol_Bastiel11"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Clutter_Symbol_Bastiel1",
+		MapObject = M["Clutter_Symbol_Bastiel11"]
 	}
 end
 

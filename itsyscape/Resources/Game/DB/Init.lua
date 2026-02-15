@@ -1714,6 +1714,9 @@ include "Resources/Game/DB/Props/ColorfulFire.lua"
 include "Resources/Game/DB/Props/DragonFireball.lua"
 include "Resources/Game/DB/Props/Dodge.lua"
 
+-- Clutter.
+include "Resources/Game/DB/Clutter/Religious.lua"
+
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
 include "Resources/Game/DB/Cooking/Recipes.lua"
