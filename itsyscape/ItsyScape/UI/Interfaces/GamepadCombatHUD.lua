@@ -196,7 +196,14 @@ function GamepadCombatHUD:restoreFocus()
 		return false
 	end
 
-	self:focusChild(self:getMenu())
+	if #self.thingiesStack >= 1 then
+		local current = self.thingiesStack[#self.thingiesStack]
+		if current == self.FEATURE_MENU then
+			self:openMenu()
+		else
+			self:restoreThingiesFocus(current)
+		end
+	end
 end
 
 function GamepadCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
@@ -331,20 +338,30 @@ function GamepadCombatHUD:_initCommon()
 	self.pendingPowerMenuIcon:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 end
 
+function GamepadCombatHUD:restoreThingiesFocus(name)
+	local thingiesWidget = self:getThingiesWidget(name)
+
+	self:focusChild(thingiesWidget)
+
+	local angle = self.thingiesAngles[name]
+	if angle then
+		thingiesWidget:setCurrentAngle(angle)
+	end
+end
+
 function GamepadCombatHUD:openThingies(name, targetWidget)
 	local didOpen = BaseCombatHUD.openThingies(self, name, targetWidget)
 	if didOpen then
 		local thingiesWidget = self:getThingiesWidget(name)
 
 		self:addChild(thingiesWidget)
-		self:focusChild(thingiesWidget)
+		self:restoreThingiesFocus(name)
 
-		local angle = self.thingiesAngles[name]
-		if angle then
-			thingiesWidget:setCurrentAngle(angle)
+		local currentThingiesName = self.thingiesStack[#self.thingiesStack]
+		if currentThingiesName ~= name then
+			self.currentThingiesOpenElapsedTime = 0
 		end
 
-		self.currentThingiesOpenElapsedTime = 0
 		self.lastOpenedThingiesMenu = thingiesWidget
 	end
 
@@ -373,7 +390,11 @@ function GamepadCombatHUD:openMenu()
 		self:layoutSpiralMenu(menu)
 		self:updateStandardThingiesInterface(menu)
 
-		self.currentThingiesOpenElapsedTime = 0
+		local currentThingiesName = self.thingiesStack[#self.thingiesStack]
+		if currentThingiesName ~= self.FEATURE_MENU then
+			self.currentThingiesOpenElapsedTime = 0
+		end
+
 		self.lastOpenedThingiesMenu = menu
 	end
 end
@@ -517,11 +538,15 @@ function GamepadCombatHUD:addSpiralMenuRichTextLabel(menu)
 	innerPanel:addChild(label)
 end
 
-function GamepadCombatHUD:addSpiralMenuCursor(menu)
-	local cursor = GamepadCircleCursor()
-	cursor:setTargetLayout(menu)
+function GamepadCombatHUD:addSpiralMenuCursor(name, spiralMenu)
+	if self.thingiesAngles[name] then
+		spiralMenu:setCurrentAngle(self.thingiesAngles[name])
+	end
 
-	menu:getInnerPanel():addChild(cursor)
+	local cursor = GamepadCircleCursor()
+	cursor:setTargetLayout(spiralMenu)
+
+	spiralMenu:getInnerPanel():addChild(cursor)
 end
 
 function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
@@ -638,8 +663,6 @@ function GamepadCombatHUD:newSpiralMenu(name)
 
 	spiralMenu.onGamepadRelease:register(self.onSpiralMenuGamepadButtonRelease, self, name)
 
-	self:addSpiralMenuCursor(spiralMenu)
-
 	return spiralMenu
 end
 
@@ -655,6 +678,8 @@ function GamepadCombatHUD:finishSpiralMenu(name, spiralMenu)
 
 		spiralMenu:addChild(button)
 	end
+
+	self:addSpiralMenuCursor(name, spiralMenu)
 end
 
 function GamepadCombatHUD:newSpiralButton()
@@ -818,6 +843,7 @@ end
 
 function GamepadCombatHUD:finishMenu(menu)
 	menu:setNumVisibleOptions(menu:getNumOptions())
+	self:addSpiralMenuCursor(self.FEATURE_MENU, menu)
 end
 
 function GamepadCombatHUD:updateMenuButton(name, button)

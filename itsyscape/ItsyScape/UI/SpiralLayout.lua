@@ -245,6 +245,8 @@ function SpiralLayout:_setAngle(currentAngle, focus)
 
 		if childWidget and inputProvider and not childWidget:getIsFocused() then
 			inputProvider:setFocusedWidget(childWidget, "select")
+		else
+			self.currentFocusedChildIndex = nextFocusedChildIndex
 		end
 	end
 

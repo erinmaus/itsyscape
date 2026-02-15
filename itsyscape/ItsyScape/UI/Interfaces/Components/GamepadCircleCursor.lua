@@ -60,8 +60,8 @@ end
 
 function GamepadCircleCursor:setTargetLayout(layout)
 	self.targetLayout = layout
-	self.previousAngle = self.targetLayout:getCursorAngle()
-	self.currentAngle = self.targetLayout:getCursorAngle()
+	self.previousAngle = self.targetLayout:getFocusedOptionAngle()
+	self.currentAngle = self.targetLayout:getFocusedOptionAngle()
 	self.activityTimeElapsed = self.activityTimeDuration
 end
 
