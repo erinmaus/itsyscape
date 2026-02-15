@@ -97,6 +97,7 @@ function BaseCombatHUDController:new(peep, director)
 		food = false,
 		enabled = false
 	}
+	self.equipment = {}
 
 	self.powers = {}
 	self:_pullPowers()
@@ -414,33 +415,23 @@ function BaseCombatHUDController:deleteEquipmentSlot(e)
 end
 
 function BaseCombatHUDController:equip(e)
-	local equipmentStorage = self:getStorage("Equipment")
-	local slotStorage = equipmentStorage:getSection(e.index):getSection(e.slot):getSection("items")
+	assert(type(e.key) == "number", "item key must be number")
 
-	local peep = self:getPeep()
-	local gameDB = self:getDirector():getGameDB()
-
-	for _, item in slotStorage:iterateSections() do
-		local itemID = item:get("id")
-		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
-		local itemResource = gameDB:getResource(itemID, "Item")
-
-		if itemInstance and itemResource then
-			local actions = Utility.getActions(
-				self:getDirector():getGameInstance(),
-				itemResource,
-				'inventory')
-			for i = 1, #actions do
-				local actionInstance = actions[i].instance
-				if actionInstance:is("equip") then
-					actionInstance:perform(
-						peep:getState(),
-						peep,
-						itemInstance)
-					break
-				end
-			end
+	local equipment
+	for _, otherEquipment in ipairs(self.equipment) do
+		if otherEquipment.key == e.key then
+			equipment = otherEquipment
+			break
 		end
+	end
+
+	if not equipment then
+		print(">>> no equipment with key", e.key)
+		return
+	end
+
+	if not Utility.Item.equipMany(self:getPeep(), { equipment.instance }) then
+		Utility.Peep.notify(peep, "ui.notification.inventory.equipItemInventoryFull")
 	end
 end
 
@@ -448,7 +439,6 @@ function BaseCombatHUDController:getConfig()
 	local config = self:getStorage("Config"):get().config or {}
 
 	local disabled = config.disabled or {}
-	disabled["equipment"] = true
 	disabled["spells"] = true
 	disabled["prayers"] = true
 	config.disabled = disabled
@@ -1014,44 +1004,6 @@ function BaseCombatHUDController:getCurrentEquipment(e)
 	for name, value in equipment:getStats() do
 		result.stats[name] = value
 	end
-
-	return result
-end
-
-function BaseCombatHUDController:getEquipment()
-	local equipment = self:getStorage("Equipment")
-	if equipment:length() <= 1 and not equipment:getSection(1):hasValue("name") then
-		equipment:getSection(1):set("name", "Gear")
-	end
-
-	local result = self:getStorage("Equipment"):get()
-	for _, section in ipairs(result) do
-		for i, slot in ipairs(section) do
-			local newSlot = {
-				icon = slot.icon,
-				stats = slot.stats,
-				items = {}
-			}
-
-			local items = slot.items
-			for _, item in ipairs(items or {}) do
-				local key = item.slot
-				if key == Equipment.PLAYER_SLOT_TWO_HANDED then
-					key = Equipment.PLAYER_SLOT_RIGHT_HAND
-				end
-
-				newSlot.items[key] = {
-					id = item.id,
-					count = 1,
-					slot = key
-				}
-			end
-
-			section[i] = newSlot
-		end
-	end
-
-	result.current = { self:getCurrentEquipment() }
 
 	return result
 end
@@ -1637,6 +1589,81 @@ function BaseCombatHUDController:updateFood()
 	self:updateQuickHeal()
 end
 
+
+
+function BaseCombatHUDController:tryPullEquipment(key, item)
+	if item:isNoted() then
+		return nil
+	end
+
+	local gameDB = self:getDirector():getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if not itemResource then
+		return nil
+	end
+
+	local equipmentRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+	if not equipmentRecord then
+		return nil
+	end
+
+	local slot = equipmentRecord:get("EquipSlot")
+	if not (slot == Equipment.PLAYER_SLOT_TWO_HANDED or slot == Equipment.PLAYER_SLOT_RIGHT_HAND or slot == Equipment.PLAYER_SLOT_QUIVER) then
+		return nil
+	end
+
+	local actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource, 'inventory', false)
+	local equipAction
+	for _, action in ipairs(actions) do
+		if action.instance:is("Equip") then
+			equipAction = action.instance
+			break
+		end
+	end
+
+	if not equipAction then
+		return nil
+	end
+
+	local result = {}
+	result.key = key
+	result.action = equipAction
+	result.id = item:getID()
+	result.count = item:getCount()
+	result.name = Utility.Item.getInstanceName(item)
+	result.description = Utility.Item.getInstanceDescription(item)
+	result.instance = item
+
+	return result
+end
+
+function BaseCombatHUDController:updateEquipment()
+	local oldEquipment = self.equipment
+	self.equipment = {}
+
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	if not broker then
+		return
+	end
+
+	for key in broker:keys(inventory) do
+		for item in broker:iterateItemsByKey(inventory, key) do
+			local equipment = self:tryPullEquipment(key, item)
+			if equipment then
+				table.insert(self.equipment, equipment)
+			end
+		end
+	end
+
+	self.isDirty = self.isDirty or #oldEquipment ~= #self.equipment
+end
+
 function BaseCombatHUDController:updateQuickHeal()
 	local combatStatus = self:getPeep():getBehavior(CombatStatusBehavior)
 	if not combatStatus then
@@ -1719,6 +1746,24 @@ function BaseCombatHUDController:getFood()
 	return foodState
 end
 
+function BaseCombatHUDController:getEquipment()
+	local equipmentState = {}
+
+	for _, equipment in ipairs(self.equipment) do
+		local result = {
+			id = equipment.id,
+			key = equipment.key,
+			count = equipment.count,
+			name = equipment.name,
+			description = equipment.description
+		}
+
+		table.insert(equipmentState, result)
+	end
+
+	return equipmentState
+end
+
 function BaseCombatHUDController:getQuickHeal()
 	local enabled = self.quickHeal.enabled
 	local food = self.quickHeal.food
@@ -1759,6 +1804,7 @@ function BaseCombatHUDController:update(delta)
 	self.updateDebugStats:measure("updateActiveSpell", self)
 	self.updateDebugStats:measure("updateTurnOrder", self)
 	self.updateDebugStats:measure("updateFood", self)
+	self.updateDebugStats:measure("updateEquipment", self)
 
 	local wasDirty = self.isDirty
 

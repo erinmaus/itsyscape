@@ -1050,6 +1050,78 @@ function GamepadCombatHUD:finishFoodThingies(name, spiralMenu)
 	self:finishSpiralMenu(name, spiralMenu)
 end
 
+function GamepadCombatHUD:_onEquipmentVisible(_, child, delta)
+	self:layoutSpiralButton(child, delta)
+end
+
+function GamepadCombatHUD:_onEquipmentSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local state = self:getState()
+	local equipmentState = state.equipment[index]
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	if not equipmentState then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Gather and craft more equipment!" }
+		})
+	else
+		label:setText({
+			{ t = "header", equipmentState.name },
+			equipmentState.description
+		})
+	end
+end
+
+function GamepadCombatHUD:_updateEquipmentThingiesInterface(name)
+	local result = {
+		titleText = self:getThingiesName(name),
+		icon = "Resources/Game/UI/Icons/Common/Equipment.png"
+	}
+
+	return result
+end
+
+function GamepadCombatHUD:newEquipmentThingies(name)
+	local foodSpiral = self:newSpiralMenu(name)
+	foodSpiral.onChildVisible:register(self._onEquipmentVisible, self)
+	foodSpiral.onChildSelected:register(self._onEquipmentSelected, self)
+
+	self:addSpiralMenuRichTextLabel(foodSpiral)
+	self:addStandardThingiesInterface(foodSpiral, self._updateEquipmentThingiesInterface)
+
+	return foodSpiral
+end
+
+function GamepadCombatHUD:newEquipmentButton(equipmentState)
+	local button = self:newSpiralButton()
+
+	local itemIcon = ItemIcon()
+	button:addChild(itemIcon)
+
+	button:removeChild(button:getData("icon"))
+	button:setData("icon", itemIcon)
+
+	return button
+end
+
+function GamepadCombatHUD:updateEquipmentButton(button, equipmentState)
+	local icon = button:getData("icon")
+	icon:setItemID(equipmentState.id)
+	icon:setItemCount(equipmentState.count)
+end
+
+function GamepadCombatHUD:finishEquipmentThingies(name, spiralMenu)
+	self:finishSpiralMenu(name, spiralMenu)
+end
+
 function GamepadCombatHUD:getStanceInfo(style, stance)
 	if not style or not stance then
 		return "???", {}
