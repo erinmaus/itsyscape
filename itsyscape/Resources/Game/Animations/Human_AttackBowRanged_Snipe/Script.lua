@@ -58,9 +58,9 @@ Animation "Human Attack (Weapon: Bow/Longbow, Style: Ranged) Snipe" {
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
-					count = { 1, 2 },
-					delay = { 0 },
-					duration = { 1 }
+					count = { 10, 20 },
+					delay = { 1 / 30 },
+					duration = { 0.25 }
 				}
 			}
 		}
@@ -125,16 +125,16 @@ Animation "Human Attack (Weapon: Bow/Longbow, Style: Ranged) Snipe" {
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
-					count = { 1, 2 },
-					delay = { 0 },
-					duration = { 1 }
+					count = { 10, 20 },
+					delay = { 1 / 30 },
+					duration = { 0.25 }
 				}
 			}
 		}
 	},
 
 	Channel {
-		Wait(50 / 24),
+		Wait(42 / 24),
 
 		Particles {
 			duration = 1,
@@ -194,16 +194,16 @@ Animation "Human Attack (Weapon: Bow/Longbow, Style: Ranged) Snipe" {
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
-					count = { 1, 2 },
-					delay = { 0 },
-					duration = { 1 }
+					count = { 10, 20 },
+					delay = { 1 / 30 },
+					duration = { 0.25 }
 				}
 			}
 		}
 	},
 
 	Channel {
-		Wait(50 / 24),
+		Wait(42 / 24),
 		
 		Particles {
 			duration = 1,
@@ -263,9 +263,9 @@ Animation "Human Attack (Weapon: Bow/Longbow, Style: Ranged) Snipe" {
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
-					count = { 1, 2 },
-					delay = { 0 },
-					duration = { 1 }
+					count = { 10, 20 },
+					delay = { 1 / 30 },
+					duration = { 0.25 }
 				}
 			}
 		}
