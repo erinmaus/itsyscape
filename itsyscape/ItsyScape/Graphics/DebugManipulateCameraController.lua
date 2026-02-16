@@ -37,6 +37,9 @@ function DebugManipulateCameraController:new(...)
 	self.rotationOffset = Quaternion.IDENTITY
 
 	self:reset()
+
+	self.isToggleWallHackDown = love.keyboard.isDown("space")
+	self.isWallHackEnabled = self:getCamera():getIsWallHackEnabled()
 end
 
 function DebugManipulateCameraController:reset()
@@ -268,6 +271,12 @@ function DebugManipulateCameraController:update(delta)
 
 	self:updateCurve(delta)
 	self:updateShake(delta)
+
+	local isToggleDown = love.keyboard.isDown("space")
+	if self.isToggleWallHackDown ~= isToggleWallHackDown then
+		self.isWallHackEnabled = not self.isWallHackEnabled
+		self.isToggleWallHackDown = isToggleDown
+	end
 end
 
 function DebugManipulateCameraController:mousePress(uiActive, x, y, button)
@@ -388,7 +397,7 @@ function DebugManipulateCameraController:draw()
 	camera:setDistance(0)
 	camera:setVerticalRotation(math.pi / 2)
 	camera:setHorizontalRotation(-math.pi)
-	camera:setIsWallHackEnabled(false)
+	camera:setIsWallHackEnabled(self.isWallHackEnabled)
 
 	local translation, rotation
 	if self.currentCurve then
