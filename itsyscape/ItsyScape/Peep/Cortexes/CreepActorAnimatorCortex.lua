@@ -176,8 +176,8 @@ function CreepActorAnimatorCortex:update(delta)
 				self.idleTime[peep] = nil
 				self.idling[peep] = true
 				self.walking[peep] = nil
+				self.flying[peep] = true
 			end
-			self.flying[peep] = nil
 		elseif not flying and self.flying[peep] then
 			actor:stopAnimation("main-fly")
 			self.flying[peep] = nil
