@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Class = require "ItsyScape.Common.Class"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
@@ -18,6 +19,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local InputScheme = require "ItsyScape.UI.InputScheme"
 
 local Ribbon = Class(Interface)
 Ribbon.BUTTON_SIZE = 64
@@ -79,6 +81,8 @@ Ribbon.PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/SideRibbon.png"
 }
 
+Ribbon.HIDE_DURATION = 0.25
+
 function Ribbon:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
@@ -96,6 +100,9 @@ function Ribbon:new(id, index, ui)
 	self.icons = {}
 	self.buttons = {}
 	self.activeButton = false
+
+	self.isHidden = false
+	self.hideShowDuration = self.HIDE_DURATION
 
 	self:addButton("PlayerPowers", "Resources/Game/UI/Icons/Concepts/Powers.png")
 	self:addButton("PlayerStance", "Resources/Game/UI/Icons/Common/Stance.png")
@@ -118,7 +125,14 @@ function Ribbon:performLayout()
 
 	local panelWidth, panelHeight = self:getSize()
 	local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
-	self:setPosition(screenWidth - panelWidth, screenHeight - panelHeight)
+
+	local delta = math.clamp(self.hideShowDuration / self.HIDE_DURATION)
+	if not self.isHidden then
+		delta = 1 - delta
+	end
+
+	local offset = math.lerp(0, panelWidth, Tween.sineEaseInOut(delta))
+	self:setPosition(screenWidth - panelWidth + offset, screenHeight - panelHeight)
 end
 
 function Ribbon:addButton(tab, iconID)
@@ -164,6 +178,30 @@ function Ribbon:activate(tab)
 	if button then
 		button:setStyle(self.ACTIVE_BUTTON_STYLE, ButtonStyle)
 		self.activeButton = button
+	end
+end
+
+function Ribbon:inputSchemeChanged(current, previous)
+	Interface.inputSchemeChanged(self, current, previous)
+
+	if current == InputScheme.INPUT_SCHEME_GAMEPAD then
+		self:sendPoke("close", nil, {})
+		self.isHidden = true
+		self.hideShowDuration = self.HIDE_DURATION - self.hideShowDuration
+	elseif self.isHidden and current ~= InputScheme.INPUT_SCHEME_GAMEPAD then
+		self.isHidden = false
+		self.hideShowDuration = self.HIDE_DURATION - self.hideShowDuration
+	end
+end
+
+function Ribbon:update(delta)
+	Interface.update(self, delta)
+
+	local previousDuration = self.hideShowDuration
+	self.hideShowDuration = math.clamp(self.hideShowDuration + delta, 0, self.HIDE_DURATION)
+
+	if self.hideShowDuration ~= previousDuration then
+		self:performLayout()
 	end
 end
 

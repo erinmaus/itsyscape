@@ -65,9 +65,9 @@ function Widget:new()
 	self.isVisible = true
 end
 
-function Widget:inputSchemeChanged()
+function Widget:inputSchemeChanged(current, previous)
 	for _, child in self:iterate() do
-		child:inputSchemeChanged()
+		child:inputSchemeChanged(current, previous)
 	end
 end
 

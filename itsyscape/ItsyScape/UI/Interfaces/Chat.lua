@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local GridLayout = require "ItsyScape.UI.GridLayout"
@@ -20,6 +21,7 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInput = require "ItsyScape.UI.TextInput"
 local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
 local Interface = require "ItsyScape.UI.Interface"
+local InputScheme = require "ItsyScape.UI.InputScheme"
 
 local Chat = Class(Interface)
 Chat.WIDTH   = 480
@@ -31,12 +33,10 @@ Chat.Z_DEPTH = -1000
 Chat.BUTTON_WIDTH = 96
 Chat.LINE_HEIGHT  = 24
 
+Chat.HIDE_DURATION = 0.25
+
 function Chat:new(id, index, ui)
 	Interface.new(self, id, index, ui)
-
-	local windowWidth, windowHeight = love.graphics.getScaledMode()
-
-	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
 
 	self:setSize(Chat.WIDTH, Chat.HEIGHT + Chat.INPUT)
 	self:setIsSelfClickThrough(true)
@@ -116,6 +116,44 @@ function Chat:new(id, index, ui)
 		self:hide()
 	else
 		self:show()
+	end
+
+	self.isHidden = false
+	self.hideShowDuration = self.HIDE_DURATION
+
+	self:performLayout()
+end
+
+function Chat:performLayout()
+	local windowWidth, windowHeight = itsyrealm.graphics.getScaledMode()
+	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT)
+
+	local delta = math.clamp(self.hideShowDuration / self.HIDE_DURATION)
+	if not self.isHidden then
+		delta = 1 - delta
+	end
+
+	local offset
+	local isChatHidden = self:getState().hidden
+	if isChatHidden then
+		offset = self.INPUT
+	else
+		offset = Chat.HEIGHT + Chat.INPUT
+	end
+
+	offset = math.lerp(0, offset, Tween.sineEaseInOut(delta))
+	self:setPosition(0, windowHeight - Chat.HEIGHT - Chat.INPUT + offset)
+end
+
+function Chat:inputSchemeChanged(current, previous)
+	Interface.inputSchemeChanged(self, current, previous)
+
+	if current == InputScheme.INPUT_SCHEME_GAMEPAD then
+		self.isHidden = true
+		self.hideShowDuration = self.HIDE_DURATION - self.hideShowDuration
+	elseif self.isHidden and current ~= InputScheme.INPUT_SCHEME_GAMEPAD then
+		self.isHidden = false
+		self.hideShowDuration = self.HIDE_DURATION - self.hideShowDuration
 	end
 end
 
@@ -223,7 +261,6 @@ function Chat:update(delta)
 		self.received = state.received
 	end
 
-
 	local isKeybindDown = self.keybind:isDown()
 	if not self.isKeybindDown and isKeybindDown then
 		if self.textInput:getIsFocused() then
@@ -241,6 +278,13 @@ function Chat:update(delta)
 
 		local scrollBar = self.chatPanel:getScrollBar()
 		scrollBar:setIsSelfClickThrough(isClickThrough)
+	end
+
+	local previousDuration = self.hideShowDuration
+	self.hideShowDuration = math.clamp(self.hideShowDuration + delta, 0, self.HIDE_DURATION)
+
+	if self.hideShowDuration ~= previousDuration then
+		self:performLayout()
 	end
 end
 
