@@ -33,6 +33,12 @@
 			"mouse/keyboard": ["ui", "keyboardQuickHeal"]
 		},
 
+		"quickAttack": {
+			"$type": "ui",
+			"gamepad": ["ui", "gamepadQuickAttack"],
+			"mouse/keyboard": ["ui", "keyboardQuickAttack"]
+		},
+
 		"back": {
 			"$type": "ui",
 			"gamepad": ["ui", "gamepadBack"],
@@ -119,11 +125,13 @@
 			"gamepadTertiaryAction": "x",
 			"gamepadBack": "b",
 			"gamepadQuickHeal": "dpup",
+			"gamepadQuickAttack": "dpdown",
 
 			"keyboardQuickHeal": ["h"],
 			"keyboardBack": ["escape"],
 			"keyboardOpenRibbon": ["escape"],
 			"keyboardOpenCombatRing": ["tab"],
+			"keyboardQuickAttack": ["e"],
 		},
 
 		"world": {

@@ -18,6 +18,7 @@ local Controls = {
 	"pokeTarget",
 	"back",
 	"quickHeal",
+	"quickAttack",
 	"debug1",
 	"debug2",
 	"debug3",

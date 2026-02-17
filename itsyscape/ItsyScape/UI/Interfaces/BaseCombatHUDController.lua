@@ -180,6 +180,8 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:activateQuickHeal(e)
 	elseif actionID == "setQuickHealFood" then
 		self:setQuickHealFood(e)
+	elseif actionID == "activateQuickAttack" then
+		self:activateQuickAttack(e)
 	elseif actionID == "changeStance" then
 		self:changeStance(e)
 	elseif actionID == "show"then
@@ -321,6 +323,59 @@ function BaseCombatHUDController:setQuickHealFood(e)
 
 	local quickHealStorage = self:getStorage("Heal")
 	quickHealStorage:set("quickHealItemID", e.id)
+end
+
+function BaseCombatHUDController:activateQuickAttack(e)
+	local peep = self:getPeep()
+
+	local attackers = self:getDirector():probe(
+		self:getPeep():getLayerName(),
+		self:isAttacking(),
+		function(p)
+			local target = p:getBehavior(CombatTargetBehavior)
+			target = target and target.actor and target.actor:getPeep()
+
+			if target == peep then
+				return true
+			end
+		end)
+
+	table.sort(attackers, function(a, b)
+		local aLineOfSightClear = Utility.Combat.canSeeTarget(peep, a)
+		local bLineOfSightClear = Utility.Combat.canSeeTarget(peep, b)
+
+		if aLineOfSightClear ~= bLineOfSightClear then
+			if aLineOfSightClear then
+				return true
+			elseif bLineOfSightClear then
+				return false
+			end
+		end
+
+		local aCombatLevel = Utility.Combat.getCombatLevel(a)
+		local bCombatLevel = Utility.Combat.getCombatLevel(b)
+
+		if aCombatLevel ~= bCombatLevel then
+			return aCombatLevel > bCombatLevel
+		end
+
+		local distanceA = Utility.Peep.getAbsoluteDistance(peep, a)
+		local distanceB = Utility.Peep.getAbsoluteDistance(peep, b)
+
+		if distanceA ~= distanceB then
+			return distanceA < distanceB
+		end
+
+		return a:getID() < b:getID()
+	end)
+
+	local attacker = attackers[1]
+	if attacker then
+		Log.info("Player '%s' is quick-attacking '%s'!", peep:getName(), attacker:getName())
+		Utility.Peep.attack(peep, attacker)
+	else
+		Log.info("Player '%s' isn't being attacked...", peep:getName(), attacker:getName())
+	end
 end
 
 function BaseCombatHUDController:deleteEquipment(e)

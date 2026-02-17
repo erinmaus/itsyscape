@@ -1113,6 +1113,16 @@ function BaseCombatHUD:updateTurnOrder()
 	end
 end
 
+function BaseCombatHUD:activateQuickAttack()
+	self:sendPoke("activateQuickAttack", nil, {})
+end
+
+function BaseCombatHUD:previewControlUp(control)
+	if control:is("quickAttack") then
+		self:activateQuickAttack()
+	end
+end
+
 function BaseCombatHUD:_updateDebug()
 	local isDebugKeydown = love.keyboard.isDown("f7")
 	if self.wasDebugKeydown ~= isDebugKeydown and isDebugKeydown then
