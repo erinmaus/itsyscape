@@ -21,6 +21,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
+local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 local ManipulatedBehavior = require "ItsyScape.Peep.Behaviors.ManipulatedBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
@@ -592,6 +593,8 @@ function DebugManipulateController:new(peep, director)
 	self:recordPeep(self:getPeep(), -1)
 	self:pullExistingPeeps()
 	self:populate()
+
+	self:getPeep():addBehavior(ImmortalBehavior)
 end
 
 function DebugManipulateController:_onPeepTryAction(_, poke)
@@ -820,6 +823,10 @@ function DebugManipulateController:close()
 	if self.isRecording then
 		self:stopRecording()
 	end
+
+	self:getPeep():silence("actionTried", self._onPeepTryAction)
+	self:getPeep():silence("walk", self._onPeepWalk)
+	self:getPeep():removeBehavior(ImmortalBehavior)
 end
 
 function DebugManipulateController:startRecording(e)
