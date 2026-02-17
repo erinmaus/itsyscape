@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Tween = require "ItsyScape.Common.Math.Tween"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
@@ -464,13 +465,25 @@ function GamepadCombatHUD:flee()
 	end
 end
 
-function GamepadCombatHUD:layoutSpiralMenu(spiralMenu)
-	local width, height = itsyrealm.graphics.getScaledMode()
+do
+	local position = Vector()
+	function GamepadCombatHUD:layoutSpiralMenu(spiralMenu)
+		local camera = self:getView():getGameView():getCamera()
+		local player = self:getView():getGame():getPlayer():getActor()
+		camera:project(player:getPosition(), position)
 
-	local _, outerRadius = spiralMenu:getRadius()
-	spiralMenu:setPosition(
-		width / 2 + outerRadius / 2 + self.SPIRAL_OFFSET_X,
-		height / 2 + outerRadius / 2 + self.SPIRAL_OFFSET_Y)
+		local _, outerRadius = spiralMenu:getRadius()
+		local spiralMenuSize = outerRadius * 2
+		local x = position.x + outerRadius + self.SPIRAL_OFFSET_X
+		local y = position.y + outerRadius + self.SPIRAL_OFFSET_Y
+
+		local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
+
+		x = math.min(math.max(x, 0), screenWidth - spiralMenuSize)
+		y = math.min(math.max(y, 0), screenHeight - spiralMenuSize)
+
+		spiralMenu:setPosition(x, y)
+	end
 end
 
 function GamepadCombatHUD:openSpiralMenu(spiralMenu)
