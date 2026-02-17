@@ -1154,7 +1154,15 @@ function DemoApplication:controlUp(_, control)
 	local inputProvider = self:getUIView():getInputProvider()
 	local isFocusTaken = inputProvider:getIsFocusTaken()
 
-	if not isFocusTaken then
+	local isDebugManipulateOpen
+	do
+		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+		isDebugManipulateOpen = not (combatRing and combatRing:getIsShowing())
+		isDebugManipulateOpen = isDebugManipulateOpen and self:getUIView():getInterface("DebugManipulate")
+	end
+
+
+	if not isFocusTaken or isDebugManipulateOpen then
 		if control:is("cycleTarget") then
 			self.lastShimmerCycle = love.timer.getTime()
 			self:nextShimmer()
