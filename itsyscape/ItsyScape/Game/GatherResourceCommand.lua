@@ -53,7 +53,9 @@ end
 
 function GatherResourceCommand:onBegin(peep)
 	if peep:hasBehavior(PlayerBehavior) then
-		self.isInterfaceOpen, self.interfaceIndex = Utility.UI.openInterface(peep, "ActionCommand", false, self.prop, self.action, Function(self.attack, self))
+		self.isInterfaceOpen, self.interfaceIndex = Utility.UI.openInterface(peep, "ActionCommand", false, self.prop, self.action, {
+			tool = self.tool
+		}, Function(self.attack, self))
 	else
 		self.isInterfaceOpen = false
 	end

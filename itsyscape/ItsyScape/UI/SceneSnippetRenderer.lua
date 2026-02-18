@@ -32,7 +32,7 @@ function SceneSnippetRenderer:add(widget)
 	local renderer = Renderer()
 	renderer:setClearColor(Color(0, 0, 0, 0))
 	renderer:setCullEnabled(false)
-	renderer:setIsChildRenderer(true)
+	renderer:setIsChildRenderer(widget:getIsChildRenderer())
 
 	local outlinePostProcessPass = OutlinePostProcessPass(renderer)
 	outlinePostProcessPass:load(self.gameView:getResourceManager())
@@ -84,6 +84,8 @@ function SceneSnippetRenderer:draw(widget)
 	if camera then
 		local renderer = self.renderers[widget]
 		local isRendered = self.renders[widget]
+
+		renderer:setIsChildRenderer(widget:getIsChildRenderer())
 
 		if (not isRendered and self.currentNumRenders < self.MAX_RENDERS_PER_FRAME) or widget:getAlwaysRender() then
 			local oldParent

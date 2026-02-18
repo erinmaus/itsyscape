@@ -23,6 +23,7 @@ function SceneSnippet:new()
 	self.alwaysRender = false
 	self.isFocusable = false
 	self.dpiScale = 1
+	self.isChildRenderer = true
 end
 
 function SceneSnippet:getRoot()
@@ -87,6 +88,14 @@ end
 
 function SceneSnippet:getDPIScale()
 	return self.dpiScale
+end
+
+function SceneSnippet:setIsChildRenderer(value)
+	self.isChildRenderer = value
+end
+
+function SceneSnippet:getIsChildRenderer()
+	return self.isChildRenderer
 end
 
 return SceneSnippet

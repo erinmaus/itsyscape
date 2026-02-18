@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local Component = Class()
 Component.TYPE = "component"
@@ -24,6 +26,7 @@ function Component:new()
 	self.height = 1
 	self.children = {}
 	self.parent = false
+	self.target = false
 end
 
 function Component:iterate()
@@ -53,6 +56,25 @@ function Component:serialize(t)
 	t.y = self.y
 	t.width = self.width
 	t.height = self.height
+
+	t.targetType = false
+	t.targetID = false
+
+	if self.target then
+		local actor = self.target:getBehavior(ActorReferenceBehavior)
+		actor = actor and actor.actor
+
+		local prop = self.target:getBehavior(PropReferenceBehavior)
+		prop = prop and prop.prop
+
+		if actor then
+			t.targetType = "actor"
+			t.targetID = actor:getID()
+		elseif prop then
+			t.targetType = "prop"
+			t.targetID = prop:getID()
+		end
+	end
 end
 
 function Component:getPosition()
@@ -103,6 +125,14 @@ end
 
 function Component:setHeight(value)
 	self.height = math.max(value or 1)
+end
+
+function Component:setTarget(peep)
+	self.target = peep or false
+end
+
+function Component:getTarget()
+	return self.target
 end
 
 return Component

@@ -156,7 +156,12 @@
 			"keyboardToggleTargetCamera": ["lshift", "tab"],
 
 			"keyboardQuickDodge": ["q"],
-			"gamepadQuickDodge": "triggerright"
+			"gamepadQuickDodge": "triggerright",
+
+			"keyboardMoveLeft": "left",
+			"keyboardMoveRight": "right",
+			"keyboardMoveUp": "up",
+			"keyboardMoveDown": "down",
 		},
 
 		"debug": {

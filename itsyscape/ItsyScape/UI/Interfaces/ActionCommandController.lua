@@ -13,16 +13,21 @@ local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBeh
 
 local ActionCommandController = Class(Controller)
 
-function ActionCommandController:new(peep, director, prop, action, attack)
+function ActionCommandController:new(peep, director, prop, action, t, attack)
 	Controller.new(self, peep, director)
 
 	local Fish1 = require "Resources.Game.ActionCommands.Fish1"
 	self.prop = prop
 	self.attack = attack
-	self.actionCommand = Fish1(action, peep, prop)
+	self.actionCommand = Fish1(action, peep, prop, t)
+
 	self.actionCommand.onHit:register(self.hit, self)
 
 	self:update(0)
+end
+
+function ActionCommandController:close()
+	self.actionCommand:close()
 end
 
 function ActionCommandController:hit(_, spread)

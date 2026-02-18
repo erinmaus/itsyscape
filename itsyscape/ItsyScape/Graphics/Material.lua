@@ -152,6 +152,14 @@ function Material:setIsZWriteDisabled(value)
 	self._handle:setIsZWriteDisabled(value or false)
 end
 
+function Material:getIsZCompareDisabled()
+	return self._handle:getIsZCompareDisabled()
+end
+
+function Material:setIsZCompareDisabled(value)
+	self._handle:setIsZCompareDisabled(value or false)
+end
+
 -- Returns true if the Material should always be drawn, false otherwise.
 -- Defaults to false (the object will only be drawn if visible).
 function Material:getIsCullDisabled()

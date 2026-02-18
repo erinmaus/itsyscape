@@ -309,6 +309,10 @@ Theme.PROGRESS_BAR_LABEL_STYLE = {
 	spaceLines = true
 }
 
+Theme.SCENE_BORDER_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/SceneBorder.png"
+}
+
 function Theme.newItemParent(parent, Type)
 	local instance = Type()
 	instance:setSize(Theme.DEFAULT_ITEM_SIZE_WITH_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
@@ -357,6 +361,37 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, z
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
 	camera:setPosition(Vector.ZERO:transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + (offset * distance / 2))
+	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
+	camera:setDistance(distance * zoom + 2)
+
+	local width, height = sceneSnippet:getSize()
+	camera:setWidth(width)
+	camera:setHeight(height)
+
+	return true
+end
+
+function Theme.setSceneSnippetMap(sceneSnippet, camera, gameView, layer, offset, zoom)
+	local view = gameView:getView(object)
+
+	local node = gameView:getMapSceneNode(layer)
+	local map = gameView:getMap(layer)
+
+	if not (node and map) then
+		return false
+	end
+
+	local maxX = map and (map:getWidth() * map:getCellSize()) or 8
+	local maxZ = map and (map:getHeight() * map:getCellSize()) or 8
+
+	offset = offset or Vector.UNIT_Y
+	zoom = zoom or 2
+
+	local distance = math.max(maxX, maxZ)
+
+	sceneSnippet:setChildNode(node)
+	camera:copy(gameView:getCamera())
+	camera:setPosition(Vector(maxX / 2, -distance / 2, maxZ / 2):transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + (offset * distance / 2))
 	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
 	camera:setDistance(distance * zoom + 2)
 

@@ -53,6 +53,14 @@ local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local MapPeep = require "ItsyScape.Peep.Peeps.Map"
 local ShipMapScript = require "Resources.Game.Peeps.Maps.ShipMapPeep2"
 
+-- # CONTROLS
+-- Tools:
+-- * f1: terrain tool
+-- * shift + f1: brush tool
+-- Brush tool:
+-- * left-click: clamp brush motion
+-- * ctrl + left-click: regular brush motion
+
 local MapEditorApplication = Class(EditorApplication)
 MapEditorApplication.TOOL_NONE = 0
 MapEditorApplication.TOOL_TERRAIN = 1

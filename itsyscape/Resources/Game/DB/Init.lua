@@ -1656,6 +1656,9 @@ include "Resources/Game/DB/Effects/Immunities.lua"
 include "Resources/Game/DB/Effects/Misc.lua"
 include "Resources/Game/DB/Effects/Tutorial.lua"
 
+-- Action commands
+include "Resources/Game/DB/ActionCommands/Fish.lua"
+
 -- Props
 do
 	ItsyScape.Resource.Prop "Null" {

@@ -1056,10 +1056,17 @@ function Instance:getMapScriptByLayer(layer)
 	return nil
 end
 
-function Instance:getMapScriptByMapFilename(filename)
+function Instance:getMapScriptByMapFilename(filename, player)
 	for _, mapScript in pairs(self.mapScripts) do
 		if mapScript:getFilename() == filename then
-			return mapScript:getPeep()
+			if player then
+				local instanced = mapScript:getPeep():getBehavior(InstancedBehavior)
+				if instanced and instanced.playerID == player:getID() then
+					return mapScript:getPeep()
+				end
+			else
+				return mapScript:getPeep()
+			end
 		end
 	end
 

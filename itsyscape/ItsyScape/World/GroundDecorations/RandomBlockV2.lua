@@ -158,8 +158,12 @@ function RandomBlock:emit(method, tileSet, map, i, j, tileSetTile, mapTile)
 				local absoluteY = map:getInterpolatedHeight(absoluteX, absoluteZ)
 				local feature = self.FEATURES[self._features:index(g.feature, #self.FEATURES)]
 
+				local isXInside = absoluteX >= 0 and absoluteX <= map:getWidth() * map:getCellSize()
+				local isZInside = absoluteZ >= 0 and absoluteZ <= map:getWidth() * map:getCellSize()
+				local isInside = isXInside and isZInside
+
 				local realMapTile = map:getTileAt(absoluteX, absoluteZ)
-				if mapTile.flat == realMapTile.flat then
+				if mapTile.flat == realMapTile.flat and isInside then
 					self:addFeature(
 						feature,
 						Vector(absoluteX, absoluteY, absoluteZ),

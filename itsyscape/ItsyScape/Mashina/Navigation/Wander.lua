@@ -70,28 +70,11 @@ function Wander:update(mashina, state, executor)
 	end
 
 	local radialDistance = state[self.RADIAL_DISTANCE] or 5
-
-	local s, t
-	do
-		local min = state[self.MIN_RADIAL_DISTANCE] or 0
-		local max = radialDistance - min
-		if wanderI then
-			s = love.math.random(-max, max) + min
-		else
-			s = 0
-		end
-
-		if wanderJ  then
-			t = love.math.random(-max, max) + min
-		else
-			t = 0
-		end
-	end
-
-	local targetI = i + s
-	local targetJ = j + t
+	local minRadialDistance = state[self.MIN_RADIAL_DISTANCE] or 0
 
 	local map = Utility.Peep.getMap(mashina)
+	local targetI, targetJ = Utility.Map.getRandomTile(map, i, j, radialDistance, true, nil, nil, minRadialDistance)
+
 	local start = map:getTileCenter(i, j)
 	start.y = 0
 	local stop = map:getTileCenter(targetI, targetJ)
@@ -124,9 +107,10 @@ function Wander:update(mashina, state, executor)
 
 		if map:canMove(previousI, previousJ, differenceI, differenceJ) then
 			path:makeNode(PositionPathNode, map, k, map:getTileCenter(previousI + differenceI, previousJ + differenceJ))
-		else
-			return false
+			return true
 		end
+
+		return false
 	end)
 
 	if path:getNumNodes() == 0 then

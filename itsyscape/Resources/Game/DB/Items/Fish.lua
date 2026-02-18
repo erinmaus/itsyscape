@@ -2281,7 +2281,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 100,
+		Health = 10000,
 		SpawnTime = 20,
 		Resource = ItsyScape.Resource.Prop "LightningStormfish_Default"
 	}
@@ -2520,6 +2520,20 @@ do
 		Key = "Cooking",
 		Value = "BurntFish",
 		Resource = ItsyScape.Resource.Item "BurntLightningStormfish"
+	}
+
+	ItsyScape.Resource.Peep "LightningStormfish"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Fish.LightningStormfish",
+		Resource = ItsyScape.Resource.Peep "LightningStormfish"
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Fish/Fish_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = ItsyScape.Resource.Peep "LightningStormfish"
 	}
 end
 

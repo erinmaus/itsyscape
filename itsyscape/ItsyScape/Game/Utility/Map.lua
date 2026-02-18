@@ -464,10 +464,12 @@ end
 
 -- Gets a random tile within the line of sight of (i, j) no more than 'distance' tiles away (Euclidean)
 -- Returns nil, nil if nothing was found
-function UMap.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, ...)
+function UMap.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, minDistance, ...)
 	if checkLineOfSight == nil then
 		checkLineOfSight = true
 	end
+
+	minDistance = minDistance or 0
 
 	local m = {}
 
@@ -475,10 +477,14 @@ function UMap.getRandomTile(map, i, j, distance, checkLineOfSight, rng, flags, .
 		for mapI = 1, map:getWidth() do
 			local d = math.sqrt((mapI - i) ^ 2 + (mapJ - j) ^ 2)
 			local tile = map:getTile(mapI, mapJ)
-			if (i ~= mapI or j ~= mapJ) and d <= distance and tile:getIsPassable(flags) then
+			if (i ~= mapI or j ~= mapJ) and d <= distance and d >= minDistance and tile:getIsPassable(flags) then
 				table.insert(m, { mapI, mapJ })
 			end
 		end
+	end
+
+	if #m == 0 then
+		return nil, nil
 	end
 
 	repeat

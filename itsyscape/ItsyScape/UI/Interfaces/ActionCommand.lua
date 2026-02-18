@@ -8,10 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
+local ActorView = require "ItsyScape.Graphics.ActorView"
 local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
+local PropView = require "ItsyScape.Graphics.PropView"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local CloseButton = require "ItsyScape.UI.CloseButton"
@@ -20,13 +23,23 @@ local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local Glyph = require "ItsyScape.UI.Glyph"
 local Icon = require "ItsyScape.UI.Icon"
+local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Interface = require "ItsyScape.UI.Interface"
+local Panel = require "ItsyScape.UI.Panel"
+local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local Widget = require "ItsyScape.UI.Widget"
 local Theme = require "ItsyScape.UI.Interfaces.Theme"
 
 local ActionCommand = Class(Interface)
 ActionCommand.DROP_SHADOW = 4
+ActionCommand.CANVAS_SIZE = 540
+
+ActionCommand.ROOT_PANEL_STYLE = {
+	image = "Resources/Game/UI/Buttons/DialogButton-Default.png"
+}
+
+ActionCommand.ROOT_PADDING = Theme.DEFAULT_OUTER_PADDING * 3
 
 ActionCommand.Root = Class(Widget)
 function ActionCommand.Root:getIsFocusable()
@@ -71,6 +84,9 @@ function ActionCommand.Bar:makeCurrentT(currentT, previousT, delta)
 end
 
 function ActionCommand.Bar:draw()
+	local _, screenHeight = itsyrealm.graphics.getScaledMode()
+	local scale = screenHeight / ActionCommand.CANVAS_SIZE
+
 	local valueColor = Color(unpack(self.t.foregroundColor))
 	local backgroundColor = Color(unpack(self.t.backgroundColor))
 
@@ -114,24 +130,29 @@ function ActionCommand.Rectangle:makeCurrentT(currentT, previousT, delta)
 end
 
 function ActionCommand.Rectangle:draw()
+	local _, screenHeight = itsyrealm.graphics.getScaledMode()
+	local scale = screenHeight / ActionCommand.CANVAS_SIZE
+
 	local valueColor = Color(unpack(self.t.color))
 
 	love.graphics.setLineWidth(self.t.lineWidth)
 
+	local x, y = -self.t.lineWidth / 2, -self.t.lineWidth / 2
+
 	love.graphics.setColor(0, 0, 0, 1)
 	itsyrealm.graphics.rectangle(
 		self.t.fillMode,
-		ActionCommand.DROP_SHADOW, ActionCommand.DROP_SHADOW,
-		self.t.width,
-		self.t.height,
+		x + ActionCommand.DROP_SHADOW, y + ActionCommand.DROP_SHADOW,
+		self.t.width * scale,
+		self.t.height * scale,
 		self.t.radius)
 
 	love.graphics.setColor(valueColor:get())
 	itsyrealm.graphics.rectangle(
 		self.t.fillMode,
-		0, 0,
-		self.t.width,
-		self.t.height,
+		x, y,
+		self.t.width * scale,
+		self.t.height * scale,
 		self.t.radius)
 
 	love.graphics.setLineWidth(1)
@@ -160,6 +181,10 @@ function ActionCommand:new(...)
 	self.closeButton = CloseButton()
 	self.closeButton.onClick:register(self._onClose, self)
 
+	self.panel = Panel()
+	self.panel:setStyle(self.ROOT_PANEL_STYLE, PanelStyle)
+	self.root:addChild(self.panel)
+
 	self.sceneSnippets = {}
 	self.glyphs = {}
 end
@@ -174,14 +199,81 @@ function ActionCommand:getOverflow()
 	return true
 end
 
+function ActionCommand:_getParentSceneSnippet(widget)
+	local current = widget
+	while current do
+		for _, child in current:iterate() do
+			if Class.isCompatibleType(child, SceneSnippet) then
+				return child
+			end
+		end
+
+		current = widget:getParent()
+	end
+
+	return nil
+end
+
+do
+	local worldPosition = Vector()
+	local screenPosition = Vector()
+
+	function ActionCommand:_getTargetOffset(parent, t)
+		if not (t.targetType and t.targetID) then
+			return 0, 0
+		end
+
+		local sceneSnippet = self:_getParentSceneSnippet(parent)
+		if not (sceneSnippet and sceneSnippet:getCamera()) then
+			return 0, 0
+		end
+
+		local gameView = self:getView():getGameView()
+
+		local object
+		if t.targetType == "actor" then
+			object = gameView:getActorByID(t.targetID)
+		elseif t.targetType == "prop" then
+			object = gameView:getPropByID(t.targetID)
+		else
+			return 0, 0
+		end
+
+		local view = gameView:getView(object)
+		if not view then
+			return 0, 0
+		end
+
+		local node
+		if Class.isCompatibleType(view, ActorView) then
+			node = view:getSceneNode()
+		elseif Class.isCompatibleType(view, PropView) then
+			node = view:getRoot()
+		end
+
+		if not node then
+			return 0, 0
+		end
+
+		local transform = node:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
+		worldPosition:from(0):transform(transform, worldPosition)
+
+		sceneSnippet:getCamera():project(worldPosition, screenPosition)
+		return screenPosition.x, screenPosition.y
+	end
+end
+
 function ActionCommand:_build(parent, t, o, delta)
+	local _, screenHeight = itsyrealm.graphics.getScaledMode()
+	local scale = screenHeight / self.CANVAS_SIZE
+
 	local widget
 	if t.type == "bar" then
 		widget = ActionCommand.Bar(t, o, delta)
 	elseif t.type == "button" then
 		widget = GamepadToolTip()
 		widget:setHasBackground(false)
-		widget:setRowSize(math.huge, math.lerp(o.height, t.height, delta))
+		widget:setRowSize(math.huge, math.lerp(o.height, t.height, delta) * scale)
 
 		if t.standard then
 			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, t.standard.button)
@@ -203,8 +295,15 @@ function ActionCommand:_build(parent, t, o, delta)
 		widget = Icon()
 		widget:setIcon(t.icon)
 		widget:setSize(
-			math.lerp(o.width, t.width, delta),
-			math.lerp(o.height, t.height, delta))
+			math.lerp(o.width, t.width, delta) * scale,
+			math.lerp(o.height, t.height, delta) * scale)
+	elseif t.type == "item" then
+		widget = ItemIcon()
+		widget:setItemID(t.item)
+		widget:setItemCount(t.count)
+		widget:setSize(
+			math.lerp(o.width, t.width, delta) * scale,
+			math.lerp(o.height, t.height, delta) * scale)
 	elseif t.type == "rectangle" then
 		widget = ActionCommand.Rectangle(t, o, delta)
 	elseif t.type == "glyph" then
@@ -216,13 +315,14 @@ function ActionCommand:_build(parent, t, o, delta)
 		widget:setGlowColor(Color(unpack(o.glowColor)):lerp(Color(unpack(t.glowColor)), delta))
 		widget:setOutlineColor(Color(unpack(o.outlineColor)):lerp(Color(unpack(t.outlineColor)), delta))
 		widget:setSize(
-			math.lerp(o.width, t.width, delta),
-			math.lerp(o.height, t.height, delta))
+			math.lerp(o.width, t.width, delta) * scale,
+			math.lerp(o.height, t.height, delta) * scale)
 	elseif t.type == "peep" then
 		widget = self.sceneSnippets[t.id] or SceneSnippet()
 
-		local camera = ThirdPersonCamera()
-		widget:setCamera(camera)
+		if not widget:getCamera() then
+			widget:setCamera(ThirdPersonCamera())
+		end
 
 		local gameView = self:getView():getGameView()
 
@@ -240,23 +340,68 @@ function ActionCommand:_build(parent, t, o, delta)
 
 		widget:setParentNode(parentNode)
 		widget:setRoot(parentNode)
-
-		Theme.setSceneSnippet(widget, camera, gameView, object, Vector(unpack(t.offset)))
+		widget:setSize(
+			math.lerp(o.width, t.width, delta) * scale,
+			math.lerp(o.height, t.height, delta) * scale)
 
 		self.sceneSnippets[t.id] = widget
+	elseif t.type == "map" then
+		widget = self.sceneSnippets[t.id]
+		if not widget then
+			widget = SceneSnippet()
+
+			local child = Panel()
+			child:setStyle(Theme.SCENE_BORDER_PANEL_STYLE, PanelStyle)
+			widget:addChild(child)
+		end
+
+		widget:setIsChildRenderer(false)
+
+		if not widget:getCamera() then
+			widget:setCamera(ThirdPersonCamera())
+		end
+
+		if not widget:getParentNode() then
+			widget:setParentNode(widget:getRoot())
+		end
 
 		widget:setSize(
-			math.lerp(o.width, t.width, delta),
-			math.lerp(o.height, t.height, delta))
+			math.lerp(o.width, t.width, delta) * scale,
+			math.lerp(o.height, t.height, delta) * scale)
+
+		local borderChild = widget:getChildAt(1)
+		if borderChild then
+			borderChild:setSize(widget:getSize())
+		end
+
+		local gameView = self:getView():getGameView()
+		Theme.setSceneSnippetMap(widget, widget:getCamera(), gameView, t.mapLayer, nil, 2.5)
+
+		widget:getCamera():setHorizontalRotation(-math.pi / 8)
+		widget:getCamera():setVerticalRotation(-math.pi / 2 + math.pi / 8)
+		widget:getCamera():setRotation(Quaternion.IDENTITY)
+
+		local distance = math.lerp(o.distance, t.distance, delta)
+		local position = Vector(
+			math.lerp(o.offsetX, t.offsetX, delta),
+			math.lerp(o.offsetY, t.offsetY, delta) + widget:getCamera():getPosition().y,
+			math.lerp(o.offsetZ, t.offsetZ, delta))
+
+		widget:getCamera():setPosition(position)
+		widget:getCamera():setDistance(distance)
+
+		self.sceneSnippets[t.id] = widget
 	end
+
+	local ox, oy = self:_getTargetOffset(parent, t)
 
 	local p = ActionCommand.Wrapper()
 	p:setPosition(
-		math.lerp(o.x, t.x, delta),
-		math.lerp(o.y, t.y, delta))
+		math.lerp(o.x, t.x, delta) * scale + ox,
+		math.lerp(o.y, t.y, delta) * scale + oy)
 	p:setSize(
-		math.lerp(o.width, t.width, delta),
-		math.lerp(o.height, t.height, delta))
+		math.lerp(o.width, t.width, delta) * scale,
+		math.lerp(o.height, t.height, delta) * scale)
 
 	if widget then
 		p:addChild(widget)
@@ -297,8 +442,8 @@ function ActionCommand:_addProgressBar()
 	local t = {
 		x = 0,
 		y = 0,
-		width = self.root:getSize(),
-		height = 32,
+		width = self.root:getSize() / 2,
+		height = Theme.DEFAULT_BUTTON_SIZE,
 		currentValue = state.resource.progress,
 		maximumValue = 100,
 		ratio = state.resource.progress / 100,
@@ -306,7 +451,9 @@ function ActionCommand:_addProgressBar()
 		foregroundColor = { remainderColor:get() },
 	}
 	self.progressBar = ActionCommand.Bar(t, t, 1)
-	self.progressBar:setPosition(x, y - 48)
+	self.progressBar:setPosition(
+		x + (self.root:getSize() - self.root:getSize() / 2) / 2,
+		y + self.ROOT_PADDING)
 	self:addChild(self.progressBar)
 end
 
@@ -353,15 +500,21 @@ function ActionCommand:performLayout()
 	self:_addProgressBar()
 
 	local rootX, rootY = self.root:getPosition() 
-	local progessBarX, progressBarY = self.progressBar:getPosition()
+	self.panel:setSize(
+		Theme.calculateSizeWithPadding(self.ROOT_PADDING, rootWidth),
+		Theme.calculateSizeWithPadding(self.ROOT_PADDING, rootHeight))
+	self.panel:setPosition(-self.ROOT_PADDING, -self.ROOT_PADDING)
+
+	local _, progressBarY = self.progressBar:getPosition()
+	local progressBarWidth = self.progressBar:getSize()
 	self.closeButton:setPosition(
-		rootX + rootWidth + Theme.DEFAULT_OUTER_PADDING,
-		progressBarY - CloseButton.DEFAULT_SIZE - Theme.DEFAULT_OUTER_PADDING)
+		rootX + rootWidth - CloseButton.DEFAULT_SIZE - self.ROOT_PADDING,
+		progressBarY)
 	self:addChild(self.closeButton)
 
 	local closeButtonX, closeButtonY = self.closeButton:getPosition()
 	self.closeToolTip:setPosition(
-		closeButtonX + CloseButton.DEFAULT_SIZE + Theme.DEFAULT_OUTER_PADDING,
+		rootX + rootWidth + self.ROOT_PADDING,
 		closeButtonY)
 	self:addChild(self.closeToolTip)
 end
@@ -424,6 +577,20 @@ end
 function ActionCommand:gamepadRelease(x, y, button)
 	Interface.gamepadRelease(self, joystick, button)
 	self:sendPoke("button", nil, { controller = "gamepad", type = "up", value = button })
+end
+
+function ActionCommand:keyDown(key, scan, isRepeat)
+	Interface.keyDown(self, key, scan, isRepeat)
+
+	if not isRepeat then
+		self:sendPoke("key", nil, { controller = "keyboard", type = "down", value = scan })
+	end
+end
+
+function ActionCommand:keyUp(key, scan, ...)
+	Interface.keyUp(self, key, scan, ...)
+
+	self:sendPoke("key", nil, { controller = "keyboard", type = "up", value = scan })
 end
 
 function ActionCommand:controlUp(control)

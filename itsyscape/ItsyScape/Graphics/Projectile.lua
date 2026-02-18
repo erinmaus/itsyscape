@@ -91,7 +91,7 @@ function Projectile:playAnimation(target, animation, slot, priority)
 	end
 end
 
-function Projectile:getTargetPosition(target, offset)
+function Projectile:getTargetPosition(target, offset, isLocal)
 	offset = offset or Vector.ZERO
 
 	if target then
@@ -107,7 +107,13 @@ function Projectile:getTargetPosition(target, offset)
 			end
 
 			if positionable then
-				local transform = positionable:getTransform():getGlobalDeltaTransform(0)
+				local transform
+				if isLocal then
+					transform = positionable:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())
+				else
+					transform = positionable:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
+				end
+
 				local position = Vector(transform:transformPoint(offset:get()))
 
 				local y
