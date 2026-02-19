@@ -971,6 +971,22 @@ function Instance:addLayer(layer, group, player)
 			table.insert(self.mapGroups[group], layer)
 			self.layerToMapGroup[layer] = group
 		end
+
+		if not player then
+			for _, otherPlayer in self:iteratePlayers() do
+				local playerPeep = otherPlayer:getActor() and otherPlayer:getActor():getPeep()
+				if playerPeep then
+					for _, layer in self:iterateLayers() do
+						playerPeep:pushPoke("preloadActionCommands", layer)
+					end
+				end
+			end
+		else
+			local playerPeep = player:getActor() and player:getActor():getPeep()
+			if playerPeep then
+				playerPeep:pushPoke("preloadActionCommands", layer)
+			end
+		end
 	end
 end
 
@@ -1107,6 +1123,13 @@ function Instance:addPlayer(player, e)
 		if not self.partyLeader then
 			Log.info("No party leader; setting player to party instance.")
 			self:setPartyLeader(player)
+		end
+
+		local playerPeep = player:getActor() and player:getActor():getPeep()
+		if playerPeep then
+			for _, layer in self:iterateLayers() do
+				playerPeep:pushPoke("preloadActionCommands", layer)
+			end
 		end
 
 		return true

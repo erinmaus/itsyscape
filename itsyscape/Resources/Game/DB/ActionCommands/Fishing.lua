@@ -39,3 +39,12 @@ do
 		MapObject = Cursor
 	}
 end
+
+do
+	local Fish1 = ItsyScape.Resource.ActionCommand "Fish1"
+
+	ItsyScape.Meta.ActionCommandMap {
+		Map = ItsyScape.Resource.Map "Skilling_Fishing1",
+		Resource = Fish1
+	}
+end

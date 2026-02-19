@@ -84,6 +84,8 @@ function LocalStage:new(game)
 	table.insert(self.instances, self.dummyInstance)
 	self.instancesByLayer[1] = self.dummyInstance
 
+	self.pendingActionCommandInstances = {}
+
 	-- self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
 	-- if self:_preloadMapObjects() then
 	-- 	self._preloadMapObjects = nil
@@ -1245,6 +1247,8 @@ function LocalStage:movePeep(peep, path, anchor, e)
 
 				self:unloadInstance(previousInstance)
 			end
+
+			self.pendingActionCommandInstances[instance] = true
 		end
 	else
 		local actor = peep:getBehavior(ActorReferenceBehavior)
@@ -1263,6 +1267,68 @@ function LocalStage:movePeep(peep, path, anchor, e)
 	end
 
 	return instance
+end
+
+function LocalStage:preloadPlayerActionCommandsForPeep(instance, player, peep)
+	local director = self.game:getDirector()
+	local gameDB = self.game:getDirector():getGameDB()
+	local actionCommands = Utility.Skilling.getActionCommands(peep, director)
+
+	local maps = {}
+	if actionCommands and #actionCommands > 0 then
+		for _, actionCommand in ipairs(actionCommands) do
+			local actionCommandResource = gameDB:getResource(actionCommand.actionCommand, "ActionCommand")
+			local actionCommandMaps = actionCommandResource and gameDB:getRecords("ActionCommandMap", {
+				Resource = actionCommandResource
+			})
+
+			if actionCommandMaps then
+				for _, actionCommandMap in ipairs(actionCommandMaps) do
+					maps[actionCommandMap:get("Map").name] = true
+				end
+			end
+		end
+	end
+
+	for map in pairs(maps) do
+		local mapScript = instance:getMapScriptByMapFilename(map, player)
+		if not mapScript then
+			Log.info("Loading action command map '%s' for player '%s' (%d)...", map, player:getActor():getPeep():getName(), player:getID())
+
+			Utility.Map.spawnMap(instance:getBaseMapScript(), map, Vector(0, 1000, 0), {
+				isInstancedToPlayer = true,
+				player = player
+			})
+		end
+	end
+end
+
+function LocalStage:preloadPlayerActionCommands(instance, player, layer)
+	local layerName = player:getActor():getPeep():getLayerName()
+	local director = self.game:getDirector()
+
+	local peeps = director:probe(
+		layerName,
+		function(peep)
+			if peep:hasBehavior(InstancedBehavior) and peep:getBehavior(InstancedBehavior).playerID ~= player:getID() then
+				return false
+			end
+
+			if Utility.Peep.getLayer(peep) ~= layer then
+				return false
+			end
+
+			return peep:hasBehavior(PropReferenceBehavior) or peep:hasBehavior(ActorReferenceBehavior)
+		end)
+
+	if #peeps == 0 then
+		return
+	end
+
+	Log.info("Preloading action commands for player '%s' in instance '%s' on on layer '%d'.", player:getActor() and player:getActor():getName() or "???", layerName, layer)
+	for _, peep in ipairs(peeps) do
+		self:preloadPlayerActionCommandsForPeep(instance, player, peep)
+	end
 end
 
 local function _sortLayers(a, b)
@@ -1459,6 +1525,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 			end
 		end
 	end
+
+	self.pendingActionCommandInstances[instance] = true
 
 	return baseLayer, mapScript
 end

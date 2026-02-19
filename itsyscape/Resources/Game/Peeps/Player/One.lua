@@ -56,7 +56,7 @@ One.PENDING_ANALYTIC_LEVEL_UP_PERIOD_SECONDS = 5
 One.PENDING_ANALYTIC_XP_GAIN_PERIOD_SECONDS = 30
 
 function One:new(...)
-	Peep.new(self, 'Player', ...)
+	Peep.new(self, "Player", ...)
 
 	self:addBehavior(ActorReferenceBehavior)
 	self:addBehavior(CombatStatusBehavior)
@@ -99,27 +99,28 @@ function One:new(...)
 	Utility.Peep.makeAttackable(self, false)
 	Utility.Peep.makeArtisan(self)
 
-	self:addPoke('actionTried')
-	self:addPoke('actionFailed')
-	self:addPoke('initiateAttack')
-	self:addPoke('receiveAttack')
-	self:addPoke('resourceHit')
-	self:addPoke('resourceObtained')
-	self:addPoke('changeWardrobe')
-	self:addPoke('transferItemTo')
-	self:addPoke('transferItemFrom')
-	self:addPoke('spawnItem')
-	self:addPoke('gotKeyItem')
-	self:addPoke('equipItem')
-	self:addPoke('dequipItem')
-	self:addPoke('travel')
-	self:addPoke('walk')
-	self:addPoke('bootstrapComplete')
-	self:addPoke('endGame')
-	self:addPoke('moveInstance')
-	self:addPoke('fall')
-	self:addPoke('openInterface')
-	self:addPoke('closeInterface')
+	self:addPoke("actionTried")
+	self:addPoke("actionFailed")
+	self:addPoke("initiateAttack")
+	self:addPoke("receiveAttack")
+	self:addPoke("resourceHit")
+	self:addPoke("resourceObtained")
+	self:addPoke("changeWardrobe")
+	self:addPoke("transferItemTo")
+	self:addPoke("transferItemFrom")
+	self:addPoke("spawnItem")
+	self:addPoke("gotKeyItem")
+	self:addPoke("equipItem")
+	self:addPoke("dequipItem")
+	self:addPoke("travel")
+	self:addPoke("walk")
+	self:addPoke("bootstrapComplete")
+	self:addPoke("endGame")
+	self:addPoke("moveInstance")
+	self:addPoke("fall")
+	self:addPoke("openInterface")
+	self:addPoke("closeInterface")
+	self:addPoke("preloadActionCommands")
 end
 
 function One:onChangeWardrobe(e)
@@ -347,12 +348,12 @@ function One:applySkins()
 	local director = self:getDirector()
 
 	local SLOTS = {
-		'hair',
-		'eyes',
-		'head',
-		'body',
-		'hands',
-		'feet'
+		"hair",
+		"eyes",
+		"head",
+		"body",
+		"hands",
+		"feet"
 	}
 
 	local skin = director:getPlayerStorage(self):getRoot():getSection("Player"):getSection("Skin")
@@ -369,12 +370,12 @@ function One:applySkins()
 			end
 
 			self:onChangeWardrobe({
-				slot = s:get('slot'),
-				slotName = s:get('slotName'),
-				priority = s:get('priority'),
-				name = s:get('name'),
-				filename = s:get('filename'),
-				type = s:get('type'),
+				slot = s:get("slot"),
+				slotName = s:get("slotName"),
+				priority = s:get("priority"),
+				name = s:get("name"),
+				filename = s:get("filename"),
+				type = s:get("type"),
 				config = config
 			})
 		else
@@ -391,7 +392,7 @@ function One:applySkins()
 				slot = One.SKINS[slot].slot,
 				slotName = slot,
 				priority = One.SKINS[slot].priority,
-				name = 'Default',
+				name = "Default",
 				filename = roll(One.SKINS[slot]),
 				type = "ItsyScape.Game.Skin.ModelSkin",
 				config = config
@@ -514,13 +515,13 @@ function One:ready(director, game)
 end
 
 function One:onTransferItemTo(e)
-	if e.purpose ~= 'bank-withdraw' and e.purpose ~= self then
+	if e.purpose ~= "bank-withdraw" and e.purpose ~= self then
 		self:interruptUI()
 	end
 end
 
 function One:onTransferItemFrom(e)
-	if e.purpose ~= 'bank-deposit' and e.purpose ~= 'uninterrupted-drop' then
+	if e.purpose ~= "bank-deposit" and e.purpose ~= "uninterrupted-drop" then
 		self:interruptUI()
 	end
 end
@@ -654,7 +655,7 @@ function One:update(...)
 		self:getDirector():getGameInstance():getStage():movePeep(self, "Purgatory", "Anchor_Spawn")
 	end
 
-	if _DEBUG and love.keyboard.isDown('f9') then
+	if _DEBUG and love.keyboard.isDown("f9") then
 		local i, j, k = Utility.Peep.getTile(self)
 		Log.info("Peep: tile = (%d, %d; %d)", i, j, k)
 
@@ -668,7 +669,7 @@ function One:onEndGame()
 end
 
 function One:onPoof()
-	Log.info('Player poofed.')
+	Log.info("Player poofed.")
 end
 
 function One:onActionFailed(e)
@@ -764,6 +765,14 @@ function One:onMoveInstance(previousInstance, currentInstance)
 				currentInstance:getFilename(), currentInstance:getID())
 		end
 	end
+end
+
+function One:onPreloadActionCommands(layer)
+	local instance = Utility.Peep.getInstance(self)
+	local player = Utility.Peep.getPlayerModel(self)
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	stage:preloadPlayerActionCommands(instance, player, layer)
 end
 
 return One

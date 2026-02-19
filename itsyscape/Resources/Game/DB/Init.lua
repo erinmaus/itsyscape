@@ -332,6 +332,13 @@ Game "ItsyScape"
 		LootCategory = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "ActionCommand"
+
+	Meta "ActionCommandMap" {
+		Map = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Character"
 	ResourceType "Team"
 
@@ -1657,7 +1664,7 @@ include "Resources/Game/DB/Effects/Misc.lua"
 include "Resources/Game/DB/Effects/Tutorial.lua"
 
 -- Action commands
-include "Resources/Game/DB/ActionCommands/Fish.lua"
+include "Resources/Game/DB/ActionCommands/Fishing.lua"
 
 -- Props
 do

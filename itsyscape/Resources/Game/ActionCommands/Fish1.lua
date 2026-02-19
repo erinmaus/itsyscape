@@ -106,9 +106,6 @@ function Fish:updateCursorPositionSize(delta)
 		return
 	end
 
-	local scale = math.lerp(1, 1.5, math.sin(math.clamp(self.hitTimer / self.HIT_INTERVAL) * math.pi))
-	Utility.Peep.setScale(self.cursor, Vector(scale))
-
 	local x, y = self:getInputDirection()
 	local velocityX, velocityY = self.VELOCITY * x, self.VELOCITY * y
 
