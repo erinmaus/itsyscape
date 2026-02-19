@@ -44,6 +44,8 @@ function ActionCommandController:poke(actionID, actionIndex, e)
 		self:button(e)
 	elseif actionID == "key" then
 		self:key(e)
+	elseif actionID == "control" then
+		self:control(e)
 	elseif actionID == "close" then
 		self:getPeep():getCommandQueue():clear()
 		self:getGame():getUI():closeInstance(self)
@@ -73,6 +75,14 @@ function ActionCommandController:key(e)
 		self.actionCommand:onKeyDown(e.controller, e.value)
 	elseif e.type == "up" then
 		self.actionCommand:onKeyUp(e.controller, e.value)
+	end
+end
+
+function ActionCommandController:control(e)
+	if e.type == "down" then
+		self.actionCommand:onControlDown(e.value)
+	elseif e.type == "up" then
+		self.actionCommand:onControlUp(e.value)
 	end
 end
 

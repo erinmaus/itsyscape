@@ -84,8 +84,8 @@ do
 		Resource = M["Cursor"]
 	}
 
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "FishingCursor",
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "CameraDolly",
 		MapObject = M["Cursor"]
 	}
 end

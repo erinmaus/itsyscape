@@ -44,6 +44,7 @@ local MapObjectBehavior = require "ItsyScape.Peep.Behaviors.MapObjectBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local MappResourceBehavior = require "ItsyScape.Peep.Behaviors.MappResourceBehavior"
 local MapResourceReferenceBehavior = require "ItsyScape.Peep.Behaviors.MapResourceReferenceBehavior"
+local MashinaArgumentsBehavior = require "ItsyScape.Peep.Behaviors.MashinaArgumentsBehavior"
 local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
@@ -1506,6 +1507,18 @@ function Peep.isAttackable(peep)
 	return _isAttackable(peep, resource) or _isAttackable(peep, mapObject) or peep:hasBehavior(PlayerBehavior)
 end
 
+function Peep.stopAnimation(peep, animationSlot)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if not actor then
+		return false
+	end
+
+	actor:stopAnimation(animationSlot)
+
+	return true
+end
+
 function Peep.playAnimation(peep, animationSlot, animationPriority, animationName, animationForced, animationTime)
 	if not (animationName and animationSlot and animationPriority) then
 		return false
@@ -2532,10 +2545,27 @@ function Peep.getMashinaState(peep)
 	return mashina and mashina.currentState or false
 end
 
-function Peep.setMashinaState(peep, state)
+function Peep.getMashinaArgument(peep, key)
+	local arguments = peep:getBehavior(MashinaArgumentsBehavior)
+	return arguments and arguments.arguments[key]
+end
+
+function Peep.setMashinaState(peep, state, arguments)
 	local mashina = peep:getBehavior(MashinaBehavior)
 	if mashina then
 		mashina.currentState = state or false
+
+		if arguments and next(arguments) ~= nil then
+			local _, mashinaArguments = peep:addBehavior(MashinaArgumentsBehavior)
+
+			table.clear(mashinaArguments.arguments)
+			for k, v in pairs(arguments) do
+				arguments[k] = v
+			end
+		else
+			peep:removeBehavior(MashinaArgumentsBehavior)
+		end
+
 		return not not mashina.states[state] or state == false
 	end
 

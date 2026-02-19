@@ -278,19 +278,23 @@ function ActionCommand:_build(parent, t, o, delta)
 		widget:setHasBackground(false)
 		widget:setRowSize(math.huge, math.lerp(o.height, t.height, delta) * scale)
 
-		if t.standard then
+		if t.standard and t.standard.button then
 			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, t.standard.button)
 			widget:setMessage(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, t.standard.label)
 		end
 
-		if t.gamepad then
+		if t.gamepad and t.gamepad.button then
 			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, t.gamepad.button)
 			widget:setMessage(GamepadToolTip.INPUT_SCHEME_GAMEPAD, t.gamepad.label)
 		end
 
-		if t.mobile then
+		if t.mobile and t.mobile.button then
 			widget:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, t.mobile.button)
 			widget:setMessage(GamepadToolTip.INPUT_SCHEME_TOUCH, t.mobile.label)
+		end
+
+		if t.control then
+			widget:setControl(t.control)
 		end
 	elseif t.type == "component" then
 		widget = ActionCommand.Common(t, o, delta)
@@ -596,11 +600,19 @@ function ActionCommand:keyUp(key, scan, ...)
 	self:sendPoke("key", nil, { controller = "keyboard", type = "up", value = scan })
 end
 
+function ActionCommand:controlDown(control)
+	Interface.controlDown(self, control)
+
+	self:sendPoke("control", nil, { type = "down", value = control:getName() })
+end
+
 function ActionCommand:controlUp(control)
 	Interface.controlUp(self, control)
 
 	if control:is("back") then
 		self:sendPoke("close", nil, {})
+	else
+		self:sendPoke("control", nil, { type = "up", value = control:getName() })
 	end
 end
 

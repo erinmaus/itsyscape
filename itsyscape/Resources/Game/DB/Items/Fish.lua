@@ -2535,6 +2535,12 @@ do
 		IsDefault = 1,
 		Resource = ItsyScape.Resource.Peep "LightningStormfish"
 	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "fish-reel",
+		Tree = "Resources/Game/Peeps/Fish/Fish_ReelLogic.lua",
+		Resource = ItsyScape.Resource.Peep "LightningStormfish"
+	}
 end
 
 -- Blackmelt bass

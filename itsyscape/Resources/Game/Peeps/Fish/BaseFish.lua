@@ -16,6 +16,7 @@ local Creep = require "ItsyScape.Peep.Peeps.Creep"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
+local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 
 local BaseFish = Class(Creep)
 
@@ -29,6 +30,13 @@ function BaseFish:new(resource, name, ...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = 6
 	movement.float = 0.75
+
+	local size = self:getBehavior(SizeBehavior)
+	size.size = Vector(1, 2, 3.5)
+
+	self.minReelCooldown = 2
+	self.maxReelCooldown = 3
+	self.currentReelCooldown = 0
 end
 
 function BaseFish:ready(director, game)
@@ -40,14 +48,26 @@ function BaseFish:ready(director, game)
 	Creep.ready(self, director, game)
 end
 
-function BaseFish:onReel()
-	Utility.Peep.playAnimation(self, "fishing", 500, "Fish_Defend")
+-- e -> { peep = I.Peep.Peep, tool = I.Game.ItemInstance }
+function BaseFish:onReel(e)
+	if self.currentReelCooldown > 0 then
+		return
+	end
+
+	Utility.Peep.setMashinaState(self, "fish-reel", {
+		["reel-peep"] = e and e.peep or false,
+		["reel-tool-item"] = e and e.tool or false
+	})
+
+	self.currentReelCooldown = math.lerp(self.minReelCooldown, self.maxReelCooldown, love.math.random())
 end
 
-function BaseFish:update(...)
-	Creep.update(self, ...)
+function BaseFish:update(director, game)
+	Creep.update(self, director, game)
 
 	Utility.Peep.face3D(self)
+
+	self.currentReelCooldown = math.max(self.currentReelCooldown - game:getDelta())
 end
 
 return BaseFish

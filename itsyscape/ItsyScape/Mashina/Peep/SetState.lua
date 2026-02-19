@@ -10,20 +10,18 @@
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
-local MashinaBehavior = require "ItsyScape.Peep.Behaviors.MashinaBehavior"
 
 local SetState = B.Node("SetState")
 SetState.STATE = B.Reference()
+SetState.ARGUMENTS = B.Reference()
 
 function SetState:update(mashina, state, executor)
-	local mashina = mashina:getBehavior(MashinaBehavior)
-	if mashina then
-		local s = state[self.STATE] or false
-		mashina.currentState = s
-		return B.Status.Success
+	local success = Utility.Peep.setMashinaState(mashina, state[self.STATE], state[self.ARGUMENTS])
+	if not success then
+		return B.Status.Failure
 	end
 
-	return B.Status.Failure
+	return B.Status.Success
 end
 
 return SetState

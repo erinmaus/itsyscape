@@ -41,12 +41,11 @@ function ActionCommand:new(action, peep, target, t)
 	self.gamepadXDirection = 0
 	self.gamepadYDirection = 0
 
-	self.toolID = false
-	self.toolResourceType = false
+	self.tool = false
 
 	if t then
 		if t.tool then
-			self:setToolResource(t.tool:getID(), "Item")
+			self:setTool(t.tool)
 		end
 	end
 end
@@ -71,13 +70,16 @@ function ActionCommand:getGame()
 	return self.peep:getDirector():getGameInstance()
 end
 
-function ActionCommand:setToolResource(toolID, toolResourceType)
-	self.toolID = toolID
-	self.toolResourceType = toolResourceType
+function ActionCommand:setTool(tool)
+	self.tool = tool
+end
+
+function ActionCommand:getTool()
+	return self.tool
 end
 
 function ActionCommand:getToolResource()
-	return self.toolID or "Null", self.toolResourceType or "Item"
+	return self.tool and self.tool:getID() or "Null", "Item"
 end
 
 function ActionCommand:onDamage(damage)
@@ -276,6 +278,14 @@ function ActionCommand:onKeyUp(controller, key)
 	elseif key == downScan then
 		self.keyboardYDirection = self.keyboardYDirection - 1
 	end
+end
+
+function ActionCommand:onControlUp(value)
+	-- Nothing.
+end
+
+function ActionCommand:onControlDown(value)
+	-- Nothing.
 end
 
 function ActionCommand:update(delta)

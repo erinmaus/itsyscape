@@ -45,6 +45,12 @@
 			"mouse/keyboard": ["ui", "keyboardBack"]
 		},
 
+		"poke": {
+			"$type": "world",
+			"gamepad": ["ui", "gamepadPrimaryAction"],
+			"mouse/keyboard": ["world", "keyboardPoke"]
+		},
+
 		"toggleTargetCamera": {
 			"$type": "world",
 			"gamepad": ["world", "gamepadToggleTargetCamera"],
@@ -151,6 +157,8 @@
 			"flickInputStallIntervalMS": 250,
 
 			"shimmerActiveCycleDurationMS": 2000,
+
+			"keyboardPoke": ["space"],
 
 			"gamepadToggleTargetCamera": "triggerleft",
 			"keyboardToggleTargetCamera": ["lshift", "tab"],

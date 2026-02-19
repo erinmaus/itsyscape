@@ -23,6 +23,7 @@ function Button:new()
 	self.standardText = false
 	self.touchButton = "tap"
 	self.touchText = false
+	self.control = false
 end
 
 function Button:getGamepadButton()
@@ -30,7 +31,7 @@ function Button:getGamepadButton()
 end
 
 function Button:setGamepadButton(value)
-	self.gamepadButton = value
+	self.gamepadButton = value or false
 end
 
 function Button:getTouchButton()
@@ -38,7 +39,7 @@ function Button:getTouchButton()
 end
 
 function Button:setTouchButton(value)
-	self.touchButton = value
+	self.touchButton = value or false
 end
 
 function Button:getStandardButton()
@@ -46,7 +47,7 @@ function Button:getStandardButton()
 end
 
 function Button:setStandardButton(value)
-	self.standardButton = value
+	self.standardButton = value or false
 end
 
 function Button:getGamepadText()
@@ -73,6 +74,14 @@ function Button:setStandardText(value)
 	self.standardText = value
 end
 
+function Button:getControl()
+	return self.control
+end
+
+function Button:setControl(value)
+	self.control = value or false
+end
+
 function Button:serialize(t)
 	Component.serialize(self, t)
 
@@ -92,6 +101,8 @@ function Button:serialize(t)
 		controller = "Touch",
 		label = self.touchText
 	}
+
+	t.control = self.control
 end
 
 return Button

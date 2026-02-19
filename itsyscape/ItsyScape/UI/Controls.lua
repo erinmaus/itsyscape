@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 
 local Controls = {
+	"poke",
 	"openRibbon",
 	"openCombatRing",
 	"toggleTargetCamera",

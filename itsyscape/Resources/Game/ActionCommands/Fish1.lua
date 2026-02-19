@@ -18,8 +18,8 @@ local Probe = require "ItsyScape.Peep.Probe"
 local Fish = Class(ActionCommand)
 Fish.HIT_INTERVAL = 0.5
 Fish.VELOCITY = 8
-Fish.MIN_DISTANCE = 1.5
-Fish.NEAR_DISTANCE = 3
+Fish.MIN_DISTANCE = 0.25
+Fish.NEAR_DISTANCE = 0.5
 
 function Fish:new(...)
 	ActionCommand.new(self, ...)
@@ -31,7 +31,7 @@ function Fish:new(...)
 	self:addChild(self.map)
 
 	self.rectangleContainer = ActionCommand.Component()
-	self.rectangleContainer:setPosition(-24, 24)
+	self.rectangleContainer:setPosition(-24, -24)
 	self.rectangleContainer:setSize(48, 48)
 	self.map:addChild(self.rectangleContainer)
 
@@ -95,7 +95,7 @@ function Fish:hit()
 
 	self:onHit(love.math.random())
 
-	self.fish:poke("reel", self:getPeep())
+	self.fish:poke("reel", { peep = self:getPeep(), tool = self:getTool() })
 	self:getGame():getStage():fireProjectile("FishingSplash", Vector.ZERO, self.fish)
 
 	self.hitTimer = self.HIT_INTERVAL
@@ -125,7 +125,7 @@ function Fish:updateCursorPositionSize(delta)
 	self.map:setOffset(Vector(currentPosition.x, 0, currentPosition.z))
 end
 
-function Fish:tryHit()
+function Fish:calculateDistance()
 	if not (self.cursor and self.fish) then
 		return math.huge
 	end
@@ -134,15 +134,56 @@ function Fish:tryHit()
 		return math.huge
 	end
 
-	local cursorPosition = Utility.Peep.getAbsolutePosition(self.cursor) * Vector.PLANE_XZ
-	local fishPosition = Utility.Peep.getAbsolutePosition(self.fish) * Vector.PLANE_XZ
-	local cursorFishDistance = cursorPosition:distance(fishPosition)
+	local cursorFishDistance = Utility.Peep.getAbsoluteDistance(self.cursor, self.fish)
+	return cursorFishDistance
+end
 
-	if cursorFishDistance < self.MIN_DISTANCE then
+function Fish:onControlDown()
+	self:tryHit()
+end
+
+function Fish:tryHit()
+	local distance = self:calculateDistance()
+
+	if distance <= self.MIN_DISTANCE then
 		self:hit()
 	end
+end
 
-	return cursorFishDistance
+function Fish:updateCursorColor(distance)
+	local goColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.hit"))
+	local warmColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.warm"))
+	local readyColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.ready"))
+
+	local isHot = distance <= self.MIN_DISTANCE
+	local isWarm = not isHot and distance <= self.NEAR_DISTANCE
+	local isCold = not (isHot or isWarm)
+
+	if isHot then
+		self.innerRectangle:setColor(goColor)
+		self.outerRectangle:setColor(goColor)
+
+		self.rectangleButton:setControl("poke")
+		self.rectangleButton:setGamepadButton()
+		self.rectangleButton:setStandardButton()
+	else
+		self.rectangleButton:setControl()
+		self.rectangleButton:setGamepadButton("stick_l")
+		self.rectangleButton:setStandardButton("keyboard_arrows")
+	end
+
+	if isWarm then
+		local delta = (distance - self.MIN_DISTANCE) / (self.NEAR_DISTANCE - self.MIN_DISTANCE)
+		local color = readyColor:lerp(warmColor, delta)
+
+		self.innerRectangle:setColor(color)
+		self.outerRectangle:setColor(color)
+	end
+
+	if isCold then
+		self.innerRectangle:setColor(readyColor)
+		self.outerRectangle:setColor(readyColor)
+	end
 end
 
 function Fish:update(delta)
@@ -158,37 +199,9 @@ function Fish:update(delta)
 	self.hitTimer = math.max(self.hitTimer - delta, 0)
 
 	self:updateCursorPositionSize(delta)
-	local distance = self:tryHit()
 
-	local goColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.hit"))
-	local warmColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.warm"))
-	local readyColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.ready"))
-
-	if distance < self.MIN_DISTANCE then
-		self.innerRectangle:setColor(goColor)
-		self.outerRectangle:setColor(goColor)
-
-		if self.cursor then
-			self.cursor:setColor(goColor)
-		end
-	elseif distance < self.NEAR_DISTANCE then
-		local delta = (distance - self.MIN_DISTANCE) / (self.NEAR_DISTANCE - self.MIN_DISTANCE)
-		local color = readyColor:lerp(warmColor, delta)
-
-		self.innerRectangle:setColor(color)
-		self.outerRectangle:setColor(color)
-
-		if self.cursor then
-			self.cursor:setColor(color)
-		end
-	else
-		self.innerRectangle:setColor(readyColor)
-		self.outerRectangle:setColor(readyColor)
-
-		if self.cursor then
-			self.cursor:setColor(readyColor)
-		end
-	end
+	local distance = self:calculateDistance()
+	self:updateCursorColor(distance)
 end
 
 return Fish
