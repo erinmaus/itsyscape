@@ -28,6 +28,14 @@ function CutsceneTransitionController:new(peep, director, minDuration, callback)
 	self.onFinishClosing = Callback()
 
 	self.onFinishClosing:register(callback)
+
+	self._travel = Callback(self.move, self)
+	assert(peep:listen("moveInstance", self._travel))
+end
+
+function CutsceneTransitionController:close()
+	Controller.close(self)
+	self:getPeep():silence("move", self._travel)
 end
 
 function CutsceneTransitionController:getIsClosing()
@@ -36,6 +44,7 @@ end
 
 function CutsceneTransitionController:move()
 	self:send("onPlayerMove")
+	self:getPeep():silence("move", self._travel)
 end
 
 function CutsceneTransitionController:poke(actionID, actionIndex, e)

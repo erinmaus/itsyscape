@@ -69,14 +69,10 @@ function CutsceneTransition:new(id, index, ui)
 		h - icon:getHeight() / 2 - CutsceneTransition.PADDING)
 	self:addChild(self.spinningIcon)
 
-
 	self:setZDepth(5000)
 
 	local game = self:getView():getGame()
 	local player = game:getPlayer()
-
-	self._onPlayerMove = function() self:onPlayerMove() end
-	player.onMove:register(self._onPlayerMove, self)
 
 	self.onClose:register(function()
 		player.onMove:unregister(self._onPlayerMove)

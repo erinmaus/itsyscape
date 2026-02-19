@@ -720,10 +720,16 @@ function DefaultCameraController:tryRecenter()
 		return false
 	end
 
+
 	local _, _, layer = actor:getTile()
 	local group = self:getGameView():getMapGroup()
 
 	local recenter = false
+
+	local cutsceneTransition = self:getApp():getUIView():getInterface("CutsceneTransition")
+	if cutsceneTransition then
+		recenter = true
+	end
 
 	local instance = player:getInstanceID()
 	if instance ~= self.currentPlayerInstance then

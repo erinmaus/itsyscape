@@ -1152,8 +1152,8 @@ function LocalStage:movePeep(peep, path, anchor, e)
 		if previousLayer ~= layer then
 			Log.engine("Layer different; firing travel event.")
 			peep:poke('travel', {
-				from = filename,
-				to = filename
+				from = previousLayer,
+				to = layer
 			})
 		end
 
