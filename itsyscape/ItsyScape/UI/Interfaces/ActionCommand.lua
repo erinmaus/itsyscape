@@ -25,6 +25,7 @@ local Glyph = require "ItsyScape.UI.Glyph"
 local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Interface = require "ItsyScape.UI.Interface"
+local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
@@ -161,6 +162,8 @@ end
 
 function ActionCommand:new(...)
 	Interface.new(self, ...)
+
+	self:setData(KeyboardSink, KeyboardSink())
 
 	self.root = ActionCommand.Root()
 	self:addChild(self.root)

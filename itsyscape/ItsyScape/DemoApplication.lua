@@ -40,6 +40,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -2550,6 +2551,21 @@ function DemoApplication:isInterfaceBlockingGamepadMovement(widget)
 	return gamepadSink and gamepadSink:getIsBlocking()
 end
 
+function DemoApplication:isInterfaceBlockingKeyboardMovement(widget)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = widget or inputProvider:getFocusedWidget()
+
+	if not focusedWidget then
+		return false
+	end
+
+	local interfaceParent = focusedWidget:getParentOfType(Interface)
+	local keyboardSink = interfaceParent and interfaceParent:getData(KeyboardSink)
+	keyboardSink = keyboardSink or focusedWidget:getParentData(KeyboardSink)
+
+	return keyboardSink and keyboardSink:getIsBlocking()
+end
+
 function DemoApplication:updatePlayerMovement()
 	local player = self:getGame():getPlayer()
 	if not player then
@@ -2564,7 +2580,7 @@ function DemoApplication:updatePlayerMovement()
 	local flickInputStallIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "flickInputStallIntervalMS") / 1000
 
 	local keyboardX, keyboardZ = 0, 0
-	do
+	if not self:isInterfaceBlockingKeyboardMovement() then
 		local up = Keybinds['PLAYER_1_MOVE_UP']:isDown()
 		local down = Keybinds['PLAYER_1_MOVE_DOWN']:isDown()
 		local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()

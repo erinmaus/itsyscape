@@ -18,6 +18,7 @@ local Config = require "ItsyScape.Game.Config"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 
 local DefaultCameraController = Class(CameraController)
@@ -484,6 +485,12 @@ function DefaultCameraController:updateControls(delta)
 			self.isPanning = false
 			return
 		end
+
+		local keyboardSink = focusedWidget:getParentData(KeyboardSink)
+		if Class.isCompatibleType(keyboardSink, KeyboardSink) and keyboardSink:getIsBlockingCamera() then
+			self.isPanning = false
+			return
+		end
 	end
 
 	local upPressed = Keybinds['CAMERA_UP']:isDown()
@@ -525,6 +532,18 @@ function DefaultCameraController:updateControls(delta)
 end
 
 function DefaultCameraController:debugUpdate(delta)
+	local focusedWidget = self:getApp():getUIView():getInputProvider():getFocusedWidget()
+	if focusedWidget then
+		if focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput") then
+			return
+		end
+
+		local keyboardSink = focusedWidget:getParentData(KeyboardSink)
+		if Class.isCompatibleType(keyboardSink, KeyboardSink) and keyboardSink:getIsBlockingCamera() then
+			return
+		end
+	end
+
 	local isShiftDown = love.keyboard.isDown('lshift') or
 	                    love.keyboard.isDown('rshift')
 	local isCtrlDown = love.keyboard.isDown('lctrl') or
