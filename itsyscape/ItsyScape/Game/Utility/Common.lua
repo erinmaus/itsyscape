@@ -63,6 +63,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local TransformBehavior = require "ItsyScape.Peep.Behaviors.TransformBehavior"
@@ -119,6 +120,7 @@ function Common.move(player, path, anchor, raid, e, callback)
 
 	Utility.Peep.disable(player)
 	player:removeBehavior(TargetTileBehavior)
+	player:removeBehavior(TargetPositionBehavior)
 
 	local movement = player:getBehavior(MovementBehavior)
 	if movement then

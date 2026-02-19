@@ -8,7 +8,9 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local ActionCommandController = Class(Controller)
@@ -16,18 +18,23 @@ local ActionCommandController = Class(Controller)
 function ActionCommandController:new(peep, director, prop, action, t, attack)
 	Controller.new(self, peep, director)
 
-	local Fish1 = require "Resources.Game.ActionCommands.Fish1"
+	local ActionCommandType = Utility.Skilling.getActionCommandType(prop, action)
+
 	self.prop = prop
 	self.attack = attack
-	self.actionCommand = Fish1(action, peep, prop, t)
+	self.actionCommand = ActionCommandType and ActionCommandType(action, peep, prop, t)
 
-	self.actionCommand.onHit:register(self.hit, self)
+	if self.actionCommand then
+		self.actionCommand.onHit:register(self.hit, self)
+	end
 
 	self:update(0)
 end
 
 function ActionCommandController:close()
-	self.actionCommand:close()
+	if self.actionCommand then
+		self.actionCommand:close()
+	end
 end
 
 function ActionCommandController:hit(_, spread)
@@ -90,7 +97,11 @@ function ActionCommandController:pull()
 	local prop = self.prop:getBehavior(PropReferenceBehavior)
 	prop = prop and prop.prop
 
+	local actor = self.prop:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
 	return {
+		actorID = actor and actor:getID(),
 		propID = prop and prop:getID(),
 		current = self.currentInterface,
 		previous = self.previousInterface
@@ -98,6 +109,13 @@ function ActionCommandController:pull()
 end
 
 function ActionCommandController:update(delta)
+	Controller.update(self, delta)
+
+	if not self.actionCommand then
+		self:getGame():getUI():closeInstance(self)
+		return
+	end
+
 	self.actionCommand:update(delta)
 
 	self.previousInterface = self.currentInterface or self.actionCommand:serialize()

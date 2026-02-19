@@ -169,12 +169,10 @@ function Skilling._actionCommandMappingConstraintsMatch(mappingConstraints, acti
 	return true
 end
 
-function Skilling._getActionCommandMappingsForResource(resource, director, mappings)
+function Skilling._getActionCommandMappingsForResource(resource, actions, director, mappings, result)
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
-	local actions = Utility.getActions(game, resource)
 
-	local result = {}
 	for _, action in ipairs(actions) do
 		local constraints = Utility.getActionConstraints(game, action.instance:getAction())
 
@@ -190,15 +188,16 @@ function Skilling._getActionCommandMappingsForResource(resource, director, mappi
 						local mapResource = gameDB:getResource(mapObjectMap, "Map")
 
 						local mapObjectRecord = mapResource and (gameDB:getRecord("MapObjectReference", {
-							Name = mapObjectName.name,
+							Name = mapObjectName,
 							Map = mapResource
 						}) or gameDB:getRecord("MapObjectLocation", {
-							Name = mapObjectName.name,
+							Name = mapObjectName,
 							Map = mapResource
 						}))
 
 						local mapObjectResourceID = mapObjectRecord and mapObjectRecord:get("Resource").id.value
-						if mapObjectResourceID and  mapObjectResourceID == resource.id.value then
+						if mapObjectResourceID and mapObjectResourceID == resource.id.value then
+							isMatch = true
 							break
 						end
 					end
@@ -224,29 +223,83 @@ end
 
 function Skilling.getActionCommands(peep, director)
 	director = director or peep:getDirector()
+	local game = director:getGameInstance()
 
 	local mapObject = Utility.Peep.getMapObject(peep)
+	local mapObjectActions = mapObject and Utility.getActions(game, mapObject)
 	local resource = Utility.Peep.getResource(peep)
+	local resourceActions = resource and Utility.getActions(game, resource)
 
-	local mapObjectMappings = mapObject and Skilling.ACTION_COMMAND_CACHE[mapObject.id.value]
-	local resourceMappings = resource and Skilling.ACTION_COMMAND_CACHE[resource.id.value]
+	local mapObjectMappings = mapObject and Skilling.ACTION_COMMAND_CACHE[mapObject.id.value] or nil
+	local resourceMappings = resource and Skilling.ACTION_COMMAND_CACHE[resource.id.value] or nil
 
-	if mapObjectMappings or resourceMappings then
-		return mapObjectMappings or resourceMappings
+	if mapObjectMappings ~= nil or resourceMappings ~= nil then
+		return (mapObjectMappings or nil) or (resourceMappings or nil)
 	end
 
 	local mappings = Skilling.getActionCommandMappings()
 
-	mapObjectMappings = mapObject and Skilling._getActionCommandMappingsForResource(mapObject, director, mappings)
-	if mapObjectMappings and #mapObjectMappings > 0 then
-		Skilling.ACTION_COMMAND_CACHE[mapObject.id.value] = mapObjectMappings
-		return mapObjectMappings
+	local mapObjectMappings = {}
+	if mapObject then
+		if mapObjectActions then
+			Skilling._getActionCommandMappingsForResource(mapObject, mapObjectActions, director, mappings, mapObjectMappings)
+		end
+
+		if resourceActions then
+			Skilling._getActionCommandMappingsForResource(mapObject, resourceActions, director, mappings, mapObjectMappings)
+		end
 	end
 
-	resourceMappings = resource and Skilling._getActionCommandMappingsForResource(resource, director, mappings)
-	if resourceMappings and #resourceMappings > 0 then
+	local resourceMappings = {}
+	if resourceMappings then
+		if mapObjectActions then
+			Skilling._getActionCommandMappingsForResource(resource, mapObjectActions, director, mappings, resourceMappings)
+		end
+
+		if resourceActions then
+			Skilling._getActionCommandMappingsForResource(resource, resourceActions, director, mappings, resourceMappings)
+		end
+
+		if #mapObjectMappings > 0 then
+			for _, mapping in ipairs(resourceMappings) do
+				table.insert(mapObjectMappings, mapping)
+			end
+		end
+	end
+
+	if #mapObjectMappings > 0 then
+		Skilling.ACTION_COMMAND_CACHE[mapObject.id.value] = mapObjectMappings
+		return mapObjectMappings
+	else
+		Skilling.ACTION_COMMAND_CACHE[mapObject.id.value] = false
+	end
+
+	if #resourceMappings > 0 then
 		Skilling.ACTION_COMMAND_CACHE[resource.id.value] = resourceMappings
 		return resourceMappings
+	else
+		Skilling.ACTION_COMMAND_CACHE[resource.id.value] = false
+	end
+
+	return nil
+end
+
+function Skilling.getActionCommandType(peep, actionInstance)
+	local actionCommands = Skilling.getActionCommands(peep)
+	if not actionCommands then
+		return nil
+	end
+
+	for _, actionCommand in ipairs(actionCommands) do
+		if actionInstance:is(actionCommand.actionType) then
+			local TypeName = string.format("Resources.Game.ActionCommands.%s", actionCommand.actionCommand)
+			local s, r = xpcall(require, debug.traceback, TypeName)
+			if not s then
+				Log.error("Couldn't load action command '%s' (%s): %s", TypeName, actionCommand.actionCommand, r)
+			end
+
+			return r, actionCommand
+		end
 	end
 
 	return nil
