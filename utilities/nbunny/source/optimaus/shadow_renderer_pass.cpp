@@ -72,6 +72,8 @@ void nbunny::ShadowRendererPass::walk_all_nodes(SceneNode& node, float delta)
 			shadow_casting_scene_nodes.push_back(visible_scene_node);
 		}
 	}
+
+	SceneNode::sort_by_position(glass_scene_nodes, get_renderer()->get_camera(), delta);
 }
 
 void nbunny::ShadowRendererPass::calculate_viewing_frustum_corners(float near, float far, std::vector<glm::vec3>& result) const

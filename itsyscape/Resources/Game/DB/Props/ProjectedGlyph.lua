@@ -16,3 +16,19 @@ do
 		Resource = ProjectedGlyph
 	}
 end
+
+do
+	local Glyph = ItsyScape.Resource.Prop "Glyph"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.ProjectedGlyph",
+		Resource = Glyph
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1,
+		SizeY = 1,
+		SizeZ = 0,
+		MapObject = Glyph
+	}
+end
