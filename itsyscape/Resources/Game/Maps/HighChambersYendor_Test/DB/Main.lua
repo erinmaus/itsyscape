@@ -176,12 +176,3 @@ do
 		Peep = M["Isabelle"]
 	}
 end
-
-do
-	ItsyScape.Meta.MapObjectSize {
-		SizeX = 8,
-		SizeY = 1,
-		SizeZ = 8,
-		MapObject = M["ProjectedGlyph1"]
-	}
-end
