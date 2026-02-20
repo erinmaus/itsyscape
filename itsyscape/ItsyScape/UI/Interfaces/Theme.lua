@@ -360,9 +360,9 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, z
 
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
-	camera:setPosition(Vector.ZERO:transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + (offset * distance / 2))
+	camera:setPosition(Vector.ZERO:transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + offset)
 	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
-	camera:setDistance(distance * zoom + 2)
+	camera:setDistance(distance * zoom)
 
 	local width, height = sceneSnippet:getSize()
 	camera:setWidth(width)

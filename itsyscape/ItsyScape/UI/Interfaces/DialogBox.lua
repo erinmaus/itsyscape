@@ -28,6 +28,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local TextInput = require "ItsyScape.UI.TextInput"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 
 local DialogBox = Class(Interface)
@@ -378,49 +379,17 @@ function DialogBox:update(delta)
 	self.camera:setHorizontalRotation(gameCamera:getHorizontalRotation())
 	self.camera:setVerticalRotation(gameCamera:getVerticalRotation())
 
-	local root = self.speakerIcon:getChildNode()
-	local transform = root and root:getTransform():getLocalTransform() or love.math.newTransform()
-
-	local offset
-	local zoom
 	if (self.actor or self.prop) and self:getView():getGameView():getView(self.actor or self.prop) then
 		local node = self.actor or self.prop
-		local min, max, z, o = node:getBounds()
+		local min, max, zoom, offset = node:getBounds()
 
-		local otherY
-		if self.prop then
-			otherY = 1
-		else
-			otherY = 0.75
-		end
-
-		offset = Vector.UNIT_Y * (max.y - min.y) - o
-		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z) * (z or 1)
-
-		-- Flip if facing left.
-		local rotation = Quaternion.IDENTITY
-		if node == self.actor then
-			local direction, r = node:getDirection()
-			if r then
-				rotation = (-r) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
-			elseif direction.x < 0 then
-				rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
-			end
-		elseif node == self.prop then
-			rotation = (-node:getRotation()) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
-		end
-		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation:getNormal())
-
-		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform(_APP:getFrameDelta())
-		otherTransform:apply(transform)
-
-		transform = otherTransform
-
-		self.camera:setNear(0.01)
-		self.camera:setFar(zoom * 2)
-	else
-		offset = Vector.ZERO
-		zoom = 1
+		Theme.setSceneSnippet(
+			self.speakerIcon,
+			self.camera,
+			self:getView():getGameView(),
+			node,
+			Vector.UNIT_Y * (max.y - min.y) - offset,
+			zoom or 1)
 	end
 
 	self.colorTime = self.colorTime + delta
@@ -436,14 +405,6 @@ function DialogBox:update(delta)
 			self:getView():getRoot():removeChild(self.background)
 		end
 	end
-
-	local x, y, z = transform:transformPoint(offset:get())
-
-	local w, h = self.speakerIcon:getSize()
-	self.camera:setWidth(w)
-	self.camera:setHeight(h)
-	self.camera:setPosition(Vector(x, y, z))
-	self.camera:setDistance(zoom)
 
 	local isKeybindDown = self.keybind:isDown()
 	if not self.isKeybindDown and isKeybindDown then
