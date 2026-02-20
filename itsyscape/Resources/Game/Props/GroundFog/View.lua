@@ -111,6 +111,7 @@ function GroundFog:_build()
 	material:setIsFullLit(false)
 	material:setColor(Color(1))
 	material:setOutlineThreshold(-1)
+	material:setZBias(1)
 
 	local gameView = self:getGameView()
 	local _, layer = self:getProp():getPosition()
