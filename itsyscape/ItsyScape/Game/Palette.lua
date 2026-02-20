@@ -34,6 +34,7 @@ local Palette = {
 	PRIMARY_RED = Color.fromHexString("cb1d1d"),
 	PRIMARY_GREEN = Color.fromHexString("abc837"),
 	PRIMARY_BLUE = Color.fromHexString("3771c8"),
+	PRIMARY_ORANGE = Color.fromHexString("ff6600"),
 	PRIMARY_YELLOW = Color.fromHexString("ffcc00"),
 	PRIMARY_PURPLE = Color.fromHexString("855ad8"),
 	PRIMARY_PINK = Color.fromHexString("ffd5e5"),

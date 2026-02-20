@@ -92,6 +92,30 @@ do
 	}
 end
 
+M["GroundFog"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "GroundFog",
+		Map = M._MAP,
+		Resource = M["GroundFog"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "GroundFog",
+		MapObject = M["GroundFog"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 51,
+		ColorGreen = 157,
+		ColorBlue = 128,
+		Resource = M["GroundFog"]
+	}
+end
+
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -113,6 +137,43 @@ do
 		Name = "Anchor_Cliff",
 		Map = M._MAP,
 		Resource = M["Anchor_Cliff"]
+	}
+end
+
+M["Isabelle"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35,
+		PositionY = 0,
+		PositionZ = 27,
+		Name = "Isabelle",
+		Map = M._MAP,
+		Resource = M["Isabelle"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "Isabelle_Kursed",
+		MapObject = M["Isabelle"]
+	}
+
+	local TalkAction = ItsyScape.Action.Talk()
+
+	ItsyScape.Meta.TalkCharacter {
+		Character = ItsyScape.Resource.Character "Isabelle",
+		Main = "test_trailer_switch_weapons",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.TalkSpeaker {
+		Resource = M["Isabelle"],
+		Name = "Isabelle",
+		Action = TalkAction
+	}
+
+	ItsyScape.Meta.NamedPeepAction {
+		Name = "Talk",
+		Action = TalkAction,
+		Peep = M["Isabelle"]
 	}
 end
 

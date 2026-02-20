@@ -197,10 +197,12 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
 	local canReachTarget = distance <= worldWeaponRange and worldWeaponRange > 0
-	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange) or worldWeaponRange < 0
+	local isOutOfRange = status and distance > (status.maxChaseDistance + worldWeaponRange) or worldWeaponRange <= 0
+	local isTooFar = distance > worldWeaponRange
 	local isTooClose = canMove and distance <= 0
 	local maybeCanReach = (isTooClose or isTooFar) and worldWeaponRange > 0
-	return canReachTarget, isTooFar, isTooClose, maybeCanReach
+
+	return canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 end
 
 function CombatCortex:_getPeepSpell(peep, weapon)
@@ -237,8 +239,8 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	local equippedWeapon = self:_getPeepWeapon(selfPeep)
 	local weaponRange = equippedWeapon:getAttackRange(selfPeep)
 
-	local canReachTarget, isTooFar, isTooClose, maybeCanReach = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
-	if not canReachTarget and maybeCanReach then
+	local canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
+	if not canReachTarget and maybeCanReach and isOutOfRange then
 		return false, isTooFar, isTooClose, maybeCanReach
 	end
 

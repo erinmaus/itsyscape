@@ -1630,6 +1630,7 @@ include "Resources/Game/DB/Characters/VizierRockKnight.lua"
 include "Resources/Game/DB/Characters/Dummy.lua"
 include "Resources/Game/DB/Characters/BlackTentacles.lua"
 include "Resources/Game/DB/Characters/Rosalind.lua"
+include "Resources/Game/DB/Characters/Isabelle.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
