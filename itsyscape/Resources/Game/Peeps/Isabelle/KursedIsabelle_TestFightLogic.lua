@@ -42,20 +42,22 @@ local Begin = Mashina.Step {
 	}
 }
 
-local TryAndFailToAttack = Mashina.Step {
-	Mashina.Peep.WasAttacked {
-		[AGGRESSOR] = B.Output.aggressor
-	},
+local TryAndFailToAttack = Mashina.Success {
+	Mashina.Step {
+		Mashina.Peep.WasAttacked {
+			[AGGRESSOR] = B.Output.aggressor
+		},
 
-	Mashina.Peep.Zeal {
-		zeal = 0.25
-	},
+		Mashina.Peep.Zeal {
+			zeal = 0.25
+		},
 
-	Mashina.Invert {
-		Mashina.Peep.EngageCombatTarget {
-			peep = AGGRESSOR,
-			require_line_of_sight = true,
-			shoot = false
+		Mashina.Invert {
+			Mashina.Peep.EngageCombatTarget {
+				peep = AGGRESSOR,
+				require_line_of_sight = true,
+				shoot = false
+			}
 		}
 	}
 }
@@ -98,17 +100,17 @@ local Snipe = Mashina.Step {
 		},
 
 		Mashina.Peep.TimeOut {
-			duration = 1
+			duration = 0.5
 		}
-	},
-
-	Mashina.Peep.EngageCombatTarget {
-		peep = AGGRESSOR
 	},
 
 	Mashina.Peep.QueuePower {
 		power = "Snipe",
-		turns = 1
+		turns = 0
+	},
+
+	Mashina.Peep.EngageCombatTarget {
+		peep = AGGRESSOR
 	},
 
 	Mashina.Peep.DidUsePower,
