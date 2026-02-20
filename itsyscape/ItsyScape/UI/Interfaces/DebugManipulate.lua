@@ -1661,6 +1661,15 @@ function DebugManipulate:probePreset(presetInfo, button)
 	else
 		table.insert(actions, {
 			id = #actions + 1,
+			verb = "Duplicate",
+			object = object,
+			callback = function()
+				self:duplicatePreset(presetInfo)
+			end
+		})
+
+		table.insert(actions, {
+			id = #actions + 1,
 			verb = "Delete",
 			object = object,
 			callback = function()
@@ -1681,6 +1690,10 @@ function DebugManipulate:newPreset(resource)
 
 	self.selectedPresetResource = nil
 	self.selectedPresetID = nil
+end
+
+function DebugManipulate:duplicatePreset(presetInfo)
+	self:sendPoke("duplicate", nil, { resource = presetInfo.resource, id = presetInfo.id })
 end
 
 function DebugManipulate:deletePreset(presetInfo)

@@ -764,6 +764,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:newPreset(e)
 	elseif actionID == "delete" then
 		self:deletePreset(e)
+	elseif actionID == "duplicate" then
+		self:duplicatePreset(e)
 	elseif actionID == "rename" then
 		self:renamePreset(e)
 	elseif actionID == "spawnActor" then
@@ -960,6 +962,29 @@ function DebugManipulateController:deletePreset(e)
 	if index then
 		mapStorage:removeSection(index)
 	end
+
+	self:populate()
+end
+
+function DebugManipulateController:duplicatePreset(e)
+	if self.isRecording then
+		self:stopRecording()
+	end
+
+	local mapStorage = self:getMapStorage(e.resource)
+
+	local id
+	if mapStorage:length() >= 1 then
+		local lastPresetStorage = mapStorage:getSection(mapStorage:length())
+		id = lastPresetStorage:get("id") + 1
+	else
+		id = 1
+	end
+
+	local preset = self:getPresetStorage(e.resource, e.id):get()
+	preset.id = id
+
+	mapStorage:set(mapStorage:length() + 1, preset)
 
 	self:populate()
 end
