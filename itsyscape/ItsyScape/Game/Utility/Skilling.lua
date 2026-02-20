@@ -270,14 +270,14 @@ function Skilling.getActionCommands(peep, director)
 	if #mapObjectMappings > 0 then
 		Skilling.ACTION_COMMAND_CACHE[mapObject.id.value] = mapObjectMappings
 		return mapObjectMappings
-	else
+	elseif mapObject then
 		Skilling.ACTION_COMMAND_CACHE[mapObject.id.value] = false
 	end
 
 	if #resourceMappings > 0 then
 		Skilling.ACTION_COMMAND_CACHE[resource.id.value] = resourceMappings
 		return resourceMappings
-	else
+	elseif resource then
 		Skilling.ACTION_COMMAND_CACHE[resource.id.value] = false
 	end
 
