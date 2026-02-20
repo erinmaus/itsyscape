@@ -115,6 +115,11 @@ function Combat.dodgeFailure(peep, aggressor)
 	end
 end
 
+function Combat.dodge(peep, target)
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon.UNARMED
+	return weapon:dodge(peep, target)
+end
+
 function Combat.tryPunish(peep, aggressor)
 	if peep and peep:hasBehavior(SpecialAttackBehavior) then
 		peep:poke("punished", aggressor)

@@ -71,6 +71,12 @@ local Snipe = Mashina.Step {
 		player = AGGRESSOR,
 	},
 
+	Mashina.Peep.Dodge {
+		target = AGGRESSOR,
+		dodge_backwards = true,
+		max_distance = 4
+	},
+
 	Mashina.Player.Dialog {
 		player = AGGRESSOR,
 		named_action = "Talk"
@@ -82,6 +88,18 @@ local Snipe = Mashina.Step {
 
 	Mashina.Peep.EquipInventoryItem {
 		item = "IsabelliumLongbow"
+	},
+
+	Mashina.Sequence {
+		Mashina.Success {
+			Mashina.Peep.Interrupt {
+				everything = true
+			}
+		},
+
+		Mashina.Peep.TimeOut {
+			duration = 1
+		}
 	},
 
 	Mashina.Peep.EngageCombatTarget {
