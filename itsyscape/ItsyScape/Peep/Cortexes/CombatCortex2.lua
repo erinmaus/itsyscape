@@ -29,6 +29,7 @@ local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavio
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
 local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
@@ -52,6 +53,12 @@ CombatCortex.STRAFE_DIRECTIONS = {
 	{  1, 0 },
 	{  0, 1 },
 	{  0, -1 }
+}
+
+CombatCortex.DEFAULT_CLASS_SWITCH_ANIMATIONS = {
+	[Weapon.STYLE_ARCHERY] = "Human_SwapGear_ToArchery_1",
+	[Weapon.STYLE_MAGIC] = "Human_SwapGear_ToMagic_1",
+	[Weapon.STYLE_MELEE] = "Human_SwapGear_ToMelee_1"
 }
 
 function CombatCortex:new()
@@ -265,6 +272,13 @@ function CombatCortex:updatePeepCombatStyle(peep)
 
 	if previousCombatStyle then
 		Utility.Peep.flash(peep, "ClassChange", 0, currentCombatStyle)
+	end
+
+	if peep:hasBehavior(HumanoidBehavior) then
+		local animation = self.DEFAULT_CLASS_SWITCH_ANIMATIONS[currentCombatStyle]
+		if animation then
+			Utility.Peep.playAnimation(peep, "main-swap-gear", 500, animation)
+		end
 	end
 
 	self.previousCombatStyle[peep] = currentCombatStyle
