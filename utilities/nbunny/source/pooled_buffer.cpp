@@ -705,7 +705,7 @@ NBUNNY_EXPORT int luaopen_nbunny_pooledbuffer(lua_State* L)
 	nbunny::lua::push_function(L, &nbunny_pooled_buffer_new, "PooledBuffer.new");
 	lua_setfield(L, -2, "new");
 
-	nbunny::lua::push_function(L, &nbunny_pooled_buffer_restart, "PooledBuffer.reset");
+	nbunny::lua::push_function(L, &nbunny_pooled_buffer_reset, "PooledBuffer.reset");
 	lua_setfield(L, -2, "reset");
 
 	nbunny::lua::push_function(L, &nbunny_pooled_buffer_restart, "PooledBuffer.restart");

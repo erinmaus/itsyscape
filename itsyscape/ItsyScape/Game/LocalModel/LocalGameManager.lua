@@ -341,10 +341,6 @@ function LocalGameManager:sendToPlayer(player)
 				local isSamePlayer = e.id == player:getID()
 				if isSamePlayer then
 					self:_doSend(player, e)
-
-					if e.type == EventQueue.EVENT_TYPE_DESTROY then
-						self.game:acknowledgePlayerDestroyed(player)
-					end
 				end
 			elseif e.interface == "ItsyScape.Game.Model.Game" then
 				self:_doSend(player, e)
@@ -452,6 +448,12 @@ function LocalGameManager:_send()
 	end
 
 	self:getQueue():tick()
+
+	for _, instance in ipairs(self.pendingDeletion) do
+		if instance:getInterface() == "ItsyScape.Game.Model.Player" then
+			self.game:acknowledgePlayerDestroyed(instance:getInstance())
+		end
+	end
 
 	table.clear(self.outgoingKeys)
 	table.clear(self.pendingDeletion)

@@ -59,6 +59,7 @@ function ChannelRPCService:receive(c)
 
 		if e then
 			if type(e) == "userdata" then
+				NPooledBuffer.reset(self.queue)
 				NPooledBuffer.copy(e, self.queue)
 				NPooledBuffer.restart(self.queue)
 				NPooledBuffer.free(e)

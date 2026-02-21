@@ -741,6 +741,10 @@ function Application:disconnect()
 			type = 'conf',
 			ticks = self.SINGLE_PLAYER_TICKS_PER_SECOND
 		})
+
+		self.inputAdminChannel:push({
+			type = 'tick'
+		})
 	end
 end
 

@@ -90,6 +90,7 @@ do
 	local glowColor = Color()
 	local glyphColor = Color()
 	local outlineColor = Color()
+	local defaultColor = {}
 
 	function ProjectedGlyph:update()
 		local state = self:getProp():getState()
@@ -97,9 +98,9 @@ do
 
 		local time = math.lerp(self.previousTime or 0, self.currentTime or 0, _APP:getFrameDelta())
 
-		glowColor:from(unpack(state.glowColor))
-		glyphColor:from(unpack(state.glyphColor))
-		outlineColor:from(unpack(state.outlineColor))
+		glowColor:from(unpack(state.glowColor or defaultColor))
+		glyphColor:from(unpack(state.glyphColor or defaultColor))
+		outlineColor:from(unpack(state.outlineColor or defaultColor))
 
 		local glyphManager = self:getGameView():getGlyphManager()
 		local planeNormal, planeD = glyphManager:getStandardPlane(time)

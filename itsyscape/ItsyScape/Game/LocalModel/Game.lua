@@ -157,7 +157,7 @@ function LocalGame:spawnPlayer(clientID)
 	return player
 end
 
-function LocalGame:removePlayer(player)
+function LocalGame:cleanupPlayer(player)
 	self.playersByID[player:getID()] = nil
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
@@ -180,7 +180,13 @@ function LocalGame:_onPlayerSpawn(player)
 end
 
 function LocalGame:_onPlayerPoofed(player)
+	Log.info("Player %d (client %d) is poofing.", player:getID(), player:getClientID())
 	player.onPoof:unregister(self._onPlayerPoofed)
+
+	self:removePlayer(player)	
+end
+
+function LocalGame:removePlayer(player)
 	self:onPlayerPoofed(player)
 end
 
@@ -267,7 +273,7 @@ function LocalGame:cleanup()
 		Log.info(
 			"Finally removing player %d (client ID = %d).",
 			player:getID(), player:getClientID())
-		self:removePlayer(player)
+		self:cleanupPlayer(player)
 	end
 	table.clear(self.playersPendingRemoval)
 end

@@ -43,7 +43,7 @@ local gameManager = LocalGameManager(channelRpcService, game)
 
 local isRunning = true
 local isOnline = false
-local hasTick = false
+local hasTick = true
 
 game.onQuit:register(function()
 	if not isOnline then
@@ -307,8 +307,6 @@ while isRunning do
 	repeat
 		e = inputAdminChannel:pop()
 		if e then
-			hasTick = true
-
 			if e.type == 'quit' then
 				isRunning = false
 
@@ -460,6 +458,8 @@ while isRunning do
 						player:save()
 					end
 				end
+			elseif e.type == 'tick' then
+				hasTick = true
 			end
 		end
 	until not e
