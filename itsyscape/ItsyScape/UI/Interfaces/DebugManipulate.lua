@@ -1412,7 +1412,10 @@ function DebugManipulate:detach()
 		root:removeChild(facade)
 	end
 
-	self:getView():getGame():getPlayer():onPopCamera()
+	local player = self:getView():getGame():getPlayer()
+	if player then
+		player:onPopCamera()
+	end
 end
 
 function DebugManipulate:_wrapPresetGridsFocus(grid, widget, directionX, directionY)

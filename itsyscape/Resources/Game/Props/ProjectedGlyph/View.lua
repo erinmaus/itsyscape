@@ -177,49 +177,59 @@ function ProjectedGlyph:_drawRite(glyph, projections, offset, color)
 	love.graphics.pop()
 end
 
-function ProjectedGlyph:update()
-	local state = self:getProp():getState()
+do
+	local glowColor = Color()
+	local glyphColor = Color()
+	local outlineColor = Color()
+	local defaultColor = {}
 
-	if self.mapMesh then
-		self.mapMesh:getMaterial():setAlpha(state.alpha or 1)
+	function ProjectedGlyph:update()
+		local state = self:getProp():getState()
+
+		if self.mapMesh then
+			self.mapMesh:getMaterial():setAlpha(state.alpha or 1)
+		end
+
+		local time = math.lerp(self.previousTime or 0, self.currentTime or 0, _APP:getFrameDelta())
+
+		glowColor:from(unpack(state.glowColor or defaultColor))
+		glyphColor:from(unpack(state.glyphColor or defaultColor))
+		outlineColor:from(unpack(state.outlineColor or defaultColor))
+
+		local glyphManager = self:getGameView():getGlyphManager()
+		local planeNormal, planeD = glyphManager:getStandardPlane(time)
+		local projections = glyphManager:asyncProjectAll(self, self.glyphInstance, planeNormal, planeD, time)
+
+		self._canvas = self._canvas or { stencil = true }
+		self._canvas[1] = self.canvas
+
+		love.graphics.push("all")
+		love.graphics.setCanvas(self._canvas)
+		love.graphics.clear(0, 0, 0, 0)
+
+		self:_drawRite(
+			self.glyphInstance,
+			projections,
+			math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 1,
+			glowColor,
+			0.5)
+
+		self:_drawRite(
+			self.glyphInstance,
+			projections,
+			0.5,
+			outlineColor,
+			1)
+
+		self:_drawRite(
+			self.glyphInstance,
+			projections,
+			0,
+			glyphColor,
+			1)
+
+		love.graphics.pop()
 	end
-
-	local time = math.lerp(self.previousTime or 0, self.currentTime or 0, _APP:getFrameDelta())
-
-	local glowColor = Color(unpack(state.glowColor))
-	local glyphColor = Color(unpack(state.glyphColor))
-	local outlineColor = Color(unpack(state.outlineColor))
-
-	local glyphManager = self:getGameView():getGlyphManager()
-	local planeNormal, planeD = glyphManager:getStandardPlane(time)
-	local projections = glyphManager:asyncProjectAll(self, self.glyphInstance, planeNormal, planeD, time)
-
-	love.graphics.push("all")
-	love.graphics.setCanvas({ self.canvas, stencil = true })
-	love.graphics.clear(0, 0, 0, 0)
-
-	self:_drawRite(
-		self.glyphInstance,
-		projections,
-		math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 1,
-		glowColor,
-		0.5)
-
-	self:_drawRite(
-		self.glyphInstance,
-		projections,
-		0.5,
-		outlineColor,
-		1)
-
-	self:_drawRite(
-		self.glyphInstance,
-		projections,
-		0,
-		glyphColor,
-		1)
-
-	love.graphics.pop()
 end
 
 return ProjectedGlyph
