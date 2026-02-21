@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local ActorView = require "ItsyScape.Graphics.ActorView"
@@ -361,7 +362,17 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, z
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
 	camera:setPosition(Vector.ZERO:transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + offset)
-	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
+	camera:setVerticalRotation(math.clamp(camera:getVerticalRotation(), -math.pi / 8 - math.pi / 2, math.pi / 8 - math.pi / 2))
+	if camera:getDistance() == 0 then
+		camera:setRotation(Quaternion.IDENTITY)
+		camera:setVerticalRotation(-math.pi / 2)
+		camera:setHorizontalRotation(0)
+
+		camera:setRotation(-node:getTransform():getLocalRotation())
+	else
+ 		camera:setRotation(-camera:getRotation() * -node:getTransform():getLocalRotation())
+ 	end
+
 	camera:setDistance(distance * zoom)
 
 	local width, height = sceneSnippet:getSize()
