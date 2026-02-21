@@ -274,7 +274,7 @@ function CombatCortex:updatePeepCombatStyle(peep)
 		Utility.Peep.flash(peep, "ClassChange", 0, currentCombatStyle)
 	end
 
-	if peep:hasBehavior(HumanoidBehavior) then
+	if previousCombatStyle and peep:hasBehavior(HumanoidBehavior) then
 		local animation = self.DEFAULT_CLASS_SWITCH_ANIMATIONS[currentCombatStyle]
 		if animation then
 			Utility.Peep.playAnimation(peep, "main-swap-gear", 500, animation)
