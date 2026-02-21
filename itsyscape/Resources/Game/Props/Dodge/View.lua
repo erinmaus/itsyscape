@@ -42,7 +42,8 @@ function Dodge:new(...)
 				color = "ffffff",
 				alpha = 0,
 				outlineThreshold = -1,
-				zBias = 1
+				isZWriteDisabled = true,
+				zBias = 0.005
 			},
 
 			uniforms = {
@@ -67,6 +68,8 @@ function Dodge:new(...)
 				color = "ffffff",
 				alpha = 0,
 				outlineThreshold = -1,
+				isZWriteDisabled = true,
+				zBias = 0.01
 			},
 
 			uniforms = {
