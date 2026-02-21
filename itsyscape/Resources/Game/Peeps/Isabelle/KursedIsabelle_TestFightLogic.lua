@@ -100,7 +100,7 @@ local Snipe = Mashina.Step {
 		},
 
 		Mashina.Peep.TimeOut {
-			duration = 0.5
+			duration = 1
 		}
 	},
 
