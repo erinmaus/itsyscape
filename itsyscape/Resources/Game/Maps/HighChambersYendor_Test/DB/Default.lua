@@ -170,6 +170,30 @@ do
 	}
 end
 
+M["Brazier_Isabelle4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35.750000,
+		PositionY = 0.000000,
+		PositionZ = 47.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Brazier_Isabelle4",
+		Map = M._MAP,
+		Resource = M["Brazier_Isabelle4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
+		MapObject = M["Brazier_Isabelle4"]
+	}
+end
+
 M["Brazier_Isabelle5"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -191,6 +215,102 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
 		MapObject = M["Brazier_Isabelle5"]
+	}
+end
+
+M["Brazier_Isabelle6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32.000000,
+		PositionY = 0.000000,
+		PositionZ = 47.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Brazier_Isabelle6",
+		Map = M._MAP,
+		Resource = M["Brazier_Isabelle6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Brazier_Isabelle",
+		MapObject = M["Brazier_Isabelle6"]
+	}
+end
+
+M["Chest_Foreman1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 32.000000,
+		PositionY = -0.500000,
+		PositionZ = 45.000000,
+		RotationX = -0.000000,
+		RotationY = 0.890955,
+		RotationZ = 0.000000,
+		RotationW = 0.454091,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Foreman1",
+		Map = M._MAP,
+		Resource = M["Chest_Foreman1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Foreman",
+		MapObject = M["Chest_Foreman1"]
+	}
+end
+
+M["Chest_Foreman2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35.690083,
+		PositionY = -0.097422,
+		PositionZ = 45.292406,
+		RotationX = -0.000000,
+		RotationY = -0.923880,
+		RotationZ = 0.000000,
+		RotationW = 0.382683,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Foreman2",
+		Map = M._MAP,
+		Resource = M["Chest_Foreman2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Foreman",
+		MapObject = M["Chest_Foreman2"]
+	}
+end
+
+M["Chest_Isabelle1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33.600976,
+		PositionY = 0.072933,
+		PositionZ = 46.911660,
+		RotationX = -0.000000,
+		RotationY = -0.989326,
+		RotationZ = 0.000000,
+		RotationW = -0.145718,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Chest_Isabelle1",
+		Map = M._MAP,
+		Resource = M["Chest_Isabelle1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Chest_Isabelle",
+		MapObject = M["Chest_Isabelle1"]
 	}
 end
 

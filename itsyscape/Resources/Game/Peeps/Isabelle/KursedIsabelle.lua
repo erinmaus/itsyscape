@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Player = require "ItsyScape.Peep.Peeps.Player"
+local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 
 local KursedIsabelle = Class(Player)
 
@@ -19,6 +20,8 @@ end
 
 function KursedIsabelle:ready(director, game)
 	Player.ready(self, director, game)
+
+	self:addBehavior(ImmortalBehavior)
 
 	self:applySkin(
 		Equipment.PLAYER_SLOT_HEAD,

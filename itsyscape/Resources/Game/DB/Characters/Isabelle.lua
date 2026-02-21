@@ -114,37 +114,37 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Isabelle
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Isabelle
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Isabelle
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Isabelle
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Isabelle
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(20),
+		Value = ItsyScape.Utility.xpForLevel(15),
 		Resource = Isabelle
 	}
 
@@ -157,24 +157,6 @@ do
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Faith",
 		Value = ItsyScape.Utility.xpForLevel(20),
-		Resource = Isabelle
-	}
-
-	ItsyScape.Meta.Equipment {
-		AccuracyStab = ItsyScape.Utility.styleBonusForWeapon(15),
-		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(15),
-		AccuracyCrush = ItsyScape.Utility.styleBonusForWeapon(15),
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(15),
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(15),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(10),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(10),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(10),
-		DefenseMagic = ItsyScape.Utility.styleBonusForItem(10),
-		DefenseRanged = ItsyScape.Utility.styleBonusForItem(10),
-		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(15),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(15),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(15),
-		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
 		Resource = Isabelle
 	}
 

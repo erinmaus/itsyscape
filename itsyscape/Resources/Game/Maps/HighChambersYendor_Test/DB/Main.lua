@@ -175,4 +175,8 @@ do
 		Action = TalkAction,
 		Peep = M["Isabelle"]
 	}
+
+	M["Isabelle"] {
+		TalkAction
+	}
 end

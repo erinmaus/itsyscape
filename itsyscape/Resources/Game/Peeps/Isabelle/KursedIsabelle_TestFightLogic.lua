@@ -76,7 +76,7 @@ local Snipe = Mashina.Step {
 	Mashina.Peep.Dodge {
 		target = AGGRESSOR,
 		dodge_backwards = true,
-		max_distance = 4
+		max_distance = 3
 	},
 
 	Mashina.Player.Dialog {
