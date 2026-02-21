@@ -97,7 +97,7 @@ function DebugManipulateCameraController:onOrientateToActor(actorID, delay, dura
 	self:rebuildMapCurve()
 end
 
-function DebugManipulateCameraController:onOrientateFromActorToActor(actorID, otherActorID, delay, duration, tween)
+function DebugManipulateCameraController:onOrientateFromActorToActor(actorID, otherActorID, otherActorBone, delay, duration, tween)
 	local nextActor = self:getGameView():getActorByID(actorID)
 	if not nextActor then
 		return
@@ -115,6 +115,7 @@ function DebugManipulateCameraController:onOrientateFromActorToActor(actorID, ot
 	table.insert(self.pending, {
 		actor = nextActor,
 		otherActor = otherActor,
+		bone = otherActorBone or "",
 		delay = delay or 0,
 		duration = duration or 0,
 		tween = tween
@@ -175,9 +176,16 @@ function DebugManipulateCameraController:rebuildMapCurve()
 	})
 end
 
-function DebugManipulateCameraController:getActorTransforms(actor)
+function DebugManipulateCameraController:getActorTransforms(actor, bone)
 	local actorView = self:getGameView():getView(actor)
-	local transform = actorView and actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta()) or love.math.newTransform()
+
+	local transform
+	if bone and bone ~= "" then
+		transform = actorView:getBoneWorldTransform(bone)
+	else
+		transform = actorView and actorView:getSceneNode():getTransform():getGlobalDeltaTransform(_APP:getFrameDelta()) or love.math.newTransform()
+	end
+
 	local translation, rotation = MathCommon.decomposeTransform(transform)
 	rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
 
@@ -410,7 +418,7 @@ function DebugManipulateCameraController:draw()
 	local p = self.pending[math.min(self.currentIndex, #self.pending)]
 	if p and p.otherActor then
 		local currentTranslation = self:getActorTransforms(p.actor)
-		local otherTranslation = self:getActorTransforms(p.otherActor)
+		local otherTranslation = self:getActorTransforms(p.otherActor, p.bone)
 		rotation = Quaternion.lookAt(translation, otherTranslation, Vector.UNIT_Y)
 		rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
 	end

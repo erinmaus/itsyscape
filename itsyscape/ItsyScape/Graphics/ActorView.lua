@@ -806,7 +806,7 @@ function ActorView:getActor()
 end
 
 function ActorView:getIsImmediate()
-	return Class.isCompatibleType(self.actor, NullActor)
+	return Class.isCompatibleType(self.actor, NullActor) or (_APP and _APP:getUIView():getInterface("DebugManipulate")) 
 end
 
 function ActorView:attach(game)
@@ -1502,11 +1502,27 @@ function ActorView:decomposeBoneLocalTransform(boneName)
 	return MathCommon.decomposeTransform(boneTransform)
 end
 
+function ActorView:getBoneWorldTransform(boneName)
+	local nodeTransform = self.sceneNode:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	local bone = self:getSkeleton():getBoneByName(boneName)
+	if not bone then
+		return nodeTransform
+	end
+
+	local composedTransform = love.math.newTransform()
+	composedTransform:apply(nodeTransform)
+	composedTransform:apply(boneTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
+
+	return composedTransform
+end
+
 function ActorView:getBoneWorldPosition(boneName, position, rotation)
 	position = position or Vector.ZERO
 	rotation = rotation or Quaternion.IDENTITY
 
-	local nodeTransform = self.sceneNode:getTransform():getGlobalTransform()
+	local nodeTransform = self.sceneNode:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
 	local boneTransform = self:getLocalBoneTransform(boneName)
 	local bone = self:getSkeleton():getBoneByName(boneName)
 	if not bone then

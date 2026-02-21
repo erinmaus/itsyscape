@@ -400,7 +400,7 @@ function DebugManipulateController.REPLAYED_ACTIONS:orientateCamera(action)
 			player:pokeCamera("resetTransforms")
 
 			if otherPeep then
-				player:pokeCamera("orientateFromActorToActor", actor:getID(), otherActor:getID(), delay or 0, duration or 0, tween or "sineEaseInOut")
+				player:pokeCamera("orientateFromActorToActor", actor:getID(), otherActor:getID(), action.event.bone or "", delay or 0, duration or 0, tween or "sineEaseInOut")
 			else
 				player:pokeCamera("orientateToActor", actor:getID(), delay or 0, duration or 0, tween or "sineEaseInOut")
 			end
@@ -1585,6 +1585,7 @@ function DebugManipulateController:orientateCamera(e)
 			targetPeepID = otherTargetInfo and otherTargetInfo.peepID,
 			targetMapResource = otherMapInfo and otherMapInfo.resource,
 			targetMapLocalLayer = otherMapInfo and otherMapInfo.localLayer,
+			bone = ""
 		})
 	end
 end
