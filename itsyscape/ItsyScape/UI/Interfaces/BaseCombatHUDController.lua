@@ -481,7 +481,6 @@ function BaseCombatHUDController:equip(e)
 	end
 
 	if not equipment then
-		print(">>> no equipment with key", e.key)
 		return
 	end
 

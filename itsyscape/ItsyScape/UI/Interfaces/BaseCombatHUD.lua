@@ -765,6 +765,7 @@ function BaseCombatHUD:equip(index)
 		return
 	end
 
+	self:playItemSoundEffect(equipment, { id = -1, type = "Equip" })
 	self:sendPoke("equip", nil, { key = equipment.key })
 end
 
