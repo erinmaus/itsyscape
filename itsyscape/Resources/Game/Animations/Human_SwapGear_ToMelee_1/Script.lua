@@ -60,7 +60,7 @@ Animation "Human Swap Gear (To: Melee)" {
 
 				emissionStrategy = {
 					type = "RandomDelayEmissionStrategy",
-					count = { 20, 40 },
+					count = { 10, 20 },
 					delay = { 1 / 30 },
 					duration = { 0.25 }
 				}
