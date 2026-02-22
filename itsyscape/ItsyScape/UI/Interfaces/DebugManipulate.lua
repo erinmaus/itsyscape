@@ -935,6 +935,39 @@ function DebugManipulate.TalkAction:_playAnimation(_, _, form)
 	self:getInterface():stopAction()
 end
 
+DebugManipulate.FlashPowerAction = Class(DebugManipulate.Action)
+
+function DebugManipulate.FlashPowerAction:new(...)
+	DebugManipulate.Action.new(self, ...)
+end
+
+function DebugManipulate.FlashPowerAction:start()
+	DebugManipulate.Action.start(self)
+
+	local propertiesPrompt = PropertiesPrompt()
+	propertiesPrompt.onSubmit:register(self._flashPower, self)
+	propertiesPrompt.onCancel:register(self.close, self)
+	propertiesPrompt:setText("Flash Power")
+	propertiesPrompt:setProperties({
+		PropertiesPrompt.Property("power", "Power", "string", "Snipe")
+	})
+
+	self:addPopup(propertiesPrompt)
+end
+
+function DebugManipulate.FlashPowerAction:_flashPower(_, _, form)
+	local id = self:getObject():getID()
+
+	self:getInterface():sendPoke(
+		"flashPower",
+		nil, {
+			actorID = id,
+			power = form.Power
+		})
+
+	self:getInterface():stopAction()
+end
+
 DebugManipulate.WIDTH  = 800
 DebugManipulate.HEIGHT = 600
 DebugManipulate.TITLE_HEIGHT = 48
@@ -2292,6 +2325,13 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 		verb = "Fire-Projectile",
 		callback = function()
 			self:beginAction(DebugManipulate.FireProjectileAction, object, hit)
+		end
+	})
+
+	self:buildActorAction(actions, object, {
+		verb = "Flash-Power",
+		callback = function()
+			self:beginAction(DebugManipulate.FlashPowerAction, object, hit)
 		end
 	})
 

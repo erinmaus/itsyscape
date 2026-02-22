@@ -288,6 +288,24 @@ function DebugManipulateController.REPLAYED_ACTIONS:talk(action)
 	end
 end
 
+function DebugManipulateController.REPLAYED_ACTIONS:flashPower(action)
+	return function()
+		local layer = self:getLayerFromMapInfo(action.map)
+		local peep = self:getPeepFromTargetInfo(action.target, layer)
+		if peep then
+			local gameDB = peep:getDirector():getGameDB()
+			local resource = gameDB:getResource(action.event.power, "Power")
+			local powerName = resource and Utility.getName(resource, gameDB) or action.event.power
+
+			Utility.Peep.flash(peep, "Power", 0.5, action.event.power, powerName)
+
+			coroutine.yield(DebugManipulateController.ACTION_PROCESSING)
+		end
+
+		return DebugManipulateController.ACTION_COMPLETE
+	end
+end
+
 function DebugManipulateController.REPLAYED_ACTIONS:transform(action)
 	return function(timeInfo)
 		local layer = self:getLayerFromMapInfo(action.map)
@@ -782,6 +800,8 @@ function DebugManipulateController:poke(actionID, actionIndex, e)
 		self:setMashinaState(e)
 	elseif actionID == "talk" then
 		self:talk(e)
+	elseif actionID == "flashPower" then
+		self:flashPower(e)
 	elseif actionID == "transform" then
 		self:transform(e)
 	elseif actionID == "saveLocation" then
@@ -1412,6 +1432,32 @@ function DebugManipulateController:talk(e)
 	end
 
 	Utility.Peep.talk(actor:getPeep(), e.message or "'Ey!", Color.fromHexString(e.color or "ffff00"))
+end
+
+function DebugManipulateController:flashPower(e)
+	local actor = self:getGame():getStage():getActorByID(e.actorID)
+	if not actor then
+		return
+	end
+
+	local selfInstance = Utility.Peep.getInstance(self:getPeep())
+	local otherInstance = Utility.Peep.getInstance(actor:getPeep())
+
+	if selfInstance ~= otherInstance then
+		return
+	end
+
+	if self.isRecording then
+		self:record(Utility.Peep.getLayer(actor:getPeep()), actor:getPeep(), "flashPower", {
+			power = e.power or ""
+		})
+	end
+
+	local gameDB = peep:getDirector():getGameDB()
+	local resource = gameDB:getResource(power, "Power")
+	local powerName = resource and Utility.getName(resource, gameDB) or power
+
+	Utility.Peep.flash(actor:getPeep(), "Power", 0.5, action.event.power, powerName)
 end
 
 function DebugManipulateController:saveLocation(e)
