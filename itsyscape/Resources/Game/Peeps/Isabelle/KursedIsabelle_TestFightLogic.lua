@@ -69,8 +69,16 @@ local TryAttack = Mashina.Step {
 }
 
 local Snipe = Mashina.Step {
+	Mashina.Peep.DidAttack {
+		peep = AGGRESSOR
+	},
+
 	Mashina.Player.Disable {
 		player = AGGRESSOR,
+	},
+
+	Mashina.Peep.TimeOut {
+		duration = 2,
 	},
 
 	Mashina.Peep.Dodge {
