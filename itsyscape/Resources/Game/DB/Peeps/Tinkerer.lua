@@ -487,43 +487,43 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(90),
+		Value = ItsyScape.Utility.xpForLevel(40),
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(90),
+		Value = ItsyScape.Utility.xpForLevel(40),
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Attack",
-		Value = ItsyScape.Utility.xpForLevel(80),
+		Value = ItsyScape.Utility.xpForLevel(40),
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Strength",
-		Value = ItsyScape.Utility.xpForLevel(120),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Magic",
-		Value = ItsyScape.Utility.xpForLevel(90),
+		Value = ItsyScape.Utility.xpForLevel(40),
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Wisdom",
-		Value = ItsyScape.Utility.xpForLevel(120),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = MedicalTinkerer
 	}
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Archery",
-		Value = ItsyScape.Utility.xpForLevel(90),
+		Value = ItsyScape.Utility.xpForLevel(40),
 		Resource = MedicalTinkerer
 	}
 
@@ -541,7 +541,7 @@ do
 
 	ItsyScape.Meta.PeepStat {
 		Skill = ItsyScape.Resource.Skill "Dexterity",
-		Value = ItsyScape.Utility.xpForLevel(120),
+		Value = ItsyScape.Utility.xpForLevel(50),
 		Resource = MedicalTinkerer
 	}
 
