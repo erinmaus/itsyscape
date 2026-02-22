@@ -19,11 +19,11 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local Fire = Class(PropView)
 Fire.MIN_FLICKER_TIME = 10 / 60
 Fire.MAX_FLICKER_TIME = 20 / 60
-Fire.MIN_ATTENUATION = 2
-Fire.MAX_ATTENUATION = 3.5
+Fire.MIN_ATTENUATION = 0.5
+Fire.MAX_ATTENUATION = 0.75
 Fire.MIN_COLOR_BRIGHTNESS = 0.9
 Fire.MAX_COLOR_BRIGHTNESS = 1.0
-Fire.COLOR = Color(1, 0.5, 0, 1)
+Fire.COLOR = Color(1, 1, 1, 1)
 Fire.HEIGHT = 1
 Fire.WIND_RESISTANCE = 16
 
@@ -305,11 +305,11 @@ function Fire:flicker()
 	if self.light then
 		local flickerWidth = self.MAX_FLICKER_TIME - self.MIN_FLICKER_TIME
 		self.flickerTime = math.random() * flickerWidth + self.MIN_FLICKER_TIME
+		local scale = self:getProp():getScale():getLength()
 
 		local scale = 1.0 + (self:getProp():getScale():getLength() - math.sqrt(3))
-		local attenuationWidth = self.MAX_ATTENUATION - self.MIN_ATTENUATION
-		local attenuation = love.math.random() * attenuationWidth + self.MAX_ATTENUATION
-		attenuation = attenuation * math.max(self:getRoot():getTransform():getLocalScale():getLength() / 5, 1)
+		local attenuationWidth = self.MAX_ATTENUATION * scale - self.MIN_ATTENUATION * scale
+		local attenuation = love.math.random() * attenuationWidth + self.MAX_ATTENUATION * scale
 		self.light:setAttenuation(attenuation)
 
 		local brightnessWidth = self.MAX_COLOR_BRIGHTNESS - self.MIN_COLOR_BRIGHTNESS
