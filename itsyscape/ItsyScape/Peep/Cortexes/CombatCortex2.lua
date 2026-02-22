@@ -1049,7 +1049,7 @@ function CombatCortex:tickPeep(delta, peep)
 	local success = weapon:perform(peep, target)
 	self:_updateAggressiveTarget(peep)
 
-	if not success then
+	if not success and success ~= nil then
 		return
 	end
 
