@@ -75,6 +75,7 @@ Animation "Tinkerer Attack" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Tinkerer_Attack_Saw/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Tinkerer_Attack_Saw/Animation.lanim"
 	}
 }

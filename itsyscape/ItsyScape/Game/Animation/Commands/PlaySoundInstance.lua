@@ -15,6 +15,7 @@ local PlaySoundInstance = Class(CommandInstance)
 function PlaySoundInstance:new(command)
 	self.command = command or false
 	self.played = false
+	self.time = 0
 end
 
 function PlaySoundInstance:bind(animatable)
@@ -22,15 +23,19 @@ function PlaySoundInstance:bind(animatable)
 end
 
 function PlaySoundInstance:pending(time, windingDown)
-	return not windingDown and not self.played
+	local repeatSound = self.command and self.command:getRepeatSound()
+	return not windingDown and (not self.played or repeatSound)
 end
 
 function PlaySoundInstance:play(animatable, time)
-	if not self.played and self.command then
+	local repeatSound = self.command and self.command:getRepeatSound()
+	if (not self.played or repeatSound) and self.command and time >= self.time then
 		local s = animatable:playSound(self.command:getFilename(), self.command:getAttenuation())
 		s:setPitch(love.math.random() * (self.command:getMaxPitch() - self.command:getMinPitch()) + self.command:getMinPitch())
 		s:seek(0)
 		s:play()
+
+		self.time = self.time + math.lerp(self.command:getMinDuration(), self.command:getMaxDuration(), love.math.random())
 	end
 
 	self.played = true
