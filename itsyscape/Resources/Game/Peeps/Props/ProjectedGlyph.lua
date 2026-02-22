@@ -69,7 +69,7 @@ function ProjectedGlyph:getPropState()
 
 		local oldOneDescription = self:getBehavior(OldOneDescriptionBehavior)
 		glyph = (oldOneDescription and oldOneDescription.description) or glyph
-		glyph = Utility.getOldOneDescription(mapObject, gameDB) or 0
+		glyph = glyph or Utility.getOldOneDescription(mapObject, gameDB) or 0
 	end
 
 	local map = Utility.Peep.getMap(self)
