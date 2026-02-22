@@ -69,6 +69,7 @@ Animation "Human Swap Gear (To: Magic)" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Human_SwapGear_ToMagic_1/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Human_SwapGear_ToMagic_1/Animation.lanim"
 	}
 }

@@ -69,6 +69,7 @@ Animation "Human Swap Gear (To: Archery)" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Human_SwapGear_ToArchery_1/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Human_SwapGear_ToArchery_1/Animation.lanim"
 	}
 }

@@ -69,6 +69,7 @@ Animation "Human Swap Gear (To: Melee)" {
 	},
 
 	Target {
+		PlaySound "Resources/Game/Animations/Human_SwapGear_ToMelee_1/Sound.wav",
 		PlayAnimation "Resources/Game/Animations/Human_SwapGear_ToMelee_1/Animation.lanim"
 	}
 }
