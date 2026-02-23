@@ -19,11 +19,11 @@ local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local Fire = Class(PropView)
 Fire.MIN_FLICKER_TIME = 10 / 60
 Fire.MAX_FLICKER_TIME = 20 / 60
-Fire.MIN_ATTENUATION = 0.5
-Fire.MAX_ATTENUATION = 0.75
-Fire.MIN_COLOR_BRIGHTNESS = 0.9
+Fire.MIN_ATTENUATION = 0.25
+Fire.MAX_ATTENUATION = 1
+Fire.MIN_COLOR_BRIGHTNESS = 0.5
 Fire.MAX_COLOR_BRIGHTNESS = 1.0
-Fire.COLOR = Color(1, 1, 1, 1)
+Fire.COLOR = Color(1, 0.5, 0, 1)
 Fire.HEIGHT = 1
 Fire.WIND_RESISTANCE = 16
 
@@ -58,36 +58,36 @@ do
 		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
 		normal:normalize(normal)
 
-		direction.speed[1] = windSpeed / 3 * speed
-		direction.speed[2] = windSpeed / 3 * speed
+		direction.speed[1] = windSpeed / 12 * speed
+		direction.speed[2] = windSpeed / 12 * speed
 		direction.direction[1] = normal.x
 		direction.direction[2] = normal.y
 		direction.direction[3] = normal.z
 	end
 end
 
-function Fire:_getInnerParticleDefinition()
-	self._innerParticleDefinition = self._innerParticleDefinition or {
-		numParticles = 50,
+function Fire:_getOuterParticleDefinition()
+	self._outerParticleDefinition = self._outerParticleDefinition or {
+		numParticles = 100,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.15 },
+				radius = { 0, 0.1 },
 				position = { 0, 0.1, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 1.25, 0.15 }
+				lifetime = { 2.75, 0.05 }
 			},
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
+				speed = { 0.1, 0.1 },
 			},
 			{
 				type = "RandomColorEmitter",
-				colors = self:getInnerColors()
+				colors = self:getOuterColors()
 			},
 			{
 				type = "RandomScaleEmitter",
@@ -114,42 +114,42 @@ function Fire:_getInnerParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
+			count = { 10, 15 },
 			delay = { 1 / 10 }
 		}
 	}
 
-	self:_updateDirection(self._innerParticleDefinition.emitters[2], 0.45)
+	self:_updateDirection(self._outerParticleDefinition.emitters[2], 0.45)
 
-	return self._innerParticleDefinition
+	return self._outerParticleDefinition
 end
 
-function Fire:_getOuterParticleDefinition()
-	self._outerParticleDefinition = self._outerParticleDefinition or {
-		numParticles = 50,
+function Fire:_getInnerParticleDefinition()
+	self._innerParticleDefinition = self._innerParticleDefinition or {
+		numParticles = 100,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.25 },
+				radius = { 0, 0.1 },
 				position = { 0, 0, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 1.5, 0.4 }
+				lifetime = { 2.5, 0.05 }
 			},
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.45, 0.45 },
+				speed = { 0.1, 0.1 },
 			},
 			{
 				type = "RandomColorEmitter",
-				colors = self:getOuterColors()
+				colors = self:getInnerColors()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.1 }
+				scale = { 0.15 }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -160,8 +160,8 @@ function Fire:_getOuterParticleDefinition()
 		paths = {
 			{
 				type = "FadeInOutPath",
-				fadeInPercent = { 0.4 },
-				fadeOutPercent = { 0.6 },
+				fadeInPercent = { 0.2 },
+				fadeOutPercent = { 0.8 },
 				tween = { 'sineEaseOut' }
 			},
 			{
@@ -172,14 +172,14 @@ function Fire:_getOuterParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
+			count = { 10, 15 },
 			delay = { 1 / 10 }
 		}
 	}
 
-	self:_updateDirection(self._outerParticleDefinition.emitters[2], 0.5)
+	self:_updateDirection(self._innerParticleDefinition.emitters[2], 0.5)
 
-	return self._outerParticleDefinition
+	return self._innerParticleDefinition
 end
 
 function Fire:_getSmokeParticleDefinition()
@@ -255,7 +255,7 @@ function Fire:getSmokeColors()
 	}
 end
 
-function Fire:getInnerColors()
+function Fire:getOuterColors()
 	return {
 		{ Color.fromHexString("ffd52a"):get() },
 		{ Color.fromHexString("ffd52a"):get() },
@@ -264,7 +264,7 @@ function Fire:getInnerColors()
 	}
 end
 
-function Fire:getOuterColors()
+function Fire:getInnerColors()
 	return {
 		{ 1, 0.4, 0.0, 0.0 },
 		{ 0.9, 0.4, 0.0, 0.0 },
@@ -287,6 +287,7 @@ function Fire:load()
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
 		self.innerFlames:setParent(root)
+		self.innerFlames:getMaterial():setZBias(0.00005)
 
 		self.smoke = ParticleSceneNode()
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)
