@@ -227,7 +227,7 @@ do
 			"scape_NormalStep", self.normalStep,
 			"scape_Forward", self._forward)
 
-		love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.DEPTH_INDEX))
+		love.graphics.draw(deferredRendererPass:getDepthBuffer())
 	end
 end
 
