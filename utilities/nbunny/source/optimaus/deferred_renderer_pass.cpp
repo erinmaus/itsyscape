@@ -466,8 +466,11 @@ void nbunny::DeferredRendererPass::draw_shadows(lua_State* L, float delta)
 	int num_cascades = shadow_pass->get_num_cascades();
 	shader_cache.update_uniform(shader, "scape_NumCascades", &num_cascades, sizeof(int));
 	
-	auto shadow_alpha = std::max(1.0f - std::min(ambient_light, 1.0f), 0.5f);
+	auto shadow_alpha = std::max(1.0f - std::min(ambient_light, 1.0f), 0.3f);
 	shader_cache.update_uniform(shader, "scape_ShadowAlpha", &shadow_alpha, sizeof(float));
+	
+	auto glass_alpha = std::max(1.0f - std::min(ambient_light, 1.0f), 0.5f);
+	shader_cache.update_uniform(shader, "scape_GlassAlpha", &glass_alpha, sizeof(float));
 
 	float near = get_renderer()->get_camera().get_near();
 	shader_cache.update_uniform(shader, "scape_Near", &near, sizeof(float));

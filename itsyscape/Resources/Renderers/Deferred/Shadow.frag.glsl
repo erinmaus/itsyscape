@@ -18,6 +18,7 @@ uniform mat4 scape_CascadeLightSpaceMatrices[SCAPE_MAX_CASCADES];
 uniform vec2 scape_CascadePlanes[SCAPE_MAX_CASCADES];
 uniform int scape_NumCascades;
 uniform float scape_ShadowAlpha;
+uniform float scape_GlassAlpha;
 uniform mat4 scape_View;
 
 #define SCAPE_PCF_BLUR_START -2
@@ -94,9 +95,9 @@ vec4 effect(
 	float otherShadowDepth = 0.0;
 	float otherShadow = calculatePCF(cascadeIndex, projectedLightPosition, bias, scape_ShadowColorsMap, otherShadowDepth);
 
-	vec4 shadowColor = vec4(vec3(0.0), shadow);
+	vec4 shadowColor = vec4(vec3(0.0), shadow * scape_ShadowAlpha);
 	vec4 glassColor = Texel(scape_ShadowColorTexture, vec3(projectedLightPosition.xy, float(cascadeIndex)));
-	glassColor.a *= otherShadow * sceneAlpha;
+	glassColor.a *= otherShadow * sceneAlpha * scape_GlassAlpha;
 
 	vec4 finalColor = vec4(0.0);
 	if (projectedLightPosition.z < shadowDepth + bias)
@@ -108,5 +109,5 @@ vec4 effect(
 		finalColor = alphaBlend(glassColor, shadowColor);
 	}
 
-	return vec4(finalColor.rgb, scape_ShadowAlpha * finalColor.a);
+	return finalColor;
 }
