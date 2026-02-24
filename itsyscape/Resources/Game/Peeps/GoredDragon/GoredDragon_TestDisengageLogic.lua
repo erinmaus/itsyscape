@@ -11,6 +11,14 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Mashina = require "ItsyScape.Mashina"
 
 local Disengage = Mashina.Sequence {
+	Mashina.Peep.EquipXWeapon {
+		x_weapon = "Dragon_GoreVomit",
+	},
+
+	Mashina.Peep.StopAnimation {
+		slot = "x-gored-dragon-stunned"
+	},
+
 	Mashina.Peep.DisengageCombatTarget,
 
 	Mashina.Peep.Interrupt {

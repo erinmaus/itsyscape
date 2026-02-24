@@ -155,7 +155,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Strength",
-	Value = ItsyScape.Utility.xpForLevel(100),
+	Value = ItsyScape.Utility.xpForLevel(30),
 	Resource = GoredDragon
 }
 
@@ -173,7 +173,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Dexterity",
-	Value = ItsyScape.Utility.xpForLevel(100),
+	Value = ItsyScape.Utility.xpForLevel(30),
 	Resource = GoredDragon
 }
 
@@ -185,7 +185,7 @@ ItsyScape.Meta.PeepStat {
 
 ItsyScape.Meta.PeepStat {
 	Skill = ItsyScape.Resource.Skill "Wisdom",
-	Value = ItsyScape.Utility.xpForLevel(120),
+	Value = ItsyScape.Utility.xpForLevel(30),
 	Resource = GoredDragon
 }
 
@@ -205,21 +205,21 @@ ItsyScape.Meta.Equipment {
 	DefenseCrush = ItsyScape.Utility.styleBonusForItem(50),
 	DefenseMagic = ItsyScape.Utility.styleBonusForItem(75),
 	DefenseRanged = ItsyScape.Utility.styleBonusForItem(45),
-	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(50),
-	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(70),
-	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(65),
+	StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(25),
+	StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(25),
+	StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(25),
 	Resource = GoredDragon
 }
 
 ItsyScape.Meta.XWeaponBoost {
 	AccuracyBonus = 100,
-	StrengthBonus = 50,
+	StrengthBonus = 0,
 	AlwaysHits = 1,
 	Resource = ItsyScape.Resource.Item "X_Dragon_ChargedDragonfyreHit"
 }
 
 ItsyScape.Meta.XWeaponBoost {
 	AccuracyBonus = 50,
-	StrengthBonus = 25,
+	StrengthBonus = 0,
 	Resource = ItsyScape.Resource.Item "X_Dragon_Dragonfyre"
 }

@@ -12,7 +12,7 @@ local BTreeBuilder = require "B.TreeBuilder"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Mashina = require "ItsyScape.Mashina"
 
-local PLAYER = B.Reference("GoredDragon_TestDragonfyreLogic", "PLAYER")
+local PLAYER = B.Reference("GoredDragon_TestEatLogic", "PLAYER")
 
 local GetPlayer = Mashina.Peep.GetPlayer {
 	[PLAYER] = B.Output.player
@@ -23,6 +23,10 @@ local AttackPlayer = Mashina.Sequence {
 
 	Mashina.Peep.EngageCombatTarget {
 		peep = PLAYER
+	},
+
+	Mashina.Peep.ApplyAttackCooldown {
+		peep = PLAYER,
 	}
 }
 
@@ -36,13 +40,22 @@ local PrepareForCombat = Mashina.Sequence {
 	},
 }
 
+local Attack = Mashina.Step {
+	Mashina.Peep.DidAttack,
+
+	Mashina.Peep.ApplyAttackCooldown {
+		peep = PLAYER,
+	}
+}
+
 local Tree = BTreeBuilder.Node() {
 	Mashina.Step {
 		AttackPlayer,
+		PrepareForCombat,
 
 		Mashina.Repeat {
 			Mashina.Success {
-				PrepareForCombat
+				Attack
 			}
 		}
 	}
