@@ -43,7 +43,7 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 		specularSample.a += currentSpecularSample.a;
 	}
 
-	specular = specularSample.r * specularSample.a + 0.2;
+	specular = specularSample.r + specularSample.a + 0.2;
 	color *= diffuseSample * resultSample * vec4(mix(vec3(specularSample), vec3(1.0), mix(1.0 - specularSample.a, 1.0, scape_SpecularWeight)), 1.0);
 	color.a *= alpha;
 }
