@@ -46,7 +46,7 @@ Decapitate.PARTICLE_SYSTEM = function(direction)
 			},
 			{
 				type = "DirectionalEmitter",
-				speed = { 8, 12 },
+				speed = { 12, 16 },
 				direction = { direction:get() }
 			},
 			{
@@ -63,7 +63,7 @@ Decapitate.PARTICLE_SYSTEM = function(direction)
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.75, 1.0 }
+				scale = { 1.5, 2 }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -86,7 +86,7 @@ Decapitate.PARTICLE_SYSTEM = function(direction)
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
+			count = { 20, 30 },
 			delay = { 1 / 30 },
 			duration = { 0.5 }
 		}
