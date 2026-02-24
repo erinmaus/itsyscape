@@ -1388,7 +1388,7 @@ function ActorView:draw()
 				local isImmediate = self:getIsImmediate()
 				local texture = material:getTexture(1)
 
-				if hasTransform or isForward or isMultiTexture or isImmediate or isReflective or hasOverrideMaterial or not texture then
+				if hasTransform or isForward or isMultiTexture or isReflective or hasOverrideMaterial or not texture then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
