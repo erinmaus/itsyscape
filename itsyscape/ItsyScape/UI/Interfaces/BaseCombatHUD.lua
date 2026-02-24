@@ -1119,6 +1119,8 @@ function BaseCombatHUD:activateQuickAttack()
 end
 
 function BaseCombatHUD:previewControlUp(control)
+	Interface.previewControlUp(self, control)
+
 	if control:is("quickAttack") then
 		self:activateQuickAttack()
 	end
