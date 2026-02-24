@@ -34,7 +34,7 @@ function FireProjectile:update(mashina, state, executor)
 	end
 
 	if Class.isCompatibleType(destination, Peep) then
-		if not (destination:hasBehavior(ActorReferenceBehavior) or destination:hasBehavior()) then
+		if not (destination:hasBehavior(ActorReferenceBehavior) or destination:hasBehavior(PropReferenceBehavior)) then
 			offset = Utility.Peep.getRotation(destination):transformVector(offset)
 			destination = Utility.Peep.getPosition(destination) + offset
 		end

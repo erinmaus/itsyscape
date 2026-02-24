@@ -8,10 +8,13 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
-local CacheRef = require "ItsyScape.Game.CacheRef"
+local Weapon = require "ItsyScape.Game.Weapon"
+local Utility = require "ItsyScape.Game.Utility"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 
 local ApplyAttackCooldown = B.Node("ApplyAttackCooldown")
+ApplyAttackCooldown.PEEP = B.Reference()
+
 ApplyAttackCooldown.MIN_DURATION = B.Reference()
 ApplyAttackCooldown.MAX_DURATION = B.Reference()
 ApplyAttackCooldown.DURATION = B.Reference()
@@ -27,29 +30,32 @@ ApplyAttackCooldown.RESET = B.Reference()
 ApplyAttackCooldown.ROUND = B.Reference()
 
 function ApplyAttackCooldown:update(mashina, state, executor)
+	local peep = state[self.PEEP] or mashina
+
 	local duration = state[self.DURATION]
 	if not duration then
 		if state[self.MIN_DURATION] and state[self.MAX_DURATION] then
 			local min = state[self.MIN_DURATION]
 			local max = state[self.MAX_DURATION]
 
-			duration = math.random() * (max - min) + min
+			duration = love.math.random() * (max - min) + min
 			if state[self.ROUND] then
 				duration = math.floor(duration + 0.5)
 			end
 		else
-			duration = 0
+			local weapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon.UNARMED
+			duration = weapon:getCooldown(peep)
 		end
 	end
 
-	Log.info("Applying %0.2f cool down to '%s'.", duration, mashina:getName())
+	Log.info("Applying %0.2f cool down to '%s'.", duration, peep:getName())
 
-	local cooldown = mashina:getBehavior(AttackCooldownBehavior)
+	local cooldown = peep:getBehavior(AttackCooldownBehavior)
 	if not cooldown then
-		mashina:addBehavior(AttackCooldownBehavior)
+		peep:addBehavior(AttackCooldownBehavior)
 
-		cooldown = mashina:getBehavior(AttackCooldownBehavior)
-		cooldown.ticks = mashina:getDirector():getGameInstance():getCurrentTime()
+		cooldown = peep:getBehavior(AttackCooldownBehavior)
+		cooldown.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 	elseif state[self.RESET] then
 		cooldown.ticks = target:getDirector():getGameInstance():getCurrentTime()
 		cooldown.cooldown = 0
