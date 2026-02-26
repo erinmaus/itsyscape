@@ -1347,8 +1347,9 @@ function ActorView:flash(message, anchor, ...)
 	self.sprites[sprite] = true
 end
 
-function ActorView:tick()
+function ActorView:tick(delta)
 	self.sceneNode:getTransform():setLocalScale(self.actor:getScale())
+	self.previousPosition:lerp(self.position, delta, self.previousPosition)
 end
 
 function ActorView:update(delta)

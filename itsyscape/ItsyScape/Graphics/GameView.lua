@@ -3275,6 +3275,14 @@ function GameView:preTick(frameDelta)
 			projectile)
 	end
 
+	for _, actor in pairs(self.actors) do
+		self.generalDebugStats:measure(
+			string.format("actor::%s::tick", actor:getActor():getPeepID()),
+			actor.tick,
+			actor,
+			frameDelta)
+	end
+
 	for skybox in pairs(self.skyboxes) do
 		skybox:tick(frameDelta)
 	end
@@ -3336,7 +3344,7 @@ function GameView:postTick()
 			local interface = instance:getInterface()
 			local object = instance:getInstance()
 			local objectView = self.views[object]
-			if objectView then
+			if objectView and Class.isCompatibleType(objectView, PropView) then
 				self.generalDebugStats:measure(
 					string.format("%s::%s::tick", interface, object:getPeepID()),
 					objectView.tick,
@@ -3346,13 +3354,6 @@ function GameView:postTick()
 			self:addOrUpdateProbe(object)
 		end
 	else
-		for _, actor in pairs(self.actors) do
-			self.generalDebugStats:measure(
-				string.format("actor::%s::tick", actor:getActor():getPeepID()),
-				actor.tick,
-				actor)
-		end
-
 		for _, prop in pairs(self.props) do
 			self.generalDebugStats:measure(
 				string.format("prop::%s::tick", prop:getProp():getPeepID()),
