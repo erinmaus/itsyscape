@@ -192,7 +192,7 @@ function DodgeCortex:updateDodge(peep, delta)
 	Utility.Peep.setPosition(peep, finalPosition)
 	dodge.currentDistance = dodge.currentDistance + finalDistance
 
-	if #collisions > 0 or finalDistance == 0 then
+	if #collisions > 0 and finalDistance == 0 then
 		peep:removeBehavior(CombatDodgeBehavior)
 		return
 	end
