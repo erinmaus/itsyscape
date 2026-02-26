@@ -1088,7 +1088,7 @@ function DebugManipulateController:getLayerFromMapInfo(mapInfo)
 	for group, layers in instance:iterateMapGroups() do
 		local baseMapScript = instance:getMapScriptByLayer(instance:getGlobalLayerFromLocalLayer(group, 1))
 		local mapResource = baseMapScript and Utility.Peep.getResource(baseMapScript)
-		if mapResource.name == mapInfo.resource and layers[mapInfo.localLayer] then
+		if mapResource and mapResource.name == mapInfo.resource and layers[mapInfo.localLayer] then
 			return layers[mapInfo.localLayer], instance:getMapScriptByLayer(layers[mapInfo.localLayer])
 		end
 	end
