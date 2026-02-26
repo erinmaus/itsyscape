@@ -208,7 +208,7 @@ function ActionCommand:getInputDirection()
 	return x, y
 end
 
-function ActionCommand:onXAxis(controller, x)
+function ActionCommand:onXAxis(controller, value)
 	self:_setLastInputScheme(controller)
 
 	if controller == "gamepad" then
@@ -221,7 +221,7 @@ function ActionCommand:onXAxis(controller, x)
 	end
 end
 
-function ActionCommand:onYAxis(controller, y)
+function ActionCommand:onYAxis(controller, value)
 	self:_setLastInputScheme(controller)
 
 	if controller == "gamepad" then
