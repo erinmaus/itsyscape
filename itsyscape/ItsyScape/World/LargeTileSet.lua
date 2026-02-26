@@ -267,7 +267,6 @@ function LargeTileSet:emitAll(map)
 							love.graphics.setBlendMode("replace", "premultiplied")
 
 							love.graphics.origin()
-							love.graphics.scale(scaleMultiplier, scaleMultiplier)
 
 							local diffuseImageData, specularImageData, outlineImageData = unpack(images, index, index + 3)
 
