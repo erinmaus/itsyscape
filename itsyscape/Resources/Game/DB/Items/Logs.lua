@@ -91,7 +91,7 @@ local LOGS = {
 	["Yew"] = {
 		tier = 40,
 		weight = 6,
-		health = 100,
+		health = 175,
 		tinderbox = "Tinderbox",
 		variants = { "Default1" },
 		secondaries = {
@@ -104,7 +104,7 @@ local LOGS = {
 		niceName = "Petrified spider",
 		tier = 50,
 		weight = 2,
-		health = 50,
+		health = 250,
 		peepID = "Resources.Game.Peeps.Arachnid.PetrifiedSpiderTree",
 		tinderbox = "Tinderbox",
 		secondaries = {
@@ -333,6 +333,12 @@ for name, log in spairs(LOGS) do
 			ItsyScape.Meta.ResourceName {
 				Value = string.format("%s tree", log.niceName or name),
 				Language = "en-US",
+				Resource = Variant
+			}
+
+			ItsyScape.Meta.GatherableProp {
+				Health = log.health,
+				SpawnTime = log.tier + 10,
 				Resource = Variant
 			}
 		end

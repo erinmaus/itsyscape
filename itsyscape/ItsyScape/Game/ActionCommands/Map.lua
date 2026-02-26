@@ -21,6 +21,8 @@ function Map:new()
 	self.mapScript = false
 	self.offset = Vector()
 	self.distance = 20
+	self.verticalRotation = -math.pi / 2 + math.pi / 8
+	self.horizontalRotation = -math.pi / 8
 end
 
 function Map:setMap(value)
@@ -47,6 +49,22 @@ function Map:getDistance()
 	return self.distance
 end
 
+function Map:setVerticalRotation(value)
+	self.verticalRotation = value or 0
+end
+
+function Map:getVerticalRotation()
+	return self.verticalRotation
+end
+
+function Map:setHorizontalRotation(value)
+	self.horizontalRotation = value or 0
+end
+
+function Map:getHorizontalRotation()
+	return self.horizontalRotation
+end
+
 function Map:serialize(t)
 	Component.serialize(self, t)
 
@@ -55,9 +73,10 @@ function Map:serialize(t)
 	t.offsetY = self.offset.y
 	t.offsetZ = self.offset.z
 	t.distance = self.distance
+	t.verticalRotation = self.verticalRotation
+	t.horizontalRotation = self.horizontalRotation
 
 	if not (self.mapScript and self.mapScript:getIsReady()) then
-		print(">>> no map script")
 		return
 	end
 

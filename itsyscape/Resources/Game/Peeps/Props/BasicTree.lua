@@ -26,19 +26,21 @@ function BasicTree:new(...)
 
 	self:addBehavior(PropResourceHealthBehavior)
 
-	self:addPoke('chopped')
-	self:addPoke('shake')
-	self:addPoke('resourceObtained')
-	self:addPoke('replenished')
+	self:addPoke("chop")
+	self:addPoke("shake")
+	self:addPoke("resourceObtained")
+	self:addPoke("replenished")
+
+	self.chopCount = 0
 end
 
 function BasicTree:spawnOrPoofTile(tile, i, j, mode)
-	if mode == 'spawn' then
-		tile:pushFlag('impassable')
-		tile:pushFlag('shoot')
-	elseif mode == 'poof' then
-		tile:popFlag('impassable')
-		tile:popFlag('shoot')
+	if mode == "spawn" then
+		tile:pushFlag("impassable")
+		tile:pushFlag("shoot")
+	elseif mode == "poof" then
+		tile:popFlag("impassable")
+		tile:popFlag("shoot")
 	end
 end
 
@@ -84,13 +86,17 @@ function BasicTree:onResourceHit(e)
 				self.spawnCooldown = self.DEFAULT_SPAWN_COOLDOWN
 			end
 		end
-
-		local e = { peep = e.peep }
-		self:poke('chopped', e)
-		self:poke('resourceObtained', e)
+		self:poke("resourceObtained", e)
 
 		self.felledPosition = Utility.Peep.getPosition(e.peep)
 	end
+
+	local e = { peep = e.peep }
+	self:poke("chop", e)
+end
+
+function BasicTree:previewChop()
+	self.chopCount = self.chopCount + 1
 end
 
 function BasicTree:previewShake()
@@ -127,6 +133,7 @@ function BasicTree:getPropState()
 		progress = progress,
 		depleted = progress >= 100,
 		shaken = shakeCount or 0,
+		chops = self.chopCount,
 		felledPosition = self.felledPosition and { self.felledPosition:get() }
 	}
 

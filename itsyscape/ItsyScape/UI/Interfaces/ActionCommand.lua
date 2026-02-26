@@ -384,8 +384,11 @@ function ActionCommand:_build(parent, t, o, delta)
 		local gameView = self:getView():getGameView()
 		Theme.setSceneSnippetMap(widget, widget:getCamera(), gameView, t.mapLayer, nil, 2.5)
 
-		widget:getCamera():setHorizontalRotation(-math.pi / 8)
-		widget:getCamera():setVerticalRotation(-math.pi / 2 + math.pi / 8)
+		local horizontalRotation = math.lerpAngle(o.horizontalRotation, t.horizontalRotation, delta)
+		local verticalRotation = math.lerpAngle(o.verticalRotation, t.verticalRotation, delta)
+
+		widget:getCamera():setHorizontalRotation(horizontalRotation)
+		widget:getCamera():setVerticalRotation(verticalRotation)
 		widget:getCamera():setRotation(Quaternion.IDENTITY)
 
 		local distance = math.lerp(o.distance, t.distance, delta)

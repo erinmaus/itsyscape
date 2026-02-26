@@ -62,8 +62,8 @@ function PetrifiedSpiderTree:onReplenished()
 	size.oldSize = nil
 end
 
-function PetrifiedSpiderTree:onResourceHit(...)
-	BasicTree.onResourceHit(self, ...)
+function PetrifiedSpiderTree:previewChop(...)
+	BasicTree.previewChop(self, ...)
 
 	if self.spider then
 		self.spider:playAnimation(
