@@ -23,7 +23,7 @@ local Make = require "Resources.Game.Actions.Make"
 
 local Fish = Class(Make)
 Fish.SCOPES = { ['world'] = true, ['world-pvm'] = true, ['world-pvp'] = true }
-Fish.TARGET_MAX_DISTANCE = 5
+Fish.TARGET_MAX_DISTANCE = 9
 Fish.MAX_SEARCH_DISTANCE_BUFFER = 1.5
 Fish.TARGET_ANCHOR_STEPS = 4
 Fish.FLAGS = {

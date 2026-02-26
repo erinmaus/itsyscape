@@ -132,7 +132,7 @@ function ViziersRockGround:new()
 		},
 
 		COLORS = {
-			Color.fromHexString("614a39")
+			Color.fromHexString("51493e")
 		}
 	})
 end

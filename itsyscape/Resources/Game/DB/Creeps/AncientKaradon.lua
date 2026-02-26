@@ -69,15 +69,15 @@ do
 	}
 
 	ItsyScape.Meta.Equipment {
-		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(60, 1),
-		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(60, 1.5),
-		DefenseStab = ItsyScape.Utility.styleBonusForItem(65, 1.1),
-		DefenseSlash = ItsyScape.Utility.styleBonusForItem(65, 1.1),
-		DefenseCrush = ItsyScape.Utility.styleBonusForItem(65, 1.1),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(40, 1),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(40, 1.5),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(45, 1.1),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(45, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(45, 1.1),
 		DefenseMagic = ItsyScape.Utility.styleBonusForItem(40, 1.2),
 		DefenseRanged = ItsyScape.Utility.styleBonusForItem(40, 0.95),
-		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(55),
-		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(50),
+		StrengthRanged = ItsyScape.Utility.strengthBonusForWeapon(40),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(45),
 		Resource = AncientKaradon
 	}
 end
@@ -122,6 +122,13 @@ do
 		OffsetI = 0,
 		OffsetJ = 0,
 		Resource = AncientKaradonFishingSpotProxy
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6.5,
+		SizeY = 1,
+		SizeZ = 6.5,
+		MapObject = AncientKaradonFishingSpotProxy
 	}
 
 	ItsyScape.Meta.ResourceName {

@@ -1,0 +1,5 @@
+{
+	type = "array",
+
+	"Dark.png"
+}
