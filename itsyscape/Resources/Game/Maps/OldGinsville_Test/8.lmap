@@ -1,0 +1,440 @@
+{
+	width = 4,
+	height = 9,
+	cellSize = 2,
+	tiles =
+	{
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 2, topRight = 2, bottomLeft = 2, bottomRight = 2,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 10, flat = 10, decals = {  },
+			tileSetID = "OldGinsville1",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+	}
+}

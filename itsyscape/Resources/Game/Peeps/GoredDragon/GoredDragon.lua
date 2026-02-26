@@ -65,7 +65,6 @@ function GoredDragon:onGutsSpawned()
 
 	local instance = Utility.Peep.getInstance(self)
 	local group = instance:getMapGroup(self.gutsLayer)
-	print(">>> group", group)
 
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage:updateSky(instance, group, {

@@ -50,6 +50,30 @@ do
 	}
 end
 
+M["Art_Rage_Fire10"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49.143902,
+		PositionY = 0.000000,
+		PositionZ = 62.203424,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 4.750000,
+		ScaleY = 4.750000,
+		ScaleZ = 4.750000,
+		Name = "Art_Rage_Fire10",
+		Map = M._MAP,
+		Resource = M["Art_Rage_Fire10"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["Art_Rage_Fire10"]
+	}
+end
+
 M["Art_Rage_Fire2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -194,6 +218,54 @@ do
 	}
 end
 
+M["Art_Rage_Fire8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 46.559884,
+		PositionY = 0.000000,
+		PositionZ = 58.514277,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 7.500000,
+		ScaleY = 7.500000,
+		ScaleZ = 7.500000,
+		Name = "Art_Rage_Fire8",
+		Map = M._MAP,
+		Resource = M["Art_Rage_Fire8"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["Art_Rage_Fire8"]
+	}
+end
+
+M["Art_Rage_Fire9"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49.035255,
+		PositionY = 0.000000,
+		PositionZ = 59.807463,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 9.750000,
+		ScaleY = 9.750000,
+		ScaleZ = 9.750000,
+		Name = "Art_Rage_Fire9",
+		Map = M._MAP,
+		Resource = M["Art_Rage_Fire9"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Art_Rage_Fire",
+		MapObject = M["Art_Rage_Fire9"]
+	}
+end
+
 M["Clutter_Candles_Bastiel11"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -263,6 +335,294 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "Clutter_Symbol_Bastiel1",
 		MapObject = M["Clutter_Symbol_Bastiel11"]
+	}
+end
+
+M["Lamp_IsabelleTower1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 29.000000,
+		PositionY = 2.000000,
+		PositionZ = 58.750000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Lamp_IsabelleTower1",
+		Map = M._MAP,
+		Resource = M["Lamp_IsabelleTower1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
+		MapObject = M["Lamp_IsabelleTower1"]
+	}
+end
+
+M["Lamp_IsabelleTower2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 33.000000,
+		PositionY = 2.000000,
+		PositionZ = 58.750000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Lamp_IsabelleTower2",
+		Map = M._MAP,
+		Resource = M["Lamp_IsabelleTower2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
+		MapObject = M["Lamp_IsabelleTower2"]
+	}
+end
+
+M["Lamp_IsabelleTower3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 37.000000,
+		PositionY = 2.000000,
+		PositionZ = 59.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Lamp_IsabelleTower3",
+		Map = M._MAP,
+		Resource = M["Lamp_IsabelleTower3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
+		MapObject = M["Lamp_IsabelleTower3"]
+	}
+end
+
+M["Lamp_IsabelleTower4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 41.000000,
+		PositionY = 2.000000,
+		PositionZ = 58.750000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Lamp_IsabelleTower4",
+		Map = M._MAP,
+		Resource = M["Lamp_IsabelleTower4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
+		MapObject = M["Lamp_IsabelleTower4"]
+	}
+end
+
+M["Lamp_IsabelleTower5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49.500000,
+		PositionY = 2.000000,
+		PositionZ = 61.000000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Lamp_IsabelleTower5",
+		Map = M._MAP,
+		Resource = M["Lamp_IsabelleTower5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
+		MapObject = M["Lamp_IsabelleTower5"]
+	}
+end
+
+M["Lamp_IsabelleTower6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 49.250000,
+		PositionY = 2.000000,
+		PositionZ = 57.000000,
+		RotationX = 0.000000,
+		RotationY = -0.707107,
+		RotationZ = 0.000000,
+		RotationW = 0.707107,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "Lamp_IsabelleTower6",
+		Map = M._MAP,
+		Resource = M["Lamp_IsabelleTower6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Lamp_IsabelleTower",
+		MapObject = M["Lamp_IsabelleTower6"]
+	}
+end
+
+M["PetrifiedSpiderTree_Default1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 43.000000,
+		PositionY = 0.000000,
+		PositionZ = 65.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "PetrifiedSpiderTree_Default1",
+		Map = M._MAP,
+		Resource = M["PetrifiedSpiderTree_Default1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default",
+		MapObject = M["PetrifiedSpiderTree_Default1"]
+	}
+end
+
+M["PetrifiedSpiderTree_Default2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35.000000,
+		PositionY = 0.000000,
+		PositionZ = 73.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "PetrifiedSpiderTree_Default2",
+		Map = M._MAP,
+		Resource = M["PetrifiedSpiderTree_Default2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default",
+		MapObject = M["PetrifiedSpiderTree_Default2"]
+	}
+end
+
+M["PetrifiedSpiderTree_Default3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 27.000000,
+		PositionY = 0.000000,
+		PositionZ = 65.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "PetrifiedSpiderTree_Default3",
+		Map = M._MAP,
+		Resource = M["PetrifiedSpiderTree_Default3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default",
+		MapObject = M["PetrifiedSpiderTree_Default3"]
+	}
+end
+
+M["PetrifiedSpiderTree_Default4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 31.000000,
+		PositionY = 0.000000,
+		PositionZ = 68.750000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "PetrifiedSpiderTree_Default4",
+		Map = M._MAP,
+		Resource = M["PetrifiedSpiderTree_Default4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default",
+		MapObject = M["PetrifiedSpiderTree_Default4"]
+	}
+end
+
+M["PetrifiedSpiderTree_Default5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39.000000,
+		PositionY = 0.000000,
+		PositionZ = 67.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "PetrifiedSpiderTree_Default5",
+		Map = M._MAP,
+		Resource = M["PetrifiedSpiderTree_Default5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default",
+		MapObject = M["PetrifiedSpiderTree_Default5"]
+	}
+end
+
+M["PetrifiedSpiderTree_Default6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 35.000000,
+		PositionY = 0.000000,
+		PositionZ = 63.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "PetrifiedSpiderTree_Default6",
+		Map = M._MAP,
+		Resource = M["PetrifiedSpiderTree_Default6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "PetrifiedSpiderTree_Default",
+		MapObject = M["PetrifiedSpiderTree_Default6"]
 	}
 end
 
