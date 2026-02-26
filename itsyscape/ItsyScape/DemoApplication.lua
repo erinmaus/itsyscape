@@ -1160,6 +1160,7 @@ function DemoApplication:controlUp(_, control)
 		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
 		isDebugManipulateOpen = not (combatRing and combatRing:getIsShowing())
 		isDebugManipulateOpen = isDebugManipulateOpen and self:getUIView():getInterface("DebugManipulate")
+		isDebugManipulateOpen = isDebugManipulateOpen and not self:getUIView():getInterface("ActionCommand")
 	end
 
 
@@ -2211,7 +2212,7 @@ function DemoApplication:updatePositionProbe()
 			local shimmeringObject = self.shimmeringObjects[1]
 			if shimmeringObject and shimmeringObject.objectType == "actor" then
 				local _, object = self:_getShimmerNodeObject(shimmeringObject)
-				if object:getTarget() == playerActor then
+				if object and object:getTarget() == playerActor then
 					isFirstObjectAttackingPlayer = true					
 				end
 			end
