@@ -460,6 +460,16 @@ do
 		if tiles then
 			table.sort(tiles, self._sortTile)
 
+			local playerLayer
+			do
+				local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+				if playerActor then
+					local i, j, k = playerActor:getTile()
+					playerLayer = k
+				end
+			end
+
+			local playerTile
 			for _, tile in ipairs(tiles) do
 				local i = tile[Map.RAY_TEST_RESULT_I]
 				local j = tile[Map.RAY_TEST_RESULT_J]
@@ -475,6 +485,10 @@ do
 				local depth = self.gameView:getCamera():depth(transformedPosition)
 
 				table.insert(self._hits, self:_newHit(self:_newTile(i, j, layer, t, position), transformedPosition, depth))
+
+				if playerLayer and layer == playerLayer then
+					playerTile = tile
+				end
 			end
 
 			if self.layer then
@@ -484,6 +498,9 @@ do
 						break
 					end
 				end
+			elseif playerTile then
+				self.tile = playerTile
+				self.layer = self.tile.layer
 			else
 				self.tile = tiles[1]
 				if self.tile then
