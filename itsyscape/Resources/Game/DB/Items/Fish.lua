@@ -384,6 +384,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
@@ -464,6 +469,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(1)
@@ -645,6 +655,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(5)
 		},
@@ -737,6 +752,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(5)
@@ -906,6 +926,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(20)
 		},
@@ -998,6 +1023,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(20)
@@ -1221,6 +1251,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
@@ -1312,6 +1347,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(10)
@@ -1493,6 +1533,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(15)
 		},
@@ -1590,6 +1635,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(15)
@@ -1771,6 +1821,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(20)
 		},
@@ -1851,6 +1906,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(20)
@@ -2032,6 +2092,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(25)
 		},
@@ -2112,6 +2177,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(25)
@@ -2293,6 +2363,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(35)
 		},
@@ -2400,6 +2475,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(35)
@@ -2600,6 +2680,11 @@ do
 
 	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
 		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
+		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(30)
 		},
@@ -2707,6 +2792,11 @@ do
 	}
 
 	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Count = 1,
+		},
+
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Cooking",
 			Count = ItsyScape.Utility.xpForLevel(30)

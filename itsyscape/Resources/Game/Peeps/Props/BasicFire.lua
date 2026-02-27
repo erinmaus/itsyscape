@@ -12,13 +12,15 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
-local BlockingProp = require "Resources.Game.Peeps.Props.BlockingProp"
+local BasicArtisanStation = require "Resources.Game.Peeps.Props.BasicArtisanStation"
 
-local BasicFire = Class(BlockingProp)
+local BasicFire = Class(BasicArtisanStation)
 BasicFire.CHARCOAL_TIME = 10
 
+BasicFire.COLLISION_IS_BLOCKING = true
+
 function BasicFire:new(resource, name, ...)
-	BlockingProp.new(self, resource, 'Fire', ...)
+	BasicArtisanStation.new(self, resource, 'Fire', ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1, 0.5, 1)
@@ -61,7 +63,7 @@ function BasicFire:onSpawnedByAction(instigator)
 end
 
 function BasicFire:update(director, game)
-	BlockingProp.update(self, director, game)
+	BasicArtisanStation.update(self, director, game)
 
 	self.duration = self.duration - game:getDelta()
 	if self.duration < 0 then

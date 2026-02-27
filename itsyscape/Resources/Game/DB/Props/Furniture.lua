@@ -766,8 +766,8 @@ ItsyScape.Meta.PeepID {
 
 ItsyScape.Meta.MapObjectSize {
 	SizeX = 1.5,
-	SizeY = 3,
-	SizeZ = 3.5,
+	SizeY = 1,
+	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "KitchenSink_Default"
 }
 

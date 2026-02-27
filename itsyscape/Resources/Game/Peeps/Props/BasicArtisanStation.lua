@@ -16,6 +16,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local BasicArtisanStation = Class(Prop)
 
 BasicArtisanStation.COLLISION_IS_TALL = false
+BasicArtisanStation.COLLISION_IS_BLOCKING = false
 
 function BasicArtisanStation:new(...)
 	Prop.new(self, ...)
@@ -38,10 +39,17 @@ function BasicArtisanStation:onCraft()
 end
 
 function BasicArtisanStation:spawnOrPoofTile(tile, i, j, mode)
+	local flag
+	if self.COLLISION_IS_BLOCKING then
+		flag = "blocking"
+	else
+		flag = "impassable"
+	end
+
 	if mode == "spawn" then
-		tile:pushFlag("impassable")
+		tile:pushFlag(flag)
 	elseif mode == "poof" then
-		tile:popFlag("impassable")
+		tile:popFlag(flag)
 	end
 
 	if not self.COLLISION_IS_TALL then

@@ -1730,6 +1730,7 @@ include "Resources/Game/DB/Props/Schism.lua"
 
 -- Clutter.
 include "Resources/Game/DB/Clutter/Religious.lua"
+include "Resources/Game/DB/Clutter/Cooking.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"

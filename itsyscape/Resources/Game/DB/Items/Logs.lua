@@ -366,6 +366,12 @@ for name, log in spairs(LOGS) do
 			Resource = Fire
 		}
 
+		ItsyScape.Meta.ArtisanProperty {
+			Count = 1,
+			Property = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Resource = Fire
+		}
+
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
 		ItsyScape.Meta.DelegatedActionTarget {
 			CategoryKey = "CookingMethodFire",

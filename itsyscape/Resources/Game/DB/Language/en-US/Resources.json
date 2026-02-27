@@ -10,5 +10,11 @@
 	"ArtisanProperty.BasicKnife.description": "Requires any kind of knife.",
 	"ArtisanProperty.BasicKnife.name": "Knife",
 	"ArtisanProperty.SturdyAnvil_Smith.description": "Needs to be hammered on a sturdy anvil.",
-	"ArtisanProperty.SturdyAnvil_Smith.name": "Sturdy anvil"
+	"ArtisanProperty.SturdyAnvil_Smith.name": "Sturdy anvil",
+	"ArtisanProperty.CommonFire_Cook.description": "An open flame to roast fish and meats.",
+	"ArtisanProperty.CommonFire_Cook.name": "Open flame",
+	"ArtisanProperty.CommonStoveTop_Cook.description": "A basic stove top. Good for most dishes.",
+	"ArtisanProperty.CommonStoveTop_Cook.name": "Stove top",
+	"ArtisanProperty.CommonOven_Cook.description": "An oven for baking, roasting, and such.",
+	"ArtisanProperty.CommonOven_Cook.name": "Oven"
 }

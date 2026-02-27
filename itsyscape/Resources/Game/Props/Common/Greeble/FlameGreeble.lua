@@ -235,6 +235,7 @@ function FlameGreeble:load()
 		self.outerFlames:setParent(root)
 		self.outerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
 		self.outerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
+		self.outerFlames:getMaterial():setZBias(0.00005)
 
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
