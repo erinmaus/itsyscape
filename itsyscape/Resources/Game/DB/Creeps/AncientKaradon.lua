@@ -99,6 +99,40 @@ do
 end
 
 do
+	local AncientKaradonGoldfish = ItsyScape.Resource.Peep "AncientKaradonGoldfish"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Fish.AncientKaradonGoldfish",
+		Resource = AncientKaradonGoldfish
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Large goldfish",
+		Language = "en-US",
+		Resource = AncientKaradonGoldfish
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Didn't know goldfish could get so big...",
+		Language = "en-US",
+		Resource = AncientKaradonGoldfish
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Peeps/Fish/Fish_IdleLogic.lua",
+		IsDefault = 1,
+		Resource = AncientKaradonGoldfish
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "fish-reel",
+		Tree = "Resources/Game/Peeps/Fish/Fish_ReelLogic.lua",
+		Resource = AncientKaradonGoldfish
+	}
+end
+
+do
 	local AncientKaradonFishingSpotProxy = ItsyScape.Resource.Prop "AncientKaradonFishingSpotProxy" {
 		ItsyScape.Action.Fish() {
 			Requirement {
@@ -114,6 +148,11 @@ do
 			Output {
 				Resource = ItsyScape.Resource.Skill "Fishing",
 				Count = ItsyScape.Utility.xpForResource(40)
+			},
+
+			Output {
+				Resource = ItsyScape.Resource.Item "AncientKaradonSteak",
+				Count = 1
 			}
 		}
 	}
@@ -144,7 +183,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 5,
+		Health = 1000,
 		SpawnTime = math.huge,
 		Resource = AncientKaradonFishingSpotProxy
 	}
@@ -152,6 +191,213 @@ do
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BasicFish",
 		Resource = AncientKaradonFishingSpotProxy
+	}
+end
+
+do
+	local CookIngredientAction = ItsyScape.Action.CookIngredient() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AncientKaradonSteak",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(40)
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = CookIngredientAction
+	}
+
+	ItsyScape.Resource.Item "AncientKaradonSteak" {
+		CookIngredientAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "AncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Ancient karadon steak",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Not cooking this fine piece of fish would be an insult.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "AncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(40),
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "AncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.Ingredient {
+		Item = ItsyScape.Resource.Item "AncientKaradonSteak",
+		Ingredient = ItsyScape.Resource.Ingredient "Fish"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "AncientKaradonSteak",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemHealingUserdata"
+	}
+
+	ItsyScape.Meta.ItemHealingUserdata {
+		Hitpoints = 20,
+		Resource = ItsyScape.Resource.Item "AncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ItemUserdata {
+		Item = ItsyScape.Resource.Item "AncientKaradonSteak",
+		Userdata = ItsyScape.Resource.ItemUserdata "ItemValueUserdata"
+	}
+
+	ItsyScape.Meta.ItemValueUserdata {
+		Resource = ItsyScape.Resource.Item "AncientKaradonSteak",
+		Value = ItsyScape.Utility.valueForItem(40)
+	}
+
+	local EatAction = ItsyScape.Action.Eat()
+
+	ItsyScape.Meta.HealingPower {
+		HitPoints = 20,
+		Action = EatAction
+	}
+
+	local CookAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AncientKaradonSteak",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForResource(40)
+		}
+	}
+
+	local FailAction = ItsyScape.Action.Cook() {
+		Requirement {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = ItsyScape.Utility.xpForLevel(40)
+		},
+
+		Input {
+			Resource = ItsyScape.Resource.Item "AncientKaradonSteak",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Item "BurntAncientKaradonSteak",
+			Count = 1
+		},
+
+		Output {
+			Resource = ItsyScape.Resource.Skill "Cooking",
+			Count = 1
+		}
+	}
+
+	ItsyScape.Meta.HiddenFromSkillGuide {
+		Action = FailAction
+	}
+
+	ItsyScape.Meta.CookingFailedAction {
+		Output = FailAction,
+		Start = 0,
+		Stop = 4,
+		Action = CookAction
+	}
+
+	ItsyScape.Resource.Item "CookedAncientKaradonSteak" {
+		CookAction,
+		EatAction
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethodFire",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "CookingMethodRange",
+		Value = "Fish",
+		Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Cooked ancient karadon steak",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An exquisitely cooked piece of karadon steak that would make a caveman jealous.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = ItsyScape.Utility.valueForItem(4),
+		Weight = 0.5,
+		Resource = ItsyScape.Resource.Item "CookedAncientKaradonSteak"
+	}
+
+	ItsyScape.Resource.Item "BurntAncientKaradonSteak" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Burnt ancient karadon steak",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Probably should have been a more skilled chef before cooking a steak from an extinct species. Such a shame.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Item "BurntAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.Item {
+		Value = 1,
+		Stackable = 1,
+		Resource = ItsyScape.Resource.Item "BurntAncientKaradonSteak"
+	}
+
+	ItsyScape.Meta.ResourceCategory {
+		Key = "Cooking",
+		Value = "BurntFish",
+		Resource = ItsyScape.Resource.Item "BurntAncientKaradonSteak"
 	}
 end
 

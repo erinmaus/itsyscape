@@ -48,3 +48,12 @@ do
 		Resource = Fish1
 	}
 end
+
+do
+	local FishAncientKaradon = ItsyScape.Resource.ActionCommand "FishAncientKaradon"
+
+	ItsyScape.Meta.ActionCommandMap {
+		Map = ItsyScape.Resource.Map "Skilling_FishingAncientKaradon",
+		Resource = FishAncientKaradon
+	}
+end

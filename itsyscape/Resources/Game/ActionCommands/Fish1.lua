@@ -21,6 +21,9 @@ Fish.VELOCITY = 8
 Fish.MIN_DISTANCE = 0.25
 Fish.NEAR_DISTANCE = 0.5
 
+Fish.MAP = "Skilling_Fishing1"
+Fish.FISH_OVERRIDE = false
+
 function Fish:new(...)
 	ActionCommand.new(self, ...)
 
@@ -58,7 +61,7 @@ function Fish:new(...)
 	self.rectangleButton:setSize(48, 48)
 	self.rectangleContainer:addChild(self.rectangleButton)
 
-	self.mapLayer, self.mapScript = self:newMap("Skilling_Fishing1", function(mapLayer, mapScript)
+	self.mapLayer, self.mapScript = self:newMap(self.MAP, function(mapLayer, mapScript)
 		self.map:setMap(mapScript)
 
 		local x, y, z = Utility.Map.getAnchorPosition(
@@ -66,7 +69,7 @@ function Fish:new(...)
 			Utility.Peep.getResource(mapScript),
 			"Anchor_Spawn")
 
-		local fishActor = Utility.spawnActorAtPosition(mapScript, "LightningStormfish", x, y, z)
+		local fishActor = Utility.spawnActorAtPosition(mapScript, self.FISH_OVERRIDE or self:getOutputItem(), x, y, z)
 		self.fish = fishActor and fishActor:getPeep()
 
 		self.cursor = self:getDirector():probe(

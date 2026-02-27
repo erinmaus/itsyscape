@@ -117,6 +117,23 @@ do
 	}
 end
 
+M["Anchor_AncientKaradon_DummyFishingSpot"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = -1000,
+		PositionY = 0,
+		PositionZ = -1000,
+		Name = "Anchor_AncientKaradon_DummyFishingSpot",
+		Map = M._MAP,
+		Resource = M["Anchor_AncientKaradon_DummyFishingSpot"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "AncientKaradonFishingSpotProxy",
+		MapObject = M["Anchor_AncientKaradon_DummyFishingSpot"]
+	}
+end
+
 M["AncientKaradon"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {
