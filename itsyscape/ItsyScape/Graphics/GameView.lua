@@ -2306,6 +2306,8 @@ function GameView:decorate(group, decoration, layer, materials, callback)
 		decoration = Type(decoration.value)
 	elseif Class.isClass(decoration) then
 		Type = Class.getType(decoration)
+	else
+		return
 	end
 
 	local isSpline = Class.isCompatibleType(decoration, Spline)

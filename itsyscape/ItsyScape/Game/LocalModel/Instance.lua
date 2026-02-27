@@ -1335,7 +1335,7 @@ function Instance:_clearInstancedMap(layer)
 	end
 
 	for i = 1, #water do
-		self.stage:onWaterDrain(water:getKey(), water:getLayer())
+		self.stage:onWaterDrain(water[i]:getKey(), water[i]:getLayer())
 	end
 
 	local decorations = {}
