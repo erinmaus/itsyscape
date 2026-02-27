@@ -1404,12 +1404,13 @@ function LocalStage:loadMapResource(instance, filename, args)
 		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
 			local localLayer = item:match(".*@(%d+)%.[^%.@]*$")
 			local layer = instance:getGlobalLayerFromLocalLayer(group, tonumber(localLayer) or 1)
+			local filename = waterDirectoryPath .. "/" .. item
 
-			local data = "return " .. (love.filesystem.read(waterDirectoryPath .. "/" .. item) or "")
+			local data = "return " .. (love.filesystem.read(filename) or "")
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
-			self.onWaterFlood(self, item, water, layer)
+			self.onWaterFlood(self, filename, water, layer)
 		end
 	end
 
