@@ -166,10 +166,10 @@
 			"keyboardQuickDodge": ["q"],
 			"gamepadQuickDodge": "triggerright",
 
-			"keyboardMoveLeft": "left",
-			"keyboardMoveRight": "right",
-			"keyboardMoveUp": "up",
-			"keyboardMoveDown": "down",
+			"keyboardMoveLeft": "a",
+			"keyboardMoveRight": "d",
+			"keyboardMoveUp": "w",
+			"keyboardMoveDown": "s"
 		},
 
 		"debug": {

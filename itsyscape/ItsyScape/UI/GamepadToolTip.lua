@@ -345,6 +345,10 @@ function GamepadToolTip:performLayout()
 end
 
 function GamepadToolTip:setText(value)
+	if value == self:getText() then
+		return
+	end
+
 	Panel.setText(self, value)
 	self:performLayout()
 end

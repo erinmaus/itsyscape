@@ -104,7 +104,8 @@ function ActionCommandController:pull()
 		actorID = actor and actor:getID(),
 		propID = prop and prop:getID(),
 		current = self.currentInterface,
-		previous = self.previousInterface
+		previous = self.previousInterface,
+		message = self.actionCommand and self.actionCommand:getMessage()
 	}
 end
 

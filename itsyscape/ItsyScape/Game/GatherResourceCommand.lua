@@ -188,10 +188,12 @@ function GatherResourceCommand:attack(peep, spread)
 
 		local damage
 		if spread then
-			damage = math.lerp(damageRoll:getMinHit(), damageRoll:getMaxHit(), spread)
+			damage = math.lerp(damageRoll:getMinHit(), damageRoll:getMaxHit(), math.abs(spread))
+			damage = damage * math.sign(spread)
 		else
 			damage = damageRoll:roll()
 		end
+
 
 		self.prop:poke('resourceHit', {
 			tool = self.tool,

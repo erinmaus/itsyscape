@@ -18,7 +18,7 @@ local N = 0
 
 function Component:new()
 	N = N + 1
-	self.id = N + 1
+	self.id = N
 
 	self.x = 0
 	self.y = 0
@@ -29,8 +29,22 @@ function Component:new()
 	self.target = false
 end
 
+function Component:refresh()
+	N = N + 1
+
+	self.id = N
+end
+
 function Component:iterate()
 	return ipairs(self.children)
+end
+
+function Component:getNumChildren()
+	return #self.children
+end
+
+function Component:getParent()
+	return self.parent
 end
 
 function Component:addChild(child)
@@ -38,12 +52,14 @@ function Component:addChild(child)
 		child.parent:removeChild(child)
 	end
 
+	child.parent = self
 	table.insert(self.children, child)
 end
 
 function Component:removeChild(child)
 	for i = #self.children, 1, -1 do
 		if self.children[i] == child then
+			child.parent = false
 			table.remove(self.children, i)
 		end
 	end

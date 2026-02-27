@@ -48,6 +48,7 @@
 		"world.resource.hit": "00ff00",
 		"world.resource.warm": "ffcc00",
 		"world.resource.ready": "ff0000",
+		"world.resource.disabled": "999999",
 		"world.shimmer.attackable": "c93736",
 		"world.shimmer.unselected": "999999",
 		"world.shimmer.interactive": "ffcc00",

@@ -262,6 +262,7 @@ function RockView:load()
 	local state = self:getProp():getState()
 	if state.resource then
 		self.progress = state.resource.progress or 0
+		self.whacks = state.resource.whacks or 0
 		self.depleted = state.resource.depleted
 
 		if self.depleted then
@@ -270,7 +271,7 @@ function RockView:load()
 			self:spawn(self.FADE_TIME_SECONDS)
 		end
 	else
-		self.progress = 0
+		self.whacks = 0
 		self:spawn(self.FADE_TIME_SECONDS)
 	end
 
@@ -315,12 +316,10 @@ function RockView:tick()
 				self:getProp())
 		end
 
-		if r.progress ~= self.progress then
-			if r.progress > self.progress then
-				self:hit(self.shakeTime)
-			end
-
-			self.progress = r.progress
+		if r.whacks ~= self.whacks then
+			self.whacks = r.whacks
+			self.progress = state.resource.progress or 0
+			self:hit(self.shakeTime)
 		end
 
 		if r.depleted ~= self.depleted then

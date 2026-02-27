@@ -205,6 +205,10 @@ function Woodcut1:updateCursorColor(distance)
 		self.innerRectangle:setColor(readyColor)
 		self.outerRectangle:setColor(readyColor)
 	end
+
+	self.stateIsHot = isHot
+	self.stateIsWarm = isWarm
+	self.stateIsCold = isCold
 end
 
 function Woodcut1:moveSparkle(delta)
@@ -239,6 +243,18 @@ function Woodcut1:updateSparkle(delta)
 	end
 
 	self:moveSparkle(delta)
+end
+
+function Woodcut1:getMessage()
+	if self.stateIsCold then
+		return "ui.actionCommand.woodcutting.rotateToCursor"
+	elseif self.stateIsWarm then
+		return "ui.actionCommand.woodcutting.getCloser"
+	elseif self.stateIsHot then
+		return "ui.actionCommand.woodcutting.smashButton"
+	end
+
+	return "ui.actionCommand.woodcutting.rotateToCursor"
 end
 
 function Woodcut1:update(delta)

@@ -24,6 +24,7 @@ local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local Glyph = require "ItsyScape.UI.Glyph"
 local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
+local InputScheme = require "ItsyScape.UI.InputScheme"
 local Interface = require "ItsyScape.UI.Interface"
 local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local Panel = require "ItsyScape.UI.Panel"
@@ -177,7 +178,7 @@ function ActionCommand:new(...)
 	self.root.onMouseRelease:register(self.mouseReleaseOverRoot, self)
 
 	self.closeToolTip = GamepadToolTip()
-	self.closeToolTip:setControl("back")
+	self.closeToolTip:setControl("openRibbon")
 	self.closeToolTip:setText("Close")
 	self.closeToolTip:setRowSize(math.huge, Theme.calculateInnerSize(GamepadToolTip.PADDING, CloseButton.DEFAULT_SIZE))
 
@@ -223,13 +224,11 @@ do
 
 	function ActionCommand:_getTargetOffset(parent, t)
 		if not (t.targetType and t.targetID) then
-			print(">>> no target type / id")
 			return 0, 0
 		end
 
 		local sceneSnippet = self:_getParentSceneSnippet(parent)
 		if not (sceneSnippet and sceneSnippet:getCamera()) then
-			print(">>> no scene snippet")
 			return 0, 0
 		end
 
@@ -241,13 +240,11 @@ do
 		elseif t.targetType == "prop" then
 			object = gameView:getPropByID(t.targetID)
 		else
-			print("bad type")
 			return 0, 0
 		end
 
 		local view = gameView:getView(object)
 		if not view then
-			print("no node")
 			return 0, 0
 		end
 
@@ -259,7 +256,6 @@ do
 		end
 
 		if not node then
-			print("no node")
 			return 0, 0
 		end
 
@@ -472,6 +468,33 @@ function ActionCommand:_addProgressBar()
 	self:addChild(self.progressBar)
 end
 
+function ActionCommand:_addMessageToolTip()
+	if self.hintToolTip and self.hintToolTip:getParent() == self then
+		self:removeChild(self.hintToolTip)
+	end
+
+	local state = self:getState()
+	if not state.message then
+		return
+	end
+
+	local x, y = self.root:getPosition()
+	local width, height = self.root:getSize()
+
+	self.hintToolTip = self.hintToolTip or GamepadToolTip()
+
+	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "none")
+	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "none")
+	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
+
+	self.hintToolTip:setRowSize(width, 32)
+	self.hintToolTip:setPosition(x, y + Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, height))
+
+	local currentMessage = self:T(state.message)
+	self.hintToolTip:setText(self:T(state.message))
+	self:addChild(self.hintToolTip)
+end
+
 function ActionCommand:attach()
 	Interface.attach(self)
 
@@ -532,6 +555,8 @@ function ActionCommand:performLayout()
 		rootX + rootWidth + self.ROOT_PADDING,
 		closeButtonY)
 	self:addChild(self.closeToolTip)
+
+	self:_addMessageToolTip()
 end
 
 function ActionCommand:mouseMoveOverRoot(_, x, y)
@@ -617,7 +642,7 @@ end
 function ActionCommand:controlUp(control)
 	Interface.controlUp(self, control)
 
-	if control:is("back") then
+	if control:is("openRibbon") then
 		self:sendPoke("close", nil, {})
 	else
 		self:sendPoke("control", nil, { type = "up", value = control:getName() })

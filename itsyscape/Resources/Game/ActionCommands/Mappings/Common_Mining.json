@@ -1,0 +1,15 @@
+[
+	{
+		"actionCommand": "Mine1",
+
+		"actionType": "Mine",
+		"requirements": [
+			{
+				"resource": "Mining",
+				"resourceType": "Skill",
+				"minLevel": 1,
+				"maxLevel": 99
+			}
+		]
+	}
+]

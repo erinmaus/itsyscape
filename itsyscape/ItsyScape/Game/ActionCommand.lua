@@ -82,6 +82,10 @@ function ActionCommand:getToolResource()
 	return self.tool and self.tool:getID() or "Null", "Item"
 end
 
+function ActionCommand:getMessage()
+	return false
+end
+
 function ActionCommand:onDamage(damage)
 	-- Nothing.
 end
@@ -188,16 +192,20 @@ function ActionCommand:getCurrentInputScheme()
 	return self.lastInputScheme
 end
 
-function ActionCommand:getInputDirection()
+function ActionCommand:getInputDirection(scheme)
+	scheme = scheme or self.lastInputScheme
+
 	local x, y = 0, 0
-	if self.lastInputScheme == InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD then
+	if scheme == InputScheme.INPUT_SCHEME_MOUSE_KEYBOARD then
 		x, y = self.keyboardXDirection, self.keyboardYDirection
-	elseif self.lastInputScheme == InputScheme.INPUT_SCHEME_GAMEPAD then
+	elseif scheme == InputScheme.INPUT_SCHEME_GAMEPAD then
 		x, y = self.gamepadXDirection, self.gamepadYDirection
 	end
 
 	x = math.clamp(x, -1, 1)
 	y = math.clamp(y, -1, 1)
+
+	local dx, dy = x, y
 
 	local length = math.sqrt((x ^ 2) + (y ^ 2))
 	if length > 0 then
@@ -205,7 +213,7 @@ function ActionCommand:getInputDirection()
 		y = y / length
 	end
 
-	return x, y
+	return x, y, dx, dy
 end
 
 function ActionCommand:onXAxis(controller, value)
@@ -224,6 +232,8 @@ end
 function ActionCommand:onYAxis(controller, value)
 	self:_setLastInputScheme(controller)
 
+	local _, _, px, py = self:getInputDirection(InputScheme.INPUT_SCHEME_GAMEPAD)
+
 	if controller == "gamepad" then
 		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity") or 0
 		if math.abs(value) > axisSensitivity then
@@ -231,6 +241,12 @@ function ActionCommand:onYAxis(controller, value)
 		else
 			self.gamepadYDirection = 0
 		end
+	end
+
+	local nx, ny, cx, cy = self:getInputDirection(InputScheme.INPUT_SCHEME_GAMEPAD)
+
+	if not (px == cx and py == cy) then
+		self:onDirectionChanged(cx, cy, px, py)
 	end
 end
 
@@ -285,6 +301,10 @@ function ActionCommand:onControlUp(value)
 end
 
 function ActionCommand:onControlDown(value)
+	-- Nothing.
+end
+
+function ActionCommand:onDirectionChanged(currentX, currentY, previousX, previousY)
 	-- Nothing.
 end
 

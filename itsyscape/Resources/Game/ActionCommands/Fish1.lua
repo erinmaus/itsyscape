@@ -70,8 +70,6 @@ function Fish:new(...)
 		local instance = Utility.Peep.getInstance(mapScript)
 		local mapGroup = instance:getMapGroup(mapLayer)
 
-		print(">>> map group", mapGroup)
-
 		self.cursor = self:getDirector():probe(
 			self:getPeep():getLayerName(),
 			Probe.mapGroup(mapGroup),
@@ -184,6 +182,22 @@ function Fish:updateCursorColor(distance)
 		self.innerRectangle:setColor(readyColor)
 		self.outerRectangle:setColor(readyColor)
 	end
+
+	self.stateIsHot = isHot
+	self.stateIsWarm = isWarm
+	self.stateIsCold = isCold
+end
+
+function Fish:getMessage()
+	if self.stateIsCold then
+		return "ui.actionCommand.fish.findFish"
+	elseif self.stateIsWarm then
+		return "ui.actionCommand.fish.getCloser"
+	elseif self.stateIsHot then
+		return "ui.actionCommand.fish.smashButton"
+	end
+
+	return "ui.actionCommand.fish.findFish"
 end
 
 function Fish:update(delta)

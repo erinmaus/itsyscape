@@ -24,11 +24,13 @@ function BasicRock:new(...)
 
 	self:addBehavior(PropResourceHealthBehavior)
 
-	self:addPoke("mined")
+	self:addPoke("mine")
 	self:addPoke("resourceObtained")
 	self:addPoke("resourceHit")
 	self:addPoke("depleted")
 	self:addPoke("spawned")
+
+	self.mineCount = 0
 end
 
 function BasicRock:spawnOrPoofTile(tile, i, j, mode)
@@ -105,10 +107,14 @@ function BasicRock:onResourceHit(e)
 			health.maxProgress,
 			health.currentProgress)
 
-		local e = { peep = e.peep }
-		self:poke("mined", e)
 		self:poke("resourceObtained", e)
 	end
+
+	self:poke("mine", e)
+end
+
+function BasicRock:previewMine()
+	self.mineCount = self.mineCount + 1
 end
 
 function BasicRock:getPropState()
@@ -118,7 +124,8 @@ function BasicRock:getPropState()
 	local progress = math.floor(health.currentProgress / health.maxProgress * 100)
 	result.resource = {
 		progress = progress,
-		depleted = health.maxProgress == 0 or progress >= 100
+		depleted = health.maxProgress == 0 or progress >= 100,
+		whacks = self.mineCount
 	}
 
 	return result
