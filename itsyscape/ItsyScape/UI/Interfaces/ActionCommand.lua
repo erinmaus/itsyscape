@@ -223,11 +223,13 @@ do
 
 	function ActionCommand:_getTargetOffset(parent, t)
 		if not (t.targetType and t.targetID) then
+			print(">>> no target type / id")
 			return 0, 0
 		end
 
 		local sceneSnippet = self:_getParentSceneSnippet(parent)
 		if not (sceneSnippet and sceneSnippet:getCamera()) then
+			print(">>> no scene snippet")
 			return 0, 0
 		end
 
@@ -239,11 +241,13 @@ do
 		elseif t.targetType == "prop" then
 			object = gameView:getPropByID(t.targetID)
 		else
+			print("bad type")
 			return 0, 0
 		end
 
 		local view = gameView:getView(object)
 		if not view then
+			print("no node")
 			return 0, 0
 		end
 
@@ -255,6 +259,7 @@ do
 		end
 
 		if not node then
+			print("no node")
 			return 0, 0
 		end
 

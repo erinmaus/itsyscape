@@ -67,6 +67,7 @@ do
 		PositionX = 16,
 		PositionY = 0,
 		PositionZ = 16,
+		Layer = 4,
 		Name = "Anchor_Spawn",
 		Map = M._MAP,
 		Resource = M["Anchor_Spawn"]
@@ -79,6 +80,7 @@ do
 		PositionX = 16,
 		PositionY = 0,
 		PositionZ = 16,
+		Layer = 4,
 		Name = "Cursor",
 		Map = M._MAP,
 		Resource = M["Cursor"]

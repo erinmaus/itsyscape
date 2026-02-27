@@ -64,17 +64,17 @@ function Fish:new(...)
 	self.mapLayer, self.mapScript = self:newMap(self.MAP, function(mapLayer, mapScript)
 		self.map:setMap(mapScript)
 
-		local x, y, z = Utility.Map.getAnchorPosition(
-			self:getGame(),
-			Utility.Peep.getResource(mapScript),
-			"Anchor_Spawn")
-
-		local fishActor = Utility.spawnActorAtPosition(mapScript, self.FISH_OVERRIDE or self:getOutputItem(), x, y, z)
+		local fishActor = Utility.spawnActorAtAnchor(mapScript, self.FISH_OVERRIDE or self:getOutputItem(), "Anchor_Spawn")
 		self.fish = fishActor and fishActor:getPeep()
+
+		local instance = Utility.Peep.getInstance(mapScript)
+		local mapGroup = instance:getMapGroup(mapLayer)
+
+		print(">>> map group", mapGroup)
 
 		self.cursor = self:getDirector():probe(
 			self:getPeep():getLayerName(),
-			Probe.layer(mapLayer),
+			Probe.mapGroup(mapGroup),
 			Probe.namedMapObject("Cursor"))[1]
 
 		self.rectangleContainer:setTarget(self.cursor)

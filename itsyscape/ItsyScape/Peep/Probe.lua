@@ -249,6 +249,16 @@ function Probe.actionOutput(actionType, outputName, outputType)
 	return Function(_actionOutput, actionType, outputName, outputType)
 end
 
+local _mapGroup = function(mapGroup, peep)
+	local instance = Utility.Peep.getInstance(peep)
+	local peepMapGroup = instance:getMapGroup(Utility.Peep.getLayer(peep))
+	return mapGroup == peepMapGroup
+end
+
+function Probe.mapGroup(mapGroup)
+	return Function(_mapGroup, mapGroup)
+end
+
 local _layer = function(layer, peep)
 	local position = peep:getBehavior(PositionBehavior)
 	return position and position.layer == layer

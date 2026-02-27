@@ -69,12 +69,7 @@ function Woodcut1:new(...)
 	self.mapLayer, self.mapScript = self:newMap(self.MAP, function(mapLayer, mapScript)
 		self.map:setMap(mapScript)
 
-		local x, y, z = Utility.Map.getAnchorPosition(
-			self:getGame(),
-			Utility.Peep.getResource(mapScript),
-			"Anchor_Spawn")
-
-		local treeProp = Utility.spawnPropAtPosition(mapScript, Utility.Peep.getResource(self:getTarget()), x, y, z)
+		local treeProp = Utility.spawnPropAtAnchor(mapScript, Utility.Peep.getResource(self:getTarget()), "Anchor_Spawn")
 		self.tree = treeProp and treeProp:getPeep()
 
 		self.cursor = self:getDirector():probe(
