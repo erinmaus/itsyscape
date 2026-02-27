@@ -35,6 +35,16 @@ function Skilling.compareActionCommandMapping(a, b)
 		end
 	end
 
+	if not (a.resources and b.resources) and (a.resources or b.resources) then
+		if a.resources then
+			return true
+		end
+
+		if b.resources then
+			return false
+		end
+	end
+
 	local aOutputCount = a.outputs and #a.outputs or 0
 	local bOutputCount = b.outputs and #b.outputs or 0
 
@@ -131,15 +141,19 @@ function Skilling._actionCommandMappingConstraintMatch(mappingConstraint, action
 	if mappingConstraint.minLevel then
 		minCount = Curve.XP_CURVE:compute(mappingConstraint.minLevel)
 	end
-	minCount = (minCount or mappingConstraint.minCount) and math.min(minCount or 0, mappingConstraint.minCount or 0)
+	minCount = minCount or mappingConstraint.minCount
+
+	if minCount and math.max(actionConstraint.count, 0) < minCount then
+		return false
+	end
 
 	local maxCount
 	if mappingConstraint.maxLevel then
 		maxCount = Curve.XP_CURVE:compute(mappingConstraint.maxLevel)
 	end
-	maxCount = (maxCount or mappingConstraint.maxCount) and math.max(maxCount or 0, mappingConstraint.maxCount or 0)
+	maxCount = maxCount or mappingConstraint.maxCount
 
-	if (minCount and minCount > math.max(actionConstraint.count, 1)) or (maxCount and maxCount < math.max(actionConstraint.count, 1)) then
+	if maxCount and math.max(actionConstraint.count, 0) > maxCount then
 		return false
 	end
 
@@ -177,9 +191,10 @@ function Skilling._getActionCommandMappingsForResource(resource, actions, direct
 		local constraints = Utility.getActionConstraints(game, action.instance:getAction())
 
 		for _, mapping in ipairs(mappings) do
-			local isMatch = false
+			local isMatch = true
 
 			if mapping.mapObjects then
+				local isMapObjectMatch = false
 				for _, mapObject in ipairs(mapping.mapObjects) do
 					local mapObjectMap = mapObject.map
 					local mapObjectName = mapObject.name
@@ -197,19 +212,40 @@ function Skilling._getActionCommandMappingsForResource(resource, actions, direct
 
 						local mapObjectResourceID = mapObjectRecord and mapObjectRecord:get("Resource").id.value
 						if mapObjectResourceID and mapObjectResourceID == resource.id.value then
-							isMatch = true
+							isMapObjectMatch = true
 							break
 						end
 					end
 				end
+
+				if not isMapObjectMatch then
+					isMatch = false
+				end
 			end
 
-			if (mapping.requirements or mapping.inputs or mapping.outputs) and
-			   Skilling._actionCommandMappingConstraintsMatch(mapping.requirements, constraints.requirements) and
-			   Skilling._actionCommandMappingConstraintsMatch(mapping.inputs, constraints.inputs) and
-			   Skilling._actionCommandMappingConstraintsMatch(mapping.outputs, constraints.outputs)
+			if mapping.resources then
+				local isResourceMatch = false
+				local resourceType = gameDB:getBrochure():getResourceTypeFromResource(resource)
+				for _, otherResource in ipairs(mapping.resources) do
+					if otherResource.name == resource.name and otherResource.type == resourceType.name then
+						isResourceMatch = true
+						break
+					end
+				end
+
+				if not isResourceMatch then
+					isMatch = false
+				end
+			end
+
+			local hasConstraints = mapping.requirements or mapping.inputs or mapping.outputs
+			if not (
+					(not mapping.requirements or Skilling._actionCommandMappingConstraintsMatch(mapping.requirements, constraints.requirements)) and
+					(not mapping.inputs or Skilling._actionCommandMappingConstraintsMatch(mapping.inputs, constraints.inputs)) and
+					(not mapping.outputs or Skilling._actionCommandMappingConstraintsMatch(mapping.outputs, constraints.outputs))
+				)
 			then
-				isMatch = true
+				isMatch = false
 			end
 
 			if isMatch then
