@@ -38,12 +38,17 @@ function DebugTeleportController:teleport(e)
 	local instance = Utility.Peep.getInstance(peep)
 	local group = instance:getMapGroup(Utility.Peep.getLayer(peep))
 	local mapScript = instance:getMapScriptByLayer(instance:getGlobalLayerFromLocalLayer(group, 1))
+	if mapScript and mapScript:getFilename() ~= e.map then
+		mapScript = instance:getMapScriptByMapFilename(e.map)
+	end
 	if mapScript and mapScript:getFilename() == e.map then
 		local x, y, z, localLayer = Utility.Map.getAnchorPosition(
 			self:getGame(),
 			Utility.Peep.getResource(mapScript),
 			e.anchor)
 		local anchorPosition = Vector(x, y, z)
+
+		Utility.Peep.teleport(peep, Vector.ZERO, Utility.Peep.getLayer(mapScript))
 		Utility.Peep.localTeleport(peep, anchorPosition, localLayer)
 	else
 		local gameDB = self:getDirector():getGameDB()
