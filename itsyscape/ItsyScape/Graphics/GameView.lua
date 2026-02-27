@@ -1494,6 +1494,17 @@ function GameView:moveMap(layer, position, rotation, scale, offset, disabled, pa
 
 		m.parentLayer = parentLayer or false
 		m.hidden = not not disabled
+
+		local parentM = m.parentLayer and self.mapMeshes[m.parentLayer]
+		while parentM do
+			m.root = parentM
+
+			if parentM.hidden then
+				m.hidden = true
+			end
+
+			parentM = parentM.parentLayer and self.mapMeshes[parentM.parentLayer]
+		end
 	end
 
 	local m = self.mapMeshes[layer]
@@ -2600,7 +2611,7 @@ function GameView:flood(key, water, layer)
 		node:getMaterial():setOutlineThreshold(-1.0)
 	end
 
-	local w = { node = node, layer = layer or 1, mask = not not water.mask, bend = not not water.bend }
+	local w = { node = node, layer = layer or 1, mask = not not water.mask, bend = not not water.bend, c = RPCState.merge(water) }
 
 	self.water[key] = w
 
@@ -3037,11 +3048,12 @@ function GameView:updateMaps(delta)
 
 	for otherLayer, m in pairs(self.mapMeshes) do
 		if m.hidden then
+			local node = m.root or m.node
 			if otherLayer == layer then
 				local parentNode = m.parentLayer and self:getMapSceneNode(m.parentLayer) or self.scene
-				m.node:setParent(parentNode)
+				node:setParent(parentNode)
 			else
-				m.node:setParent()
+				node:setParent()
 			end
 		end
 
