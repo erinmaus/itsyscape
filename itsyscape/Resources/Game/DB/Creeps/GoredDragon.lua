@@ -223,3 +223,17 @@ ItsyScape.Meta.XWeaponBoost {
 	StrengthBonus = 0,
 	Resource = ItsyScape.Resource.Item "X_Dragon_Dragonfyre"
 }
+
+local StomachAcid = ItsyScape.Resource.Prop "GoredDragonStomachAcid"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.GoredDragon.GoredDragonStomachAcid",
+	Resource = StomachAcid
+}
+
+local StomachAcidFire = ItsyScape.Resource.Prop "GoredDragonStomachAcidFire"
+
+ItsyScape.Meta.PeepID {
+	Value = "Resources.Game.Peeps.Props.PassableProp",
+	Resource = StomachAcidFire
+}
