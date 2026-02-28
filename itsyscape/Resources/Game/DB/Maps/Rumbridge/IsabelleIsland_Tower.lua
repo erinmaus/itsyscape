@@ -780,6 +780,29 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
 	}
+
+	ItsyScape.Meta.MakeOffset {
+		OffsetY = 1.85,
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	local CraftAction = ItsyScape.Action.OpenCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Wood",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone" {
+		CraftAction
+	}
 end
 
 do

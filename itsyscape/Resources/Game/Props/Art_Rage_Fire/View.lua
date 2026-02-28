@@ -287,7 +287,7 @@ function Fire:load()
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
 		self.innerFlames:setParent(root)
-		self.innerFlames:getMaterial():setZBias(0.00005)
+		self.innerFlames:getMaterial():setZBias(10)
 
 		self.smoke = ParticleSceneNode()
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)

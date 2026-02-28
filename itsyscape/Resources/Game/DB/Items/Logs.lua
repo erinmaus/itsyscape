@@ -175,21 +175,6 @@ for name, log in spairs(LOGS) do
 		Resource = Log
 	}
 
-	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Craft",
-		XProgressive = "Crafting",
-		Language = "en-US",
-		Action = CraftAction
-	}
-
-	ItsyScape.Meta.DelegatedActionTarget {
-		CategoryKey = "Wood",
-		CategoryValue = name,
-		Action = CraftAction
-	}
-
 	local FletchAction = ItsyScape.Action.Fletch() {
 		Requirement {
 			Resource = ItsyScape.Resource.Skill "Engineering",
@@ -441,7 +426,6 @@ for name, log in spairs(LOGS) do
 	end
 
 	Log {
-		CraftAction,
 		FletchAction,
 		LightAction
 	}

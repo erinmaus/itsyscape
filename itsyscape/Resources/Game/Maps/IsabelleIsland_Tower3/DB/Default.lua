@@ -1525,7 +1525,7 @@ do
 	}
 
 	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "Desk_Isabelle",
+		Prop = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone",
 		MapObject = M["Desk_Isabelle1"]
 	}
 end
