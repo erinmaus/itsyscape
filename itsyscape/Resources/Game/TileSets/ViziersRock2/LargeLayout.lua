@@ -50,7 +50,7 @@ return {
 	},
 
 	sand = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/ViziersRock2/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/ViziersRock2/Sand%d@Specular.png",
@@ -59,10 +59,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,
@@ -78,7 +78,7 @@ return {
 	},
 
 	mud = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/ViziersRock2/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/ViziersRock2/Sand%d@Specular.png",
@@ -87,10 +87,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,

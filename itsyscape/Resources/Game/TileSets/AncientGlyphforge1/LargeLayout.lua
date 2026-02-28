@@ -31,7 +31,7 @@ return {
 	},
 
 	mud = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/AncientGlyphforge1/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/AncientGlyphforge1/Sand%d@Specular.png",
@@ -40,10 +40,10 @@ return {
 
 		DIRT_THRESHOLD = 0.2,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,
@@ -55,9 +55,10 @@ return {
 			Color.fromHexString("7b6453"),
 			Color.fromHexString("7b6453"),
 			Color.fromHexString("53463f"),
+			Color.fromHexString("53463f"),
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("44414c"),
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("7b6453"),
 	},
 
 	rock = Block.Bind(Grass) {
@@ -70,10 +71,10 @@ return {
 
 		DIRT_THRESHOLD = 0.3,
 
-		MIN_OFFSET = -16,
-		MAX_OFFSET = 16,
-		MIN_SCALE = 0.4,
-		MAX_SCALE = 0.7,
+		MIN_OFFSET = -32,
+		MAX_OFFSET = 32,
+		MIN_SCALE = 1,
+		MAX_SCALE = 1.5,
 
 		SAMPLE_NOISE = Grass.SAMPLE_NOISE {
 			scale = 7237

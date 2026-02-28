@@ -14,15 +14,15 @@ local Grass = require "ItsyScape.World.TileSets.Grass"
 
 return {
 	grass = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 5,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianGrass%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianGrass%d@Specular.png",
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianGrass%d@Outline.png",
 		NUM_SAMPLES = 2,
 
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.4
+		MIN_SCALE = 2,
+		MAX_SCALE = 2.5
 	},
 
 	dirt_path = Block.Bind(Grass) {
@@ -35,10 +35,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 0.7,
-		MAX_SCALE = 0.9,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		COLORS = {
 			Color.fromHexString("524842"),
@@ -48,7 +48,7 @@ return {
 	},
 
 	sand = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianSand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle/TropicalYendorianSand%d@Specular.png",
@@ -57,10 +57,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,

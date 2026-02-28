@@ -21,8 +21,8 @@ return {
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle2/Grass%d@Outline.png",
 		NUM_SAMPLES = 1,
 
-		MIN_SCALE = 1.2,
-		MAX_SCALE = 1.8,
+		MIN_SCALE = 2,
+		MAX_SCALE = 2.5,
 
 		COLORS = {
 			Color.fromHexString("558855"),
@@ -31,14 +31,12 @@ return {
 			Color.fromHexString("4f7252"),
 			Color.fromHexString("49784d"),
 			Color.fromHexString("3e6d3a"),
-			Color.fromHexString("463779"),
-			Color.fromHexString("463779"),
 			Color.fromHexString("463779")
 		}
 	},
 
 	dirt = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 5,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle2/Dirt%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle2/Dirt%d@Specular.png",
@@ -60,7 +58,7 @@ return {
 	},
 
 	sand = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle2/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianJungle2/Sand%d@Specular.png",
@@ -69,10 +67,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,

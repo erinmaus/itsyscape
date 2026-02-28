@@ -19,7 +19,7 @@ return {
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Grass%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Grass%d@Specular.png",
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Grass%d@Outline.png",
-		NUM_SAMPLES = 4,
+		NUM_SAMPLES = 3,
 
 		DIRT_THRESHOLD = 0.2,
 
@@ -50,7 +50,7 @@ return {
 	},
 
 	sand = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Sand%d@Specular.png",
@@ -78,7 +78,7 @@ return {
 	},
 
 	mud = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Sand%d@Specular.png",
@@ -108,7 +108,7 @@ return {
 	},
 
 	marble = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 5,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Stone%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Stone%d@Specular.png",
@@ -119,8 +119,8 @@ return {
 
 		MIN_OFFSET = -8,
 		MAX_OFFSET = 8,
-		MIN_SCALE = 0.75,
-		MAX_SCALE = 1,
+		MIN_SCALE = 1.2,
+		MAX_SCALE = 1.5,
 
 		ROTATION_NOISE = Noise {
 			scale = 7,
@@ -136,7 +136,7 @@ return {
 	},
 
 	dirt = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 6,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Dirt%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/OldGinsville1/Dirt%d@Specular.png",
@@ -147,8 +147,8 @@ return {
 
 		MIN_OFFSET = -8,
 		MAX_OFFSET = 8,
-		MIN_SCALE = 0.5,
-		MAX_SCALE = 0.75,
+		MIN_SCALE = 0.6,
+		MAX_SCALE = 0.8,
 
 		COLORS = {
 			Color.fromHexString("ffffff")
