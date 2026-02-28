@@ -24,7 +24,7 @@ local ORES = {
 	["Copper"] = {
 		tier = 0,
 		weight = 10.5,
-		health = 10000,
+		health = 5,
 		tiers = {
 			DEFAULT_TIER,
 			{

@@ -183,7 +183,7 @@ do
 	}
 
 	ItsyScape.Meta.GatherableProp {
-		Health = 1000,
+		Health = 150,
 		SpawnTime = math.huge,
 		Resource = AncientKaradonFishingSpotProxy
 	}

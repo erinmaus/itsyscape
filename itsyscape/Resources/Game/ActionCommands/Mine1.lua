@@ -67,7 +67,7 @@ function Mine1:new(...)
 
 	self.map = ActionCommand.Map()
 	self.map:setSize(540, 400)
-	self.map:setDistance(10)
+	self.map:setDistance(15)
 	self:addChild(self.map)
 
 	self.mainContainer = ActionCommand.Component()
