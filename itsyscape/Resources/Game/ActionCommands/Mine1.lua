@@ -188,7 +188,7 @@ function Mine1:rollButtons()
 		local keyboardButton = table.remove(allKeyboardButtons, love.math.random(#allKeyboardButtons))
 
 		button.button:setStandardButton(keyboardButton)
-		button.button:setGamepadButton(self.GAMEPAD_BUTTONS[gamepadButton] or gamepadButton)
+		button.button:setGamepadButton(self.GAMEPAD_BUTTON_ICONS[gamepadButton] or gamepadButton)
 
 		local x, y = unpack(table.remove(positions, love.math.random(#positions)))
 
