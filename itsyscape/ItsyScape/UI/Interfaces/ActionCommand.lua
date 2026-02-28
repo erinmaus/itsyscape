@@ -29,6 +29,7 @@ local Interface = require "ItsyScape.UI.Interface"
 local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local Particles = require "ItsyScape.UI.Particles"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local Widget = require "ItsyScape.UI.Widget"
 local Theme = require "ItsyScape.UI.Interfaces.Theme"
@@ -161,6 +162,79 @@ function ActionCommand.Rectangle:draw()
 	love.graphics.setColor(1, 1, 1, 1)
 end
 
+ActionCommand.Particles = Class(Particles)
+
+function ActionCommand.Particles:new(particles)
+	Particles.new(self)
+
+	particles = particles or {}
+	if particles.texture then
+		self:setTexture(particles.texture)
+	end
+
+	local quads
+	if particles.quads then
+		quads = {}
+		for _, quad in ipairs(particles.quads) do
+			table.insert(quads, love.graphics.newQuad(unpack(quad)))
+		end
+	end
+
+	if particles.properties then
+		local properties = {}
+		for k, v in pairs(particles.properties) do
+			properties[k] = v
+		end
+		properties.Quads = quads
+
+		self:updateParticleSystemProperties(properties)
+	end
+
+	if particles.emit then
+		self:emit(unpack(particles.emit))
+	end
+
+	self.time = 0
+	self.duration = particles.duration or math.huge
+
+	self.fadeIn = not not particles.fadeIn
+	self.fadeOut = not not particles.fadeOut
+	self.fadeDuration = particles.fadeDuration or 0
+end
+
+do
+	local tintColor = Color()
+	function ActionCommand.Particles:update(delta)
+		Particles.update(self, delta)
+
+		self.time = self.time + delta
+
+		local alpha = 1
+		if self.fadeIn then
+			if self.time < self.fadeDuration then
+				alpha = self.time / self.fadeDuration
+			end
+		end
+
+		if self.fadeOut then
+			local remaining = self.duration - self.fadeDuration
+			if remaining > 0 and remaining < self.fadeDuration then
+				alpha = 1 - math.clamp(remaining / self.fadeDuration)
+			end
+		end
+
+		tintColor:from(1, 1, 1, alpha)
+		self:setTintColor(tintColor)
+
+		if self.time > self.duration then
+			local parent = self:getParent()
+			if parent then
+				parent:removeChild(self)
+			end
+		end
+	end
+end
+
 function ActionCommand:new(...)
 	Interface.new(self, ...)
 
@@ -191,6 +265,7 @@ function ActionCommand:new(...)
 
 	self.sceneSnippets = {}
 	self.glyphs = {}
+	self.particles = {}
 end
 
 function ActionCommand:_onClose(_, index)
@@ -478,21 +553,28 @@ function ActionCommand:_addMessageToolTip()
 		return
 	end
 
-	local x, y = self.root:getPosition()
-	local width, height = self.root:getSize()
+	local rootX, rootY = self.root:getPosition()
+	local rootWidth, rootHeight = self.root:getSize()
+	local _, panelY = self.panel:getPosition()
+	local panelWidth, panelHeight = self.panel:getSize()
 
 	self.hintToolTip = self.hintToolTip or GamepadToolTip()
+	self:addChild(self.hintToolTip)
 
 	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "none")
 	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "none")
 	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
 
-	self.hintToolTip:setRowSize(width, 32)
-	self.hintToolTip:setPosition(x, y + Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, height))
+	self.hintToolTip:setRowSize(rootWidth, 32)
+	self.hintToolTip:setID("ActionCommand-Hint")
 
 	local currentMessage = self:T(state.message)
 	self.hintToolTip:setText(self:T(state.message))
-	self:addChild(self.hintToolTip)
+
+	local hintWidth, hintHeight = self.hintToolTip:getSize()
+	self.hintToolTip:setPosition(
+		rootX + (rootWidth - hintWidth) / 2,
+		rootY + rootHeight - Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, hintHeight))
 end
 
 function ActionCommand:attach()
@@ -516,6 +598,17 @@ function ActionCommand:tick()
 	local previousInterface = state.previous
 
 	self.actionCommandRoot = self:_build(self.root, currentInterface, previousInterface, _APP:getFrameDelta())
+	for i = #self.particles, 1, -1 do
+		local particle = self.particles[i]
+
+		if particle.new or particle.widget:getParent() then
+			self.actionCommandRoot:addChild(particle.widget)
+			particle.new = false
+		else
+			table.remove(self.particles, i)
+		end
+	end
+
 	self.root:setSize(self.actionCommandRoot:getSize())
 
 	self:performLayout()
@@ -647,6 +740,24 @@ function ActionCommand:controlUp(control)
 	else
 		self:sendPoke("control", nil, { type = "up", value = control:getName() })
 	end
+end
+
+function ActionCommand:showParticles(particles, x, y, z)
+	local _, screenHeight = itsyrealm.graphics.getScaledMode()
+	local scale = screenHeight / self.CANVAS_SIZE
+
+	x = (x or 0) * scale
+	y = (y or 0) * scale
+
+	local widget = ActionCommand.Particles(particles)
+	widget:setPosition(x, y)
+	widget:setZDepth(z or 1)
+
+	if self.actionCommandRoot then
+		self.actionCommandRoot:addChild(widget)
+	end
+
+	table.insert(self.particles, { widget = widget, new = true })
 end
 
 return ActionCommand

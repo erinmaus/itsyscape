@@ -238,7 +238,6 @@ function Skilling._getActionCommandMappingsForResource(resource, actions, direct
 				end
 			end
 
-			local hasConstraints = mapping.requirements or mapping.inputs or mapping.outputs
 			if not (
 					(not mapping.requirements or Skilling._actionCommandMappingConstraintsMatch(mapping.requirements, constraints.requirements)) and
 					(not mapping.inputs or Skilling._actionCommandMappingConstraintsMatch(mapping.inputs, constraints.inputs)) and

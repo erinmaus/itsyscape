@@ -12,7 +12,16 @@ do
 	local Mining1 = ItsyScape.Resource.ActionCommand "Mine1"
 
 	ItsyScape.Meta.ActionCommandMap {
-		Map = ItsyScape.Resource.Map "Skilling_Woodcutting1",
+		Map = ItsyScape.Resource.Map "Skilling_Mining1",
 		Resource = Mining1
+	}
+end
+
+do
+	local MiningHumanityEdgeAzatite = ItsyScape.Resource.ActionCommand "MineHumanityEdgeAzatite"
+
+	ItsyScape.Meta.ActionCommandMap {
+		Map = ItsyScape.Resource.Map "Skilling_MiningHumanityEdgeAzatite",
+		Resource = MiningHumanityEdgeAzatite
 	}
 end

@@ -3300,6 +3300,12 @@ function GameView:preTick(frameDelta)
 	for skybox in pairs(self.skyboxes) do
 		skybox:tick(frameDelta)
 	end
+
+	for _, m in pairs(self.mapMeshes) do
+		if m.hidden and not m.root then
+			m.node:tick(frameDelta)
+		end
+	end
 end
 
 do

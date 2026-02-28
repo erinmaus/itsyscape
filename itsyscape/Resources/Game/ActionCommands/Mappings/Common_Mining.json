@@ -1,5 +1,13 @@
 [
 	{
+		"actionCommand": "MineHumanityEdgeAzatite",
+		"actionType": "Mine",
+
+		"mapObjects": [
+			{ "map": "Sailing_HumanityEdge", "name": "AzatiteMeteor" }
+		]
+	},
+	{
 		"actionCommand": "Mine1",
 
 		"actionType": "Mine",

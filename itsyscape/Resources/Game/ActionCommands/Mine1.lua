@@ -23,9 +23,9 @@ Mine1.MAX_STUN_INTERVAL_SECONDS   = 0.5
 
 Mine1.REROLL_INTERVAL_SECONDS = 3
 
-Mine1.ROTATION_INTERVAL = 1
+Mine1.ROTATION_INTERVAL = 0.5
 
-Mine1.MAP = "Skilling_Woodcutting1"
+Mine1.MAP = "Skilling_Mining1"
 Mine1.ROCK_OVERRIDE = false
 
 Mine1.MIN_ACTIONS = 0
@@ -149,7 +149,7 @@ function Mine1:close()
 end
 
 function Mine1:rotateCamera()
-	local delta = 1 - math.clamp(self.rotateTimer / self.ROTATION_INTERVAL)
+	local delta = math.clamp(self.rotateTimer / self.ROTATION_INTERVAL)
 	self.previousAngle = math.lerp(self.previousAngle, self.currentAngle, delta)
 	self.currentAngle = self.currentAngle + math.pi / 2
 
@@ -296,6 +296,47 @@ function Mine1:hit(success)
 		return
 	end
 
+	local fromColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.gamepadZap.from"))
+	local fr, fg, fb = fromColor:get()
+	local toColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "ui.gamepadZap.to"))
+	local tr, tg, tb = toColor:get()
+
+	local x, y = self.mainContainer:getPosition()
+	local w, h = self.mainContainer:getSize()
+
+	self:onParticles({
+		properties = {
+			EmissionArea = { "ellipse", 64, 64, math.rad(360), true },
+			ParticleLifetime = { 0.4, 0.6 },
+			Sizes = { 0.25, 1.25, 0.25 },
+			Speed = { 96, 128 },
+			Rotation = { math.rad(0), math.rad(360) },
+			LinearAcceleration = { 0, -32, 0, -32 },
+			SizeVariation = { 0.5 },
+			Colors = {
+				{ fr, fg, fb, 0 },
+				{ fr, fg, fb, 1 },
+				{ tr, tg, tb, 1 },
+				{ tr, tg, tb, 0 }
+			},
+			Offset = {
+				32, 32
+			}
+		},
+
+		texture = "Resources/Game/UI/Particles/Combat/Zap.png",
+		quads = {
+			{ 0, 0, 64, 64, 128, 128 },
+			{ 64, 0, 64, 64, 128, 128 },
+			{ 0, 64, 64, 64, 128, 128 },
+			{ 64, 64, 64, 64, 128, 128 },
+		},
+
+		emit = { 20, 35 },
+
+		duration = 0.5
+	}, x + w / 2, y + h / 2)
+
 	self:onHit(love.math.random())
 
 	self:rollButtons()
@@ -327,6 +368,10 @@ function Mine1:updateButtonColors()
 	end
 end
 
+function Mine1:getMapWidget()
+	return self.map
+end
+
 function Mine1:updateMapCamera()
 	if not self.rock then
 		return
@@ -335,7 +380,7 @@ function Mine1:updateMapCamera()
 	local rockPosition = Utility.Peep.getPosition(self.rock)
 	self.map:setOffset(rockPosition)
 
-	local delta = 1 - math.clamp(self.rotateTimer / self.ROTATION_INTERVAL)
+	local delta = math.clamp(self.rotateTimer / self.ROTATION_INTERVAL)
 	local rotation = math.lerp(self.previousAngle, self.currentAngle, delta)
 	self.map:setVerticalRotation(rotation)
 end
@@ -356,7 +401,7 @@ function Mine1:update(delta)
 
 	self.stunTimer = math.max(self.stunTimer - delta, 0)
 	self.rollTimer = math.max(self.rollTimer - delta, 0)
-	self.rotateTimer = math.max(self.rotateTimer - delta, 0)
+	self.rotateTimer = math.min(self.rotateTimer + delta, self.ROTATION_INTERVAL)
 
 	if self.rollTimer == 0 and self.isActive then
 		self:rollButtons()

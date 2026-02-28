@@ -26,6 +26,7 @@ function ActionCommandController:new(peep, director, prop, action, t, attack)
 
 	if self.actionCommand then
 		self.actionCommand.onHit:register(self.hit, self)
+		self.actionCommand.onParticles:register(self.particles, self)
 	end
 
 	self:update(0)
@@ -42,6 +43,10 @@ function ActionCommandController:hit(_, spread)
 		local damage = self.attack(self:getPeep(), spread)
 		self.actionCommand:onDamage(damage)
 	end
+end
+
+function ActionCommandController:particles(_, particles, x, y, z)
+	self:send("showParticles", particles, x, y, z)
 end
 
 function ActionCommandController:poke(actionID, actionIndex, e)

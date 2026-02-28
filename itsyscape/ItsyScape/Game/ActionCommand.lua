@@ -34,6 +34,7 @@ function ActionCommand:new(action, peep, target, t)
 	self.root = self.Component()
 
 	self.onHit = Callback()
+	self.onParticles = Callback()
 
 	self.lastInputScheme = "mouse"
 	self.keyboardXDirection = 0

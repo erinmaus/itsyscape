@@ -1666,6 +1666,7 @@ include "Resources/Game/DB/Effects/Tutorial.lua"
 
 -- Action commands
 include "Resources/Game/DB/ActionCommands/Fishing.lua"
+include "Resources/Game/DB/ActionCommands/Mining.lua"
 include "Resources/Game/DB/ActionCommands/Woodcutting.lua"
 
 -- Props
