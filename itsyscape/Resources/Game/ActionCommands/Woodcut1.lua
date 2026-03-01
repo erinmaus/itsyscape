@@ -25,6 +25,7 @@ Woodcut1.SPARKLE_MIN_IDLE_DURATION_SECONDS = 3
 Woodcut1.SPARKLE_MAX_IDLE_DURATION_SECONDS = 5
 Woodcut1.SPARKLE_RADIUS = 2
 Woodcut1.SPARKLE_VELOCITY = math.pi / 4
+Woodcut1.SPARKLE_WIDTH = math.pi / 32
 
 Woodcut1.MAP = "Skilling_Woodcutting1"
 
@@ -231,6 +232,13 @@ function Woodcut1:moveSparkle(delta)
 end
 
 function Woodcut1:updateSparkle(delta)
+	self:moveSparkle(delta)
+
+	local distance = math.abs(self.currentSparkleAngle - self.targetSparkleAngle)
+	if distance > self.SPARKLE_WIDTH then
+		return
+	end
+
 	self.sparkleTimer = math.max(self.sparkleTimer - delta, 0)
 
 	if self.sparkleTimer == 0 then
@@ -241,8 +249,6 @@ function Woodcut1:updateSparkle(delta)
 
 		self.targetSparkleAngle = love.math.random() * math.pi * 2
 	end
-
-	self:moveSparkle(delta)
 end
 
 function Woodcut1:getMessage()
