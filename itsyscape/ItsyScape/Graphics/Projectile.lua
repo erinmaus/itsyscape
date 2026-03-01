@@ -91,6 +91,22 @@ function Projectile:playAnimation(target, animation, slot, priority)
 	end
 end
 
+function Projectile:getTargetSize(target, pointSize)
+	if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
+		local min, max
+
+		if self.gameView:getView(target) then
+			if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
+				min, max = target:getBounds()
+			end
+		end
+
+		return max - min
+	end
+
+	return pointSize or 0
+end
+
 function Projectile:getTargetPosition(target, offset, isLocal)
 	offset = offset or Vector.ZERO
 

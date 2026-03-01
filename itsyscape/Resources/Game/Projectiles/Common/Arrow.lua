@@ -27,6 +27,7 @@ function Arrow:attach()
 	Projectile.attach(self)
 
 	self.duration = math.huge
+	self.didPlaySfx = false
 end
 
 function Arrow:getTextureFilename()
@@ -77,6 +78,14 @@ function Arrow:update(elapsed)
 		local delta = self:getDelta()
 		local mu = Tween.sineEaseOut(delta)
 		local position = self.spawnPosition:lerp(self.hitPosition, mu)
+
+		local distance = position:distance(self.hitPosition)
+		local hitSize = self:getTargetSize(self:getDestination())
+		local hitDistance = math.max(hitSize.x, hitSize.z) / 2
+		if distance < hitDistance and not self.didPlaySfx then
+			self.didPlaySfx = true
+			self:playAnimation(self:getDestination(), "SFX_ArrowHit")
+		end
 
 		local alpha = 0
 		if delta > 0.5 then
