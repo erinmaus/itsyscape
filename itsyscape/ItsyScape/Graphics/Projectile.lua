@@ -91,6 +91,14 @@ function Projectile:playAnimation(target, animation, slot, priority)
 	end
 end
 
+function Projectile:stopAnimation(target, slot)
+	target = target or self.gameView:getGame():getPlayer():getActor()
+
+	if Class.isCompatibleType(target, Actor) then
+		target:onAnimationStopped(slot or "x-projectile-fx")
+	end
+end
+
 function Projectile:getTargetSize(target, pointSize)
 	if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
 		local min, max
