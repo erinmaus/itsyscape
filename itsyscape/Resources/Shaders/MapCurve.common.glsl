@@ -27,12 +27,12 @@ void transformPointByCurve(int index, inout vec3 currentPoint, inout vec3 curren
 	vec3 planarPoint = vec3(currentPoint.x, 0.0, currentPoint.z);
 
 	vec3 relative = (planarPoint - curveMin) / (curveMax - curveMin) * curve.axis;
-	if (relative.x < 0.0 || relative.x > 1.0 || relative.z < 0.0 || relative.z > 1.0)
+	float t = max(relative.x, relative.z);
+	if (t < 0.0 || t > 1.0)
 	{
 		return;
 	}
 
-	float t = max(relative.x, relative.z);
 	vec3 position = Texel(scape_CurveTextures, vec3(t, SCAPE_CURVE_TEXTURE_POSITION, float(index))).xyz;
 	vec3 normal = Texel(scape_CurveTextures, vec3(t, SCAPE_CURVE_TEXTURE_NORMAL, float(index))).xyz;
 	vec4 rotation = Texel(scape_CurveTextures, vec3(t, SCAPE_CURVE_TEXTURE_ROTATION, float(index)));

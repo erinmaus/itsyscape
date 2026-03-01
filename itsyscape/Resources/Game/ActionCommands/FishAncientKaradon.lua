@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Fish1 = require "ItsyScape.Resources.Game.ActionCommands.Fish1"
+local Fish1 = require "Resources.Game.ActionCommands.Fish1"
 
 FishAncientKaradon = Class(Fish1)
 FishAncientKaradon.MAP = "Skilling_FishingAncientKaradon"

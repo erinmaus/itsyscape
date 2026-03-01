@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Mine1 = require "ItsyScape.Resources.Game.ActionCommands.Mine1"
+local Mine1 = require "Resources.Game.ActionCommands.Mine1"
 
 MineHumanityEdgeAzatite = Class(Mine1)
 MineHumanityEdgeAzatite.MAP = "Skilling_MiningHumanityEdgeAzatite"

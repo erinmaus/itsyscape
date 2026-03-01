@@ -55,14 +55,14 @@ function Sewers:moveBoss(boss)
 		anchors[i] = mapObject
 	end
 
-	if self.lastBossMapObject then
-		for i = 1, #anchors do
-			if anchors[i]:get("Resource").id.value == self.lastBossMapObject.id.value then
-				table.remove(anchors, i)
-				break
-			end
-		end
-	end
+	-- if self.lastBossMapObject then
+	-- 	for i = 1, #anchors do
+	-- 		if anchors[i]:get("Resource").id.value == self.lastBossMapObject.id.value then
+	-- 			table.remove(anchors, i)
+	-- 			break
+	-- 		end
+	-- 	end
+	-- end
 
 	local targetAnchor = anchors[love.math.random(#anchors)]
 	self.lastBossMapObject = targetAnchor:get("Resource")
