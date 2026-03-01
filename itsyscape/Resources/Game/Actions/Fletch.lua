@@ -16,18 +16,26 @@ local Make = require "Resources.Game.Actions.Make"
 local Fletch = Class(Make)
 Fletch.SCOPES = { ['craft'] = true }
 
-function Fletch:perform(state, player)
+function Fletch:perform(state, player, prop)
 	local flags = { ['item-inventory'] = true }
 
 	if self:canPerform(state, flags) then
 		local a = CallbackCommand(self.make, self, state, player)
-		local b = WaitCommand(self:getActionDuration())
+		local b = CallbackCommand(self.fletch, self, player, prop)
+		local c = WaitCommand(self:getActionDuration())
 
 		local queue = player:getCommandQueue()
-		return queue:push(CompositeCommand(nil, a, b))
+		return queue:push(CompositeCommand(nil, a, b, c))
 	end
 
 	return false, "can't perform"
+end
+
+function Fletch:fletch(player, prop)
+	if prop then
+		prop:poke("fletch", { peep = player, action = self })
+		self:spawnCraftedItem(player, prop)
+	end
 end
 
 return Fletch
