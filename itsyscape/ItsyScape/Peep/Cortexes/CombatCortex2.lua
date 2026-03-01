@@ -982,15 +982,19 @@ function CombatCortex:tickPeep(delta, peep)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
 	if not isAttackable or isTooFar then
 		if peep:hasBehavior(PlayerBehavior) then
-			if not peep:hasBehavior(AttackCooldownBehavior) then
-				if not maybeCanReach and Utility.Peep.isFlying(target) then
-					Utility.Peep.notify(peep, "ui.notification.combat.targetFlyingAndOutOfRange")
-				else
-					Utility.Peep.notify(peep, "ui.notification.combat.targetOutOfRange")
-				end
+			if isAttackable then
+				if not peep:hasBehavior(AttackCooldownBehavior) then
+					if not maybeCanReach and Utility.Peep.isFlying(target) then
+						Utility.Peep.notify(peep, "ui.notification.combat.targetFlyingAndOutOfRange")
+					else
+						Utility.Peep.notify(peep, "ui.notification.combat.targetOutOfRange")
+					end
 
-				local weapon = self:_getPeepWeapon(peep)
-				weapon:applyCooldown(peep, target)
+					local weapon = self:_getPeepWeapon(peep)
+					weapon:applyCooldown(peep, target)
+				end
+			else
+				peep:removeBehavior(CombatTargetBehavior)
 			end
 		else
 			peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
