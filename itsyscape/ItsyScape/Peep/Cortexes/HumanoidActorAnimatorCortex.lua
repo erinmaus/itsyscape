@@ -41,7 +41,6 @@ function HumanoidActorAnimatorCortex:new()
 
 	self.walking = {}
 	self.idling = {}
-	self.dodging = {}
 end
 
 function HumanoidActorAnimatorCortex:addPeep(peep)
@@ -59,6 +58,7 @@ function HumanoidActorAnimatorCortex:addPeep(peep)
 	peep:listen("switchStyle", self.peekStyle, self)
 	peep:listen("actionFailed", self.actionFailed, self)
 	peep:listen("travel", self.onTravel, self)
+	peep:listen("dodge", self.onDodge, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -79,6 +79,7 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	peep:silence("switchStyle", self.peekStyle)
 	peep:silence("actionFailed", self.actionFailed, self, peep)
 	peep:silence("travel", self.onTravel, self)
+	peep:silence("dodge", self.onDodge, self)
 end
 
 function HumanoidActorAnimatorCortex:playSkillAnimation(peep, priority, resource)
@@ -227,6 +228,10 @@ function HumanoidActorAnimatorCortex:onTravel(peep)
 	end
 end
 
+function HumanoidActorAnimatorCortex:onDodge(peep)
+	self:playDodgeAnimation(peep)
+end
+
 function HumanoidActorAnimatorCortex:getPeepWeaponType(peep, weapon)
 	if not weapon then
 		weapon = Utility.Peep.getEquippedWeapon(peep, true)
@@ -262,6 +267,21 @@ function HumanoidActorAnimatorCortex:getDodgeAnimation(peep, weapon)
 
 	local x = self:getPeepWeaponType(peep, weapon)
 	return self:getXAnimation(peep, prefix, x)
+end
+
+function HumanoidActorAnimatorCortex:playDodgeAnimation(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if actor then
+		local resource = self:getDodgeAnimation(peep)
+		if resource then
+			actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false)
+			Utility.Peep.playAnimation(peep, "main-sfx", 0, "SFX_Dodge")
+
+			self.walking[actor] = nil
+			self.idling[actor] = nil
+		end
+	end
 end
 
 function HumanoidActorAnimatorCortex:getXAnimation(peep, prefix, x)
@@ -400,35 +420,24 @@ function HumanoidActorAnimatorCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if self:isDodging(peep) then
-			if not self.dodging[actor] then
-				local resource = self:getDodgeAnimation(peep)
-				if resource then
-					actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false)
-					Utility.Peep.playAnimation(peep, "main-sfx", 0, "SFX_Dodge")
-
-					self.dodging[actor] = resource
-					self.idling[actor] = nil
-					self.walking[actor] = nil
+		if not self:isDodging(peep) then
+			if self:isWalking(peep) then
+				if not self.walking[actor] then
+					local resource = self:getWalkAnimation(peep)
+					if resource then
+						actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
+						self.walking[actor] = resource
+						self.idling[actor] = nil
+					end
 				end
-			end
-		elseif self:isWalking(peep) then
-			if not self.walking[actor] then
-				local resource = self:getWalkAnimation(peep)
-				if resource then
-					actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
-					self.walking[actor] = resource
-					self.idling[actor] = nil
-					self.dodging[actor] = nil
-				end
-			end
-		else
-			if not self.idling[actor] then
-				local resource = self:getIdleAnimation(peep)
-				if resource then
-					actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, love.math.random())
-					self.idling[actor] = resource
-					self.walking[actor] = nil
+			else
+				if not self.idling[actor] then
+					local resource = self:getIdleAnimation(peep)
+					if resource then
+						actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, love.math.random())
+						self.idling[actor] = resource
+						self.walking[actor] = nil
+					end
 				end
 			end
 		end
