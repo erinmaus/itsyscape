@@ -62,7 +62,11 @@ function ArtisanInfoContentTab:new(interface)
 	self.stationSnippet:setCamera(self.camera)
 
 	self.titleLabel = Label()
-	self.titleLabel:setStyle(Theme.BUTTON_LABEL_STYLE, LabelStyle)
+	self.titleLabel:setStyle(
+		Theme.override(
+			Theme.BUTTON_LABEL_STYLE,
+			{ fontSize = 28 }),
+		LabelStyle)
 	self.titleLabel:setSize(
 		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH),
 		Theme.DEFAULT_ICON_SIZE)

@@ -565,7 +565,7 @@ function ActionCommand:_addMessageToolTip()
 	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "none")
 	self.hintToolTip:setButtonID(GamepadToolTip.INPUT_SCHEME_TOUCH, "none")
 
-	self.hintToolTip:setRowSize(rootWidth, 32)
+	self.hintToolTip:setRowSize(rootWidth, 42)
 	self.hintToolTip:setID("ActionCommand-Hint")
 
 	local currentMessage = self:T(state.message)

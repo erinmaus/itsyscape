@@ -21,13 +21,17 @@ local StatBar = require "ItsyScape.UI.Interfaces.Components.StatBar"
 
 local CraftProgress = Class(Interface)
 
+CraftProgress.PROGRESS_BAR_HEIGHT = 32
+CraftProgress.ICON_SIZE = 64
+
 CraftProgress.CONTENT_WIDTH  = Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 CraftProgress.CONTENT_HEIGHT = Theme.calculateTiledSizeWithPadding(
 	Theme.DEFAULT_OUTER_PADDING,
 	Theme.calculateSizeWithPadding(
 		Theme.DEFAULT_OUTER_PADDING,
-		Theme.DEFAULT_ITEM_SIZE_WITH_PADDING,
-		Theme.DEFAULT_ICON_SIZE),
+		CraftProgress.ICON_SIZE,
+		Theme.CONTENT_LABEL_STYLE.fontSize,
+		CraftProgress.PROGRESS_BAR_HEIGHT),
 	1)
 
 CraftProgress.WINDOW_WIDTH  = CraftProgress.CONTENT_WIDTH
@@ -43,35 +47,44 @@ function CraftProgress:new(...)
 
 	Theme.newCloseButton(self.titlePanel)
 
-	self.itemPanel = Theme.newItemParent(self.contentPanel, Panel)
+	self.itemPanel = Theme.newItemParent(
+		self.contentPanel,
+		Panel,
+		self.ICON_SIZE)
 	self.itemPanel:setPosition(
 		Theme.DEFAULT_OUTER_PADDING,
 		Theme.DEFAULT_OUTER_PADDING)
 
-	self.item = Theme.addItemIconChild(self.itemPanel)
+	self.item = Theme.addItemIconChild(
+		self.itemPanel,
+		Theme.DEFAULT_INNER_PADDING,
+		self.ICON_SIZE)
 
 	self.itemNameLabel = Label()
 	self.itemNameLabel:setStyle(Theme.CONTENT_TITLE_LABEL_STYLE, LabelStyle)
 	self.itemNameLabel:setPosition(
-		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.ICON_SIZE),
 		Theme.DEFAULT_OUTER_PADDING)
 	self.contentPanel:addChild(self.itemNameLabel)
 
 	self.itemDescriptionLabel = Label()
 	self.itemDescriptionLabel:setStyle(Theme.CONTENT_LABEL_STYLE, LabelStyle)
 	self.itemDescriptionLabel:setPosition(
-		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.ICON_SIZE),
 		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_TITLE_LABEL_STYLE.fontSize))
 	self.contentPanel:addChild(self.itemDescriptionLabel)
 
 	self.progressBar = StatBar()
-	self.progressBar:setNamedColors("ui.resource.progress", "ui.resource.remainder")
+	self.progressBar:setNamedColors("ui.resource.remainder", "ui.resource.progress")
 	self.progressBar:setSize(
 		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WINDOW_WIDTH),
-		Theme.DEFAULT_ICON_SIZE)
+		CraftProgress.PROGRESS_BAR_HEIGHT)
 	self.progressBar:setPosition(
 		Theme.DEFAULT_OUTER_PADDING,
-		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING))
+		Theme.calculateSizeWithPadding(
+			Theme.DEFAULT_OUTER_PADDING,
+			self.ICON_SIZE,
+			Theme.CONTENT_LABEL_STYLE.fontSize))
 	self.contentPanel:addChild(self.progressBar)
 
 	self.progressBarLabel = Label()

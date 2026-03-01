@@ -176,7 +176,7 @@ function CraftCategoriesContentTab:refresh(state)
 		icon:setItemID(group.itemIcon)
 
 		local name = button:getData("name")
-		name:setText(group.value)
+		name:setText(group.literal)
 	end
 end
 

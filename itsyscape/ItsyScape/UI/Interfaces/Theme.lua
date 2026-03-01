@@ -104,10 +104,10 @@ Theme.WINDOW_TITLE_LABEL_STYLE = {
 }
 
 Theme.STANDARD_CONSTRAINTS_CONFIG = {
-	headerFontSize = 18,
+	headerFontSize = 22,
 	headerColor = { 1, 1, 1, 1 },
 	headerShadow = true,
-	constraintFontSize = 16,
+	constraintFontSize = 20,
 	constraintColor = { 1, 1, 1, 1 },
 	constraintShadow = true,
 	outerPadding = Theme.DEFAULT_INNER_PADDING,
@@ -280,7 +280,7 @@ Theme.GROUP_PANEL_STYLE = {
 
 Theme.CONTENT_TITLE_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/SemiBold.ttf",
-	fontSize = 16,
+	fontSize = 24,
 	color = { 1, 1, 1, 1 },
 	lineHeight = 0.8,
 	textShadow = true
@@ -288,7 +288,7 @@ Theme.CONTENT_TITLE_LABEL_STYLE = {
 
 Theme.CONTENT_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	color = { 1, 1, 1, 1 },
 	textShadow = true
 }
@@ -305,7 +305,7 @@ Theme.BUTTON_LABEL_STYLE = {
 Theme.PROGRESS_BAR_LABEL_STYLE = {
 	color = { 1, 1, 1, 1 },
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 16,
+	fontSize = 26,
 	textShadow = true,
 	spaceLines = true
 }
@@ -314,9 +314,11 @@ Theme.SCENE_BORDER_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/SceneBorder.png"
 }
 
-function Theme.newItemParent(parent, Type)
+function Theme.newItemParent(parent, Type, size)
 	local instance = Type()
-	instance:setSize(Theme.DEFAULT_ITEM_SIZE_WITH_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
+	instance:setSize(
+		size or Theme.DEFAULT_ITEM_SIZE_WITH_PADDING,
+		size or Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
 
 	if Type == Panel then
 		instance:setStyle(Theme.ITEM_PANEL_STYLE, PanelStyle)
@@ -329,12 +331,17 @@ function Theme.newItemParent(parent, Type)
 	return instance
 end
 
-function Theme.addItemIconChild(parent)
-	parent:setSize(Theme.DEFAULT_ITEM_SIZE_WITH_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
+function Theme.addItemIconChild(parent, padding, size)
+	padding = padding or Theme.DEFAULT_INNER_PADDING
+	size = size or Theme.DEFAULT_ITEM_SIZE_WITH_PADDING
+
+	parent:setSize(size, size)
 
 	local icon = ItemIcon()
-	icon:setSize(Theme.DEFAULT_ICON_SIZE, Theme.DEFAULT_ICON_SIZE)
-	icon:setPosition(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
+	icon:setSize(
+		Theme.calculateInnerSize(padding, size),
+		Theme.calculateInnerSize(padding, size))
+	icon:setPosition(padding, padding)
 	parent:addChild(icon)
 
 	return icon
@@ -516,7 +523,7 @@ Theme.ERROR_NOTIFICATION_PANEL_STYLE = {
 
 Theme.ERROR_NOTIFICATION_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 18,
+	fontSize = 26,
 	color = { 1, 1, 1, 1 },
 	textShadow = true,
 	center = true,

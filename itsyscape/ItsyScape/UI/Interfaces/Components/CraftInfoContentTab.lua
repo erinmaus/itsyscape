@@ -46,7 +46,7 @@ CraftInfoContentTab.ITEM_BUTTON_STYLE = {
 
 CraftInfoContentTab.ITEM_NAME_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/SemiBold.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	color = { 1, 1, 1, 1 },
 	lineHeight = 0.8,
 	textShadow = true
@@ -54,7 +54,7 @@ CraftInfoContentTab.ITEM_NAME_LABEL_STYLE = {
 
 CraftInfoContentTab.ITEM_DESCRIPTION_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 16,
+	fontSize = 20,
 	color = { 1, 1, 1, 1 },
 	textShadow = true
 }
