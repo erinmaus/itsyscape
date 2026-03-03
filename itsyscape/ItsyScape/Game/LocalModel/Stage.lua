@@ -1295,10 +1295,12 @@ function LocalStage:preloadPlayerActionCommandsForPeep(instance, player, peep)
 		if not mapScript then
 			Log.info("Loading action command map '%s' for player '%s' (%d)...", map, player:getActor():getPeep():getName(), player:getID())
 
-			Utility.Map.spawnMap(instance:getBaseMapScript(), map, Vector(0, 1000, 0), {
+			local _, actionCommandMapScript = Utility.Map.spawnMap(instance:getBaseMapScript(), map, Vector(0, 1000, 0), {
 				isInstancedToPlayer = true,
 				player = player
 			})
+
+			Utility.Peep.disable(actionCommandMapScript)
 		end
 	end
 end
