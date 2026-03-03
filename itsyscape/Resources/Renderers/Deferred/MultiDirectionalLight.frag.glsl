@@ -1,4 +1,5 @@
 #include "Resources/Shaders/GBuffer.common.glsl"
+#include "Resources/Shaders/Lights.common.glsl"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Resource/Renderer/Deferred/DirectionalLight.frag.glsl
@@ -10,6 +11,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ///////////////////////////////////////////////////////////////////////////////
 
+uniform Image scape_DepthTexture;
 uniform Image scape_NormalTexture;
 uniform Image scape_SpecularOutlineTexture;
 
@@ -20,6 +22,10 @@ uniform vec3 scape_LightColor[SCAPE_MAX_NUM_LIGHTS];
 uniform int scape_NumLights;
 
 uniform vec3 scape_CameraForward;
+uniform mat4 scape_InverseViewMatrix;
+uniform mat4 scape_InverseProjectionMatrix;
+uniform vec3 scape_CameraTarget;
+uniform vec3 scape_CameraEye;
 
 vec4 effect(
 	vec4 color,
@@ -29,9 +35,13 @@ vec4 effect(
 {
 	vec3 normal = decodeGBufferNormal(Texel(scape_NormalTexture, textureCoordinate).xy);
 	vec4 specularSample = Texel(scape_SpecularOutlineTexture, textureCoordinate);
+	float depth = Texel(scape_DepthTexture, textureCoordinate).r;
+	vec3 position = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
 	vec3 cameraToTarget = -scape_CameraForward;
 	float specular = specularSample.r;
 	float alpha = specularSample.a;
+
+	vec3 falloff = vec3(calculateDirectionalLightFalloff(position, scape_CameraEye, scape_CameraTarget));
 
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)
@@ -41,7 +51,7 @@ vec4 effect(
 		float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
 		float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 2.0;
 
-		result += lightDotSurface * scape_LightColor[i] + vec3(max(specularCoefficient, 0.0)) * vec3(pow(length(scape_LightColor[i]), 1.5));
+		result += falloff * lightDotSurface * scape_LightColor[i] + vec3(max(specularCoefficient, 0.0)) * vec3(pow(length(scape_LightColor[i]), 1.5)) * vec3(falloff);
 	}
 
 	return vec4(result, alpha);

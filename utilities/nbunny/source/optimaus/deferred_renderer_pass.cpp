@@ -167,6 +167,23 @@ void nbunny::DeferredRendererPass::draw_ambient_lights(lua_State* L, float delta
 		this->ambient_light += light.ambient_coefficient;
 	}
 
+	shader_cache.update_uniform(shader, "scape_DepthTexture", g_buffer.get_canvas(DEPTH_INDEX));
+
+	auto camera_forward = get_renderer()->get_camera().get_forward();
+	shader_cache.update_uniform(shader, "scape_CameraForward", glm::value_ptr(camera_forward), sizeof(glm::vec3));
+
+	auto camera_eye = get_renderer()->get_camera().get_eye_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
+
+	auto camera_target = get_renderer()->get_camera().get_target_position();
+	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
+
+	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
+	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
+
+	auto inverse_view_matrix = glm::inverse(get_renderer()->get_camera().get_view());
+	shader_cache.update_uniform(shader, "scape_InverseViewMatrix", glm::value_ptr(inverse_view_matrix), sizeof(glm::mat4));
+
 	shader_cache.update_uniform(shader, "scape_SpecularOutlineTexture", g_buffer.get_canvas(SPECULAR_OUTLINE_INDEX));
 	shader_cache.update_uniform(shader, "scape_LightAmbientCoefficient", &ambient_coefficients[0], sizeof(float) * index);
 	shader_cache.update_uniform(shader, "scape_LightColor", glm::value_ptr(light_colors[0]), sizeof(glm::vec3) * index);
@@ -243,6 +260,12 @@ void nbunny::DeferredRendererPass::draw_directional_lights(lua_State* L, float d
 
 	auto camera_forward = get_renderer()->get_camera().get_forward();
 	shader_cache.update_uniform(shader, "scape_CameraForward", glm::value_ptr(camera_forward), sizeof(glm::vec3));
+
+	auto camera_eye = get_renderer()->get_camera().get_eye_position();
+	shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
+
+	auto camera_target = get_renderer()->get_camera().get_target_position();
+	shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
 
 	auto inverse_projection_matrix = glm::inverse(get_renderer()->get_camera().get_projection());
 	shader_cache.update_uniform(shader, "scape_InverseProjectionMatrix", glm::value_ptr(inverse_projection_matrix), sizeof(glm::mat4));
