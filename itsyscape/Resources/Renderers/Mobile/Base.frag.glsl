@@ -78,7 +78,7 @@ vec3 scapeApplyLight(
 	else
 	{
 		float falloff = calculateXZLightFalloff(light.position.xyz, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-		pointLightFalloff = mix(0.25, 1.0, falloff);
+		pointLightFalloff = mix(0.5, 1.0, falloff);
 
 		vec3 lightSurfaceDifference = light.position.xyz - position;
 		direction = normalize(lightSurfaceDifference);
@@ -108,8 +108,8 @@ vec3 scapeApplyLight(
 			cameraToTarget /= vec3(cameraToTargetLength);
 
 			float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
-			float specularCoefficient = (pow(2.0, exponent * pow(specular, 2.2)) - 1.0) / 4.0;
-			specularLight = specularCoefficient * vec3(length(light.color));
+			float specularCoefficient = (pow(2.0, exponent * pow(specular, 2.2)) - 1.0) / 2.0;
+			specularLight = vec3(max(specularCoefficient, 0.0)) * vec3(length(light.color));
 		}
 	}
 
@@ -128,7 +128,7 @@ vec3 scapeApplyLight(
 
 	return pointLight * vec3(pointLightFalloff) +
 	       diffuseLight * vec3(directionalLightFalloff) +
-	       specularLight * vec3(directionalLightFalloff) +
+	       //specularLight +
 	       ambientLight * vec3(ambientLightFalloff) +
 	       rimLight;
 }
@@ -188,6 +188,8 @@ vec4 effect(
 	}
 
 	float xzFalloff = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
+	xzFalloff = mix(0.25, 1.0, xzFalloff);
+
 	float yFalloff = calculateYLightFalloff(position, scape_CameraEye, scape_CameraTarget);
 
 	vec3 result = vec3(0.0);
@@ -205,8 +207,8 @@ vec4 effect(
 				normal,
 				diffuse.rgb,
 				specular,
-				1.0,
-				1.0);
+				xzFalloff,
+				yFalloff);
 		}
 	}
 

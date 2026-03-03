@@ -2,9 +2,15 @@
 
 float calculateCameraRange(vec3 cameraEye, vec3 cameraTarget)
 {
-	float realDistance = distance(cameraEye, cameraTarget);
-	float additionalDistance = (1 - step(0.1, realDistance)) * 50;
-	return (realDistance + additionalDistance) / 2.0;
+	float x = distance(cameraEye, cameraTarget);
+	x += (1 - step(0.1, x)) * 25;
+	x = clamp(x, 1, 100);
+
+	const float a = 0.008;
+	const float b = 0.13;
+	const float c = 4.6;
+
+	return a * (x * x) + b * x + c;
 }
 
 float calculateXZLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTarget, mat4 viewMatrix)
