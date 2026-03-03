@@ -51,11 +51,11 @@ do
 	}
 
 	ItsyScape.Meta.Fog {
-		ColorRed = 0,
-		ColorGreen = 0,
-		ColorBlue = 0,
-		NearDistance = 50,
-		FarDistance = 100,
+		ColorRed = 234,
+		ColorGreen = 181,
+		ColorBlue = 31,
+		NearDistance = 15,
+		FarDistance = 150,
 		Resource = M["Light_Fog"]
 	}
 end
