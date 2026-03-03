@@ -22,6 +22,7 @@ uniform vec3 scape_LightColor[SCAPE_MAX_NUM_LIGHTS];
 uniform int scape_NumLights;
 
 uniform vec3 scape_CameraForward;
+uniform mat4 scape_ViewMatrix;
 uniform mat4 scape_InverseViewMatrix;
 uniform mat4 scape_InverseProjectionMatrix;
 uniform vec3 scape_CameraTarget;
@@ -41,7 +42,8 @@ vec4 effect(
 	float specular = specularSample.r;
 	float alpha = specularSample.a;
 
-	vec3 falloff = vec3(calculateDirectionalLightFalloff(position, scape_CameraEye, scape_CameraTarget));
+	float falloffValue = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
+	vec3 falloff = vec3(mix(0.25, 1.0, falloffValue));
 
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)
@@ -49,9 +51,9 @@ vec4 effect(
 		float lightDotSurface = max(dot(scape_LightDirection[i], normal), 0.0);
 
 		float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
-		float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 2.0;
+		float specularCoefficient = (pow(2.0, exponent * pow(specular, 2.2)) - 1.0) / 2.0;
 
-		result += falloff * lightDotSurface * scape_LightColor[i] + vec3(max(specularCoefficient, 0.0)) * vec3(pow(length(scape_LightColor[i]), 1.5)) * vec3(falloff);
+		result += falloff * lightDotSurface * scape_LightColor[i] + vec3(max(specularCoefficient, 0.0)) * vec3(length(scape_LightColor[i])) * falloff;
 	}
 
 	return vec4(result, alpha);

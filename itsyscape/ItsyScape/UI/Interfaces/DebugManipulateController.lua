@@ -404,13 +404,29 @@ function DebugManipulateController.REPLAYED_ACTIONS:orientateCamera(action)
 			peepID = action.event.targetPeepID,
 		}, otherLayer)
 
+		local overrideLayer = self:getLayerFromMapInfo({
+			resource = action.event.overrideMapResource,
+			localLayer = action.event.overrideMapLocalLayer,
+		})
+		local overridePeep = self:getPeepFromTargetInfo({
+			mapObjectName = action.event.overrideMapObjectName,
+			peepID = action.event.overridePeepID,
+		}, overrideLayer)
+
 		local actor = peep and peep:getBehavior(ActorReferenceBehavior)
 		actor = actor and actor.actor
 
 		local otherActor = otherPeep and otherPeep:getBehavior(ActorReferenceBehavior)
 		otherActor = otherActor and otherActor.actor
 
-		if actor then
+		local overrideActor = overridePeep and overridePeep:getBehavior(ActorReferenceBehavior)
+		overrideActor = overrideActor and overrideActor.actor
+
+		if overrideActor then
+			player:pokeCamera("overrideCameraPosition", actor:getID(), action.event.overrideBone or "")
+		end
+
+		if actor and overrideActor ~= actor then
 			local delay = action.timing and action.timing.delay
 			local duration = action.timing and action.timing.duration
 			local tween = action.timing and action.timing.tween
@@ -1603,7 +1619,15 @@ end
 function DebugManipulateController:orientateCamera(e)
 	local actor = self:getGame():getStage():getActorByID(e.actorID)
 	local peep = actor and actor:getPeep()
-	if not peep then
+
+	local overrideActor = self:getGame():getStage():getActorByID(e.overrideActorID)
+	local overridePeep = overrideActor and overrideActor:getPeep()
+
+	if e.overrideActorID and not overridePeep then
+		return
+	end
+
+	if not (peep or overridePeep) then
 		return
 	end
 
@@ -1615,23 +1639,33 @@ function DebugManipulateController:orientateCamera(e)
 	end
 
 	local selfInstance = Utility.Peep.getInstance(self:getPeep())
-	local peepInstance = Utility.Peep.getInstance(peep)
+	local peepInstance = peep and Utility.Peep.getInstance(peep)
 	local otherInstance = otherPeep and Utility.Peep.getInstance(otherPeep)
+	local overrideInstance = overridePeep and Utility.Peep.getInstance(overridePeep)
 
-	if peepInstance ~= selfInstance or (otherPeep and otherInstance ~= selfInstance) then
+	if (peep and peepInstance ~= selfInstance) or
+	   (otherPeep and otherInstance ~= selfInstance) or
+	   (overridePeep and overrideInstance ~= selfInstance)
+	then
 		return
 	end
 
 	if self.isRecording then
 		local otherMapInfo = otherPeep and self:getMapInfo(Utility.Peep.getLayer(otherPeep))
 		local otherTargetInfo = otherMapInfo and self:getTargetInfo(otherPeep)
+		local overrideMapInfo = overridePeep and self:getMapInfo(Utility.Peep.getLayer(overridePeep))
+		local overrideTargetInfo = overrideMapInfo and self:getTargetInfo(overridePeep)
 
-		self:record(Utility.Peep.getLayer(peep), peep, "orientateCamera", {
+		self:mergeOrRecord(Utility.Peep.getLayer(peep or overridePeep), peep or overridePeep, "orientateCamera", {
 			targetMapObjectName = otherTargetInfo and otherTargetInfo.mapObjectName,
 			targetPeepID = otherTargetInfo and otherTargetInfo.peepID,
 			targetMapResource = otherMapInfo and otherMapInfo.resource,
 			targetMapLocalLayer = otherMapInfo and otherMapInfo.localLayer,
-			bone = ""
+			bone = "",
+			overrideMapResource = overrideMapInfo and overrideMapInfo.resource,
+			overrideMapLocalLayer = overrideMapInfo and overrideMapInfo.localLayer,
+			overridePeepID = overrideTargetInfo and overrideTargetInfo.peepID,
+			overrideBone = overridePeep and "" or nil
 		})
 	end
 end

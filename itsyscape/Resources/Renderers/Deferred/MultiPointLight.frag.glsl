@@ -1,4 +1,5 @@
 #include "Resources/Shaders/GBuffer.common.glsl"
+#include "Resources/Shaders/Lights.common.glsl"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Resource/Renderer/Deferred/DirectionalLight.frag.glsl
@@ -24,6 +25,10 @@ uniform vec3 scape_LightPosition[SCAPE_MAX_NUM_LIGHTS];
 uniform vec3 scape_LightColor[SCAPE_MAX_NUM_LIGHTS];
 uniform int scape_NumLights;
 
+uniform mat4 scape_ViewMatrix;
+uniform vec3 scape_CameraTarget;
+uniform vec3 scape_CameraEye;
+
 vec4 effect(
 	vec4 color,
 	Image image,
@@ -37,10 +42,13 @@ vec4 effect(
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)
 	{
+		float falloffValue = calculateXZLightFalloff(scape_LightPosition[i], scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
+		vec3 falloff = vec3(mix(0.25, 1.0, falloffValue));
+
 		vec3 lightSurfaceDifference = scape_LightPosition[i] - position;
 		float attenuation = clamp(1.0 - length(lightSurfaceDifference) / scape_LightAttenuation[i], 0.0, 1.0);
 
-		result += attenuation * attenuation * scape_LightColor[i];
+		result += attenuation * attenuation * scape_LightColor[i] * falloff;
 	}
 
 	return vec4(result, alpha);

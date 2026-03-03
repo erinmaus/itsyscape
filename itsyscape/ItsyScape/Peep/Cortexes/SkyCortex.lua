@@ -377,7 +377,7 @@ function SkyCortex:update(delta)
 					local currentSunColor = sunMoonColors[currentIndex]:lerp(sunMoonColors[nextIndex], delta)
 
 					local normal = self:getDirectionLightNormal(seconds)
-					sunDirectionalLight:setColor(currentSunColor * sky.currentAmbientColor.a)
+					sunDirectionalLight:setColor(currentSunColor)
 					sunDirectionalLight:setDirection(normal)
 					sunDirectionalLight:setCastsShadows(true)
 				end

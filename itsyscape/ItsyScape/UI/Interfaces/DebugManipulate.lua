@@ -440,6 +440,13 @@ function DebugManipulate.OrientateAction:start()
 						self:getInterface():stopAction()
 					end
 				})
+
+				interface:buildActorAction(actions, object, {
+					verb = "Override-Camera-Position",
+					callback = function()
+						self:getInterface():overrideCameraPosition(self:getObject(), object)
+					end
+				})
 			end
 		end
 
@@ -2190,6 +2197,13 @@ function DebugManipulate:orientateCamera(object, otherObject)
 	})
 end
 
+function DebugManipulate:overrideCameraPosition(object, overrideObject)
+	self:sendPoke("orientateCamera", nil, {
+		actorID = object ~= overrideObject and object:getID(),
+		overrideActorID = (overrideObject or object):getID()
+	})
+end
+
 function DebugManipulate:_onClickAction(presetInfo, preset, actionIndex, button, index)
 	if index == 1 then
 		self:editPresetAction(presetInfo, preset, actionIndex)
@@ -2306,6 +2320,15 @@ function DebugManipulate:buildActorActions(object, hit, actions)
 			self:beginAction(DebugManipulate.PreviewOrientateAction, object, hit)
 		end
 	})
+
+	if object:getPeepResourceID() == "CameraDolly" or object == self:getView():getGame():getPlayer():getActor() then
+		self:buildActorAction(actions, object, {
+			verb = "Override-Camera-Position",
+			callback = function()
+				self:overrideCameraPosition(object)
+			end
+		})
+	end
 
 	self:buildActorAction(actions, object, {
 		verb = "Look-At",

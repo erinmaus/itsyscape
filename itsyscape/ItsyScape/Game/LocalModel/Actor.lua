@@ -317,6 +317,11 @@ function LocalActor:getResource()
 	return Utility.Peep.getResource(self.peep)
 end
 
+function LocalActor:getPeepResourceID()
+	local resource = self:getResource()
+	return resource and resource.name or false
+end
+
 function LocalActor:getActions(scope)
 	local status = self.peep:getBehavior(CombatStatusBehavior)
 	if status and status.dead then

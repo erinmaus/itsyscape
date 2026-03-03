@@ -10,6 +10,7 @@ uniform vec3 scape_LightColor[SCAPE_MAX_NUM_LIGHTS];
 uniform float scape_LightAmbientCoefficient[SCAPE_MAX_NUM_LIGHTS];
 uniform int scape_NumLights;
 
+uniform mat4 scape_ViewMatrix;
 uniform mat4 scape_InverseViewMatrix;
 uniform mat4 scape_InverseProjectionMatrix;
 uniform vec3 scape_CameraTarget;
@@ -26,7 +27,12 @@ vec4 effect(
 
 	float depth = Texel(scape_DepthTexture, textureCoordinate).r;
 	vec3 position = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
-	float falloff = calculateAmbientLightFalloff(position, scape_CameraEye, scape_CameraTarget);
+
+	float yFalloff = calculateYLightFalloff(position, scape_CameraEye, scape_CameraTarget);
+	float xzFalloff = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
+	xzFalloff = mix(0.5, 0.5, xzFalloff);
+
+	float falloff = xzFalloff * yFalloff;
 
 	for (int i = 0; i < scape_NumLights; ++i)
 	{

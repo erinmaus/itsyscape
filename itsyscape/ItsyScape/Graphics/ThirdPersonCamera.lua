@@ -28,6 +28,8 @@ function ThirdPersonCamera:new()
 	self.distance = 1
 	self.up = Vector(0, 1, 0):keep()
 	self.position = Vector(0, 0, 0):keep()
+	self.overridePosition = Vector()
+	self.hasOverridePosition = false
 	self.rotation = Quaternion():keep()
 	self.scale = Vector(1):keep()
 
@@ -217,7 +219,7 @@ do
 		do
 			view:reset()
 
-			MathCommon.makeTranslationTransform(self:getPosition(), translationBefore)
+			MathCommon.makeTranslationTransform(self.position, translationBefore)
 			MathCommon.makeRotationTransform(self:getCombinedRotation(combinedRotation), rotation)
 			MathCommon.makeTranslationTransform(distance:from(0, 0, self.distance), translationAfter)
 
@@ -382,11 +384,21 @@ function ThirdPersonCamera:getStrafeLeft()
 end
 
 function ThirdPersonCamera:getPosition()
-	return self.position
+	return self.hasOverridePosition and self.overridePosition or self.position
 end
 
 function ThirdPersonCamera:setPosition(value)
 	self.position = (value or self.position):keep()
+end
+
+function ThirdPersonCamera:setOverridePosition(value)
+	if not value then
+		self.overridePosition:from(0)
+		self.hasOverridePosition = false
+	else
+		self.overridePosition:from(value:get())
+		self.hasOverridePosition = true
+	end
 end
 
 do
@@ -415,6 +427,10 @@ end
 
 function ThirdPersonCamera:copy(parentCamera)
 	self:setPosition(parentCamera:getPosition())
+	if parentCamera.hasOverridePosition then
+		self:setOverridePosition(parentCamera.overridePosition)
+	end
+
 	self:setFieldOfView(parentCamera:getFieldOfView())
 	self:setNear(parentCamera:getNear())
 	self:setFar(parentCamera:getFar())

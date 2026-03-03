@@ -77,6 +77,16 @@ function DebugManipulateCameraController:onDisableInteraction()
 	self.isInteractive = self.interactiveLock <= 0
 end
 
+function DebugManipulateCameraController:onOverrideCameraPosition(actorID, actorBone)
+	local actor = self:getGameView():getActorByID(actorID)
+	if not actor then
+		return
+	end
+
+	self.overridePositionActor = actor
+	self.overridePositionActorBone = actorBone
+end
+
 function DebugManipulateCameraController:onOrientateToActor(actorID, delay, duration, tween)
 	local nextActor = self:getGameView():getActorByID(actorID)
 	if not nextActor then
@@ -421,6 +431,15 @@ function DebugManipulateCameraController:draw()
 		local otherTranslation = self:getActorTransforms(p.otherActor, p.bone)
 		rotation = Quaternion.lookAt(translation, otherTranslation, Vector.UNIT_Y)
 		rotation = Quaternion(-rotation.x, -rotation.y, -rotation.z, rotation.w)
+
+		camera:setOverridePosition(otherTranslation)
+	else
+		camera:setOverridePosition()
+	end
+
+	if self.overridePositionActor then
+		local overrideTranslation = self:getActorTransforms(self.overridePositionActor, self.overridePositionActorBone)
+		camera:setOverridePosition(overrideTranslation)
 	end
 
 	camera:setRotation((self.CONSTANT_ROTATION * rotation * self.rotationOffset):getNormal())

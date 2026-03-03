@@ -44,6 +44,7 @@ ActorProxy.unsetSkin:link(
 
 ActorProxy.getID = Property(-1)
 ActorProxy.getPeepID = Property("null")
+ActorProxy.getPeepResourceID = Property("Null")
 ActorProxy.getName = Property("Null")
 ActorProxy.getDescription = Property("This actor hasn't fully loaded yet.")
 ActorProxy.getDirection = Property(Vector.UNIT_X)
