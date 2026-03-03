@@ -78,6 +78,37 @@ do
 	}
 end
 
+M["Light_Moon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Moon",
+		Map = M._MAP,
+		Resource = M["Light_Moon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "DirectionalLight_Default",
+		MapObject = M["Light_Moon"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 100,
+		ColorGreen = 100,
+		ColorBlue = 100,
+		Resource = M["Light_Moon"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 4,
+		DirectionY = 3,
+		DirectionZ = 4,
+		Resource = M["Light_Moon"]
+	}
+end
+
 M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {

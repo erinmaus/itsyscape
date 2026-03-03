@@ -283,11 +283,13 @@ function Fire:load()
 		self.outerFlames = ParticleSceneNode()
 		self.outerFlames:initParticleSystemFromDef(self:_getOuterParticleDefinition(), resources)
 		self.outerFlames:setParent(root)
+		self.outerFlames:getMaterial():setIsFullLit(false)
 
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
 		self.innerFlames:setParent(root)
 		self.innerFlames:getMaterial():setZBias(10)
+		self.innerFlames:getMaterial():setIsFullLit(false)
 
 		self.smoke = ParticleSceneNode()
 		self.smoke:initParticleSystemFromDef(self:_getSmokeParticleDefinition(), resources)

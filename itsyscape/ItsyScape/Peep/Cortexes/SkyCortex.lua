@@ -77,7 +77,7 @@ function SkyCortex:updateSeconds(delta, sky, instance)
 	return ((sky.currentOffsetSeconds or 0) + socket.gettime()) % SkyCortex.DAY_IN_SECONDS
 end
 
-function SkyCortex:getDirectionLightNormal(seconds)
+function SkyCortex:getDirectionLightNormal(seconds, sign)
 	local HALF_DAY_IN_SECONDS = SkyCortex.DAY_IN_SECONDS / 2
 	local HALF_FACING_X_IN_SECONDS = SkyCortex.FACING_X_IN_SECONDS / 2
 
@@ -110,10 +110,10 @@ function SkyCortex:getDirectionLightNormal(seconds)
 	do
 		x = math.cos(angle)
 		y = 0.5
-		z = math.sin(angle)
+		z = -math.sin(angle)
 	end
 
-	return Vector(x, y, -z):getNormal()
+	return Vector(x * (sign or 1), y, z * (sign or 1)):getNormal()
 end
 
 function SkyCortex:getSunAlpha(seconds)
@@ -376,10 +376,31 @@ function SkyCortex:update(delta)
 					local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #sunMoonColors)
 					local currentSunColor = sunMoonColors[currentIndex]:lerp(sunMoonColors[nextIndex], delta)
 
-					local normal = self:getDirectionLightNormal(seconds)
+					local normal = self:getDirectionLightNormal(seconds, 1)
 					sunDirectionalLight:setColor(currentSunColor)
 					sunDirectionalLight:setDirection(normal)
 					sunDirectionalLight:setCastsShadows(true)
+				end
+
+				local moonDirectionalLight = self:getDirector():probe(
+					peep:getLayerName(),
+					Function(_notLayer, layer),
+					Probe.namedMapObject("Light_Moon"),
+					Probe.resource("Prop", "DirectionalLight_Default"))[1]
+
+				if moonDirectionalLight then
+					local sunMoonColors = {
+						sky.sunColor,
+						sky.moonColor
+					}
+
+					local currentIndex, nextIndex, delta = self:getSkyColorIndexDelta(seconds, #sunMoonColors)
+					local currentSunColor = sunMoonColors[currentIndex]:lerp(sunMoonColors[nextIndex], delta)
+
+					local normal = self:getDirectionLightNormal(seconds, -1)
+					moonDirectionalLight:setColor(currentSunColor * 0.5)
+					moonDirectionalLight:setDirection(normal)
+					moonDirectionalLight:setCastsShadows(false)
 				end
 
 				local skyAmbientLight = self:getDirector():probe(

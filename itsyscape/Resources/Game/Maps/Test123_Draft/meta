@@ -3,6 +3,10 @@
 		skybox = {
 			color = { 33 / 255, 162 / 255, 234 / 255 }
 		},
+		transform = {
+			origin = { 32, 0, 32 },
+			translation = { 0, 25, 0 }
+		},
 		tileSetID = "Draft",
 	},
 }

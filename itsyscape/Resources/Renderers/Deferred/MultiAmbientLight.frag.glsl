@@ -30,7 +30,7 @@ vec4 effect(
 
 	float yFalloff = calculateYLightFalloff(position, scape_CameraEye, scape_CameraTarget);
 	float xzFalloff = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-	xzFalloff = mix(0.5, 0.5, xzFalloff);
+	xzFalloff = mix(0.5, 1.0, xzFalloff);
 
 	float falloff = xzFalloff * yFalloff;
 
