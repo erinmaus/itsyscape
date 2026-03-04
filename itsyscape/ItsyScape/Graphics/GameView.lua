@@ -3049,13 +3049,14 @@ function GameView:updateMaps(delta)
 	self.currentPlayerLayer = layer
 
 	for otherLayer, m in pairs(self.mapMeshes) do
-		if m.hidden then
-			local node = m.root or m.node
-			if otherLayer == layer then
+		if m.hidden or (m.root and m.root.hidden) then
+			local rootLayer = m.root and m.root.layer or otherLayer
+
+			if rootLayer == layer then
 				local parentNode = m.parentLayer and self:getMapSceneNode(m.parentLayer) or self.scene
-				node:setParent(parentNode)
-			else
-				node:setParent()
+				m.node:setParent(parentNode)
+			elseif not m.root then
+				m.node:setParent()
 			end
 		end
 
