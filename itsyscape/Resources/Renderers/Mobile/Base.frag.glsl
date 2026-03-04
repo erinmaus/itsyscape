@@ -73,7 +73,7 @@ vec3 scapeApplyLight(
 	if (light.position.w == 1.0)
 	{
 		direction = normalize(light.position.xyz);
-		directionalLightFalloff = mix(0.25, 1.0, xzFalloff);
+		directionalLightFalloff = mix(0.5, 1.0, xzFalloff);
 	}
 	else
 	{

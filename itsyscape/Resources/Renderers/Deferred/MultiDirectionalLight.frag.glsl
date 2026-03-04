@@ -43,7 +43,7 @@ vec4 effect(
 	float alpha = specularSample.a;
 
 	float falloffValue = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-	vec3 falloff = vec3(mix(0.25, 1.0, falloffValue));
+	vec3 falloff = vec3(mix(0.5, 1.0, falloffValue));
 
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)

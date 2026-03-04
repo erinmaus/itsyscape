@@ -36,7 +36,7 @@ function Ginsville:onLoad(filename, args, layer)
 	sky.sunColor = Color.fromHexString("eab51f")
 	sky.hasFog = true
 	sky.fogNearDistance = 15
-	sky.fogFarDistance = 125
+	sky.fogFarDistance = 75
 
 	sky.sunPropType = "Sun_Default"
 end
