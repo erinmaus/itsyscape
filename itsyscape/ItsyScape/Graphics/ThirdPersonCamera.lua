@@ -388,7 +388,7 @@ function ThirdPersonCamera:getPosition()
 end
 
 function ThirdPersonCamera:setPosition(value)
-	self.position = (value or self.position):keep()
+	self.position:from(value:get())
 end
 
 function ThirdPersonCamera:setOverridePosition(value)
@@ -426,7 +426,7 @@ do
 end
 
 function ThirdPersonCamera:copy(parentCamera)
-	self:setPosition(parentCamera:getPosition())
+	self:setPosition(parentCamera.position)
 	if parentCamera.hasOverridePosition then
 		self:setOverridePosition(parentCamera.overridePosition)
 	end

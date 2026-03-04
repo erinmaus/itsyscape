@@ -434,7 +434,11 @@ function DebugManipulateCameraController:draw()
 
 		camera:setOverridePosition(otherTranslation)
 	else
-		camera:setOverridePosition()
+		local player = self:getGameView():getGame():getPlayer()
+		local playerActor = player and player:getActor()
+		local translation = player and self:getActorTransforms(playerActor)
+
+		camera:setOverridePosition(translation)
 	end
 
 	if self.overridePositionActor then

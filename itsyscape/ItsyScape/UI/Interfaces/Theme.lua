@@ -369,6 +369,7 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, z
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
 	camera:setPosition(Vector.ZERO:transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + offset)
+	camera:setOverridePosition()
 	camera:setVerticalRotation(math.clamp(camera:getVerticalRotation(), -math.pi / 8 - math.pi / 2, math.pi / 8 - math.pi / 2))
 	if camera:getDistance() == 0 then
 		camera:setRotation(Quaternion.IDENTITY)
@@ -410,6 +411,7 @@ function Theme.setSceneSnippetMap(sceneSnippet, camera, gameView, layer, offset,
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
 	camera:setPosition(Vector(maxX / 2, -distance / 2, maxZ / 2):transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + (offset * distance / 2))
+	camera:setOverridePosition()
 	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
 	camera:setDistance(distance * zoom + 2)
 
