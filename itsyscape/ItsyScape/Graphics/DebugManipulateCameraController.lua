@@ -39,7 +39,7 @@ function DebugManipulateCameraController:new(...)
 	self:reset()
 
 	self.isToggleWallHackDown = love.keyboard.isDown("space")
-	self.isWallHackEnabled = self:getCamera():getIsWallHackEnabled()
+	self.isWallHackEnabled = false
 end
 
 function DebugManipulateCameraController:reset()
@@ -291,10 +291,11 @@ function DebugManipulateCameraController:update(delta)
 	self:updateShake(delta)
 
 	local isToggleDown = love.keyboard.isDown("space")
-	if self.isToggleWallHackDown ~= isToggleWallHackDown then
+	if isToggleDown and not self.isToggleWallHackDown then
 		self.isWallHackEnabled = not self.isWallHackEnabled
-		self.isToggleWallHackDown = isToggleDown
 	end
+
+	self.isToggleWallHackDown = isToggleDown
 end
 
 function DebugManipulateCameraController:mousePress(uiActive, x, y, button)
