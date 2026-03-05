@@ -73,12 +73,11 @@ vec3 scapeApplyLight(
 	if (light.position.w == 1.0)
 	{
 		direction = normalize(light.position.xyz);
-		directionalLightFalloff = mix(0.5, 1.0, xzFalloff);
+		directionalLightFalloff = xzFalloff;
 	}
 	else
 	{
-		float falloff = calculateXZLightFalloff(light.position.xyz, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-		pointLightFalloff = mix(0.5, 1.0, falloff);
+		pointLightFalloff = calculatePointLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
 
 		vec3 lightSurfaceDifference = light.position.xyz - position;
 		direction = normalize(lightSurfaceDifference);
@@ -187,10 +186,8 @@ vec4 effect(
 		discard;
 	}
 
-	float xzFalloff = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-	xzFalloff = mix(0.25, 1.0, xzFalloff);
-
-	float yFalloff = calculateYLightFalloff(position, scape_CameraEye, scape_CameraTarget);
+	float xzFalloff = calculateDirectionalLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
+	float yFalloff = calculateAmbientLightFalloff(position, scape_CameraEye, scape_CameraTarget);
 
 	vec3 result = vec3(0.0);
 	if (scape_NumLights == 1 && scape_Lights[0].ambientCoefficient == 1.0)

@@ -23,7 +23,8 @@ float calculateXZLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTar
 	float value = zDistance / cameraRange;
 	value *= value;
 
-	return clamp(1.0 - value, 0.0, 1.0);
+	float falloff = clamp(1.0 - value, 0.0, 1.0);
+	return falloff;
 }
 
 float calculateYLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTarget)
@@ -31,6 +32,29 @@ float calculateYLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTarg
 	float distanceFromCameraTargetY = abs(worldPosition.y - cameraTarget.y);
 	float distanceFromEyeTarget = max(distance(cameraEye, cameraTarget), 25.0);
 	float distanceScale = 10.0 / pow(distanceFromEyeTarget, 0.92);
+
 	float value = distanceScale * log2(max(distanceFromCameraTargetY - 0.25, 0.1));
-	return clamp(1.0 - value, 0.0, 1.0) * 0.5 + 0.5;
+
+	float falloff = clamp(1.0 - value, 0.0, 1.0);
+	falloff *= falloff;
+
+	return falloff;
+}
+
+float calculatePointLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTarget, mat4 viewMatrix)
+{
+	float falloff = calculateXZLightFalloff(worldPosition, cameraEye, cameraTarget, viewMatrix);
+	return mix(0.25, 1.0, falloff);
+}
+
+float calculateDirectionalLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTarget, mat4 viewMatrix)
+{
+	float falloff = calculateXZLightFalloff(worldPosition, cameraEye, cameraTarget, viewMatrix);
+	return mix(0.5, 1.0, falloff);
+}
+
+float calculateAmbientLightFalloff(vec3 worldPosition, vec3 cameraEye, vec3 cameraTarget)
+{
+	float falloff = calculateYLightFalloff(worldPosition, cameraEye, cameraTarget);
+	return mix(0.5, 1.0, falloff);
 }

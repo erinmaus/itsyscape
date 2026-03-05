@@ -28,10 +28,8 @@ vec4 effect(
 	float depth = Texel(scape_DepthTexture, textureCoordinate).r;
 	vec3 position = worldPositionFromGBufferDepth(depth, textureCoordinate, scape_InverseProjectionMatrix, scape_InverseViewMatrix);
 
-	float yFalloff = calculateYLightFalloff(position, scape_CameraEye, scape_CameraTarget);
-	float xzFalloff = calculateXZLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-	xzFalloff = mix(0.5, 1.0, xzFalloff);
-
+	float yFalloff = calculateAmbientLightFalloff(position, scape_CameraEye, scape_CameraTarget);
+	float xzFalloff = calculateDirectionalLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
 	float falloff = xzFalloff * yFalloff;
 
 	for (int i = 0; i < scape_NumLights; ++i)

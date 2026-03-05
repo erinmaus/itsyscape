@@ -42,8 +42,8 @@ vec4 effect(
 	vec3 result = vec3(0.0);
 	for (int i = 0; i < scape_NumLights; ++i)
 	{
-		float falloffValue = calculateXZLightFalloff(scape_LightPosition[i], scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-		vec3 falloff = vec3(mix(0.5, 1.0, falloffValue));
+		float falloffValue = calculatePointLightFalloff(scape_LightPosition[i], scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
+		vec3 falloff = vec3(falloffValue);
 
 		vec3 lightSurfaceDifference = scape_LightPosition[i] - position;
 		float attenuation = clamp(1.0 - length(lightSurfaceDifference) / scape_LightAttenuation[i], 0.0, 1.0);
