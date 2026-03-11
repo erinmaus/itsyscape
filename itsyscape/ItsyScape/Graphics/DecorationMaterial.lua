@@ -325,6 +325,14 @@ function DecorationMaterial:getUniformValue(name)
 	return nil
 end
 
+function DecorationMaterial:getProperty(name)
+	if self.set[name] then
+		return self.properties[name]
+	end
+
+	return DecorationMaterial.DEFAULT.properties[name]
+end
+
 function DecorationMaterial:replace(other)
 	local o = other:serialize()
 
@@ -413,5 +421,7 @@ end
 function DecorationMaterial:toString()
 	return serpent.block(self:serialize(), { comment = false })
 end
+
+DecorationMaterial.DEFAULT = DecorationMaterial()
 
 return DecorationMaterial

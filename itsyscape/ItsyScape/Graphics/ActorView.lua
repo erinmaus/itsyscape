@@ -58,8 +58,15 @@ end
 function ActorView.Animatable:setColor(value)
 	for _, slot in pairs(self.actor.skins) do
 		for i = 1, #slot do
-			if slot[i].model then
-				slot[i].model:getMaterial():setColor(value)
+			local s = slot[i]
+			local material = s.instance and s.instance:getMaterial()
+			local color = material and material:getProperty("color")
+			local model = s.model
+
+			if model and color then
+				model:getMaterial():setColor(color * value)
+			elseif model then
+				model:getMaterial():setColor(value)
 			end
 		end
 	end

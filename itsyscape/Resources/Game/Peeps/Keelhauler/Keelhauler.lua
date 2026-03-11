@@ -53,14 +53,14 @@ function Keelhauler:ready(director, game)
 		"Keelhauler/Accents.lua")
 	Utility.Peep.Creep.applySkin(
 		self,
-		"x-body",
+		"x-body-stone",
 		Equipment.SKIN_PRIORITY_BASE,
-		"Keelhauler/Body.lua")
+		"Keelhauler/StoneBody.lua")
 	Utility.Peep.Creep.applySkin(
 		self,
-		"x-head",
+		"x-body-metal",
 		Equipment.SKIN_PRIORITY_BASE,
-		"Keelhauler/Head.lua")
+		"Keelhauler/MetalBody.lua")
 	Utility.Peep.Creep.applySkin(
 		self,
 		"x-accents-reflective",
