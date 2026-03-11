@@ -128,6 +128,8 @@ function BasicCannonball:_tryHit(currentIndex, nextIndex)
 			if logic:perform(self.currentPeep, hit) then
 				Log.info("%s blasted peep '%s' to smithereens!", self:getName(), hit:getName())
 			end
+
+			Utility.Combat.knockback(hit, self, 8)
 		end
 	end
 

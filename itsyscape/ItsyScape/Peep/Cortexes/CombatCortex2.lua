@@ -210,17 +210,6 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local isTooClose = canMove and distance <= 0
 	local maybeCanReach = (isTooClose or isTooFar) and worldWeaponRange > 0
 
-	if selfPeep:getName():match("Orlando") then
-		print(">>> Ser Orlando", Log.dump({
-			distance = distance,
-			canReachTarget = canReachTarget,
-			isOutOfRange = isOutOfRange,
-			isTooFar = isTooFar,
-			isTooClose = isTooClose,
-			maybeCanReach = maybeCanReach,
-		}))
-	end
-
 	return canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 end
 
@@ -898,7 +887,9 @@ function CombatCortex:movePeep(peep, position)
 		targetK = currentK
 	end
 
-	if not (targetI == previousI and targetJ == previousJ and targetK == previousK) then
+	if not (targetI == previousI and targetJ == previousJ and targetK == previousK) or
+	   (charge.currentWalkID and not Utility.Peep.isWalkPending(charge.currentWalkID))
+	then
 		if charge.currentWalkID then
 			Utility.Peep.cancelWalk(charge.currentWalkID)
 		end
@@ -1016,18 +1007,15 @@ function CombatCortex:tickPeep(delta, peep)
 
 		return
 	elseif not isWithinRange then
-		if peep:getName():match("Orlando") then print(">>> not within range, is moving") end
 		peep:addBehavior(CombatChargeBehavior)
 		self:movePeep(peep)
 		return
 	elseif isTooClose and not peep:hasBehavior(PlayerBehavior) then
-		if peep:getName():match("Orlando") then print(">>> is too close, is strafing") end
 		if not target:hasBehavior(CombatChargeBehavior) then
 			peep:addBehavior(CombatChargeBehavior)
 			self:strafePeep(peep)
 		end
 	elseif peep:hasBehavior(CombatChargeBehavior) then
-		if peep:getName():match("Orlando") then print(">>> good, cancel charge") end
 		self:cancelCharge(peep)
 	end
 

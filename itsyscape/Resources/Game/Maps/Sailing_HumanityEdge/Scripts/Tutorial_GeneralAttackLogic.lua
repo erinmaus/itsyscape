@@ -154,8 +154,12 @@ local HandlePowers = Mashina.Step {
 }
 
 local BeginDodge = Mashina.Success {
-	Mashina.Peep.HasCombatTarget {
-		[CURRENT_TARGET] = B.Output.target
+	Mashina.Sequence {
+		Mashina.Peep.HasCombatTarget,
+
+		Mashina.Peep.HasCombatTarget {
+			[CURRENT_TARGET] = B.Output.target
+		}
 	}
 }
 
@@ -163,8 +167,6 @@ local WaitDodge = Mashina.Step {
 	Mashina.Repeat {
 		Mashina.Peep.IsDodging
 	},
-
-	Mashina.Peep.Wait,
 
 	Mashina.Peep.TimeOut {
 		duration = 2
@@ -225,6 +227,10 @@ local HandleKeelhaulerCharge = Mashina.Step {
 		Mashina.Peep.Strafe {
 			distance = 10
 		}
+	},
+
+	Mashina.Peep.Talk {
+		message = "HandleKeelhaulerCharge DONE"
 	}
 }
 
@@ -251,6 +257,10 @@ local HandleGunner = Mashina.Step {
 			target = Vector.UNIT_Z,
 			distance = 10
 		}
+	},
+
+	Mashina.Peep.Talk {
+		message = "HandleGunner DONE"
 	}
 }
 

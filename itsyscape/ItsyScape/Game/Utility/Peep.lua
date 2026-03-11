@@ -1614,6 +1614,17 @@ function Peep.cancelWalk(n)
 	end
 end
 
+function Peep.isWalkPending(n)
+	for i = #Peep.WALK_QUEUE.pending, 1, -1 do
+		local pending = Peep.WALK_QUEUE.pending[i]
+		if (type(n) == "number" and pending.n == n) or pending.peep == n then
+			return true
+		end
+	end
+
+	return false
+end
+
 function Peep.updateWalks(time)
 	local queue = Peep.WALK_QUEUE.pending
 	local nextPending = Peep.WALK_QUEUE.next
