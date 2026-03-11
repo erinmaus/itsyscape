@@ -776,6 +776,10 @@ function Weapon:dodge(peep, target)
 		return false
 	end
 
+	if direction:getLengthSquared() == 0 then
+		return false
+	end
+
 	local dodgeSpeed = peep:hasBehavior(MovementBehavior) and peep:getBehavior(MovementBehavior).dodgeSpeed
 	if not dodgeSpeed or dodgeSpeed <= 0 then
 		return false

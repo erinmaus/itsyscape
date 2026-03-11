@@ -69,10 +69,8 @@ function Particles:updateParticleSystemProperties(properties)
 	if self.particleSystem then
 		self:_initParticleSystem(properties)
 	else
-		print(">>> insert", Log.dump(properties))
 		table.insert(self.particleSystemProperties, properties)
 		self.isParticleSystemDirty = true
-		print("#", #self.particleSystemProperties)
 	end
 end
 

@@ -45,7 +45,7 @@ function Dash:dealtDamage(peep, target, attack, roll)
 	target:poke("zeal", poke)
 
 	if target:hasBehavior(HumanoidBehavior) then
-		Utility.Peep.playAnimation(peep, "x-keelhauler-charge", "Human_Trip_1", 10)
+		Utility.Combat.knockback(target, peep, 8)
 	end
 end
 

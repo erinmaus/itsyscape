@@ -44,7 +44,6 @@ function OverrideTeam:update(mashina, state, executor)
 		team.override[characterResource.name] = TeamsBehavior.ALLY
 	elseif state[self.IS_ENEMY] then
 		team.override[characterResource.name] = TeamsBehavior.ENEMY
-		print(">>> characterResource", characterResource.name, "is now enemy")
 	elseif state[self.IS_NEUTRAL] then
 		team.override[characterResource.name] = TeamsBehavior.NEUTRAL
 	else

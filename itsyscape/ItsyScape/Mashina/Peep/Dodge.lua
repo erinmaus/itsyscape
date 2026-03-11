@@ -52,13 +52,14 @@ function Dodge:update(mashina, state, executor)
 	elseif state[self.DODGE_BACKWARDS] then
 		local direction = -mashinaPositionXZ:direction(targetPositionXZ)
 		local distance = math.min(weapon:getDodgeRange(peep, target), maxDistance)
+		local position = mashinaPosition + direction * distance
 
-		success = Utility.Combat.dodge(mashina, mashinaPosition + direction * distance)
+		success = Utility.Combat.dodge(mashina, position)
 	elseif state[self.DODGE_LEFT_RIGHT] then
 		local towardsDirection = mashinaPositionXZ:direction(targetPositionXZ)
 		local distance = math.min(weapon:getDodgeRange(peep, target), maxDistance)
 
-		local leftDirection = Vector(towardsDirection.y, -towardsDirection.x)
+		local leftDirection = Vector(towardsDirection.z, 0, -towardsDirection.x)
 		local leftPosition = distance * leftDirection + mashinaPosition
 		local rightDirection = -leftDirection
 		local rightPosition = distance * rightDirection + mashinaPosition

@@ -99,6 +99,10 @@ function Keelhauler:onDashStart(target)
 end
 
 function Keelhauler:onDashEnd()
+	if not self.isDashing then
+		return
+	end
+
 	self.isDashing = false
 
 	local movement = self:getBehavior(MovementBehavior)
@@ -106,7 +110,7 @@ function Keelhauler:onDashEnd()
 
 	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Run")
 
-	if self.dashTarget and not self.hits[dashTarget] then
+	if self.dashTarget and not self.hits[self.dashTarget] then
 		Utility.Combat.dodgeSuccess(self.dashTarget, self)
 		Utility.Peep.flash(self.dashTarget, "Dodge", Vector(0, 0.5, 0))
 	end

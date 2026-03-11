@@ -16,6 +16,8 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CommonLogic = require "Resources.Game.Maps.Sailing_HumanityEdge.Scripts.Tutorial_CommonLogic"
 
 local CURRENT_TARGET = B.Reference("Tutorial_GeneralAttackLogic", "CURRENT_TARGET")
+local GUNNER = B.Reference("Tutorial_GeneralAttackLogic", "GUNNER")
+local KEELHAULER = B.Reference("Tutorial_GeneralAttackLogic", "KEELHAULER")
 
 local DidKillTarget = Mashina.Sequence {
 	Mashina.Invert {
@@ -151,97 +153,103 @@ local HandlePowers = Mashina.Step {
 	}
 }
 
-local HandleKeelhaulerCharge = Mashina.Step {
-	Mashina.Peep.OnEvent {
-		event = "tutorialKeelhaulerCharge"
+local BeginDodge = Mashina.Success {
+	Mashina.Peep.HasCombatTarget {
+		[CURRENT_TARGET] = B.Output.target
+	}
+}
+
+local WaitDodge = Mashina.Step {
+	Mashina.Repeat {
+		Mashina.Peep.IsDodging
 	},
 
-	Mashina.Success {
-		Mashina.Sequence {
-			Mashina.Peep.HasCombatTarget,
+	Mashina.Peep.Wait,
 
-			Mashina.Peep.HasCombatTarget {
-				[CURRENT_TARGET] = B.Output.target
-			}
-		}
-	},
+	Mashina.Peep.TimeOut {
+		duration = 2
+	}
+}
 
-	Mashina.Sequence {
+local EndDodge = Mashina.Success {
+	Mashina.Peep.EngageCombatTarget {
+		peep = CURRENT_TARGET
+	}
+}
+
+local DodgeLoop = function(sequence)
+	return Mashina.Sequence {
 		Mashina.Success {
 			Mashina.Peep.DisengageCombatTarget
 		},
 
-		Mashina.Step {
-			Mashina.Try {
-				Mashina.Peep.Strafe {
-					distance = 10
+		Mashina.Success {
+			Mashina.Step {
+				Mashina.Try {
+					unpack(sequence)
 				},
 
-				Mashina.Failure {
-					Mashina.Set {
-						value = nil,
-						[CURRENT_TARGET] = B.Output.result
-					}
-				}
+				WaitDodge
+			}
+		}
+	}
+end
+
+local TryDodge = function(sequence)
+	return Mashina.Step {
+		BeginDodge,
+		DodgeLoop(sequence),
+		EndDodge
+	}
+end
+
+local HandleKeelhaulerCharge = Mashina.Step {
+	Mashina.Peep.OnEvent {
+		event = "tutorialKeelhaulerCharge",
+		[KEELHAULER] = B.Output.peep
+	},
+
+	TryDodge {
+		Mashina.Sequence {
+			Mashina.Invert {
+				Mashina.Peep.IsDodging
 			},
 
-			Mashina.Peep.Wait,
-
-			Mashina.Success {
-				Mashina.Peep.EngageCombatTarget {
-					peep = CURRENT_TARGET
-				}
+			Mashina.Peep.Dodge {
+				target = KEELHAULER,
+				dodge_left_right = true,
+				max_distance = 4
 			}
+		},
+
+		Mashina.Peep.Strafe {
+			distance = 10
 		}
 	}
 }
 
 local HandleGunner = Mashina.Step {
 	Mashina.Peep.OnEvent {
-		event = "tutorialGunnerAimCannon"
+		event = "tutorialGunnerAimCannon",
+		[GUNNER] = B.Output.peep
 	},
 
-	Mashina.Success {
+	TryDodge {
 		Mashina.Sequence {
-			Mashina.Peep.HasCombatTarget,
+			Mashina.Invert {
+				Mashina.Peep.IsDodging,
+			},
 
-			Mashina.Peep.HasCombatTarget {
-				[CURRENT_TARGET] = B.Output.target
+			Mashina.Peep.Dodge {
+				target = GUNNER,
+				dodge_backwards = true,
+				max_distance = 4
 			}
-		}
-	},
-
-	Mashina.Sequence {
-		Mashina.Success {
-			Mashina.Peep.DisengageCombatTarget
 		},
 
-		Mashina.Step {
-			Mashina.Try {
-				Mashina.Peep.Strafe {
-					target = Vector.UNIT_Z,
-					distance = 10
-				},
-
-				Mashina.Failure {
-					Mashina.Set {
-						value = nil,
-						[CURRENT_TARGET] = B.Output.result
-					}
-				}
-			},
-
-			Mashina.Peep.Wait,
-
-			Mashina.Peep.TimeOut {
-				duration = 1
-			},
-
-			Mashina.Success {
-				Mashina.Peep.EngageCombatTarget {
-					peep = CURRENT_TARGET
-				}
-			}
+		Mashina.Peep.Strafe {
+			target = Vector.UNIT_Z,
+			distance = 10
 		}
 	}
 }

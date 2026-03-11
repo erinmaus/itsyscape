@@ -39,6 +39,7 @@ local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
@@ -209,6 +210,17 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local isTooClose = canMove and distance <= 0
 	local maybeCanReach = (isTooClose or isTooFar) and worldWeaponRange > 0
 
+	if selfPeep:getName():match("Orlando") then
+		print(">>> Ser Orlando", Log.dump({
+			distance = distance,
+			canReachTarget = canReachTarget,
+			isOutOfRange = isOutOfRange,
+			isTooFar = isTooFar,
+			isTooClose = isTooClose,
+			maybeCanReach = maybeCanReach,
+		}))
+	end
+
 	return canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 end
 
@@ -247,15 +259,15 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	local weaponRange = equippedWeapon:getAttackRange(selfPeep)
 
 	local canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
-	if not canReachTarget and maybeCanReach and isOutOfRange then
-		return false, isTooFar, isTooClose, maybeCanReach
+	if not canReachTarget then
+		return false, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 	end
 
 	if not Utility.Combat.canSeeTarget(selfPeep, targetPeep) then
-		return false, isTooFar, isTooClose, maybeCanReach
+		return false, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 	end
 
-	return true, isTooFar, isTooClose, maybeCanReach
+	return true, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 end
 
 function CombatCortex:updatePeepCombatStyle(peep)
@@ -886,7 +898,7 @@ function CombatCortex:movePeep(peep, position)
 		targetK = currentK
 	end
 
-	if targetI ~= previousI or targetJ ~= previousJ or targetK ~= previousK then
+	if not (targetI == previousI and targetJ == previousJ and targetK == previousK) then
 		if charge.currentWalkID then
 			Utility.Peep.cancelWalk(charge.currentWalkID)
 		end
@@ -967,6 +979,7 @@ function CombatCortex:cancelCharge(peep)
 
 	peep:removeBehavior(CombatChargeBehavior)
 	peep:removeBehavior(TargetTileBehavior)
+	peep:removeBehavior(TargetPositionBehavior)
 end
 
 function CombatCortex:tickPeep(delta, peep)
@@ -978,9 +991,9 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
-	local isWithinRange, isTooFar, isTooClose, maybeCanReach = self:_isPeepWithinRange(peep, target)
+	local isWithinRange, isTooFar, isTooClose, isOutOfRange, maybeCanReach = self:_isPeepWithinRange(peep, target)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
-	if not isAttackable or isTooFar then
+	if not isAttackable or isOutOfRange then
 		if peep:hasBehavior(PlayerBehavior) then
 			if isAttackable then
 				if not peep:hasBehavior(AttackCooldownBehavior) then
@@ -1003,17 +1016,18 @@ function CombatCortex:tickPeep(delta, peep)
 
 		return
 	elseif not isWithinRange then
+		if peep:getName():match("Orlando") then print(">>> not within range, is moving") end
 		peep:addBehavior(CombatChargeBehavior)
 		self:movePeep(peep)
 		return
 	elseif isTooClose and not peep:hasBehavior(PlayerBehavior) then
-		if target:hasBehavior(CombatChargeBehavior) then
-			peep:removeBehavior(CombatChargeBehavior)
-		else
+		if peep:getName():match("Orlando") then print(">>> is too close, is strafing") end
+		if not target:hasBehavior(CombatChargeBehavior) then
 			peep:addBehavior(CombatChargeBehavior)
 			self:strafePeep(peep)
 		end
 	elseif peep:hasBehavior(CombatChargeBehavior) then
+		if peep:getName():match("Orlando") then print(">>> good, cancel charge") end
 		self:cancelCharge(peep)
 	end
 

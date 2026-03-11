@@ -15,6 +15,7 @@ local CreepBehavior = require "ItsyScape.Peep.Behaviors.CreepBehavior"
 local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 
 local CreepActorAnimatorCortex = Class(Cortex)
 CreepActorAnimatorCortex.WALK_PRIORITY = 1
@@ -139,7 +140,7 @@ function CreepActorAnimatorCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior) then
+		if velocity:getLength() > 0.1 or peep:hasBehavior(TargetTileBehavior) or peep:hasBehavior(TargetPositionBehavior) then
 			if not self.walking[peep] then
 				local resource = peep:getResource(
 					"animation-walk",
