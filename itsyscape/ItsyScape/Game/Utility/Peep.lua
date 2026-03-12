@@ -27,7 +27,8 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
 local CharacterBehavior = require "ItsyScape.Peep.Behaviors.CharacterBehavior"
-local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
@@ -2271,11 +2272,15 @@ end
 function Peep.interruptActions(peep)
 	peep:removeBehavior(TargetPositionBehavior)
 	peep:removeBehavior(TargetTileBehavior)
+	peep:removeBehavior(CombatDodgeBehavior)
 
 	peep:getCommandQueue():clear()
 end
 
 function Peep.interrupt(peep)
+	Utility.Peep.cancelWalk(peep)
+	peep:removeBehavior(PendingWalkBehavior)
+
 	Utility.Combat.disengage(peep)
 	Peep.interruptActions(peep)
 end
