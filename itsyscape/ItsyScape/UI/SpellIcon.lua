@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Color = require "ItsyScape.Graphics.Color"
 local Widget = require "ItsyScape.UI.Widget"
 
 local SpellIcon = Class(Widget)
@@ -19,6 +20,7 @@ function SpellIcon:new()
 	self.spellID = false
 	self.spellEnabled = false
 	self.spellActive = false
+	self.color = Color(1)
 
 	self:setSize(SpellIcon.DEFAULT_SIZE, SpellIcon.DEFAULT_SIZE)
 end
@@ -45,6 +47,14 @@ end
 
 function SpellIcon:getSpellActive()
 	return self.spellActive
+end
+
+function SpellIcon:setColor(value)
+	self.color:from(value:get())
+end
+
+function SpellIcon:getColor()
+	return self.color
 end
 
 return SpellIcon

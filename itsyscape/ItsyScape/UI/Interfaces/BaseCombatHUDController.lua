@@ -110,6 +110,30 @@ function BaseCombatHUDController:new(peep, director)
 	self.previousLoadoutStyle = weapon and weapon:getStyle() or false
 	self.currentLoadoutStyle = weapon and weapon:getStyle() or false
 	self.isSwappingGear = false
+
+	self:initActiveSpell()
+end
+
+function BaseCombatHUDController:initActiveSpell()
+	local activeSpellID = self:getStorage("Config"):getSection("state"):get("activeSpellID")
+
+	if not activeSpellID then
+		self:getPeep():removeBehavior(ActiveSpellBehavior)
+
+		local _, stance = self:getPeep():addBehavior(StanceBehavior)
+		stance.useSpell = false
+
+		return
+	end
+
+	local TypeName = string.format("Resources.Game.Spells.%s.Spell", activeSpellID)
+	local Type = require(TypeName)
+	local spell = Type(activeSpellID, self:getGame())
+
+	local _, activeSpell = self:getPeep():addBehavior(ActiveSpellBehavior)
+	activeSpell.spell = spell
+
+	self:useSpell()
 end
 
 function BaseCombatHUDController:close()
@@ -493,7 +517,6 @@ function BaseCombatHUDController:getConfig()
 	local config = self:getStorage("Config"):get().config or {}
 
 	local disabled = config.disabled or {}
-	disabled["spells"] = true
 	disabled["prayers"] = true
 	config.disabled = disabled
 
@@ -765,6 +788,7 @@ function BaseCombatHUDController:updateActiveSpell()
 	end
 
 	self.activeSpellID = activeSpellID
+	self:getStorage("Config"):getSection("state"):set("activeSpellID", activeSpellID or false)
 end
 
 function BaseCombatHUDController:updateSpells()

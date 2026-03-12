@@ -804,6 +804,69 @@ function BaseCombatHUD:_updateEquipmentThingies()
 	end
 end
 
+function BaseCombatHUD:newSpellThingies(name, spellsState)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:newSpellButton(spellsState)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:updateSpellButton(spellsState, button)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:finishSpellThingies(name, thingiesWidget)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:castSpell(index)
+	local state = self:getState()
+
+	local spell = state.spells[index]
+	if not spell then
+		return
+	end
+
+	self:sendPoke("castSpell", nil, { id = spell.id })
+end
+
+function BaseCombatHUD:_initSpellThingies()
+	print(">>> _initSpellThingies")
+	self:_unregisterThingies(BaseCombatHUD.THINGIES_SPELLS)
+
+	local state = self:getState()
+	local spellsState = state.spells
+
+	local spellsThingie = { buttons = {} }
+	spellsThingie.widget = self:newSpellThingies(BaseCombatHUD.THINGIES_SPELLS, spellsState)
+
+	for i, spell in ipairs(spellsState) do
+		local button = self:newSpellButton(spell)
+		button.onClick:register(self.castSpell, self, i)
+
+		spellsThingie.widget:addChild(button)
+		table.insert(spellsThingie.buttons, button)
+	end
+
+	self:finishSpellThingies(BaseCombatHUD.THINGIES_SPELLS, spellsThingie.widget)
+	self:_registerThingies(BaseCombatHUD.THINGIES_SPELLS, spellsThingie)
+end
+
+function BaseCombatHUD:_updateSpellThingies()
+	local state = self:getState()
+	local spellsState = state.spells
+	local buttons = self:_getThingies(BaseCombatHUD.THINGIES_SPELLS).buttons
+
+	for i, spell in ipairs(spellsState) do
+		local button = buttons[i]
+		if button then
+			self:updateSpellButton(button, spell)
+			button:setID(string.format("BaseCombatHUD-Spell-%s", spell.id))
+		end
+	end
+end
+
 function BaseCombatHUD:newStanceThingies(name)
 	return Class.ABSTRACT()
 end
@@ -883,6 +946,7 @@ function BaseCombatHUD:updateThingies()
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 	self:_updateFoodThingies()
 	self:_updateEquipmentThingies()
+	self:_updateSpellThingies()
 	self:_updateStanceThingies()
 end
 
@@ -897,6 +961,7 @@ function BaseCombatHUD:refreshThingies()
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 	self:_initFoodThingies()
 	self:_initEquipmentThingies()
+	self:_initSpellThingies()
 	self:_initStanceThingies()
 
 	self:resetEvents()

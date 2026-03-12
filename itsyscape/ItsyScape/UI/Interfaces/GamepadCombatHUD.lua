@@ -24,6 +24,7 @@ local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelStyle = require "ItsyScape.UI.RichTextLabelStyle"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local SpiralLayout = require "ItsyScape.UI.SpiralLayout"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
@@ -1159,6 +1160,78 @@ function GamepadCombatHUD:updateEquipmentButton(button, equipmentState)
 end
 
 function GamepadCombatHUD:finishEquipmentThingies(name, spiralMenu)
+	self:finishSpiralMenu(name, spiralMenu)
+end
+
+function GamepadCombatHUD:_onSpellVisible(_, child, delta)
+	self:layoutSpiralButton(child, delta)
+end
+
+function GamepadCombatHUD:_onSpellSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local state = self:getState()
+	local spellState = state.spells[index]
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	if not spellState then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Gather runes and level magic to access more spells!" }
+		})
+	else
+		label:setText({
+			{ t = "header", spellState.name },
+			spellState.description
+		})
+	end
+end
+
+function GamepadCombatHUD:_updateSpellThingiesInterface(name)
+	local result = {
+		titleText = self:getThingiesName(name),
+		icon = "Resources/Game/UI/Icons/Common/Spell.png"
+	}
+
+	return result
+end
+
+function GamepadCombatHUD:newSpellThingies(name)
+	local spellSpiral = self:newSpiralMenu(name)
+	spellSpiral.onChildVisible:register(self._onSpellVisible, self)
+	spellSpiral.onChildSelected:register(self._onSpellSelected, self)
+
+	self:addSpiralMenuRichTextLabel(spellSpiral)
+	self:addStandardThingiesInterface(spellSpiral, self._updateSpellThingiesInterface)
+
+	return spellSpiral
+end
+
+function GamepadCombatHUD:newSpellButton(spellState)
+	local button = self:newSpiralButton()
+
+	local spellIcon = SpellIcon()
+	button:addChild(spellIcon)
+
+	button:removeChild(button:getData("icon"))
+	button:setData("icon", spellIcon)
+
+	return button
+end
+
+function GamepadCombatHUD:updateSpellButton(button, spellState)
+	local icon = button:getData("icon")
+	icon:setSpellID(spellState.id)
+	icon:setSpellActive(spellState.active)
+end
+
+function GamepadCombatHUD:finishSpellThingies(name, spiralMenu)
 	self:finishSpiralMenu(name, spiralMenu)
 end
 
