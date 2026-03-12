@@ -619,8 +619,6 @@ function Island:onFinishPreparingTeam(playerPeep)
 		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-chop")
 		Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "KnightCommander"), "tutorial-follow-player")
 	end
-
-	self:prepareTutorialMeteor(playerPeep) -- TODO TEMP
 end
 
 function Island:onFinishPreparingYenderhounds(playerPeep)
@@ -934,10 +932,6 @@ function Island:updateTutorialEquipItemsStep(playerPeep)
 end
 
 function Island:updateTutorialMeetSerCommanderStep(playerPeep)
-	if _ITSYREALM_CONF then
-		self:updateBarrier(playerPeep, "Orlando", "Passage_KnightCommander_OutOfBounds", "Anchor_Spawn_Conf", "quest_tutorial_main_out_of_bounds")
-	end
-
 	if Utility.Peep.isInPassage(playerPeep, "Passage_KnightCommander") and
 	   Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") ~= true and
 	   Utility.Peep.isEnabled(playerPeep)
@@ -1168,6 +1162,10 @@ end
 
 function Island:updateTutorialPlayer(playerPeep)
 	local stage = self:getDirector():getGameInstance():getStage()
+
+	if _ITSYREALM_CONF then
+		self:updateBarrier(playerPeep, "Orlando", "Passage_KnightCommander_OutOfBounds", "Anchor_Spawn_Conf", "quest_tutorial_main_out_of_bounds")
+	end
 
 	if Utility.Quest.isNextStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
 		self:updateTutorialGatherItemsStep(playerPeep)
