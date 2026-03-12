@@ -20,7 +20,6 @@ precision highp float;
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Resources/Shaders/RendererPass.common.glsl"
-#include "Resources/Shaders/Lights.common.glsl"
 
 #define SCAPE_MAX_LIGHTS 32
 #define SCAPE_MAX_FOG    4
@@ -29,6 +28,7 @@ precision highp float;
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
+varying vec3 frag_LightFalloff;
 
 uniform int scape_NumLights;
 uniform int scape_NumFogs;
@@ -59,26 +59,22 @@ vec3 scapeApplyLight(
 	vec3 normal,
 	vec3 color,
 	float specular,
-	float xzFalloff,
-	float yFalloff)
+	vec3 falloff)
 {
 	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
 
 	vec3 direction;
 	float attenuation = 0.0;
 
-	float pointLightFalloff = 1.0;
-	float directionalLightFalloff = 1.0;
-	float ambientLightFalloff = xzFalloff * yFalloff;
+	float directionalLightFalloff = falloff.x;
+	float ambientLightFalloff = falloff.y;
+	float pointLightFalloff = falloff.z;
 	if (light.position.w == 1.0)
 	{
 		direction = normalize(light.position.xyz);
-		directionalLightFalloff = xzFalloff;
 	}
 	else
 	{
-		pointLightFalloff = calculatePointLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-
 		vec3 lightSurfaceDifference = light.position.xyz - position;
 		direction = normalize(lightSurfaceDifference);
 		float lightSurfaceDistance = length(lightSurfaceDifference);
@@ -186,9 +182,6 @@ vec4 effect(
 		discard;
 	}
 
-	float xzFalloff = calculateDirectionalLightFalloff(position, scape_CameraEye, scape_CameraTarget, scape_ViewMatrix);
-	float yFalloff = calculateAmbientLightFalloff(position, scape_CameraEye, scape_CameraTarget);
-
 	vec3 result = vec3(0.0);
 	if (scape_NumLights == 1 && scape_Lights[0].ambientCoefficient == 1.0)
 	{
@@ -204,8 +197,7 @@ vec4 effect(
 				normal,
 				diffuse.rgb,
 				specular,
-				xzFalloff,
-				yFalloff);
+				frag_LightFalloff);
 		}
 	}
 
