@@ -222,7 +222,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 			local previousDirection = previous:direction(current)
 			self.print("-", "previousDirection", previousDirection.x, previousDirection.z)
 
-			for i = 1, 16 do
+			for i = 1, 4 do
 				self.print("iteration", i)
 				local direction = previous:direction(current)
 				local collisions = self.world:project(self.peep, previous.x, previous.z, current.x, current.z, self._filter)
@@ -280,12 +280,13 @@ function SmartNavMeshPathFinder:find(start, goal)
 					local bump = bumps[index]
 					local isFarEnough = i == 1 or bump:distance(previous) > radius
 					local direction1 = previous:direction(bump)
-					local dot = previousDirection:dot(direction1)
-					local isAhead = dot >= 0
+					local dot1 = previousDirection:dot(direction1)
+					local dot2 = current:direction(next):dot(direction1)
+					local isAhead = dot1 > 0 or dot2 > 0
 					local canCheckCollision = isFarEnough and isAhead
 					self.print("-", "previousDirection", previousDirection.x, previousDirection.z)
 					self.print("-", "direction1", direction1.x, direction1.z)
-					self.print("-", "dot", dot)
+					self.print("-", "dot1", dot1, "dot2", dot2)
 					self.print("-", "trying bump...", bump.x, bump.z)
 					self.print("-", "isAhead", isAhead, "isFarEnough", isFarEnough, "canCheckCollision", canCheckCollision)
 
@@ -296,6 +297,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 						self.print("!!!", bump.x, bump.z)
 						table.insert(result, bump)
 						materialized = true
+						self.print("-", "previous", previous.x, previous.z, "bump", bump.x, bump.z)
 						nextDirection = previous:direction(bump)
 						previous = bump
 

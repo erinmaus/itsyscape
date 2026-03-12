@@ -2082,6 +2082,23 @@ function Peep.getWalk(peep, ...)
 		targetPosition)
 
 	if path then
+		if peep:hasBehavior(PendingWalkBehavior) then
+			local bestIndex
+			for i = path:getNumNodes(), 1, -1 do
+				local node = path:getNodeAtIndex(i)
+
+				if node.position and Utility.Map.isPassable(peep, node.position) then
+					bestIndex = i
+					break
+				end
+			end
+
+			while bestIndex > 1 do
+				path:drop(1)
+				bestIndex = bestIndex - 1
+			end
+		end
+
 		if t.asCloseAsPossible then
 			return ExecutePathCommand(path, 0), path
 		else
