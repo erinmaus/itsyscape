@@ -189,10 +189,8 @@ function Fish:updateCursorColor(distance)
 end
 
 function Fish:getMessage()
-	if self.stateIsCold then
+	if self.stateIsCold or self.stateIsWarm then
 		return "ui.actionCommand.fish.findFish"
-	elseif self.stateIsWarm then
-		return "ui.actionCommand.fish.getCloser"
 	elseif self.stateIsHot then
 		return "ui.actionCommand.fish.smashButton"
 	end

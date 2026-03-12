@@ -89,37 +89,3 @@ do
 		MapObject = M["Cursor"]
 	}
 end
-
-M["XFishingSpot"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 9,
-		PositionY = 1,
-		PositionZ = 9,
-		Name = "XFishingSpot",
-		Map = M._MAP,
-		Resource = M["XFishingSpot"]
-	}
-
-	ItsyScape.Meta.PropMapObject {
-		Prop = ItsyScape.Resource.Prop "LightningStormfish_Default",
-		MapObject = M["XFishingSpot"]
-	}
-end
-
-M["LightningStormfishTest"] = ItsyScape.Resource.MapObject.Unique()
-do
-	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16,
-		PositionY = 0,
-		PositionZ = 16,
-		Name = "LightningStormfishTest",
-		Map = M._MAP,
-		Resource = M["LightningStormfishTest"]
-	}
-
-	ItsyScape.Meta.PeepMapObject {
-		Peep = ItsyScape.Resource.Peep "LightningStormfish",
-		MapObject = M["LightningStormfishTest"]
-	}
-end
