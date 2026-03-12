@@ -73,6 +73,10 @@ function Combat.knockback(target, aggressor, distance, direction, speed)
 		return false
 	end
 
+	if Utility.Peep.isDisabled(target) then
+		return false
+	end
+
 	direction = direction or (Utility.Peep.getAbsolutePosition(aggressor) * Vector.PLANE_XZ):direction(Utility.Peep.getAbsolutePosition(target) * Vector.PLANE_XZ)
 
 	if not speed then

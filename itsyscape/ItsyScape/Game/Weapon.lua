@@ -766,6 +766,10 @@ function Weapon:dodge(peep, target)
 		return false
 	end
 
+	if Utility.Peep.isDisabled(peep) then
+		return false
+	end
+
 	local direction
 	if Class.isCompatibleType(target, Peep) then
 		direction = Utility.Peep.getPosition(peep):direction(Utility.Peep.getRelativePosition(peep, target))
