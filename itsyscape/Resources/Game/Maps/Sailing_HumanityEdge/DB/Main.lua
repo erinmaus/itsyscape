@@ -203,22 +203,22 @@ do
 	}
 end
 
--- M["Fireflies"] = ItsyScape.Resource.MapObject.Unique()
--- do
--- 	ItsyScape.Meta.MapObjectLocation {
--- 		PositionX = 0,
--- 		PositionY = 0,
--- 		PositionZ = 0,
--- 		Name = "Fireflies",
--- 		Map = M._MAP,
--- 		Resource = M["Fireflies"]
--- 	}
+M["Fireflies"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Fireflies",
+		Map = M._MAP,
+		Resource = M["Fireflies"]
+	}
 
--- 	ItsyScape.Meta.PropMapObject {
--- 		Prop = ItsyScape.Resource.Prop "Firefly_Default",
--- 		MapObject = M["Fireflies"]
--- 	}
--- end
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "Firefly_Default",
+		MapObject = M["Fireflies"]
+	}
+end
 
 M["Anchor_Spawn"] = ItsyScape.Resource.MapObject.Unique()
 do
@@ -2896,6 +2896,74 @@ do
 		Name = "KnightCommander",
 		Cutscene = Cutscene,
 		Resource = M["KnightCommander"]
+	}
+end
+
+M["WarfMite1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 3,
+		PositionZ = 175,
+		Name = "WarfMite1",
+		Map = M._MAP,
+		Resource = M["WarfMite1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite1"]
+	}
+end
+
+M["WarfMite2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 3,
+		PositionZ = 181,
+		Name = "WarfMite2",
+		Map = M._MAP,
+		Resource = M["WarfMite2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite2"]
+	}
+end
+
+M["WarfMite3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 3,
+		PositionZ = 181,
+		Name = "WarfMite3",
+		Map = M._MAP,
+		Resource = M["WarfMite3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite3"]
+	}
+end
+
+M["WarfMite4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 3,
+		PositionZ = 175,
+		Name = "WarfMite4",
+		Map = M._MAP,
+		Resource = M["WarfMite4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite4"]
 	}
 end
 

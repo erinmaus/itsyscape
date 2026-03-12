@@ -1603,6 +1603,7 @@ include "Resources/Game/DB/Creeps/Yenderhounds.lua"
 include "Resources/Game/DB/Creeps/GildedDragon.lua"
 include "Resources/Game/DB/Creeps/ExtraterrestrialYenderling.lua"
 include "Resources/Game/DB/Creeps/GoredDragon.lua"
+include "Resources/Game/DB/Creeps/WarfMite.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"

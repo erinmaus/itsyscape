@@ -51,9 +51,12 @@ local Tree = BTreeBuilder.Node() {
 
 		CommonLogic.GetOrlando,
 
-		Mashina.ParallelTry {
-			CommonLogic.IsAttacking,
-			CommonLogic.AttackPlayerTarget,
+		Mashina.ParallelSequence {
+			Mashina.ParallelTry {
+				CommonLogic.IsAttacking,
+				CommonLogic.AttackPlayerTarget
+			},
+
 			FollowOrlando
 		}		
 	}

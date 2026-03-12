@@ -1758,7 +1758,7 @@ M["Rowboat_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 179.468700,
-		PositionY = 189.750000,
+		PositionY = 208.000000,
 		PositionZ = 181.141067,
 		RotationX = 0.000000,
 		RotationY = 0.382683,
@@ -2039,6 +2039,54 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
 		MapObject = M["UraniumRock_Default7"]
+	}
+end
+
+M["YendorianRuins_Pillar1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 99.000000,
+		PositionY = 5.000000,
+		PositionZ = 177.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YendorianRuins_Pillar1",
+		Map = M._MAP,
+		Resource = M["YendorianRuins_Pillar1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YendorianRuins_Pillar",
+		MapObject = M["YendorianRuins_Pillar1"]
+	}
+end
+
+M["YendorianRuins_Rock1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 137.000000,
+		PositionY = 11.000000,
+		PositionZ = 107.000000,
+		RotationX = 0.000000,
+		RotationY = 0.799610,
+		RotationZ = 0.000000,
+		RotationW = 0.600520,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YendorianRuins_Rock1",
+		Map = M._MAP,
+		Resource = M["YendorianRuins_Rock1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YendorianRuins_Rock",
+		MapObject = M["YendorianRuins_Rock1"]
 	}
 end
 
