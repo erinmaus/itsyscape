@@ -2127,7 +2127,7 @@ function DemoApplication:updatePositionProbe()
 				currentObjectPosition:inverseTransform(playerMapTransform, currentObjectPosition)
 
 				local _, relativeI, relativeJ = playerMap:getTileAt(currentObjectPosition.x, currentObjectPosition.z)
-				if not playerMap:lineOfSightPassable(playerI, playerJ, relativeI, relativeJ) then
+				if not playerMap:lineOfSightPassable(playerI, playerJ, relativeI, relativeJ, true) then
 					table.remove(results, i)
 				end
 			end
