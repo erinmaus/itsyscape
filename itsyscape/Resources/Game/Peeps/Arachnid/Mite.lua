@@ -24,7 +24,7 @@ local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionB
 
 local Mite = Class(Creep)
 Mite.DEFAULT_SPEED = 6
-Mite.DEFAULT_RADIUS = 1.5
+Mite.DEFAULT_RADIUS = 1
 
 function Mite:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Mite_Base', ...)

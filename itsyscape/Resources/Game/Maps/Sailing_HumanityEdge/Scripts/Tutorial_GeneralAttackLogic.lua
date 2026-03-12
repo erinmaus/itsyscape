@@ -227,10 +227,6 @@ local HandleKeelhaulerCharge = Mashina.Step {
 		Mashina.Peep.Strafe {
 			distance = 10
 		}
-	},
-
-	Mashina.Peep.Talk {
-		message = "HandleKeelhaulerCharge DONE"
 	}
 }
 
@@ -257,10 +253,6 @@ local HandleGunner = Mashina.Step {
 			target = Vector.UNIT_Z,
 			distance = 10
 		}
-	},
-
-	Mashina.Peep.Talk {
-		message = "HandleGunner DONE"
 	}
 }
 

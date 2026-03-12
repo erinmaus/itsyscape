@@ -2009,6 +2009,24 @@ do
 	}
 end
 
+M["Anchor_FindYendorianScout"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 46,
+		PositionY = 3,
+		PositionZ = 168,
+		Name = "Anchor_FindYendorianScout",
+		Map = M._MAP,
+		Resource = M["Anchor_FindYendorianScout"]
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Anchor_FindYendorianScout"],
+		KeyItem = ItsyScape.Resource.KeyItem "Tutorial_FoundScout"
+	}
+end
+
 M["Passage_FishingArea"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectReference {

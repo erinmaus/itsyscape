@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Probe = require "ItsyScape.Peep.Probe"
@@ -74,6 +75,14 @@ function QuestProgressNotificationController:new(peep, director, keyItem)
 	end
 end
 
+function QuestProgressNotificationController:close()
+	Controller.close(self)
+
+	for target in pairs(self.targets) do
+		Utility.Peep.poof(target)
+	end
+end
+
 function QuestProgressNotificationController:poke(actionID, actionIndex, e)
 	if actionID == "close" then
 		self:getGame():getUI():closeInstance(self)
@@ -123,7 +132,7 @@ function QuestProgressNotificationController:updateMapHints()
 		return
 	end
 
-	if (self.mapResource and self.mapResource.name == mapResource.name) and self.nextStep.id == nextStep.id and not self.tryAgain then
+	if (self.mapResource and self.mapResource.name == mapResource.name) and self.nextStep.name == nextStep.name and not self.tryAgain then
 		return
 	end
 
@@ -138,7 +147,8 @@ function QuestProgressNotificationController:updateMapHints()
 	local gameDB = director:getGameDB()
 	for i = 1, #nextStep do
 		local step = nextStep[i]
-		if type(step) ~= 'table' then
+
+		if #step == 0 then
 			if not peep:getState():has("KeyItem", step.name) then
 				local hint = gameDB:getRecord("KeyItemLocationHint", {
 					Map = mapResource,
@@ -176,15 +186,29 @@ function QuestProgressNotificationController:updateMapHints()
 					       not gameDB:getRecord("PropMapObject", { MapObject = mapObject })
 					then
 						local location = gameDB:getRecord("MapObjectLocation", {
-							MapObject = mapObject
+							Resource = mapObject
 						})
+
+						local position = Vector(
+							location:get("PositionX"),
+							location:get("PositionY"),
+							location:get("PositionZ"))
+						local hintTarget = Utility.spawnPropAtPosition(peep, "Target_Default", position.x, position.y, position.z)
+						hintTarget = hintTarget and hintTarget:getPeep()
+
+						if hintTarget then
+							hintTarget:setTarget(
+								Utility.getName(mapObject, gameDB) or "???",
+								description)
+							self.targets[hintTarget] = true
+						end
 
 						if location then
 							table.insert(hints, {
 								layer = Utility.Peep.getLayer(peep),
-								x = location:get("PositionX"),
-								y = location:get("PositionY"),
-								z = location:get("PositionZ"),
+								x = position.x,
+								y = position.y,
+								z = position.z,
 								description = description
 							})
 						end
