@@ -335,8 +335,9 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 
 	do
 		local gameDB = peep:getDirector():getGameDB()
-		local xWeaponBoost = gameDB:getRecord("XWeaponBoost", {
-			Resource = gameDB:getResource(weapon:getID(), "Item")
+		local xWeaponResource = gameDB:getResource(weapon:getID(), "Item")
+		local xWeaponBoost = xWeaponResource and gameDB:getRecord("XWeaponBoost", {
+			Resource = xWeaponResource
 		})
 
 		self.alwaysHits = xWeaponBoost and xWeaponBoost:get("AlwaysHits") ~= 0
