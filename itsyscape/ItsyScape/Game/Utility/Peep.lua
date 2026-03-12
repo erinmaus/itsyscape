@@ -2082,7 +2082,7 @@ function Peep.getWalk(peep, ...)
 		targetPosition)
 
 	if path then
-		if peep:hasBehavior(PendingWalkBehavior) then
+		if peep:hasBehavior(PendingWalkBehavior) and path:getNumNodes() > 2 then
 			local bestIndex
 			for i = path:getNumNodes(), 1, -1 do
 				local node = path:getNodeAtIndex(i)
@@ -2093,7 +2093,7 @@ function Peep.getWalk(peep, ...)
 				end
 			end
 
-			while bestIndex > 1 do
+			while bestIndex and bestIndex > 1 do
 				path:drop(1)
 				bestIndex = bestIndex - 1
 			end
