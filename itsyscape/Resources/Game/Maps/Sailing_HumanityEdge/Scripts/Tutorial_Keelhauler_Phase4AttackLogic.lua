@@ -112,8 +112,7 @@ local AdvancePhase = Mashina.Success {
 
 		Mashina.Try {
 			Mashina.Step {
-				--CommonAttackLogic.SwitchToOrlando,
-				CommonAttackLogic.SwitchToPlayer,
+				CommonAttackLogic.SwitchToOrlando,
 				CommonAttackLogic.SwitchToStrongStyle,
 				Mashina.Peep.DidAttack,
 
