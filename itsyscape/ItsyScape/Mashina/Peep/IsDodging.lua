@@ -37,7 +37,7 @@ function IsDodging:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	if dodge.dodgeBehavior == Weapon.Weapon.DODGE_BEHAVIOR_KNOCKBACK and not includeKnockback then
+	if dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK and not includeKnockback then
 		return B.Status.Failure
 	end
 

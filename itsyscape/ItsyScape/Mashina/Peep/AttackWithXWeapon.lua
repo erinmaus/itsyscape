@@ -10,6 +10,7 @@
 local B = require "B"
 local Utility = require "ItsyScape.Game.Utility"
 local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 
 local AttackWithXWeapon = B.Node("AttackWithXWeapon")
 AttackWithXWeapon.TARGET = B.Reference()
@@ -55,7 +56,7 @@ function AttackWithXWeapon:update(mashina, state, executor)
 	end
 
 	if isSpecial then
-		local _, special = peep:addBehavior(SpecialAttackBehavior)
+		local _, special = mashina:addBehavior(SpecialAttackBehavior)
 		special.weapon = xWeapon
 		special.attackInterval = specialAttackInterval or 1
 	end
