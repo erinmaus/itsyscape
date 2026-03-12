@@ -16,6 +16,7 @@
 		"PROWESS_FLUX_CONTROLLED_INTERVALS": ["prowessFluxControlledIntervals"],
 		"PROWESS_FLUX_DAMAGE_INTERVALS": ["prowessFluxDamageIntervals"],
 		"ZEAL_INTERVAL_SECONDS": ["zealIntervalSeconds"],
+		"ZEAL_SPELL_COST_MULTIPLIER": ["zealSpellCostMultiplier"],
 		"CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP": ["criticalFluxZealMultiplierStep"],
 		"CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER": ["criticalFluxZealMaxMultiplier"],
 		"CRITICAL_FLUX_ZEAL_MIN_MULTIPLIER": ["criticalFluxZealMinMultiplier"],
@@ -77,6 +78,8 @@
 	"powerZealRechargePerInterval": 0.01,
 
 	"zealRechargeMultiplier": 0.5,
+
+	"zealSpellCostMultiplier": 0.25,
 
 	"prowessFluxDamageIntervals": [
 		{

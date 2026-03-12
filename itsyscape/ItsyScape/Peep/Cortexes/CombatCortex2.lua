@@ -662,11 +662,12 @@ end
 
 function CombatCortex:_takeSpellZeal(peep, spell, weapon)
 	local zeal = -spell:getZealCost(peep, spell)
+	local zealSpellCostMultiplier = Config.get("Combat", "ZEAL_SPELL_COST_MULTIPLIER")
 
 	peep:poke("zeal", ZealPoke.onCastSpell({
 		spell = spell,
 		weapon = weapon,
-		zeal = zeal
+		zeal = zeal * zealSpellCostMultiplier
 	}))
 end
 
