@@ -23,8 +23,8 @@ FlameGreeble.FLAME_OFFSET = Vector(0):keep()
 
 FlameGreeble.PARTICLE_SCALE = 1
 
-FlameGreeble.INNER_RADIUS = 0.125
-FlameGreeble.OUTER_RADIUS = 0.25
+FlameGreeble.INNER_RADIUS = 0.1
+FlameGreeble.OUTER_RADIUS = 0.15
 
 FlameGreeble.INNER_FLAME_SPEED = 0.45
 FlameGreeble.OUTER_FLAME_SPEED = 0.5
@@ -73,8 +73,8 @@ do
 		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
 		normal:normalize(normal)
 
-		direction.speed[1] = windSpeed / 3 * speed
-		direction.speed[2] = windSpeed / 3 * speed
+		direction.speed[1] = windSpeed / 12 * speed
+		direction.speed[2] = windSpeed / 12 * speed
 		direction.direction[1] = normal.x
 		direction.direction[2] = normal.y
 		direction.direction[3] = normal.z
@@ -92,14 +92,14 @@ function FlameGreeble:_getInnerParticleDefinition()
 			{
 				type = "RadialEmitter",
 				radius = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE },
-				position = { 0, 0.1, 0 },
+				position = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 1.25, 0.15 }
+				lifetime = { 2.75, 0.05 }
 			},
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.75, 1 },
+				speed = { 0.1, 0.1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -107,7 +107,7 @@ function FlameGreeble:_getInnerParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 * self.PARTICLE_SCALE }
+				scale = { 0.1 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -151,14 +151,14 @@ function FlameGreeble:_getOuterParticleDefinition()
 			{
 				type = "RadialEmitter",
 				radius = { 0, self.OUTER_RADIUS * self.PARTICLE_SCALE },
-				position = { 0, 0, 0 },
+				position = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 1.5, 0.4 }
+				lifetime = { 2.5, 0.05 }
 			},
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.75, 1 },
+				speed = { 0.1, 0.1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -235,7 +235,7 @@ function FlameGreeble:load()
 		self.outerFlames:setParent(root)
 		self.outerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
 		self.outerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
-		self.outerFlames:getMaterial():setZBias(0.00005)
+		self.outerFlames:getMaterial():setZBias(-10)
 
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
