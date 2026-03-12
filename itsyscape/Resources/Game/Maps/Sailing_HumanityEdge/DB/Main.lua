@@ -2932,6 +2932,18 @@ do
 		Peep = ItsyScape.Resource.Peep "WarfMite",
 		MapObject = M["WarfMite1"]
 	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["WarfMite1"]
+	}
 end
 
 M["WarfMite2"] = ItsyScape.Resource.MapObject.Unique()
@@ -2949,6 +2961,18 @@ do
 		Peep = ItsyScape.Resource.Peep "WarfMite",
 		MapObject = M["WarfMite2"]
 	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["WarfMite2"]
+	}
 end
 
 M["WarfMite3"] = ItsyScape.Resource.MapObject.Unique()
@@ -2965,6 +2989,18 @@ do
 	ItsyScape.Meta.PeepMapObject {
 		Peep = ItsyScape.Resource.Peep "WarfMite",
 		MapObject = M["WarfMite3"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["WarfMite3"]
 	}
 end
 
