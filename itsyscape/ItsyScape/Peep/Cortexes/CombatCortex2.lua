@@ -201,7 +201,7 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	local status = selfPeep:getBehavior(CombatStatusBehavior)
 
 	local map = Utility.Peep.getMap(selfPeep)
-	local worldWeaponRange = self.TILE_TO_WORLD * adjustWeaponedRange
+	local worldWeaponRange = (self.TILE_TO_WORLD * adjustWeaponedRange + 1)
 
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
 	local canReachTarget = distance <= worldWeaponRange and worldWeaponRange > 0
