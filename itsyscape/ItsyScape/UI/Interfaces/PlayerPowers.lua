@@ -104,7 +104,7 @@ function PlayerPowers:new(id, index, ui)
 
 	self.layout:addChild(self.defensivePowersLayout)
 
-	self:refresh()
+	self:refreshPowers()
 end
 
 function PlayerPowers:onActivateOffensivePower(index)
@@ -160,7 +160,7 @@ function PlayerPowers:initDefensivePowers()
 	self.defensivePowersButtons = self:createPowerButtons(powers, self.defensivePowersLayout, self.onActivateDefensivePower)
 end
 
-function PlayerPowers:refresh()
+function PlayerPowers:refreshPowers()
 	self:initOffensivePowers()
 	self:initDefensivePowers()
 

@@ -233,7 +233,7 @@ end
 
 function PlayerPowersController:sendRefresh()
 	local ui = self:getDirector():getGameInstance():getUI()
-	ui:sendPoke(self, "refresh", nil, {})
+	ui:sendPoke(self, "refreshPowers", nil, {})
 end
 
 function PlayerPowersController:update(delta)

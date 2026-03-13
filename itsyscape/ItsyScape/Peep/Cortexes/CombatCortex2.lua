@@ -983,6 +983,8 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
+	self:_makePeepFaceTarget(peep, target)
+
 	local isWithinRange, isTooFar, isTooClose, isOutOfRange, maybeCanReach = self:_isPeepWithinRange(peep, target)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
 	if not isAttackable or isOutOfRange then
@@ -1027,8 +1029,6 @@ function CombatCortex:tickPeep(delta, peep)
 	elseif peep:hasBehavior(CombatChargeBehavior) then
 		self:cancelCharge(peep)
 	end
-
-	self:_makePeepFaceTarget(peep, target)
 
 	if Utility.Peep.isDisabled(target) then
 		return
