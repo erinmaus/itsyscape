@@ -1008,12 +1008,20 @@ function CombatCortex:tickPeep(delta, peep)
 
 		return
 	elseif not isWithinRange then
-		peep:addBehavior(CombatChargeBehavior)
+		if not peep:hasBehavior(CombatChargeBehavior) then
+			peep:addBehavior(CombatChargeBehavior)
+			Utility.Peep.cancelWalk(peep)
+		end
+
 		self:movePeep(peep)
 		return
 	elseif isTooClose and not peep:hasBehavior(PlayerBehavior) then
 		if not target:hasBehavior(CombatChargeBehavior) then
-			peep:addBehavior(CombatChargeBehavior)
+			if not peep:hasBehavior(CombatChargeBehavior) then
+				peep:addBehavior(CombatChargeBehavior)
+				Utility.Peep.cancelWalk(peep)
+			end
+
 			self:strafePeep(peep)
 		end
 	elseif peep:hasBehavior(CombatChargeBehavior) then

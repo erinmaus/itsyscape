@@ -32,12 +32,8 @@ local FollowOrlando = Mashina.Success {
 				as_close_as_possible = false
 			},
 
-			Mashina.Peep.Wait,
-
 			Mashina.Repeat {
-				Mashina.Success {
-					CommonLogic.AvoidCrowding
-				}
+				Mashina.Peep.Wait
 			}
 		}
 	}
@@ -54,7 +50,8 @@ local Tree = BTreeBuilder.Node() {
 		Mashina.ParallelSequence {
 			Mashina.ParallelTry {
 				CommonLogic.IsAttacking,
-				CommonLogic.AttackPlayerTarget
+				CommonLogic.AttackPlayerTarget,
+				CommonLogic.AvoidCrowding
 			},
 
 			FollowOrlando

@@ -12,6 +12,7 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local BasicArtisanStation = Class(Prop)
 
@@ -22,6 +23,11 @@ function BasicArtisanStation:new(...)
 	Prop.new(self, ...)
 
 	Utility.Peep.makeArtisanStation(self)
+
+	if self.COLLISION_IS_BLOCKING then
+		local static = self:getBehavior(StaticBehavior)
+		static.type = StaticBehavior.PASSABLE
+	end
 
 	self.craftGeneration = 0
 end
