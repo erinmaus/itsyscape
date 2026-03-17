@@ -95,12 +95,14 @@ function SmartNavMeshPathFinder:new(peep, t)
 				return false
 			end
 
-			if self.world and self.world:has(self.peep) then
-				local collisions = self.world:test(self.peep, c.x, c.z, self._filter)
-				for _, collision in ipairs(collisions) do
-					if not self.ignored[collision.other] then
-						return false
-					end
+			do
+				local dynamic = self.peep:getBehavior(DynamicBehavior)
+				local radius = dynamic and dynamic.radius or MovementCortex.DEFAULT_PEEP_RADIUS
+				local margin = dynamic and dynamic.margin or self.DEFAULT_PEEP_MARGIN
+				local padding = (radius + margin)
+				local distance = a:distance(b)
+				if distance < padding then
+					return false 
 				end
 			end
 
