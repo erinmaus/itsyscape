@@ -207,6 +207,13 @@ function GameView:initRenderer(conf)
 	})
 	self.renderer:setCamera(self.camera)
 
+	self.skyboxRenderer = Renderer({
+		shadows = false,
+		outlines = conf and conf.outlines,
+		reflections = false
+	})
+	self.skyboxRenderer:setCamera(self.camera)
+
 	self.sceneOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
 	self.sceneOutlinePostProcessPass:load(self.resourceManager)
 	self.sceneOutlinePostProcessPass:setIsEnabled(not conf or conf.outlines == nil or not not conf.outlines)
@@ -227,6 +234,7 @@ function GameView:initRenderer(conf)
 	self.skyboxOutlinePostProcessPass:setMinOutlineDepthAlpha(1)
 	self.skyboxOutlinePostProcessPass:setMaxOutlineDepthAlpha(1)
 	self.skyboxOutlinePostProcessPass:setOutlineFadeDepth(1000)
+	self.skyboxOutlinePostProcessPass:setShimmerEnabled(false)
 	self.skyboxOutlinePostProcessPass:setIsEnabled(not conf or conf.outlines == nil or not not conf.outlines)
 
 	self.toneMapPostProcessPass = ToneMapPostProcessPass(self.renderer)
@@ -3270,9 +3278,9 @@ function GameView:draw(delta, width, height)
 	if drawSkybox and skybox then
 		local info = self.skyboxes[skybox]
 		
-		self.renderer:setClearColor(info.color)
-		self.renderer:draw(skybox, delta, width, height, self.skyboxPostProcessPasses)
-		self.renderer:present(false)
+		self.skyboxRenderer:setClearColor(info.color)
+		self.skyboxRenderer:draw(skybox, delta, width, height, self.skyboxPostProcessPasses)
+		self.skyboxRenderer:present(false)
 	end
 
 	self.renderer:setClearColor(CLEAR)

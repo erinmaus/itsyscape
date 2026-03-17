@@ -55,6 +55,7 @@ function OutlinePostProcessPass:new(...)
 
 	self.shimmerTexture = self.translucentTexture
 	self.shimmerRadius = 4
+	self.shimmerEnabled = true
 end
 
 function OutlinePostProcessPass:setIsEnabled(value)
@@ -184,6 +185,14 @@ end
 
 function OutlinePostProcessPass:getShimmerRadius()
 	return self.shimmerRadius
+end
+
+function OutlinePostProcessPass:setShimmerEnabled(value)
+	self.shimmerEnabled = value
+end
+
+function OutlinePostProcessPass:getShimmerEnabled()
+	return self.shimmerEnabled
 end
 
 function OutlinePostProcessPass:load(resources)
@@ -400,16 +409,22 @@ function OutlinePostProcessPass:_finish(dilateBuffer, width, height)
 
 	love.graphics.draw(self.outlineBuffer:getCanvas(1))
 
-	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
+	if dilateBuffer then
+		local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
 
-	self:bindShader(
-		self.composeDilateShader,
-		"scape_DilateTexture", dilateBuffer)
+		self:bindShader(
+			self.composeDilateShader,
+			"scape_DilateTexture", dilateBuffer)
 
-	love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
+		love.graphics.draw(shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX))
+	end
 end
 
 function OutlinePostProcessPass:_dilate(width, height)
+	if not self.shimmerEnabled then
+		return nil
+	end
+
 	local shimmerRendererPass = self:getRenderer():getPassByID(RendererPass.PASS_SHIMMER)
 	local highlightTexture = shimmerRendererPass:getOBuffer():getCanvas(shimmerRendererPass.SHIMMER_COLOR_INDEX)
 
