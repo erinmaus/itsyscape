@@ -18,8 +18,6 @@ precision highp float;
 
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 250.0 / 255.0
 
-#define SCAPE_SHADOW_PASS
-
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
@@ -30,6 +28,7 @@ vec4 performEffect(vec4 color, vec2 textureCoordinate);
 void effect()
 {
 	vec4 diffuse = performEffect(frag_Color, frag_Texture);
+	diffuse.a *= getGlobalWallHackAlpha(frag_Position, 0.0);
 
 #ifndef SCAPE_DEPTH_PASS_SKIP_DISCARD
 	if (diffuse.a < SCAPE_ALPHA_DISCARD_THRESHOLD)

@@ -21,11 +21,13 @@ local Color = require "ItsyScape.Graphics.Color"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local DisabledBehavior = require "ItsyScape.Peep.Behaviors.DisabledBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
@@ -53,7 +55,9 @@ function LocalPlayer:new(id, game, stage)
 	self.direction = Vector.UNIT_X
 	self.id = id
 	self.isPlayable = false
+	self.isSpawned = false
 
+	self.onSpawn = Callback(false)
 	self.onPoof = Callback(false)
 	self.onForceDisconnect = Callback(false)
 
@@ -63,6 +67,14 @@ end
 function LocalPlayer:setInstance(previousLayerName, newLayerName, instance)
 	self:onMove(previousLayerName, newLayerName)
 	self.instance = instance
+end
+
+function LocalPlayer:getInstanceID()
+	if self.instance then
+		return string.format("%s@%d", self.instance:getFilename(), self.instance:getID())
+	end
+
+	return "::orphan"
 end
 
 function LocalPlayer:getInstance()
@@ -100,6 +112,7 @@ function LocalPlayer:saveLocation()
 		local position = Utility.Peep.getPosition(self.actor:getPeep())
 		locationStorage:set({
 			name = self.instance:getFilename(),
+			layer = Utility.Peep.getLocalLayer(self.actor:getPeep()),
 			x = position.x,
 			y = position.y,
 			z = position.z
@@ -118,6 +131,8 @@ function LocalPlayer:saveLocation()
 end
 
 function LocalPlayer:spawn(storage, newGame, password)
+	storage = storage:clone()
+
 	if not self.game:verifyPassword(password) then
 		Log.warn("Player %d (client %d) did not say the right password.", self:getID(), self:getClientID() or -1)
 		self:onForceDisconnect()
@@ -192,6 +207,7 @@ function LocalPlayer:spawn(storage, newGame, password)
 								location:get("x"),
 								location:get("y"),
 								location:get("z")))
+						Utility.Peep.setLocalLayer(actor:getPeep(), location:get("layer") or 1)
 
 						local statusStorage = root:getSection("Status")
 						local status = actor:getPeep():getBehavior(CombatStatusBehavior)
@@ -206,10 +222,15 @@ function LocalPlayer:spawn(storage, newGame, password)
 							Analytics:startGame(actor:getPeep())
 						else
 							local x, y, z = Utility.Map.getAnchorPosition(self.game, location:get("name"), "Anchor_Spawn")
-							Utility.Peep.setPosition(actor:getPeep(), Vector(x, y, z))
+							Utility.Peep.teleport(actor:getPeep(), Vector(x, y, z))
 						end
 					end
 				end
+			end
+
+			if not self.isSpawned then
+				self.isSpawned = true
+				self:onSpawn()
 			end
 		end)
 
@@ -385,6 +406,8 @@ function LocalPlayer:poke(id, obj, scope)
 	self.lastPokeTime = love.timer.getTime()
 
 	self.actor:getPeep():poke("actionTried", {
+		pending = true,
+		object = self.nextObject,
 		actionID = self.nextActionID
 	})
 end
@@ -415,9 +438,14 @@ function LocalPlayer:move(x, z)
 		return false
 	end
 
+	local peep = self.actor:getPeep()
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		return
+	end
+
 	local direction = Vector(x, 0, z):getNormal()
 	local length = direction:getLength()
-	local peep = self.actor:getPeep()
 	local movement = peep:getBehavior(MovementBehavior)
 	if length == 0 or peep:hasBehavior(DisabledBehavior) then
 		movement.isStopping = true
@@ -428,15 +456,88 @@ function LocalPlayer:move(x, z)
 				targetTile.pathNode:interrupt(peep)
 			end
 
+			local targetPosition = peep:getBehavior(TargetPositionBehavior)
+			if targetPosition and targetPosition.pathNode then
+				targetPosition.pathNode:interrupt(peep)
+			end
+
 			movement.velocity = movement.maxSpeed * direction
 			movement.isStopping = false
 
 			local i, j, k = Utility.Peep.getTile(peep)
 
 			self.direction = direction
-			peep:poke('walk', { i = i, j = j, k = k })
+			peep:poke('walk', { i = i, j = j, layer = k })
 		end
 	end
+end
+
+function LocalPlayer:startDodge(target)
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
+		return
+	end
+
+	local peep = self:getActor():getPeep()
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		return
+	end
+
+	if not target then
+		local combatTarget = peep:getBehavior(CombatTargetBehavior)
+		target = combatTarget and combatTarget.actor
+	end
+
+	if Class.isCompatibleType(target, LocalActor) then
+		if not (self.instance and self.instance:hasActor(target, self)) then
+			Log.info(
+				"Player '%s' (%d) tried dodging actor '%s' (%d) in a different instance.",
+				self:getActor():getName(), self:getID(), target:getName(), target:getID())
+			return
+		end
+
+		target = target:getPeep()
+	elseif not Class.isCompatibleType(target, Vector) then
+		return
+	end
+
+	local weapon = Utility.Peep.getEquippedWeapon(peep, true) or Weapon.UNARMED
+	if not Class.isCompatibleType(weapon, Weapon) then
+		return
+	end
+
+	if Class.isCompatibleType(target, Vector) then
+		-- 'target' is a direction, we need to turn it into a position relative to the player peep.
+		target = Utility.Peep.getPosition(peep) + target:getNormal() * weapon:getDodgeRange(peep)
+	end
+
+	if weapon:dodge(peep, target) then
+		Log.info(
+			"Player '%s' (%d) successfully dodged.",
+			self:getActor():getName(), self:getID())
+	else
+		Log.info(
+			"Player '%s' (%d) did NOT dodge.",
+			self:getActor():getName(), self:getID())
+	end
+end
+
+function LocalPlayer:stopDodge()
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
+		return
+	end
+
+	local peep = self:getActor():getPeep()
+	peep:removeBehavior(CombatDodgeBehavior)
+end
+
+function LocalPlayer:getIsDodging()
+	if not self:isReady() or not self:getActor():getPeep():getIsReady() then
+		return false
+	end
+
+	local peep = self:getActor():getPeep()
+	return peep:hasBehavior(CombatDodgeBehavior) and peep:getBehavior(CombatDodgeBehavior).dodgeBehavior ~= Weapon.DODGE_BEHAVIOR_KNOCKBACK
 end
 
 function LocalPlayer:isPendingActionMovement()
@@ -453,7 +554,16 @@ end
 function LocalPlayer:tryPerformPoke()
 	local peep = self.actor:getPeep()
 
-	if not peep or peep:hasBehavior(DisabledBehavior) then
+	local isDisabled = peep and Utility.Peep.isDisabled(peep)
+	local hasKnockback = false
+
+	local dodge = peep and peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		hasKnockback = true
+	end
+
+	local canPerformAction = peep and not (hasKnockback or isDisabled)
+	if not canPerformAction then
 		self.nextObject = nil
 		self.nextActionID = nil
 		self.nextActionScope = nil
@@ -472,12 +582,18 @@ function LocalPlayer:tryPerformPoke()
 			if obj and id and scope then
 				if Class.isCompatibleType(obj, LocalProp) or Class.isCompatibleType(obj, LocalActor) then
 					local layer = Utility.Peep.getLayer(obj:getPeep())
-					if not self.instance:hasLayer(layer) then
+					if not self.instance:hasLayer(layer, self) then
 						Log.warn(
 							"Player '%s' (%d) is not in instance with layer %d! Cannot poke actor or peep %s '%s' (%d).",
 							self:getActor():getName(), self:getID(), layer, obj:getPeepID(), obj:getName(), obj:getID())
 					else
 						obj:poke(id, scope, self.actor:getPeep())
+
+						self.actor:getPeep():poke("actionTried", {
+							pending = false,
+							object = self.nextObject,
+							actionID = self.nextActionID
+						})
 					end
 				elseif Class.isClass(obj) then
 					Log.warn("Can't poke action '%d' on object of type '%s'", id, obj:getDebugInfo().shortName)
@@ -560,7 +676,21 @@ function LocalPlayer:walk(i, j, k)
 	end
 
 	local peep = self.actor:getPeep()
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+	if dodge and dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		return
+	end
+
+	local peep = self.actor:getPeep()
 	local callback, id = Utility.Peep.queueWalk(peep, i, j, k, math.huge, { asCloseAsPossible = true })
+
+	local map = Utility.Peep.getMap(peep)
+	if map then
+		peep:poke("walk", {
+			position = map:getTileCenter(i, j),
+			layer = k
+		})
+	end
 
 	self.pendingWalkID = id
 	callback:register(self._finishWalk, self)

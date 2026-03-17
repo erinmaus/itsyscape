@@ -22,9 +22,7 @@ local OutgoingEventQueue = require "ItsyScape.Game.RPC.OutgoingEventQueue"
 local Property = require "ItsyScape.Game.RPC.Property"
 local TypeProvider = require "ItsyScape.Game.RPC.TypeProvider"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
-local NGameManager = require "nbunny.gamemanager"
-local NProperty = require "nbunny.gamemanager.property"
-local NVariant = require "nbunny.gamemanager.variant"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local GameManager = Class()
 
@@ -95,7 +93,7 @@ end
 
 function GameManager.Instance:pullProperty(propertyName, field, ...)
 	local property = self.properties[propertyName]
-	property:pull(propertyName, field, ...)
+	property:pull(field, ...)
 end
 
 function GameManager.Instance:updateProperty(property, force)
@@ -126,6 +124,7 @@ function GameManager.Property:new(instance, field, property)
 	self.field = field
 	self.property = property
 	self.hasValue = false
+	self.value = { n = 0, arguments = {} }
 end
 
 function GameManager.Property:getField()
@@ -183,9 +182,9 @@ function GameManager.Property:set(instance, value)
 	self.value = value
 end
 
-function GameManager.Property:pull(instance, field, e)
+function GameManager.Property:pull(field, e)
 	self.hasValue = true
-	self.value = e[field]
+	self.value = State.merge(e[field], self.value)
 end
 
 GameManager.PropertyGroup = Class()
@@ -245,11 +244,11 @@ function GameManager.PropertyGroup:set(key, ...)
 	if not outPrioritized then
 		if index then
 			self.values[index].key = key
-			self.values[index].value = { n = select("#", ... ), arguments = { ... } }
+			self.values[index].value = State.merge({ n = select("#", ... ), arguments = { ... } }, self.values[index].value)
 		else
 			table.insert(self.values, {
 				key = key,
-				value = { n = select("#", ... ), arguments = { ... } }
+				value = State.merge({ n = select("#", ... ), arguments = { ... } })
 			})
 		end
 
@@ -282,13 +281,7 @@ function GameManager.PropertyGroup:get(key)
 end
 
 function GameManager:new()
-	if NGameManager.fetch() then
-		error("can only be one game manager on thread")
-	end
-
-	NGameManager.assign(self)
-
-	self.queue = OutgoingEventQueue()
+	self.queue = OutgoingEventQueue(self)
 
 	self.interfaces = {}
 	self.interfaceInstances = {}
@@ -363,9 +356,10 @@ function GameManager:processCallback(e)
 	if instance then
 		local obj = instance:getInstance()
 		local event = obj[e.callback]
+		local value = e.value
 
 		if Class.isCompatibleType(event, Callback) or type(event) == "function" then
-			event(obj, unpack(e.value.arguments, 1, e.value.n))
+			event(obj, unpack(value.arguments, 1, value.n))
 		end
 	end
 end
@@ -424,6 +418,8 @@ function GameManager:newInstance(interface, id, obj)
 	instances[id] = instance
 	table.insert(self.instances, instance)
 	self.interfaceInstances[interface][obj] = id
+
+	obj[NPooledBuffer.ID] = id
 
 	return instance
 end
@@ -494,7 +490,7 @@ function GameManager:setLocalStateForPropertyGroup(interface, id, event, _, ...)
 	end
 end
 
-function GameManager:_unsetLocalStateForPropertyGroup(interface, id, event, _, ...)
+function GameManager:unsetLocalStateForPropertyGroup(interface, id, event, _, ...)
 	local instance = self:getInstance(interface, id)
 	if instance then
 		local group = instance:getPropertyGroup(event:getGroup())

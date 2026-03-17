@@ -60,12 +60,18 @@ local BARS = {
 	["Uranium"] = {
 		tier = 45,
 		weight = 35,
+		traits = {
+			"NuclearHeat_Smelt",
+		},
 		{ name = "UraniumOre", count = 1 }
 	},
 
 	["Itsy"] = {
 		tier = 50,
 		weight = 5,
+		traits = {
+			"NuclearHeat_Smelt",
+		},
 		{ name = "ItsyOre", count = 1 },
 		{ name = "UraniumOre", count = 1 }
 	},
@@ -74,6 +80,15 @@ local BARS = {
 		tier = 55,
 		weight = 12,
 		{ name = "GoldOre", count = 1 }
+	},
+
+	["Azatite"] = {
+		tier = 60,
+		weight = 100,
+		traits = {
+			"DragonHeat_Smelt"
+		},
+		{ name = "AzatiteOre", count = 1 }
 	}
 }
 
@@ -107,6 +122,24 @@ for name, bar in spairs(BARS) do
 			Count = ItsyScape.Utility.xpForResource(math.max(bar.tier, 1)) * #bar
 		}
 	}
+
+	if bar.traits then
+		for _, trait in ipairs(bar.traits) do
+			SmeltAction {
+				Requirement {
+					Resource = ItsyScape.Resource.ArtisanProperty(trait),
+					Count = 1
+				}
+			}
+		end
+	else
+		SmeltAction {
+			Requirement {
+				Resource = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
+				Count = 1
+			}
+		}
+	end
 
 	ItsyScape.Meta.Item {
 		Value = ItsyScape.Utility.valueForItem(bar.tier + 1),

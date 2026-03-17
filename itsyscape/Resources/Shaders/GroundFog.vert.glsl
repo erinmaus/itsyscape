@@ -1,3 +1,5 @@
+#include "Resources/Shaders/MapCurve.common.glsl"
+
 attribute vec3 ParticlePosition;
 
 varying vec3 frag_ParticlePosition;
@@ -10,10 +12,14 @@ void performTransform(
 	out vec3 localPosition,
 	out vec4 projectedPosition)
 {
-	localPosition = position.xyz;
-	projectedPosition = modelViewProjectionMatrix * position;
+	vec3 warpedNormal = vec3(0.0);
+	vec3 warpedPosition = position.xyz;
+	transformPointByCurves(warpedPosition, warpedNormal);
 
-	frag_LocalPosition = localPosition;
+	localPosition = warpedPosition.xyz;
+	projectedPosition = modelViewProjectionMatrix * vec4(warpedPosition, 1.0);
+
+	frag_LocalPosition = position.xyz;
 	frag_ParticlePosition = (scape_WorldMatrix * vec4(ParticlePosition, 1.0)).xyz;
 
 	vec2 screenPosition = projectedPosition.xy / projectedPosition.w;

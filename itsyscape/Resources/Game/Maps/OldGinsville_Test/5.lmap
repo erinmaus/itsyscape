@@ -1,0 +1,3309 @@
+{
+	width = 11,
+	height = 25,
+	cellSize = 2,
+	tiles =
+	{
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+				["building"] = true,
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 20, topRight = 20, bottomLeft = 20, bottomRight = 20,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 16, topRight = 16, bottomLeft = 16, bottomRight = 16,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 12, topRight = 12, bottomLeft = 12, bottomRight = 12,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 8, topRight = 8, bottomLeft = 8, bottomRight = 8,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 4, topRight = 4, bottomLeft = 4, bottomRight = 4,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+		{
+			topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0,
+			red = 1.000000, green = 1.000000, blue = 1.000000,
+			edge = 4, flat = 4, decals = {  },
+			tileSetID = "Draft",
+			data =
+			{
+			},
+			flags =
+			{
+			},
+		},
+	}
+}

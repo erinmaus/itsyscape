@@ -11,9 +11,11 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 
 -- Less accurate shot (20% lower attack roll), but deals damage from 200% to 400%.
--- An additional 100% against undead. 
+-- An additional 100% against undead.
+-- Always hits following the foe using a special attack.
 local Headshot = Class(ProxyXWeapon)
 Headshot.ACCURACY_DEBUFF = 0.8
 Headshot.UNDEAD_DAMAGE_MODIFIER = 1
@@ -23,7 +25,21 @@ Headshot.MAX_DAMAGE_MULTIPLIER  = 4
 function Headshot:previewAttackRoll(roll)
 	ProxyXWeapon.previewAttackRoll(self, roll)
 
-	roll:setMaxAttackRoll(roll:getMaxAttackRoll() * Headshot.ACCURACY_DEBUFF)
+	local target = roll:getTarget()
+	if target and target:hasBehavior(SpecialAttackBehavior) then
+		roll:setAlwaysHits(true)
+	else
+		roll:setAttackLevel(math.floor(roll:getAttackLevel() * Headshot.ACCURACY_DEBUFF + 0.5))
+	end
+end
+
+function Headshot:onAttackHit(peep, target, ...)
+	ProxyXWeapon.onAttackHit(self, peep, target, ...)
+
+	local stage = target:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("Power_Decapitate", peep, target)
+
+	Utility.Combat.tryPunish(target, peep)
 end
 
 function Headshot:previewDamageRoll(roll)
@@ -48,6 +64,11 @@ function Headshot:previewDamageRoll(roll)
 		minDamageMultiplier = minDamageMultiplier + Headshot.UNDEAD_DAMAGE_MODIFIER
 		maxDamageMultiplier = maxDamageMultiplier + Headshot.UNDEAD_DAMAGE_MODIFIER
 		Log.info("Target '%s' is undead, dealing extra damage.", roll:getTarget():getName())
+	end
+
+	local target = roll:getTarget()
+	if target and target:hasBehavior(SpecialAttackBehavior) then
+		minDamageMultiplier = maxDamageMultiplier
 	end
 
 	Log.info(

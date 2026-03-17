@@ -19,6 +19,14 @@ function Path:getNumNodes()
 	return #self.nodes
 end
 
+function Path:drop(index)
+	if index < 0 then
+		index = #self.nodes - math.abs(index) + 1
+	end
+
+	table.remove(self.nodes, index)
+end
+
 function Path:getNodeAtIndex(index)
 	if index < 0 then
 		index = #self.nodes - math.abs(index) + 1

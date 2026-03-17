@@ -462,3 +462,106 @@ do
 		Resource = FleshyPillar
 	}
 end
+
+do
+	local MedicalTinkerer = ItsyScape.Resource.Peep "MedicalTinkerer" {
+		ItsyScape.Action.Attack()
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Tinkerer.MedicalTinkerer",
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Tinkerer medic",
+		Language = "en-US",
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Performs experiments on adventurers.",
+		Language = "en-US",
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Attack",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Strength",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Magic",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Wisdom",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Archery",
+		Value = ItsyScape.Utility.xpForLevel(40),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Defense",
+		Value = ItsyScape.Utility.xpForLevel(60),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Faith",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepStat {
+		Skill = ItsyScape.Resource.Skill "Dexterity",
+		Value = ItsyScape.Utility.xpForLevel(50),
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.PeepHealth {
+		Hitpoints = 1000,
+		Resource = MedicalTinkerer
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracySlash = ItsyScape.Utility.styleBonusForWeapon(50),
+		AccuracyRanged = ItsyScape.Utility.styleBonusForWeapon(55),
+		AccuracyMagic = ItsyScape.Utility.styleBonusForWeapon(55),
+		DefenseStab = ItsyScape.Utility.styleBonusForItem(40, 0.4),
+		DefenseSlash = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseCrush = ItsyScape.Utility.styleBonusForItem(40, 1.1),
+		DefenseMagic = ItsyScape.Utility.styleBonusForItem(45, 1.3),
+		DefenseRanged = ItsyScape.Utility.styleBonusForItem(45, 1.2),
+		StrengthMagic = ItsyScape.Utility.strengthBonusForWeapon(65),
+		StrengthMelee = ItsyScape.Utility.strengthBonusForWeapon(50),
+		StrengthArchery = ItsyScape.Utility.strengthBonusForWeapon(60),
+		Resource = MedicalTinkerer
+	}
+end

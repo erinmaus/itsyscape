@@ -44,6 +44,7 @@ ActorProxy.unsetSkin:link(
 
 ActorProxy.getID = Property(-1)
 ActorProxy.getPeepID = Property("null")
+ActorProxy.getPeepResourceID = Property("Null")
 ActorProxy.getName = Property("Null")
 ActorProxy.getDescription = Property("This actor hasn't fully loaded yet.")
 ActorProxy.getDirection = Property(Vector.UNIT_X)
@@ -92,6 +93,7 @@ ActorProxy.stopAnimation:link(
 	Event.Argument("priority"),
 	Event.Argument("force"))
 
+ActorProxy.getTarget = Property()
 
 ActorProxy.damage = Event.ServerToClientRPC(Event.Arguments())
 ActorProxy.damage:link("onDamage", Event.Arguments())

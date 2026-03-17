@@ -15,8 +15,8 @@ uniform int scape_NumLayers;
 
 void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 position, inout vec3 normal, out float specular)
 {
-	float alpha = getWallHackAlpha(frag_Position);
-	TriplanarTextureCoordinates triplanarTextureCoordinates = triplanarMap(frag_Position, frag_Normal);
+	float alpha = getWallHackAlpha(position);
+	TriplanarTextureCoordinates triplanarTextureCoordinates = triplanarMap(position, frag_Normal);
 
 	vec4 resultSample = vec4(0.0);
 	vec4 specularSample = vec4(0.0);
@@ -37,8 +37,8 @@ void performAdvancedEffect(vec2 textureCoordinate, inout vec4 color, inout vec3 
 		specularSample.a += currentSample.a;
 	}
 
-	specular = specularSample.r * specularSample.a + 0.2;
-	color = resultSample * color * vec4(mix(vec3(specularSample), vec3(1.0), 1.0 - specularSample.a), 1.0);
+	specular = specularSample.r * (specularSample.a + 0.2);
+	color = resultSample * color;
 	color.a *= alpha;
 }
 

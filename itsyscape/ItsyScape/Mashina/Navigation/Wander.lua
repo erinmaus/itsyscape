@@ -8,9 +8,14 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local B = require "B"
+local Ray = require "ItsyScape.Common.Math.Ray"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Peep = require "ItsyScape.Peep.Peep"
-local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
+local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
+local ExecutePathcommand = require "ItsyScape.World.ExecutePathCommand"
+local Path = require "ItsyScape.World.Path"
+local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 
 local Wander = B.Node("Wander")
 Wander.MIN_RADIAL_DISTANCE = B.Reference()
@@ -19,15 +24,7 @@ Wander.WANDER_I = B.Reference()
 Wander.WANDER_J = B.Reference()
 
 function Wander:update(mashina, state, executor)
-	local k
-	do
-		local position = mashina:getBehavior(PositionBehavior)
-		if position then
-			k = position.layer or 1
-		else
-			k = 1
-		end
-	end
+	local k = Utility.Peep.getLayer(mashina)
 
 	local wanderI, wanderJ
 	do
@@ -72,67 +69,60 @@ function Wander:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
-	if tile:hasFlag('impassable') then
-		return B.Status.Working
-	end
-
 	local radialDistance = state[self.RADIAL_DISTANCE] or 5
+	local minRadialDistance = state[self.MIN_RADIAL_DISTANCE] or 0
 
-	local s, t
-	do
-		local min = state[self.MIN_RADIAL_DISTANCE] or 0
-		local max = radialDistance - min
-		if wanderI then
-			s = math.random(-max, max) + min
-		else
-			s = 0
-		end
+	local map = Utility.Peep.getMap(mashina)
+	local targetI, targetJ = Utility.Map.getRandomTile(map, i, j, radialDistance, true, nil, nil, minRadialDistance)
 
-		if wanderJ  then
-			t = math.random(-max, max) + min
-		else
-			t = 0
-		end
-	end
+	local start = map:getTileCenter(i, j)
+	start.y = 0
+	local stop = map:getTileCenter(targetI, targetJ)
+	stop.y = 0
 
-	local targetI = i + s
-	local targetJ = j + t
+	local distance = start:distance(stop)
+	local direction = start:direction(stop)
 
-	local command, path
-	if not self.getWalk then
-		self.getWalk = coroutine.wrap(Utility.Peep.getWalk)
-		command, path = self.getWalk(
-			mashina,
-			targetI,
-			targetJ,
-			k,
-			0,
-			{
-				asCloseAsPossible = true,
-				maxDistanceFromGoal = radialDistance,
-				yield = true
-			})
-	else
-		command, path = self.getWalk()
-	end
+	local movement = mashina:getDirector():getCortex(MovementCortex)
+	local world = movement:getWorld(k)
 
-	if command ~= nil then
-		self.getWalk = nil
+	local path = Path()
 
-		if command then
-			if mashina:getCommandQueue():interrupt(command) then
-				return B.Status.Success
-			else
-				return B.Status.Failure
+	map:lineOfSightPassable(i, j, targetI, targetJ, false, function(_, previousI, previousJ, differenceI, differenceJ)
+		if world and world:has(mashina) then
+			local previousCenter = map:getTileCenter(previousI, previousJ)
+			local currentCenter = map:getTileCenter(previousI + differenceI, previousJ + differenceJ)
+
+			local collisions = world:project(mashina, previousCenter.x, previousCenter.z, currentCenter.x, currentCenter.z, function(a, b)
+				return movement:filter(a, b)
+			end)
+
+			if #collisions > 0 then
+				local y = map:getInterpolatedHeight(collisions[1].touch.x, collisions[1].touch.y)
+				path:makeNode(PositionPathNode, map, k, Vector(collisions[1].touch.x, y, collisions[1].touch.y))
+
+				return false
 			end
 		end
+
+		if map:canMove(previousI, previousJ, differenceI, differenceJ) then
+			path:makeNode(PositionPathNode, map, k, map:getTileCenter(previousI + differenceI, previousJ + differenceJ))
+			return true
+		end
+
+		return false
+	end)
+
+	if path:getNumNodes() == 0 then
+		return B.Status.Failure
 	end
 
-	return B.Status.Working
-end
+	local command = ExecutePathcommand(path)
+	if not mashina:getCommandQueue():interrupt(command) then
+		return B.Status.Failure
+	end
 
-function Wander:deactivated()
-	self.walk = nil
+	return B.Status.Success
 end
 
 return Wander

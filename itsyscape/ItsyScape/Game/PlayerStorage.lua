@@ -58,6 +58,12 @@ function PlayerStorage.Section:hasSection(key)
 	return self.sections[key] ~= nil
 end
 
+function PlayerStorage.Section:clear()
+	table.clear(self.values)
+	table.clear(self.sections)
+	table.clear(self.array)
+end
+
 function PlayerStorage.Section:unset(key)
 	self:removeSection(key)
 
@@ -258,6 +264,14 @@ end
 
 function PlayerStorage:serialize()
 	return self.root:serialize()
+end
+
+function PlayerStorage:clone()
+	local t = self.root:serialize()
+	local result = PlayerStorage()
+	result:deserialize(t)
+
+	return result
 end
 
 function PlayerStorage:toString()

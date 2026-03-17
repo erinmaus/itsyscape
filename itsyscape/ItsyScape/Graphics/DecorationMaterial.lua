@@ -18,19 +18,40 @@ local StringBuilder = require "ItsyScape.Common.StringBuilder"
 
 local DecorationMaterial = Class()
 
+DecorationMaterial.PROPERTIES = {
+	"color",
+	"alpha",
+	"isTranslucent",
+	"isFullLit",
+	"outlineColor",
+	"outlineThreshold",
+	"isReflectiveOrRefractive",
+	"reflectionPower",
+	"reflectionDistance",
+	"roughness",
+	"isShadowCaster",
+	"glassThickness",
+	"zBias",
+	"isZWriteDisabled"
+}
+
 function DecorationMaterial:new(d)
 	self.uniforms = {}
 	self.properties = {
 		color = Color(1),
 		alpha = 1,
 		isTranslucent = false,
+		isFullLit = false,
 		outlineColor = Color(0),
 		outlineThreshold = 0.5,
 		isReflectiveOrRefractive = false,
 		reflectionPower = 1,
 		reflectionDistance = 2,
 		roughness = 0,
-		isShaderCaster = false,
+		isShadowCaster = false,
+		glassThickness = -1,
+		zBias = 0,
+		isZWriteDisabled = false
 	}
 	self.set = {}
 
@@ -45,7 +66,7 @@ function DecorationMaterial:new(d)
 	end
 end
 
-function DecorationMaterial:apply(sceneNode, resourceManager)
+function DecorationMaterial:apply(sceneNode, resourceManager, textureOverride)
 	local material = sceneNode:getMaterial()
 
 	local textures = {}
@@ -65,7 +86,10 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 			end)
 	end
 
-	if self.texture then
+	local mainTexture
+	if textureOverride then
+		mainTexture = textureOverride
+	elseif type(self.texture) == "string" then
 		local TextureType
 		if self.texture:match("%.lua$") then
 			TextureType = LayerTextureResource
@@ -73,16 +97,19 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 			TextureType = TextureResource
 		end
 
+
 		resourceManager:queue(
 			TextureType,
 			self.texture,
 			function(texture)
-				table.insert(textures, 1, texture)
+				mainTexture = texture
 			end)
 	end
 
 	resourceManager:queueEvent(function()
-		if #textures >= 1 then
+		if mainTexture then
+			material:setTextures(mainTexture, unpack(textures))
+		elseif #textures >= 1 then
 			material:setTextures(unpack(textures))
 		end
 	end)
@@ -109,7 +136,8 @@ function DecorationMaterial:apply(sceneNode, resourceManager)
 			end
 		end
 
-		for name, property in pairs(self.properties) do
+		for _, name in ipairs(self.PROPERTIES) do
+			local property = self.properties[name]
 			if self.set[name] then
 				local func = "set" .. name:sub(1, 1):upper() .. name:sub(2)
 				material[func](material, property)
@@ -144,11 +172,7 @@ function DecorationMaterial:loadFromTable(t)
 				local outUniformValue
 				if uniformType == "texture" then
 					table.insert(self.textures, inUniformValue[2])
-					if self.texture then
-						outUniformValue = { #self.textures + 1 }
-					else
-						outUniformValue = { #self.textures }
-					end
+					outUniformValue = { #self.textures }
 				elseif uniformType == "color" then
 					local c = Color.fromHexString(inUniformValue[2], inUniformValue[3])
 
@@ -217,6 +241,13 @@ function DecorationMaterial:loadFromTable(t)
 		self.properties.isTranslucent = nil
 	end
 
+	if properties.isFullLit ~= nil then
+		self.set.isFullLit = true
+		self.properties.isFullLit = properties.isFullLit
+	else
+		self.properties.isFullLit = true
+	end
+
 	if properties.isReflectiveOrRefractive ~= nil then
 		self.set.isReflectiveOrRefractive = true
 		self.properties.isReflectiveOrRefractive = not not properties.isReflectiveOrRefractive
@@ -256,6 +287,27 @@ function DecorationMaterial:loadFromTable(t)
 	else
 		self.properties.isShadowCaster = true
 	end
+
+	if properties.glassThickness ~= nil then
+		self.set.glassThickness = true
+		self.properties.glassThickness = properties.glassThickness
+	else
+		self.properties.glassThickness = true
+	end
+
+	if properties.zBias ~= nil then
+		self.set.zBias = true
+		self.properties.zBias = properties.zBias
+	else
+		self.properties.zBias = true
+	end
+
+	if properties.isZWriteDisabled ~= nil then
+		self.set.isZWriteDisabled = true
+		self.properties.isZWriteDisabled = not not properties.isZWriteDisabled
+	else
+		self.properties.isZWriteDisabled = true
+	end
 end
 
 function DecorationMaterial:getUniformValue(name)
@@ -271,6 +323,14 @@ function DecorationMaterial:getUniformValue(name)
 	end
 
 	return nil
+end
+
+function DecorationMaterial:getProperty(name)
+	if self.set[name] then
+		return self.properties[name]
+	end
+
+	return DecorationMaterial.DEFAULT.properties[name]
 end
 
 function DecorationMaterial:replace(other)
@@ -325,11 +385,15 @@ function DecorationMaterial:serialize()
 				outlineColor = _get(self.set.outlineColor, self.properties.outlineColor:toHexString()),
 				outlineThreshold = _get(self.set.outlineThreshold, self.properties.outlineThreshold),
 				isTranslucent = _get(self.set.isTranslucent, self.properties.isTranslucent),
+				isFullLit = _get(self.set.isFullLit, self.properties.isFullLit),
 				isReflectiveOrRefractive = _get(self.set.isReflectiveOrRefractive, self.properties.isReflectiveOrRefractive),
 				reflectionPower = _get(self.set.reflectionPower, self.properties.reflectionPower),
 				reflectionDistance = _get(self.set.reflectionDistance, self.properties.reflectionDistance),
 				roughness = _get(self.set.roughness, self.properties.roughness),
-				isShadowCaster = _get(self.set.isShadowCaster, self.properties.isShadowCaster)
+				isShadowCaster = _get(self.set.isShadowCaster, self.properties.isShadowCaster),
+				glassThickness = _get(self.set.glassThickness, self.properties.glassThickness),
+				zBias = _get(self.set.zBias, self.properties.zBias),
+				isZWriteDisabled = _get(self.set.isZWriteDisabled, self.properties.zBias),
 			}
 		}
 
@@ -357,5 +421,7 @@ end
 function DecorationMaterial:toString()
 	return serpent.block(self:serialize(), { comment = false })
 end
+
+DecorationMaterial.DEFAULT = DecorationMaterial()
 
 return DecorationMaterial

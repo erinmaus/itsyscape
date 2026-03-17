@@ -11,7 +11,7 @@
 local Behavior = require "ItsyScape.Peep.Behavior"
 
 -- Specifies a path that the Peep is moving along.
-local TargetTileBehavior = Behavior("Path")
+local TargetTileBehavior = Behavior("TargetTile")
 
 -- Constructs a TargetTileBehavior.
 --

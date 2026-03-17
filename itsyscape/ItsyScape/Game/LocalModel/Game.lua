@@ -20,12 +20,15 @@ local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local Party = require "ItsyScape.Game.LocalModel.Party"
 local ItsyScapeDirector = require "ItsyScape.Game.ItsyScapeDirector"
 local PartyBehavior = require "ItsyScape.Peep.Behaviors.PartyBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalGame = Class(Game)
 LocalGame.TICKS_PER_SECOND = 1
 
 function LocalGame:new(gameDB, playerSlot)
 	Game.new(self)
+
+	self[NPooledBuffer.ID] = 0
 
 	self.gameDB = gameDB
 	self.director = ItsyScapeDirector(self, gameDB)
@@ -149,12 +152,12 @@ function LocalGame:spawnPlayer(clientID)
 
 	player.onLeave:register(self._onPlayerLeave, self)
 	player.onPoof:register(self._onPlayerPoofed, self)
-	self:onPlayerSpawned(player)
+	player.onSpawn:register(self._onPlayerSpawn, self)
 
 	return player
 end
 
-function LocalGame:removePlayer(player)
+function LocalGame:cleanupPlayer(player)
 	self.playersByID[player:getID()] = nil
 	for i = 1, #self.players do
 		if self.players[i]:getID() == player:getID() then
@@ -171,8 +174,19 @@ function LocalGame:_onPlayerLeave(player)
 	player:poof()
 end
 
+function LocalGame:_onPlayerSpawn(player)
+	Log.info("Player %d (client %d) is ready.", player:getID(), player:getClientID())
+	self:onPlayerSpawned(player)
+end
+
 function LocalGame:_onPlayerPoofed(player)
+	Log.info("Player %d (client %d) is poofing.", player:getID(), player:getClientID())
 	player.onPoof:unregister(self._onPlayerPoofed)
+
+	self:removePlayer(player)	
+end
+
+function LocalGame:removePlayer(player)
 	self:onPlayerPoofed(player)
 end
 
@@ -259,7 +273,7 @@ function LocalGame:cleanup()
 		Log.info(
 			"Finally removing player %d (client ID = %d).",
 			player:getID(), player:getClientID())
-		self:removePlayer(player)
+		self:cleanupPlayer(player)
 	end
 	table.clear(self.playersPendingRemoval)
 end

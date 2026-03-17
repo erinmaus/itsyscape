@@ -28,6 +28,7 @@ local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local TextInput = require "ItsyScape.UI.TextInput"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 
 local DialogBox = Class(Interface)
@@ -143,8 +144,7 @@ function DialogBox:new(id, index, ui)
 	self.stopTalking:setHasBackground(false)
 	self.stopTalking:setText("Stop talking")
 	self.stopTalking:setIsSelfClickThrough(true)
-	self.stopTalking:setKeybind(GamepadToolTip.INPUT_SCHEME_GAMEPAD, "gamepadBack")
-	self.stopTalking:setButtonID(GamepadToolTip.INPUT_SCHEME_MOUSE_KEYBOARD, "keyboard_escape")
+	self.stopTalking:setControl("back")
 
 	self.inputBox = TextInput()
 	self.inputBox:setSize(DialogBox.WIDTH - DialogBox.PADDING * 2, 32)
@@ -188,25 +188,13 @@ function DialogBox:new(id, index, ui)
 
 	self.onClose:register(self.close, self)
 
-	self._onRootGamepadRelease = function(_, joystick, button)
-		local inputProvider = self:getInputProvider()
-		if inputProvider and inputProvider:isCurrentJoystick(joystick) then
-			if button == inputProvider:getKeybind("gamepadBack") then
-				self:sendPoke("close", nil, {})
-			end
-		end
-	end
-
-	self._onRootKeyDown = function(_, _, scan)
-		if scan == "escape" then
-			self:sendPoke("close", nil, {})
-		end
-	end
-
-	self:getView():getRoot().onGamepadRelease:register(self._onRootGamepadRelease)
-	self:getView():getRoot().onKeyDown:register(self._onRootKeyDown)
-
 	self:next()
+end
+
+function DialogBox:previewControlUp(control)
+	if control:is("back") then
+		self:sendPoke("close", nil, {})
+	end
 end
 
 function DialogBox:restoreFocus()
@@ -391,55 +379,23 @@ function DialogBox:update(delta)
 	self.camera:setHorizontalRotation(gameCamera:getHorizontalRotation())
 	self.camera:setVerticalRotation(gameCamera:getVerticalRotation())
 
-	local root = self.speakerIcon:getChildNode()
-	local transform = root and root:getTransform():getLocalTransform() or love.math.newTransform()
-
-	local offset
-	local zoom
 	if (self.actor or self.prop) and self:getView():getGameView():getView(self.actor or self.prop) then
 		local node = self.actor or self.prop
-		local min, max, z, o = node:getBounds()
+		local min, max, zoom, offset = node:getBounds()
 
-		local otherY
-		if self.prop then
-			otherY = 1
-		else
-			otherY = 0.75
-		end
-
-		offset = Vector.UNIT_Y * (max.y - min.y) - o
-		zoom = math.max(max.x - min.x, max.y - min.y, max.z - min.z) * (z or 1)
-
-		-- Flip if facing left.
-		local rotation = Quaternion.IDENTITY
-		if node == self.actor then
-			local direction, r = node:getDirection()
-			if r then
-				rotation = (-r) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
-			elseif direction.x < 0 then
-				rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
-			end
-		elseif node == self.prop then
-			rotation = (-node:getRotation()) * Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi / 4)
-		end
-		self.speakerIcon:getParentNode():getTransform():setLocalRotation(rotation:getNormal())
-
-		local otherTransform = self.speakerIcon:getParentNode():getTransform():getGlobalTransform(_APP:getFrameDelta())
-		otherTransform:apply(transform)
-
-		transform = otherTransform
-
-		self.camera:setNear(0.01)
-		self.camera:setFar(zoom * 2)
-	else
-		offset = Vector.ZERO
-		zoom = 1
+		Theme.setSceneSnippet(
+			self.speakerIcon,
+			self.camera,
+			self:getView():getGameView(),
+			node,
+			Vector.UNIT_Y * (max.y - min.y) - offset,
+			zoom or 1)
 	end
 
 	self.colorTime = self.colorTime + delta
 	local panelColor = self.currentColor:lerp(self.targetColor or Color(0, 0, 0, 0), math.clamp(self.colorTime / self.BACKGROUND_FADE_TIME))
 	if panelColor.a > 0 then
-		self.background:setStyle({ image = false, color = { panelColor:get() } }, PanelStyle)
+		self.background:setStyle({ image = false, color = { panelColor:get() }, radius = 0 }, PanelStyle)
 
 		if self.background:getParent() ~= self:getView():getRoot() then
 			self:getView():getRoot():addChild(self.background)
@@ -449,14 +405,6 @@ function DialogBox:update(delta)
 			self:getView():getRoot():removeChild(self.background)
 		end
 	end
-
-	local x, y, z = transform:transformPoint(offset:get())
-
-	local w, h = self.speakerIcon:getSize()
-	self.camera:setWidth(w)
-	self.camera:setHeight(h)
-	self.camera:setPosition(Vector(x, y, z))
-	self.camera:setDistance(zoom)
 
 	local isKeybindDown = self.keybind:isDown()
 	if not self.isKeybindDown and isKeybindDown then

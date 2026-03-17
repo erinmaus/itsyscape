@@ -45,6 +45,7 @@
 		width = 128,
 		height = 128,
 		name = "stone",
+		step = 0.21,
 		mask = false
 	},
 
@@ -54,6 +55,7 @@
 		width = 128,
 		height = 128,
 		name = "wood",
+		step = 0.11,
 		mask = false
 	},
 
@@ -96,6 +98,7 @@
 		width = 128,
 		height = 128,
 		name = "stone_purple",
+		step = 0.21,
 		mask = false
 	},
 }

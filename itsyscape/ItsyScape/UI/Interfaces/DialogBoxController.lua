@@ -62,12 +62,12 @@ function DialogBoxController:new(peep, director, action, target, overrideEntryPo
 				self.dialog = InkDialog(filename, self:getVariables())
 				self.dialog.onSetVariable:register(self.saveVariable, self)
 
-				Utility.Text.bind(self.dialog, nil, "en-US")
+				Utility.Text.bindDialog(self.dialog, nil, "en-US")
 
 				local commonPath = string.format("Resources.Game.Dialog.%s.Common", characterName)
 				local s, r = pcall(require, commonPath)
 				if s then
-					Utility.Text.bind(self.dialog, r, "en-US")
+					Utility.Text.bindDialog(self.dialog, r, "en-US")
 				else
 					if love.filesystem.getInfo(string.format("Resources/Game/Dialog/%s/Common.lua", characterName)) or
 					   love.filesystem.getInfo(string.format("Resources/Game/Dialog/%s/Common/init.lua", characterName))

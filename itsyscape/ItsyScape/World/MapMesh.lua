@@ -99,13 +99,18 @@ end
 --
 -- Drawing is prohibited.
 function MapMesh:release()
-	self.mesh:release()
+	if self.mesh then
+		self.mesh:release()
+		self.mesh = nil
+	end
 end
 
 -- Draws the mesh with the provided texture.
 function MapMesh:draw(texture, ...)
-	self.mesh:setTexture(texture)
-	love.graphics.draw(self.mesh, ...)
+	if self.mesh then
+		self.mesh:setTexture(texture)
+		love.graphics.draw(self.mesh, ...)
+	end
 end
 
 function MapMesh:_getTileProperty(tileSetID, tileIndex, property, defaultValue)

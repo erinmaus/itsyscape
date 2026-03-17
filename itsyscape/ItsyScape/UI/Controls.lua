@@ -9,8 +9,22 @@
 --------------------------------------------------------------------------------
 
 local Controls = {
+	"poke",
+	"openRibbon",
+	"openCombatRing",
+	"toggleTargetCamera",
+	"quickDodge",
+	"cycleTarget",
+	"probeTarget",
+	"pokeTarget",
 	"back",
-	"quickHeal"
+	"quickHeal",
+	"quickAttack",
+	"debug1",
+	"debug2",
+	"debug3",
+	"debug4",
+	"debug5"
 }
 
 return Controls

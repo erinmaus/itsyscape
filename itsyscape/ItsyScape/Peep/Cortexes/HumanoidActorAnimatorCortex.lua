@@ -16,11 +16,14 @@ local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CacheRef = require "ItsyScape.Game.CacheRef"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
+local PositionPathNode = require "ItsyScape.World.PositionPathNode"
 
 local HumanoidActorAnimatorCortex = Class(Cortex)
 HumanoidActorAnimatorCortex.WALK_PRIORITY = 1
@@ -43,18 +46,19 @@ end
 function HumanoidActorAnimatorCortex:addPeep(peep)
 	Cortex.addPeep(self, peep)
 
-	peep:listen('initiateAttack', self.onInitiateAttack, self)
-	peep:listen('receiveAttack', self.onReceiveAttack, self)
-	peep:listen('die', self.onDie, self)
-	peep:listen('resurrect', self.onResurrect, self)
-	peep:listen('resourceHit', self.onResourceHit, self)
-	peep:listen('actionPerformed', self.onActionPerformed, self)
-	peep:listen('transferItemFrom', self.peekEquip, self)
-	peep:listen('transferItemTo', self.peekEquip, self)
-	peep:listen('spawnEquipment', self.peekEquip, self)
-	peep:listen('switchStyle', self.peekStyle, self)
-	peep:listen('actionFailed', self.actionFailed, self)
-	peep:listen('travel', self.onTravel, self)
+	peep:listen("initiateAttack", self.onInitiateAttack, self)
+	peep:listen("receiveAttack", self.onReceiveAttack, self)
+	peep:listen("die", self.onDie, self)
+	peep:listen("resurrect", self.onResurrect, self)
+	peep:listen("resourceHit", self.onResourceHit, self)
+	peep:listen("actionPerformed", self.onActionPerformed, self)
+	peep:listen("transferItemFrom", self.peekEquip, self)
+	peep:listen("transferItemTo", self.peekEquip, self)
+	peep:listen("spawnEquipment", self.peekEquip, self)
+	peep:listen("switchStyle", self.peekStyle, self)
+	peep:listen("actionFailed", self.actionFailed, self)
+	peep:listen("travel", self.onTravel, self)
+	peep:listen("dodge", self.onDodge, self)
 end
 
 function HumanoidActorAnimatorCortex:removePeep(peep)
@@ -63,25 +67,26 @@ function HumanoidActorAnimatorCortex:removePeep(peep)
 	self.walking[peep] = nil
 	self.idling[peep] = nil
 
-	peep:silence('initiateAttack', self.onInitiateAttack)
-	peep:silence('receiveAttack', self.onReceiveAttack)
-	peep:silence('die', self.onDie)
-	peep:silence('resurrect', self.onResurrect)
-	peep:silence('resourceHit', self.onResourceHit)
-	peep:silence('actionPerformed', self.onActionPerformed)
-	peep:silence('transferItemFrom', self.peekEquip)
-	peep:silence('transferItemTo', self.peekEquip)
-	peep:silence('spawnEquipment', self.peekEquip)
-	peep:silence('switchStyle', self.peekStyle)
-	peep:silence('actionFailed', self.actionFailed, self, peep)
-	peep:silence('travel', self.onTravel, self)
+	peep:silence("initiateAttack", self.onInitiateAttack)
+	peep:silence("receiveAttack", self.onReceiveAttack)
+	peep:silence("die", self.onDie)
+	peep:silence("resurrect", self.onResurrect)
+	peep:silence("resourceHit", self.onResourceHit)
+	peep:silence("actionPerformed", self.onActionPerformed)
+	peep:silence("transferItemFrom", self.peekEquip)
+	peep:silence("transferItemTo", self.peekEquip)
+	peep:silence("spawnEquipment", self.peekEquip)
+	peep:silence("switchStyle", self.peekStyle)
+	peep:silence("actionFailed", self.actionFailed, self, peep)
+	peep:silence("travel", self.onTravel, self)
+	peep:silence("dodge", self.onDodge, self)
 end
 
 function HumanoidActorAnimatorCortex:playSkillAnimation(peep, priority, resource)
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
-		actor:playAnimation('skill', priority, resource)
+		actor:playAnimation("skill", priority, resource)
 	end
 end
 
@@ -89,7 +94,7 @@ function HumanoidActorAnimatorCortex:playCombatAnimation(peep, priority, resourc
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
-		actor:playAnimation('combat-attack', priority, resource)
+		actor:playAnimation("combat-attack", priority, resource)
 	end
 end
 
@@ -97,7 +102,7 @@ function HumanoidActorAnimatorCortex:playDeathAnimation(peep, priority, resource
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
-		actor:playAnimation('combat-die', priority, resource)
+		actor:playAnimation("combat-die", priority, resource)
 	end
 end
 
@@ -105,7 +110,7 @@ function HumanoidActorAnimatorCortex:playDefendAnimation(peep, priority, resourc
 	local actor = peep:getBehavior(ActorReferenceBehavior)
 	if actor then
 		actor = actor.actor
-		actor:playAnimation('combat-defend', priority, resource)
+		actor:playAnimation("combat-defend", priority, resource)
 	end
 end
 
@@ -163,7 +168,17 @@ function HumanoidActorAnimatorCortex:onReceiveAttack(peep, p)
 	end
 
 	if not resource then
-		resource = peep:getResource(
+		if direction == MovementBehavior.FACING_LEFT then
+			resource = peep:getResource(
+				"animation-defend-left",
+				"ItsyScape.Graphics.AnimationResource")
+		elseif direction == MovementBehavior.FACING_RIGHT then
+			resource = peep:getResource(
+				"animation-defend-right",
+				"ItsyScape.Graphics.AnimationResource")
+		end
+
+		resource = resource or peep:getResource(
 			"animation-defend",
 			"ItsyScape.Graphics.AnimationResource")
 	end
@@ -200,7 +215,7 @@ function HumanoidActorAnimatorCortex:onResurrect(peep, p)
 				HumanoidActorAnimatorCortex.ATTACK_PRIORITY,
 				resource)
 		else
-			actor:playAnimation('combat', false)
+			actor:playAnimation("combat", false)
 		end
 	end
 end
@@ -211,6 +226,10 @@ function HumanoidActorAnimatorCortex:onTravel(peep)
 	if actor then
 		actor:teleport(position.position)
 	end
+end
+
+function HumanoidActorAnimatorCortex:onDodge(peep)
+	self:playDodgeAnimation(peep)
 end
 
 function HumanoidActorAnimatorCortex:getPeepWeaponType(peep, weapon)
@@ -234,6 +253,35 @@ end
 function HumanoidActorAnimatorCortex:getWalkAnimation(peep, weapon)
 	local x = self:getPeepWeaponType(peep, weapon)
 	return self:getXAnimation(peep, "walk", x)
+end
+
+function HumanoidActorAnimatorCortex:getDodgeAnimation(peep, weapon)
+	local dodge = peep:getBehavior(CombatDodgeBehavior)
+
+	local prefix
+	if dodge.dodgeBehavior == Weapon.DODGE_BEHAVIOR_KNOCKBACK then
+		prefix = "knockback"
+	else
+		prefix = "dodge"
+	end
+
+	local x = self:getPeepWeaponType(peep, weapon)
+	return self:getXAnimation(peep, prefix, x)
+end
+
+function HumanoidActorAnimatorCortex:playDodgeAnimation(peep)
+	local actor = peep:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+	if actor then
+		local resource = self:getDodgeAnimation(peep)
+		if resource then
+			actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false)
+			Utility.Peep.playAnimation(peep, "main-sfx", 0, "SFX_Dodge")
+
+			self.walking[actor] = nil
+			self.idling[actor] = nil
+		end
+	end
 end
 
 function HumanoidActorAnimatorCortex:getXAnimation(peep, prefix, x)
@@ -282,9 +330,24 @@ end
 
 function HumanoidActorAnimatorCortex:onActionPerformed(peep, p)
 	local actionName = p.action:getName():lower()
-	local resource = peep:getResource(
-		string.format("animation-action-%s", actionName),
+	local baseName = string.format("animation-action-%s", actionName)
+	local resource
+
+	local direction = peep:getBehavior(MovementBehavior).facing
+	if direction == MovementBehavior.FACING_LEFT then
+		resource = peep:getResource(
+			string.format("%s-left", baseName),
+			"ItsyScape.Graphics.AnimationResource")
+	elseif direction == MovementBehavior.FACING_RIGHT then
+		resource = peep:getResource(
+			string.format("%s-right", baseName),
+			"ItsyScape.Graphics.AnimationResource")
+	end
+
+	resource = resource or peep:getResource(
+		baseName,
 		"ItsyScape.Graphics.AnimationResource")
+
 	if resource then
 		self:playSkillAnimation(
 			peep,
@@ -296,13 +359,13 @@ end
 function HumanoidActorAnimatorCortex:actionFailed(peep)
 	local actor = peep:getBehavior(ActorReferenceBehavior).actor
 	if actor then
-		actor:playAnimation('skill', false)
+		actor:playAnimation("skill", false)
 	end
 end
 
 function HumanoidActorAnimatorCortex:peekEquip(peep, e)
 	local item = nil
-	if e.purpose == 'equip' then
+	if e.purpose == "equip" then
 		item = e.item
 	end
 
@@ -339,8 +402,14 @@ function HumanoidActorAnimatorCortex:isWalking(peep)
 
     local targetTile = peep:getBehavior(TargetTileBehavior)
     local isMoving = targetTile and (Class.isCompatibleType(targetTile.pathNode, TilePathNode) or not targetTile.pathNode)
+    local targetPosition = peep:getBehavior(TargetPositionBehavior)
+    isMoving = isMoving or (targetPosition and (Class.isCompatibleType(targetPosition.pathNode, PositionPathNode) or not targetPosition.pathNode))
 
     return (velocity:getLength() > 0.1 or isMoving) and canMove
+end
+
+function HumanoidActorAnimatorCortex:isDodging(peep)
+	return peep:hasBehavior(CombatDodgeBehavior)
 end
 
 function HumanoidActorAnimatorCortex:update(delta)
@@ -351,22 +420,24 @@ function HumanoidActorAnimatorCortex:update(delta)
 		local actor = peep:getBehavior(ActorReferenceBehavior).actor
 
 		-- TODO this needs to be better
-		if self:isWalking(peep) then
-			if not self.walking[actor] then
-				local resource = self:getWalkAnimation(peep)
-				if resource then
-					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
-					self.walking[actor] = resource
-					self.idling[actor] = nil
+		if not self:isDodging(peep) then
+			if self:isWalking(peep) then
+				if not self.walking[actor] then
+					local resource = self:getWalkAnimation(peep)
+					if resource then
+						actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource)
+						self.walking[actor] = resource
+						self.idling[actor] = nil
+					end
 				end
-			end
-		else
-			if not self.idling[actor] then
-				local resource = self:getIdleAnimation(peep)
-				if resource then
-					actor:playAnimation('main', HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, math.random())
-					self.idling[actor] = resource
-					self.walking[actor] = false
+			else
+				if not self.idling[actor] then
+					local resource = self:getIdleAnimation(peep)
+					if resource then
+						actor:playAnimation("main", HumanoidActorAnimatorCortex.WALK_PRIORITY, resource, false, love.math.random())
+						self.idling[actor] = resource
+						self.walking[actor] = nil
+					end
 				end
 			end
 		end

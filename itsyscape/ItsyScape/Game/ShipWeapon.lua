@@ -37,8 +37,17 @@ function ShipWeapon:rollAttack(peep, target, bonus)
 	return roll
 end
 
+function ShipWeapon:pokeInitiateAttack()
+	-- Nothing. This is a multi-hit attack.
+	-- The actual aggressor peep isn't dealing this attack; it's via e.g., a cannonball.
+end
+
 function ShipWeapon:getAttackRange()
 	return math.huge
+end
+
+function ShipWeapon:getWeaponType()
+	return "ship"
 end
 
 function ShipWeapon:getStyle()

@@ -25,7 +25,7 @@ function NotificationController:new(peep, director, constraints)
 		requirements = constraints.requirements or {},
 	}
 
-	local count = #self.constraints.inputs + #self.constraints.requirements
+	local count = #self.state.inputs + #self.state.requirements
 	if count == 0 then
 		self:getGame():getUI():closeInstance(self)
 	end

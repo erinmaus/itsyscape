@@ -19,6 +19,63 @@ State.PRIMITIVES = {
 	["boolean"] = true
 }
 
+function State.merge(a, b, config)
+	-- Loop.
+	config = config or require("ItsyScape.Game.RPC.EventQueue").CONFIG
+
+	if type(a) ~= "table" then
+		return a
+	end
+
+	if type(b) ~= "table" then
+		b = {}
+	end
+
+	for key, value in pairs(a) do
+		if type(value) == "table" then
+			local otherValue
+			local bValue = b[key]
+
+			local metatable = getmetatable(value)
+			if config.proxy[metatable] then
+				otherValue = value
+			elseif type(bValue) == "table" or metatable then
+				local otherMetatable = getmetatable(otherValue)
+				if metatable ~= otherMetatable then
+					assert(config.metatable[metatable], "value is not a simple type; cannot merge")
+
+					if type(bValue) == "table" then
+						otherValue = bValue
+					else
+						otherValue = {}
+					end
+
+					setmetatable(otherValue, metatable)
+				else
+					otherValue = bValue
+				end
+
+				otherValue = State.merge(value, otherValue)
+			else
+				otherValue = {}
+				State.merge(value, otherValue)
+			end
+
+			b[key] = otherValue
+		else
+			b[key] = value
+		end
+	end
+
+	for key, value in pairs(b) do
+		if a[key] == nil then
+			b[key] = nil
+		end
+	end
+
+	return b
+end
+
 function State.deepEquals(a, b)
 	if a == b then
 		return true
@@ -170,3 +227,4 @@ function State:serialize(obj)
 end
 
 return State
+	

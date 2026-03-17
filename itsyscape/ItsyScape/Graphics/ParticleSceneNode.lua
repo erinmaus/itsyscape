@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local SceneNode = require "ItsyScape.Graphics.SceneNode"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local NParticleSceneNode = require "nbunny.optimaus.scenenode.particlescenenode"
 
 local ParticleSceneNode = Class(SceneNode)
@@ -26,7 +27,7 @@ function ParticleSceneNode:new()
 	self:getMaterial():setIsTranslucent(true)
 	self:getMaterial():setIsFullLit(true)
 	self:getMaterial():setIsShadowCaster(false)
-	self:getMaterial():setIsZWriteDisabled(false)
+	self:getMaterial():setIsZWriteDisabled(true)
 
 	self.isReady = false
 	self._texture = false
@@ -67,6 +68,16 @@ function ParticleSceneNode:initParticleSystemFromDef(def, resources)
 
 				self.isReady = true
 			end)
+
+			if def.soft then
+				resources:queue(ShaderResource, "Resources/Shaders/SoftParticles", function(shader)
+					self:getMaterial():setShader(shader)
+				end)
+			end
+
+			if def.material then
+				DecorationMaterial(def.material):apply(self, resources)
+			end
 		else
 			self:getHandle():initParticleSystemFromDef(def)
 		end

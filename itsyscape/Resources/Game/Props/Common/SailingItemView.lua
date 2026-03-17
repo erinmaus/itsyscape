@@ -54,6 +54,7 @@ function SailingItemView:load()
 	self.hiddenTime = self.HIDE_FADE_IN_OUT_DURATION
 end
 
+local _info = {}
 function SailingItemView:getAttachments()
 	local state = self:getProp():getState()
 	local resource = state and state.resource
@@ -67,7 +68,7 @@ function SailingItemView:getAttachments()
 	end
 
 	local attachmentsFilename = string.format("Resources/Game/SailingItems/%s/Attachments.json", resource)
-	if not love.filesystem.getInfo(attachmentsFilename) then
+	if not love.filesystem.getInfo(attachmentsFilename, _info) then
 		return {}
 	end
 
@@ -78,29 +79,41 @@ function SailingItemView:getAttachments()
 	return self._attachments
 end
 
-function SailingItemView:updateAttachments(nodes, attachments)
-	if not attachments then
-		return
-	end
-
-	local state = self:getProp():getState()
-	local colors = state and state.colors
-
-	for index, attachment in ipairs(attachments) do
-		local colorState = colors and colors[attachment.colorIndex]
-		local alpha = attachments.alpha
-		local node = nodes[index]
-
-		local color = colorState and Color(unpack(colorState)) or Color(node:getMaterial():getColor():get())
-		if node and colorState then
-			color.a = alpha or 1
+do
+	local color = Color()
+	function SailingItemView:updateAttachments(nodes, attachments)
+		if not attachments then
+			return
 		end
 
-		if attachment.isHideable then
-			color.a = self.hiddenAlpha * color.a
-		end
+		local state = self:getProp():getState()
+		local colors = state and state.colors
 
-		node:getMaterial():setColor(color)
+		for index, attachment in ipairs(attachments) do
+			local colorState = colors and colors[attachment.colorIndex]
+			local alpha = attachments.alpha
+			local node = nodes[index]
+
+			if colorState then
+				color:from(unpack(colorState))
+			elseif node then
+				color:from(node:getMaterial():getColor():get())
+			else
+				color:from(1)
+			end
+
+			if node and colorState then
+				color.a = alpha or 1
+			end
+
+			if attachment.isHideable then
+				color.a = self.hiddenAlpha * color.a
+			end
+
+			if node then
+				node:getMaterial():setColor(color)
+			end
+		end
 	end
 end
 

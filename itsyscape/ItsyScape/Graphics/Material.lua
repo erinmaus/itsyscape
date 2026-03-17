@@ -25,6 +25,9 @@ Material.UNIFORM_TEXTURE = 3
 --
 -- Nil values in textures are ignored.
 function Material:new(node, shader, ...)
+	self._color = Color()
+	self._outlineColor = Color()
+	self._shimmerColor = Color()
 	self._handle = node:getHandle():getMaterial()
 	self._handle:setOutlineThreshold(Material.DEFAULT_OUTLINE_THRESHOLD)
 	self.shader = shader or false
@@ -109,6 +112,18 @@ function Material:setIsShadowCaster(value)
 	self._handle:setIsShadowCaster(value == nil and true or not not value)
 end
 
+function Material:getGlassThickness()
+	return self._handle:getGlassThickness()
+end
+
+function Material:unsetGlassThickness()
+	self._handle:setGlassThickness(-1)
+end
+
+function Material:setGlassThickness(value)
+	self._handle:setGlassThickness(value)
+end
+
 function Material:getIsRendered()
 	return self._handle:getIsRendered()
 end
@@ -135,6 +150,14 @@ end
 
 function Material:setIsZWriteDisabled(value)
 	self._handle:setIsZWriteDisabled(value or false)
+end
+
+function Material:getIsZCompareDisabled()
+	return self._handle:getIsZCompareDisabled()
+end
+
+function Material:setIsZCompareDisabled(value)
+	self._handle:setIsZCompareDisabled(value or false)
 end
 
 -- Returns true if the Material should always be drawn, false otherwise.
@@ -214,28 +237,37 @@ function Material:setRoughness(value)
 end
 
 function Material:getColor()
-	return Color(self._handle:getColor())
+	return self._color:from(self._handle:getColor())
 end
 
 function Material:setColor(value)
-	self._handle:setColor((value or Color(1)):get())
+	if value then
+		self._handle:setColor(value:get())
+	else
+		self._handle:setColor(1, 1, 1, 1)
+	end
 end
 
 function Material:getAlpha()
-	return self:getColor().a
+	local r, g, b, a = self._handle:getColor()
+	return a
 end
 
 function Material:setAlpha(value)
-	local c = self:getColor()
-	self:setColor(Color(c.r, c.g, c.b, value))
+	local r, g, b = self._handle:getColor()
+	self._handle:setColor(r, g, b, value)
 end
 
 function Material:getOutlineColor()
-	return Color(self._handle:getOutlineColor())
+	return self._outlineColor:from(self._handle:getOutlineColor())
 end
 
 function Material:setOutlineColor(value)
-	self._handle:setOutlineColor((value or Color(0)):get())
+	if value then
+		self._handle:setOutlineColor(value:get())
+	else
+		self._handle:setOutlineColor(0, 0, 0, 1)
+	end
 end
 
 function Material:getIsShimmerEnabled()
@@ -247,11 +279,31 @@ function Material:setIsShimmerEnabled(value)
 end
 
 function Material:getShimmerColor()
-	return Color(self._handle:getShimmerColor())
+	return self._shimmerColor:from(self._handle:getShimmerColor())
 end
 
 function Material:setShimmerColor(value)
-	self._handle:setShimmerColor((value or Color(0)):get())
+	if value then
+		self._handle:setShimmerColor(value:get())
+	else
+		self._handle:setShimmerColor(0, 0, 0, 1)
+	end
+end
+
+function Material:getIsGlobalWallHackEnabled()
+	return self._handle:getIsGlobalWallHackEnabled()
+end
+
+function Material:setIsGlobalWallHackEnabled(value)
+	self._handle:setIsGlobalWallHackEnabled(value)
+end
+
+function Material:getGlobalWallHackWindow()
+	return self._handle:getGlobalWallHackWindow()
+end
+
+function Material:setGlobalWallHackWindow(left, right, top, bottom)
+	self._handle:setGlobalWallHackWindow(left, right, top, bottom)
 end
 
 -- Gets the number of textures.
@@ -306,8 +358,9 @@ function Material:unsetTexture(index)
 	self._handle:setTextures(unpack(self.textures.n))
 end
 
+local _data = {}
 function Material:send(uniformType, uniform, ...)
-	local data = {}
+	table.clear(_data)
 
 	for i = 1, select("#", ...) do
 		local values = select(i, ...)
@@ -316,23 +369,23 @@ function Material:send(uniformType, uniform, ...)
 			for _, a in ipairs(values) do
 				if type(a) == "table" then
 					for _, b in ipairs(a) do
-						table.insert(data, b)
+						table.insert(_data, b)
 					end
 				else
-					table.insert(data, a)
+					table.insert(_data, a)
 				end
 			end
 		else
-			table.insert(data, values)
+			table.insert(_data, values)
 		end
 	end
 
 	if uniformType == Material.UNIFORM_INTEGER then
-		self._handle:setIntUniform(uniform, data)
+		self._handle:setIntUniform(uniform, _data)
 	elseif uniformType == Material.UNIFORM_TEXTURE then
-		self._handle:setTextureUniform(uniform, unpack(data))
+		self._handle:setTextureUniform(uniform, unpack(_data))
 	else
-		self._handle:setFloatUniform(uniform, data)
+		self._handle:setFloatUniform(uniform, _data)
 	end
 end
 

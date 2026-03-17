@@ -18,9 +18,12 @@ local GrassBlock = Class(Block)
 
 GrassBlock.GROUP = Block.GROUP_BENDY
 
+GrassBlock.SHOW_IN_BUILDING = false
+
 GrassBlock.SATURATION = 6
 
 GrassBlock.DIRT_NOISE = Noise {
+	offset = Vector(1 / 7, 0, 1 / 7),
 	scale = 12,
 	octaves = 2,
 	attenuation = 0.5
@@ -31,7 +34,8 @@ GrassBlock.DIRT_THRESHOLD = 0.35
 GrassBlock.MIN_OFFSET = -0.25
 GrassBlock.MAX_OFFSET = 0.25
 GrassBlock.OFFSET_NOISE = Noise {
-	scale = 23163,
+	offset = Vector(1 / 7, 0, 1 / 7),
+	scale = 23163.7374573,
 	octaves = 2,
 	attenuation = -2
 }
@@ -46,7 +50,8 @@ GrassBlock.FEATURES = {
 }
 
 GrassBlock.FEATURE_NOISE = Noise {
-	scale = 12363,
+	offset = Vector(1 / 7),
+	scale = 12363.838952,
 	octaves = 1,
 	attenuation = 0
 }
@@ -117,6 +122,10 @@ function GrassBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
 		return
 	end
 
+	if mapTile:hasFlag("building") and not self.SHOW_IN_BUILDING then
+		return
+	end
+
 	if drawType == "cache" then
 		self:cache(tileSet, map, i, j, tileSetTile, mapTile)
 		return
@@ -142,12 +151,16 @@ function GrassBlock:emit(drawType, tileSet, map, i, j, tileSetTile, mapTile)
 				local absoluteY = map:getInterpolatedHeight(absoluteX, absoluteZ)
 				local feature = self.FEATURES[self._features:index(g.feature, #self.FEATURES)]
 
-				self:addFeature(
-					feature,
-					Vector(absoluteX, absoluteY - 0.125, absoluteZ),
-					Quaternion.IDENTITY,
-					Vector(scale),
-					color)
+				local realMapTile = map:getTileAt(absoluteX, absoluteZ)
+				local isBuilding = realMapTile:hasFlag("building")
+				if mapTile.flat == realMapTile.flat and not (isBuiding and self.SHOW_IN_BUILDING == false) then
+					self:addFeature(
+						feature,
+						Vector(absoluteX, absoluteY - 0.125, absoluteZ),
+						Quaternion.IDENTITY,
+						Vector(scale),
+						color)
+				end
 			end
 		end
 	end

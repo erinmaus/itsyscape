@@ -1,0 +1,28 @@
+[
+	{
+		"actionCommand": "Woodcut1",
+
+		"actionType": "Chop",
+		"requirements": [
+			{
+				"resource": "Woodcutting",
+				"resourceType": "Skill",
+				"minLevel": 1,
+				"maxLevel": 9
+			}
+		]
+	},
+	{
+		"actionCommand": "Woodcut50",
+
+		"actionType": "Chop",
+		"requirements": [
+			{
+				"resource": "Woodcutting",
+				"resourceType": "Skill",
+				"minLevel": 50,
+				"maxLevel": 59
+			}
+		]
+	}
+]

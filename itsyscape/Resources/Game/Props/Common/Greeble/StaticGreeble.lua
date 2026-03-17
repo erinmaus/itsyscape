@@ -59,6 +59,10 @@ function StaticGreeble:load()
 	end)
 end
 
+function StaticGreeble:getDecorationNode()
+	return self.decoration
+end
+
 function StaticGreeble:regreebilize(t, ...)
 	Greeble.regreebilize(self, t, ...)
 

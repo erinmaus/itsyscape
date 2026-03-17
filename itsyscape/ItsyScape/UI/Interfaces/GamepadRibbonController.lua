@@ -51,13 +51,14 @@ GamepadRibbonController.SKILLS_SORT_ORDER = {
 	"Crafting",
 	"Cooking",
 	"Engineering",
-	"Firemaking",
+	"Alchemy",
 	"Sailing",
 	"Antilogika",
 	"Necromancy"
 }
 
 GamepadRibbonController.SKILL_GUIDE_ACTION_ICON_RESOURCE_TYPES = {
+	item = true,
 	prop = true,
 	sailingcrew = true,
 	peep = true,
@@ -82,8 +83,8 @@ function GamepadRibbonController:new(peep, director)
 		a = self.actionsByID[a.id].instance:getAction()
 		b = self.actionsByID[b.id].instance:getAction()
 
-		local aReqXP, bReqXP = self:findActionXPRequirement(a), self:findActionXPRequirement(b)
-		local aOutXP, bOutXP = self:findActionOutputXP(a), self:findActionOutputXP(b)
+		local aReqXP, bReqXP = self:findActionXPRequirement(nil, a) or 0, self:findActionXPRequirement(nil, b) or 0
+		local aOutXP, bOutXP = self:findActionOutputXP(nil, a) or 0, self:findActionOutputXP(nil, b) or 0
 		local aResource, bResource = self:findActionResource(a), self:findActionResource(b)
 
 		if aReqXP < bReqXP then
@@ -132,9 +133,15 @@ function GamepadRibbonController:pull()
 	local clockSection = playerStorage:getSection("clock")
 	local lastSurveyTime = clockSection:get("survey") or (os.time() - Utility.Time.DAY)
 	local showSurvey = (os.time() - lastSurveyTime) >= Utility.Time.DAY
+	local hasAmuletOfYendor = self:getPeep():getState():has("Item", "AmuletOfYendor", 1, {
+		["item-inventory"] = true,
+		["item-equipment"] = true,
+		["item-bank"] = true,
+	})
 
 	return {
-		showSurvey = showSurvey
+		showSurvey = showSurvey,
+		hasAmuletOfYendor = hasAmuletOfYendor
 	}
 end
 
@@ -225,14 +232,14 @@ end
 function GamepadRibbonController:selectSkillGuide(e)
 	assert(type(e.skill) == "string", "skill is not number")
 
-	local skillResource = gameDB:getResource(e.skill, "Skill")
+	local skillResource = self:getDirector():getGameDB():getResource(e.skill, "Skill")
 	if not skillResource then
 		Log.warn("Unknown skill: '%s'", e.skill)
 		return
 	end
 
 	self:populateSkillGuide(skillResource)
-	self:send("populateSkillGuide", self.actionsBySkill[e.skill])
+	self:send("populateSkillGuide", e.skill, self.actionsBySkill[e.skill])
 end
 
 function GamepadRibbonController:selectSkillAction(e)
@@ -243,10 +250,10 @@ function GamepadRibbonController:selectSkillAction(e)
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
 
-	local action = self.actionsByID[e.id].instance:getAction()
-	local result = Utility.getActionConstraints(self:getDirector():getGameInstance(), action)
+	local action = self.actionsByID[e.id].instance
+	local result = Utility.getActionConstraints(self:getDirector():getGameInstance(), action:getAction())
 
-	self:send("populateSkillGuideAction", result)
+	self:send("populateSkillGuideAction", self:pullSkillGuideAction(action), result)
 end
 
 function GamepadRibbonController:pullSkillGuideAction(action)
@@ -304,7 +311,8 @@ function GamepadRibbonController:pullSkillGuideAction(action)
 	end
 
 	return {
-		id = a.id,
+		action = { id = { value = action:getID() } },
+		id = action:getID(),
 		verb = action:getVerb() or action:getName(),
 		item = item and item.name or false,
 		quantity = quantity,
@@ -321,8 +329,12 @@ function GamepadRibbonController:populateSkillGuide(skill)
 	end
 	self.actionsBySkill[skill.name] = {}
 
+	local game = self:getGame()
+	local gameDB = self:getDirector():getGameDB()
+	local brochure = gameDB:getBrochure()
+
 	local actionTypes = gameDB:getRecords("SkillAction", {
-		Skill = skillResource
+		Skill = skill
 	})
 
 	local actionDefinition = Mapp.ActionDefinition()
@@ -350,33 +362,37 @@ end
 function GamepadRibbonController:findActionXPRequirement(skillName, action)
 	local gameDB = self:getDirector():getGameDB()
 	local brochure = gameDB:getBrochure()
+
+	local count = false
 	for requirement in brochure:getRequirements(action) do
 		local resource = brochure:getConstraintResource(requirement)
 		local resourceType = brochure:getResourceTypeFromResource(resource)
 		if resourceType.name:lower() == "skill" and
-		   resource.name:lower() == skillName
+		   (not skillName or resource.name == skillName)
 		then
-			return requirement.count
+			count = math.max(requirement.count, count or -math.huge)
 		end
 	end
 
-	return false
+	return count
 end
 
 function GamepadRibbonController:findActionOutputXP(skillName, action)
 	local gameDB = self:getDirector():getGameDB()
 	local brochure = gameDB:getBrochure()
+
+	local count = false
 	for output in brochure:getOutputs(action) do
 		local resource = brochure:getConstraintResource(output)
 		local resourceType = brochure:getResourceTypeFromResource(resource)
 		if resourceType.name:lower() == "skill" and
-		   resource.name:lower() == skillName
+		   (not skillName or resource.name == skillName)
 		then
-			return output.count
+			count = math.max(output.count, count or -math.huge)
 		end
 	end
 
-	return 0
+	return count
 end
 
 function GamepadRibbonController:findActionResource(action)
@@ -396,9 +412,8 @@ function GamepadRibbonController:sortSkillGuide(skill)
 		local actionState = actions[i]
 		local action = self.actionsByID[actionState.id]
 
-		if not self:findActionXPRequirement(action.instance:getAction()) then
-			self.actionsByID[action.instance:getAction().id] = nil
-			table.remove(actions, index)
+		if not self:findActionXPRequirement(skill.name, action.instance:getAction()) then
+			table.remove(actions, i)
 		end
 	end
 
@@ -800,7 +815,11 @@ function GamepadRibbonController:pullEquipmentStats()
 end
 
 function GamepadRibbonController:spawn(e)
-	assert(_DEBUG ~= nil and _DEBUG, "debug mode must be enabled spawn item")
+	assert((_DEBUG ~= nil and _DEBUG) or not self:getPeep():getState():has("Item", "AmuletOfYendor", 1, {
+		["item-inventory"] = true,
+		["item-equipment"] = true,
+		["item-bank"] = true,
+	}), "debug mode must be enabled to spawn items")
 
 	local state = self:getPeep():getState()
 	local success = state:give("Item", e.itemID, e.count or 1, { ['item-inventory'] = true, ['item-drop-excess'] = true })
@@ -833,7 +852,12 @@ function GamepadRibbonController:rate(e)
 end
 
 function GamepadRibbonController:steal(e)
-	assert(_DEBUG ~= nil and _DEBUG, "debug mode must be enabled to steal items")
+	assert((_DEBUG ~= nil and _DEBUG) or not self:getPeep():getState():has("Item", "AmuletOfYendor", 1, {
+		["item-inventory"] = true,
+		["item-equipment"] = true,
+		["item-bank"] = true,
+	}), "debug mode must be enabled to steal items")
+	local count = e.count or 1
 
 	local gameDB = self:getGame():getGameDB()
 	local brochure = gameDB:getBrochure()
@@ -845,30 +869,37 @@ function GamepadRibbonController:steal(e)
 
 	local state = self:getPeep():getState()
 
-	for requirement in brochure:getRequirements(action) do
+	for resource in brochure:findResourcesByAction(action.instance:getAction()) do
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+		if resourceType.name == "Item" then
+			state:give("Item", resource.name, count, { ['item-inventory'] = true, ['item-drop-excess'] = true })
+		end
+	end
+
+	for requirement in brochure:getRequirements(action.instance:getAction()) do
 		local requirementResource = brochure:getConstraintResource(requirement)
 		local requirementType = brochure:getResourceTypeFromResource(requirementResource)
 
-		if requirementType.name:lower() == "item" then
-			state:give("Item", requirementResource.name, requirement.count or 1, { ['item-inventory'] = true, ['item-drop-excess'] = true })
+		if requirementType.name == "Item" then
+			state:give("Item", requirementResource.name, (requirement.count or 1) * count, { ['item-inventory'] = true, ['item-drop-excess'] = true })
 		end
 	end
 
-	for input in brochure:getInputs(action) do
+	for input in brochure:getInputs(action.instance:getAction()) do
 		local inputResource = brochure:getConstraintResource(input)
 		local inputType = brochure:getResourceTypeFromResource(inputResource)
 
-		if inputType.name:lower() == "item" then
-			state:give("Item", inputResource.name, input.count or 1, { ['item-inventory'] = true, ['item-drop-excess'] = true })
+		if inputType.name == "Item" then
+			state:give("Item", inputResource.name, (input.count or 1) * count, { ['item-inventory'] = true, ['item-drop-excess'] = true })
 		end
 	end
 
-	for output in brochure:getOutputs(action) do
+	for output in brochure:getOutputs(action.instance:getAction()) do
 		local outputResource = brochure:getConstraintResource(output)
 		local outputType = brochure:getResourceTypeFromResource(outputResource)
 
-		if outputType.name:lower() == "item" then
-			state:give("Item", inputResource.name, output.count or 1, { ['item-inventory'] = true, ['item-drop-excess'] = true })
+		if outputType.name == "Item" then
+			state:give("Item", inputResource.name, (output.count or 1) * count, { ['item-inventory'] = true, ['item-drop-excess'] = true })
 		end
 	end
 end

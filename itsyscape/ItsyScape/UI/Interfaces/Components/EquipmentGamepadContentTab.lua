@@ -60,6 +60,8 @@ function EquipmentGamepadContentTab:new(interface)
 	self:updateSlots(#Equipment.SLOTS)
 	self.layout:performLayout()
 
+	self.placeholderItems = {}
+
 	local statsPanel = Panel()
 	statsPanel:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
 	statsPanel:setSize(self.WIDTH - self.PADDING * 2, EquipmentStatsPanel.DEFAULT_HEIGHT)
@@ -162,6 +164,11 @@ function EquipmentGamepadContentTab:getEquipmentItem(slot)
 		return item
 	end
 
+	item = self.placeholderItems[slot]
+	if item then
+		return item
+	end
+
 	local placeholderSlotRecord = gameDB:getRecord("EquipmentPlaceholder", {
 		EquipSlot = slot
 	})
@@ -172,7 +179,7 @@ function EquipmentGamepadContentTab:getEquipmentItem(slot)
 
 	local itemResource = placeholderSlotRecord:get("Resource")
 
-	return {
+	item = {
 		id = itemResource.name,
 		count = 1,
 		noted = false,
@@ -180,6 +187,9 @@ function EquipmentGamepadContentTab:getEquipmentItem(slot)
 		description = Utility.getDescription(itemResource, gameDB),
 		actions = {}
 	}
+
+	self.placeholderItems[slot] = item
+	return item
 end
 
 function EquipmentGamepadContentTab:_updateToolTip()

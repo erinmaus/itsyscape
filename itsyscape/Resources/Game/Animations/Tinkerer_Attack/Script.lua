@@ -3,11 +3,11 @@ Animation "Tinkerer Attack" {
 		Particles {
 			duration = 1.5,
 			attach = "wing.l.2",
-			rotation = 'X_270',
 
 			system = {
 				numParticles = 20,
 				texture = "Resources/Game/Animations/Tinkerer_Attack/Particle_Feather.png",
+				soft = true,
 
 				emitters = {
 					{
@@ -63,11 +63,11 @@ Animation "Tinkerer Attack" {
 		Particles {
 			duration = 1.5,
 			attach = "wing.l.2",
-			rotation = 'X_270',
 
 			system = {
 				numParticles = 20,
 				texture = "Resources/Game/Animations/Tinkerer_Attack/Particle_Bone.png",
+				soft = true,
 
 				emitters = {
 					{
@@ -123,11 +123,11 @@ Animation "Tinkerer Attack" {
 		Particles {
 			duration = 1.5,
 			attach = "wing.r.2",
-			rotation = 'X_270',
 
 			system = {
 				numParticles = 20,
 				texture = "Resources/Game/Animations/Tinkerer_Attack/Particle_Feather.png",
+				soft = true,
 
 				emitters = {
 					{
@@ -183,11 +183,11 @@ Animation "Tinkerer Attack" {
 		Particles {
 			duration = 1.5,
 			attach = "wing.r.2",
-			rotation = 'X_270',
 
 			system = {
 				numParticles = 20,
 				texture = "Resources/Game/Animations/Tinkerer_Attack/Particle_Bone.png",
+				soft = true,
 
 				emitters = {
 					{

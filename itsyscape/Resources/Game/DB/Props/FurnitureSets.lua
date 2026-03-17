@@ -29,6 +29,16 @@ local COMPONENTS = {
 		size = { x = 7.5, y = 2, z = 3.5 }
 	},
 
+	["Counter"] = {
+		peepID = "Resources.Game.Peeps.Props.FurnitureProp",
+		size = { x = 3.5, y = 1, z = 1.5 }
+	},
+
+	["Dresser"] = {
+		peepID = "Resources.Game.Peeps.Props.FurnitureProp",
+		size = { x = 3.5, y = 2, z = 1.5 }
+	},
+
 	["Chest"] = {
 		peepID = "Resources.Game.Peeps.Props.BasicChest",
 		size = { x = 1.5, y = 2, z = 1.5 }
@@ -43,7 +53,9 @@ local SETS = {
 			"Desk",
 			"Table",
 			"LongTable",
-			"Chest"
+			"Chest",
+			"Counter",
+			"Dresser"
 		}
 	}
 }

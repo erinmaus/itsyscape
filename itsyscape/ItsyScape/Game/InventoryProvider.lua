@@ -70,8 +70,13 @@ end
 -- method is called.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onConsume(item)
-	-- Nothing.
+function InventoryProvider:onConsume(item, count)
+	self:getPeep():poke("consumeItem", {
+		action = "consumeItem",
+		destination = self,
+		item = item,
+		count = count
+	})
 end
 
 
@@ -83,8 +88,13 @@ end
 -- method is called.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onDestroy(item)
-	-- Nothing.
+function InventoryProvider:onDestroy(item, force)
+	self:getPeep():poke("destroyItem", {
+		action = "destroyItem",
+		destination = self,
+		item = item,
+		force = force
+	})
 end
 
 -- Called when an item is destroyed during a transaction.
@@ -92,8 +102,13 @@ end
 -- 'item' is the ItemInstance of the noted item.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onNote(item)
-	-- Nothing.
+function InventoryProvider:onNote(item, items)
+	self:getPeep():poke("noteItem", {
+		action = "noteItem",
+		destination = self,
+		item = item,
+		items = items
+	})
 end
 
 -- Called when an item is destroyed during a transaction.
@@ -104,8 +119,13 @@ end
 -- 'items' is an array of ItemInstances of the newly spawned items.
 --
 -- If this method fails, the transaction still proceeds.
-function InventoryProvider:onUnnoted(item, items)
-	-- Nothing.
+function InventoryProvider:onUnnote(item, items)
+	self:getPeep():poke("unnoteItem", {
+		action = "unnoteItem",
+		destination = self,
+		item = item,
+		items = items
+	})
 end
 
 -- Called when an item is spawned during a transaction.
@@ -116,7 +136,12 @@ end
 --
 -- If this method fails, the transaction still proceeds.
 function InventoryProvider:onSpawn(item, count)
-	-- Nothing.
+	self:getPeep():poke("spawnItem", {
+		action = "spawnItem",
+		destination = self,
+		item = item,
+		count = count
+	})
 end
 
 -- Called when an item is transferred to this provider during a transaction.
@@ -131,7 +156,15 @@ end
 --
 -- If this method fails, the transaction still proceeds.
 function InventoryProvider:onTransferTo(item, source, count, purpose)
-	-- Nothing.
+	self:getPeep():poke("transferItemTo", {
+		action = "transferItemTo",
+		destination = self,
+		source = source,
+		source = source:getPeep(),
+		item = item,
+		count = count,
+		purpose = purpose
+	})
 end
 
 -- Called when an item is transferred from this provider during a transaction.
@@ -146,7 +179,14 @@ end
 --
 -- If this method fails, the transaction still proceeds.
 function InventoryProvider:onTransferFrom(destination, item, count, purpose)
-	-- Nothing.
+	self:getPeep():poke("transferItemFrom", {
+		action = "transferItemFrom",
+		destination = destination,
+		source = self,
+		item = item,
+		count = count,
+		purpose = purpose
+	})
 end
 
 -- Called when the provider is attached to the broker.

@@ -43,12 +43,12 @@ ItsyScape.Resource.Spell "FireStrike" {
 			Count = ItsyScape.Utility.xpForLevel(8)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 1
 		}
@@ -57,6 +57,7 @@ ItsyScape.Resource.Spell "FireStrike" {
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 8,
+	ZealCost = 0.025,
 	Resource = ItsyScape.Resource.Spell "FireStrike"
 }
 
@@ -99,12 +100,12 @@ ItsyScape.Resource.Spell "WaterStrike" {
 			Count = ItsyScape.Utility.xpForLevel(6)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "WaterRune",
 			Count = 1
 		}
@@ -113,6 +114,7 @@ ItsyScape.Resource.Spell "WaterStrike" {
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 6,
+	ZealCost = 0.02,
 	Resource = ItsyScape.Resource.Spell "WaterStrike"
 }
 
@@ -145,6 +147,7 @@ ItsyScape.Meta.ResourceName {
 ItsyScape.Meta.ResourceDescription {
 	Value = "Strike the foe with earth. Applies a 10% accuracy debuff to opponent for 5 seconds.",
 	Language = "en-US",
+	ZealCost = 0.015,
 	Resource = ItsyScape.Resource.Spell "EarthStrike"
 }
 
@@ -155,12 +158,12 @@ ItsyScape.Resource.Spell "EarthStrike" {
 			Count = ItsyScape.Utility.xpForLevel(4)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "EarthRune",
 			Count = 1
 		}
@@ -170,11 +173,6 @@ ItsyScape.Resource.Spell "EarthStrike" {
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "EarthStrike", "magic")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "EarthStrike", "magic_modern_spell")
 ItsyScape.Utility.tag(ItsyScape.Resource.Spell "EarthStrike", "magic_combat_spell")
-
-ItsyScape.Meta.CombatSpell {
-	Strength = 4,
-	Resource = ItsyScape.Resource.Spell "EarthStrike"
-}
 
 ItsyScape.Resource.Effect "AirStrike" {
 	-- Nothing.
@@ -211,7 +209,7 @@ ItsyScape.Resource.Spell "AirStrike" {
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
 			Count = 1
 		}
@@ -220,6 +218,7 @@ ItsyScape.Resource.Spell "AirStrike" {
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 2,
+	ZealCost = 0.01,
 	Resource = ItsyScape.Resource.Spell "AirStrike"
 }
 
@@ -246,20 +245,21 @@ ItsyScape.Resource.Spell "FireBlast" {
 			Count = ItsyScape.Utility.xpForLevel(52)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "FireRune",
-			Count = 5
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 64,
+	ZealCost = 0.05,
 	Resource = ItsyScape.Resource.Spell "FireBlast"
 }
 
@@ -286,20 +286,21 @@ ItsyScape.Resource.Spell "WaterBlast" {
 			Count = ItsyScape.Utility.xpForLevel(48)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 5
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 56,
+	ZealCost = 0.045,
 	Resource = ItsyScape.Resource.Spell "WaterBlast"
 }
 
@@ -326,14 +327,14 @@ ItsyScape.Resource.Spell "EarthBlast" {
 			Count = ItsyScape.Utility.xpForLevel(44)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 5
+			Count = 1
 		}
 	}
 }
@@ -344,6 +345,7 @@ ItsyScape.Utility.tag(ItsyScape.Resource.Spell "EarthBlast", "magic_combat_spell
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 48,
+	ZealCost = 0.04,
 	Resource = ItsyScape.Resource.Spell "EarthBlast"
 }
 
@@ -366,15 +368,16 @@ ItsyScape.Resource.Spell "AirBlast" {
 			Count = ItsyScape.Utility.xpForLevel(40)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 40,
+	ZealCost = 0.035,
 	Resource = ItsyScape.Resource.Spell "AirBlast"
 }
 
@@ -401,25 +404,26 @@ ItsyScape.Resource.Spell "Lightning" {
 			Count = ItsyScape.Utility.xpForLevel(70)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 10
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 10
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "CosmicRune",
-			Count = 5
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 100,
+	ZealCost = 0.06,
 	Resource = ItsyScape.Resource.Spell "Lightning"
 }
 
@@ -446,20 +450,21 @@ ItsyScape.Resource.Spell "Infest" {
 			Count = ItsyScape.Utility.xpForLevel(40)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 4
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "FireRune",
-			Count = 2
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
 	Strength = -16,
+	ZealCost = 0.03,
 	Resource = ItsyScape.Resource.Spell "Infest"
 }
 
@@ -531,17 +536,17 @@ ItsyScape.Resource.Spell "SummonGoo" {
 			Count = ItsyScape.Utility.xpForLevel(20)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 2
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 2
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "FireRune",
 			Count = 1
 		}
@@ -550,6 +555,7 @@ ItsyScape.Resource.Spell "SummonGoo" {
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 24,
+	ZealCost = 0.02,
 	Resource = ItsyScape.Resource.Spell "SummonGoo"
 }
 
@@ -588,12 +594,12 @@ ItsyScape.Resource.Spell "Psychic" {
 			Count = ItsyScape.Utility.xpForLevel(35)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 2
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "CosmicRune",
 			Count = 1
 		}
@@ -623,6 +629,7 @@ ItsyScape.Meta.ResourceDescription {
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 30,
+	ZealCost = 0.02,
 	Resource = ItsyScape.Resource.Spell "Psychic"
 }
 
@@ -661,20 +668,21 @@ ItsyScape.Resource.Spell "Icicle" {
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 3
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 2
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
-	Strength = 16,
+	Strength = 32,
+	ZealCost = 0.05,
 	Resource = ItsyScape.Resource.Spell "Icicle"
 }
 
@@ -697,30 +705,31 @@ ItsyScape.Resource.Spell "Miasma" {
 			Count = ItsyScape.Utility.xpForLevel(55)
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "AirRune",
-			Count = 5
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "EarthRune",
-			Count = 5
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "WaterRune",
-			Count = 4
+			Count = 1
 		},
 
-		Input {
+		Requirement {
 			Resource = ItsyScape.Resource.Item "FireRune",
-			Count = 2
+			Count = 1
 		}
 	}
 }
 
 ItsyScape.Meta.CombatSpell {
 	Strength = 24,
+	ZealCost = 0.06,
 	Resource = ItsyScape.Resource.Spell "Miasma"
 }
 

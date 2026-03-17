@@ -22,6 +22,12 @@ ItsyScape.Meta.ActionVerb {
 	Action = FurnaceAction
 }
 
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
+	Resource = ItsyScape.Resource.Prop "Furnace_Default"
+}
+
 ItsyScape.Resource.Prop "Furnace_Default" {
 	FurnaceAction,
 

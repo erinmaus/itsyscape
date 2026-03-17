@@ -29,12 +29,18 @@ namespace nbunny
 		int width = 0, height = 0;
 
 		love::graphics::Canvas* shadow_map = nullptr;
+		love::graphics::Canvas* shadow_colors_map = nullptr;
+		love::graphics::Canvas* shadow_colors = nullptr;
 
 		std::vector<DirectionalLightSceneNode*> directional_lights;
 		std::vector<SceneNode*> visible_scene_nodes;
 		std::vector<SceneNode*> shadow_casting_scene_nodes;
+		std::vector<SceneNode*> glass_scene_nodes;
 
 		void walk_all_nodes(SceneNode& node, float delta);
+
+		void prepare_passes();
+		void draw_pass(lua_State* L, float delta, const std::vector<SceneNode*>& nodes, love::graphics::Canvas* depth, love::graphics::Canvas* color, bool sort);
 		void draw_nodes(lua_State* L, float delta);
 
 		void calculate_viewing_frustum_corners(float near, float far, std::vector<glm::vec3>& result) const;
@@ -49,6 +55,8 @@ namespace nbunny
 		~ShadowRendererPass();
 
 		love::graphics::Canvas* get_shadow_map();
+		love::graphics::Canvas* get_shadow_colors();
+		love::graphics::Canvas* get_shadow_colors_map();
 
 		int get_num_cascades() const;
 		bool get_has_shadow_map() const;

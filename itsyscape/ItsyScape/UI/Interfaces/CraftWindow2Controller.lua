@@ -13,6 +13,8 @@ local Curve = require "ItsyScape.Game.Curve"
 local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
+local ArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ArtisanStationBehavior"
+local ActiveArtisanStationBehavior = require "ItsyScape.Peep.Behaviors.ActiveArtisanStationBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local CraftWindowController = Class(Controller)
@@ -22,9 +24,23 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 
 	Controller.new(self, peep, director)
 
+	if prop then
+		local _, active = peep:addBehavior(ActiveArtisanStationBehavior)
+		active.target = prop
+	end
+
 	local game = director:getGameInstance()
 	local gameDB = director:getGameDB()
 	local brochure = gameDB:getBrochure()
+
+	local station = prop and prop:getBehavior(ArtisanStationBehavior)
+	local traits = {}
+	if station then
+		for resourceName, count in pairs(station.properties) do
+			table.insert(traits, Utility.getActionConstraintResource(game, gameDB:getResource(resourceName, "ArtisanProperty"), count))
+		end
+		table.sort(traits, function(a, b) return a.id < b.id end)
+	end
 
 	local resources = gameDB:getRecords("ResourceCategory", {
 		Key = categoryKey,
@@ -86,6 +102,8 @@ function CraftWindowController:new(peep, director, prop, categoryKey, categoryVa
 	end
 
 	self.state = {
+		traits = traits,
+
 		action = {
 			verb = verb,
 			categoryKey = categoryKey,
@@ -242,6 +260,7 @@ function CraftWindowController:poke(actionID, actionIndex, e)
 	end
 end
 
+
 function CraftWindowController:pull()
 	return self.state
 end
@@ -267,6 +286,12 @@ function CraftWindowController:select(e)
 	assert(self.actionsByID[e.id] ~= nil, "action with ID not found")
 
 	self.currentAction = self.actionsByID[e.id]
+end
+
+function CraftWindowController:close()
+	Controller.close(self)
+
+	self.peep:removeBehavior(ActiveArtisanStationBehavior)
 end
 
 return CraftWindowController

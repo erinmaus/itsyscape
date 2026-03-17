@@ -40,6 +40,7 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Interface = require "ItsyScape.UI.Interface"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
@@ -74,6 +75,11 @@ DemoApplication.GAMEPAD_TOGGLE_INTERFACES = {
 	"GamepadCombatHUD"
 }
 
+DemoApplication.MOCK_GAMEPAD_BUTTONS = {
+	["triggerleft"] = true,
+	["triggerright"] = true
+}
+
 DemoApplication.SHIMMER_CURRENT_OBJECT_LABEL_STYLE = function(color)
 	return {
 		color = { color:get() },
@@ -102,6 +108,30 @@ function DemoApplication:new()
 	self.nextShimmerToolTip:setZDepth(-900)
 	self.nextShimmerToolTip:setRowSize(math.huge)
 
+	self.hadPotentialJoystickFlickInput = false
+	self.previousJoystickFlickTime = love.timer.getTime()
+	self.previousJoystickFlickDirection = Vector(0)
+	self.currentJoystickFlickDirection = Vector(0)
+
+	self.hadPotentialKeyboardFlickInput = false
+	self.previousKeyboardFlickTime = love.timer.getTime()
+	self.previousKeyboardFlickDirection = Vector(0)
+	self.currentKeyboardFlickDirection = Vector(0)
+
+	self.previousFlickTime = love.timer.getTime()
+	self.currentDodgeDirection = Vector()
+	self.quickDodgeDirection = Vector(0, 0, -1)
+	self.currentQuickDodgeDirection = Vector()
+	self.lastShimmerCycle = love.timer.getTime()
+
+	self.wasPlayerMoving = false
+	self.isPlayerMoving = false
+
+	self.mockGamepadButtons = {}
+
+	local relativePosition = Vector()
+	local positionA, directionA = Vector(), Vector()
+	local positionB, directionB = Vector(), Vector()
 	self._sortShimmerObjects = function(a, b)
 		if a.objectType ~= b.objectType then
 			if a.objectType == "item" then
@@ -113,14 +143,18 @@ function DemoApplication:new()
 			end
 		end
 
-		local nodeA = self:_getShimmerNodeObject(a)
-		local nodeB = self:_getShimmerNodeObject(b)
-		local player = self:getGame():getPlayer()
 
+		local nodeA, objectA = self:_getShimmerNodeObject(a)
+		local nodeB, objectB = self:_getShimmerNodeObject(b)
+
+		local player = self:getGame():getPlayer()
+		local playerActor = player and player:getActor()
 		if nodeA and nodeB then
 			if a.objectType == "actor" and b.objectType == "actor" then
 				local aHasAttackAction = false
 				local bHasAttackAction = false
+				local aIsAttackingPlayer = playerActor and objectA:getTarget() == playerActor
+				local bIsAttackingPlayer = playerActor and objectB:getTarget() == playerActor
 
 				for _, action in ipairs(a.actions) do
 					if action.type == "Attack" then
@@ -136,61 +170,39 @@ function DemoApplication:new()
 					end
 				end
 
-				if aHasAttackAction ~= bHasAttackAction then
+				if aIsAttackingPlayer ~= bIsAttackingPlayer then
+					if aIsAttackingPlayer then
+						return true
+					end
+
+					return false
+				elseif aHasAttackAction ~= bHasAttackAction then
 					if aHasAttackAction then
 						return true
 					end
 
 					return false
-				else
-					local aIsAgressor = false
-					local bIsAggressor = false
-
-					local combatHUD = self:getUIView():getInterface("GamepadCombatHUD")
-					local state = combatHUD and combatHUD:getState()
-					if state and #state.combatants > 1 then
-						for _, combatant in ipairs(state.combatants) do
-							if combatant.targetID == player:getActor():getID() and combatant.id == a.objectID then
-								aIsAgressor = true
-							end
-
-							if combatant.targetID == player:getActor():getID() and combatant.id == b.objectID then
-								bIsAgressor = true
-							end
-						end
-					end
-
-					if aIsAgressor ~= bIsAgressor then
-						if aIsAgressor then
-							return true
-						end
-
-						return false
-					end
 				end
 			end
 
-			local relativePosition
 			do
-				player = player and player:getActor()
-				player = player and self:getGameView():getActor(player)
-
-				if player then
-					relativePosition = Vector.ZERO:transform(player:getSceneNode():getTransform():getGlobalDeltaTransform(0))
+				local playerActorView = playerActor and self:getGameView():getActor(playerActor)
+				if playerActorView then
+					Vector.ZERO:transform(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0), relativePosition)
 				else
-					relativePosition = Vector.ZERO
+					relativePosition:from(0)
 				end
 			end
 
-			local positionA = Vector.ZERO:transform(nodeA:getTransform():getGlobalDeltaTransform(0))
-			local distanceA = (relativePosition - positionA):getLengthSquared()
-			local directionA = relativePosition:direction(positionA):getNormal()
+			Vector.ZERO:transform(nodeA:getTransform():getGlobalDeltaTransform(0), positionA)
+			local distanceA = relativePosition:distance(positionA)
+			relativePosition:direction(positionA, directionA):normalize(directionA)
 			local dotA = directionA:dot(self.currentPlayerDirection)
 
-			local positionB = Vector.ZERO:transform(nodeB:getTransform():getGlobalDeltaTransform(0))
-			local distanceB = (relativePosition - positionB):getLengthSquared()
-			local directionB = relativePosition:direction(positionB):getNormal()
-			local dotB = directionB:dot(self.currentPlayerDirection)
+			Vector.ZERO:transform(nodeB:getTransform():getGlobalDeltaTransform(0), positionB)
+			local distanceB = relativePosition:distance(positionB)
+			relativePosition:direction(positionB, directionB):normalize(directionB)
+			local dotB = directionA:dot(self.currentPlayerDirection)
 
 			local angleA = math.deg(math.acos(math.clamp(dotA, -1, 1)))
 			local angleB = math.deg(math.acos(math.clamp(dotB, -1, 1)))
@@ -283,7 +295,11 @@ function DemoApplication:new()
 
 	self:initTitleScreen()
 
-	--Pool():makeCurrent()
+	local controls = self:getUIView():getControlManager()
+	controls.onControlDown:register(self.controlDown, self)
+	controls.onControlUp:register(self.controlUp, self)
+
+	collectgarbage("stop")
 end
 
 function DemoApplication:changeCamera(_, cameraType)
@@ -376,6 +392,8 @@ end
 
 function DemoApplication:clearResourceManagerCache()
 	self:getGameView():getResourceManager():clear()
+	collectgarbage()
+	collectgarbage()
 end
 
 function DemoApplication:playItemSoundEffect(player, item)
@@ -404,6 +422,10 @@ end
 
 function DemoApplication:postTickMultiThread()
 	Application.postTickMultiThread(self)
+
+	if self.cameraController then
+		self.cameraController:tick()
+	end
 end
 
 function DemoApplication:closeTitleScreen()
@@ -1062,6 +1084,24 @@ function DemoApplication:gamepadAxis(joystick, axis, value)
 
 	local isUIActive = not not inputProvider:getFocusedWidget()
 	self.cameraController:gamepadAxis(isUIActive, axis, value)
+
+	if DemoApplication.MOCK_GAMEPAD_BUTTONS[axis] then
+		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
+
+		if math.abs(value) > axisSensitivity then
+			if not self.mockGamepadButtons[axis] then
+				self:gamepadPress(joystick, axis)
+			end
+
+			self.mockGamepadButtons[axis] = true
+		else
+			if self.mockGamepadButtons[axis] then
+				self:gamepadRelease(joystick, axis)
+			end
+
+			self.mockGamepadButtons[axis] = false
+		end
+	end
 end
 
 function DemoApplication:toggleUI(hud)
@@ -1080,59 +1120,109 @@ function DemoApplication:toggleUI(hud)
 	end
 end
 
-function DemoApplication:gamepadRelease(joystick, button)
-	local inputProvider = self:getUIView():getInputProvider()
-	local focusedWidget = inputProvider:getFocusedWidget()
-
-	Application.gamepadRelease(self, joystick, button)
-
-	if not inputProvider:isCurrentJoystick(joystick) then
+function DemoApplication:tryQuickDodge()
+	local player = self:getGame():getPlayer()
+	if not player then
 		return
 	end
 
-	local cycleTargetButton = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadCycleTarget")
-	local gamepadProbe = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadProbe")
-	local gamepadAction = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadAction")
+	local target = player:getTarget()
+	if target and not self.wasPlayerMoving then
+		player:startDodge(target)
+		return
+	end
 
-	if not focusedWidget then
-		if button == cycleTargetButton then
+	local x, _, z = self.quickDodgeDirection:get()
+
+	local rotation = self:getCamera():getLocalRotation()
+	local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
+	if forward.z < 0 then
+		x = -x
+		z = -z
+	end
+
+	self.currentQuickDodgeDirection:from(x, 0, z)
+	self.currentDodgeDirection:from(x, 0, z)
+
+	player:startDodge(self.currentQuickDodgeDirection)
+end
+
+function DemoApplication:controlDown(_, control)
+	-- Nothing.
+end
+
+function DemoApplication:controlUp(_, control)
+	local inputProvider = self:getUIView():getInputProvider()
+	local isFocusTaken = inputProvider:getIsFocusTaken()
+
+	local isDebugManipulateOpen
+	do
+		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+		isDebugManipulateOpen = not (combatRing and combatRing:getIsShowing())
+		isDebugManipulateOpen = isDebugManipulateOpen and self:getUIView():getInterface("DebugManipulate")
+		isDebugManipulateOpen = isDebugManipulateOpen and not self:getUIView():getInterface("ActionCommand")
+	end
+
+
+	if not isFocusTaken or isDebugManipulateOpen then
+		if control:is("cycleTarget") then
+			self.lastShimmerCycle = love.timer.getTime()
 			self:nextShimmer()
-		elseif button == gamepadProbe then
+			return
+		elseif control:is("probeTarget") then
 			self:probeCurrentShimmer(false)
-		elseif button == gamepadAction then
+			return
+		elseif control:is("pokeTarget") then
 			self:probeCurrentShimmer(true)
+			return
 		end
 	end
 
-	local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
-	local ribbon = self:getUIView():getInterface("GamepadRibbon")
+	do
+		local combatRing = self:getUIView():getInterface("GamepadCombatHUD")
+		local ribbon = self:getUIView():getInterface("GamepadRibbon")
 
-	if combatRing and combatRing:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenCombatRing") then
-		self:toggleUI("GamepadCombatHUD")
-		return
-	elseif ribbon and ribbon:getIsShowing() and button == inputProvider:getKeybind("gamepadOpenRibbon") then
-		self:toggleUI("GamepadRibbon")
-		return
+		if combatRing and combatRing:getIsShowing() and control:is("openCombatRing") then
+			self:toggleUI("GamepadCombatHUD")
+			return
+		elseif ribbon and ribbon:getIsShowing() and control:is("openRibbon") then
+			self:toggleUI("GamepadRibbon")
+			return
+		end
 	end
-	
+
+	local focusedWidget = inputProvider:getFocusedWidget()
 	if self:isInterfaceBlockingRibbon(focusedWidget) or self:isInterfaceBlockingRibbon() then
 		return
 	end
 
 	focusedWidget = inputProvider:getFocusedWidget()
 	if focusedWidget and self:isInterfaceBlockingGamepadMovement(focusedWidget) then
-		local hasBoundary = focusedWidget:getParentOfType(FocusBoundary)
 		if focusedWidget:hasParent(combatRing) or focusedWidget:hasParent(ribbon) then
 			return
 		end
 	end
 
-	if button == inputProvider:getKeybind("gamepadOpenCombatRing") then
-		self:toggleUI("GamepadCombatHUD")
-	elseif button == inputProvider:getKeybind("gamepadOpenRibbon") then
-		self:toggleUI("GamepadRibbon")
-	elseif button == inputProvider:getKeybind("gamepadToggleTargetCamera") then
+	if not isFocusTaken then
+		if control:is("openCombatRing") then
+			self:toggleUI("GamepadCombatHUD")
+			return
+		end
+
+		if control:is("openRibbon") then
+			self:toggleUI("GamepadRibbon")
+			return
+		end
+	end
+
+ 	if control:is("toggleTargetCamera") then
 		_CONF.targetCameraMode = not _CONF.targetCameraMode
+		return
+	end
+
+	if control:is("quickDodge") then
+		self:tryQuickDodge()
+		return
 	end
 end
 
@@ -1754,16 +1844,11 @@ function DemoApplication:getScreenshotName(prefix, index)
 end
 
 function DemoApplication:snapshotPlayerPeep()
-	local actors
-	if _DEBUG then
-		actors = {}
-		for actor in self:getGame():getStage():iterateActors() do
-			if self:getGameView():getActor(actor) then
-				table.insert(actors, actor)
-			end
+	local actors = {}
+	for actor in self:getGame():getStage():iterateActors() do
+		if self:getGameView():getActor(actor) then
+			table.insert(actors, actor)
 		end
-	else
-		actors = { self:getGame():getPlayer():getActor() }
 	end
 
 	love.graphics.push('all')
@@ -1982,7 +2067,7 @@ function DemoApplication:updatePositionProbe()
 		return
 	end
 
-	local i, j, layer = playerActor:getTile()
+	local playerI, playerJ, layer = playerActor:getTile()
 	local position = Vector.ZERO:transform(playerActorView:getSceneNode():getTransform():getGlobalDeltaTransform(0))
 	local direction = self.currentPlayerDirection
 
@@ -1999,10 +2084,55 @@ function DemoApplication:updatePositionProbe()
 		probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
 	end
 
-	probe:setTile(i, j, layer)
+	probe:setTile(playerI, playerJ, layer)
 	probe:run()
 
 	local results = probe:toArray()
+
+	local playerMap = gameView:getMap(layer)
+	if playerMap then
+		local playerMapSceneNode = gameView:getMapSceneNode(layer)
+		local playerMapTransform = playerMapSceneNode:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+
+		local currentObjectPosition = Vector()
+		for i = #results, 1, -1 do
+			local result = results[i]
+			local objectI, objectJ, objectLayer
+			if result.objectType == "actor" then
+				local actor = gameView:getActorByID(result.objectID)
+				if actor then
+					objectI, objectJ, objectLayer = actor:getTile()
+				end
+			elseif result.objectType == "prop" then
+				local prop = gameView:getPropByID(result.objectID)
+				if prop then
+					objectI, objectJ, objectLayer = prop:getTile()
+				end
+			elseif result.objectType == "item" then
+				local item = self:getGame():getStage():getItem(result.objectID)
+				if item and item.tile then
+					objectI = item.tile.i
+					objectJ = item.tile.j
+					objectLayer = item.tile.layer
+				end
+			end
+
+			if objectI and objectJ and objectLayer then
+				local objectMap = gameView:getMap(objectLayer)
+				local objectMapSceneNode = gameView:getMapSceneNode(objectLayer)
+				local objectMapTransform = objectMapSceneNode:getTransform():getGlobalDeltaTransform(self:getPreviousFrameDelta())
+
+				objectMap:getTileCenter(objectI, objectJ, currentObjectPosition)
+				currentObjectPosition:transform(objectMapTransform, currentObjectPosition)
+				currentObjectPosition:inverseTransform(playerMapTransform, currentObjectPosition)
+
+				local _, relativeI, relativeJ = playerMap:getTileAt(currentObjectPosition.x, currentObjectPosition.z)
+				if not playerMap:lineOfSightPassable(playerI, playerJ, relativeI, relativeJ, true) then
+					table.remove(results, i)
+				end
+			end
+		end
+	end
 
 	for _, shimmeringObject in ipairs(self.shimmeringObjects) do
 		shimmeringObject.isPending = true
@@ -2057,15 +2187,42 @@ function DemoApplication:updatePositionProbe()
 	table.sort(self.shimmeringObjects, self._sortShimmerObjects)
 
 	if self.pendingObjectID and self.pendingObjectType then
+		local shimmerActiveCycleDuration = Config.get("Input", "KEYBIND", "type", "world", "name", "shimmerActiveCycleDurationMS") / 1000
+		local shouldTakeAttackTarget = (love.timer.getTime() - self.lastShimmerCycle) > shimmerActiveCycleDuration
+
 		local hasPendingObject = false
+		local pendingObjectCanAttack = false
 		for _, shimmeringObject in ipairs(self.shimmeringObjects) do
 			if self.pendingObjectID == shimmeringObject.objectID and self.pendingObjectType == shimmeringObject.objectType and shimmeringObject.isActive then
 				hasPendingObject = true
+
+				for _, action in ipairs(shimmeringObject.actions) do
+					if action.type == "Attack" then
+						pendingObjectCanAttack = true
+						break
+					end
+				end
+
 				break
 			end
 		end
 
-		if not hasPendingObject then
+		local isFirstObjectAttackingPlayer = false
+		if playerActor then
+			local shimmeringObject = self.shimmeringObjects[1]
+			if shimmeringObject and shimmeringObject.objectType == "actor" then
+				local _, object = self:_getShimmerNodeObject(shimmeringObject)
+				if object and object:getTarget() == playerActor then
+					isFirstObjectAttackingPlayer = true					
+				end
+			end
+		end
+
+		if isFirstObjectAttackingPlayer and shouldTakeAttackTarget and not pendingObjectCanAttack then
+			local shimmeringObject = self.shimmeringObjects[1]
+			self.pendingObjectID = shimmeringObject.objectID
+			self.pendingObjectType = shimmeringObject.objectType
+		elseif not hasPendingObject then
 			self:nextShimmer()
 		end
 	end
@@ -2114,7 +2271,7 @@ function DemoApplication:getNextShimmer(pendingObjectID, pendingObjectType)
 
 	local nextIndex = math.wrapIndex(currentIndex, 1, #shimmerCandidates)
 	local candidate = shimmerCandidates[nextIndex]
-	if candidate and not (candidate.objectID == pendingObjectID and candidate.objectType == pendingObjectType ) then
+	if candidate and not (candidate.objectID == pendingObjectID and candidate.objectType == pendingObjectType) then
 		return candidate.objectID, candidate.objectType
 	end
 
@@ -2181,6 +2338,7 @@ end
 
 function DemoApplication:updateNearbyShimmer(delta)
 	local isShimmerEnabled = self:getUIView():getCurrentInputScheme() == UIView.INPUT_SCHEME_GAMEPAD
+	isShimmerEnabled = isShimmerEnabled and not self:getUIView():getInterface("DebugManipulate")
 
 	local playerActorID = self:getGame():getPlayer()
 	playerActorID = playerActorID and playerActorID:getActor()
@@ -2394,6 +2552,21 @@ function DemoApplication:isInterfaceBlockingGamepadMovement(widget)
 	return gamepadSink and gamepadSink:getIsBlocking()
 end
 
+function DemoApplication:isInterfaceBlockingKeyboardMovement(widget)
+	local inputProvider = self:getUIView():getInputProvider()
+	local focusedWidget = widget or inputProvider:getFocusedWidget()
+
+	if not focusedWidget then
+		return false
+	end
+
+	local interfaceParent = focusedWidget:getParentOfType(Interface)
+	local keyboardSink = interfaceParent and interfaceParent:getData(KeyboardSink)
+	keyboardSink = keyboardSink or focusedWidget:getParentData(KeyboardSink)
+
+	return keyboardSink and keyboardSink:getIsBlocking()
+end
+
 function DemoApplication:updatePlayerMovement()
 	local player = self:getGame():getPlayer()
 	if not player then
@@ -2401,69 +2574,113 @@ function DemoApplication:updatePlayerMovement()
 	end
 
 	local didPressKey = false
+	local isDodging = false
 
-	local x, z = 0, 0
-	if self.hasGyroInput then
-		for _, gyroState in pairs(self.currentGyroState) do
-			if math.abs(gyroState.left[1]) > x and math.abs(gyroState.left[1]) > 0.1 then
-				x = -gyroState.left[1]
-			end
+	local minFlickIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "minFlickIntervalMS") / 1000
+	local maxFlickIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "maxFlickIntervalMS") / 1000
+	local flickInputStallIntervalSeconds = Config.get("Input", "KEYBIND", "type", "world", "name", "flickInputStallIntervalMS") / 1000
 
-			if math.abs(gyroState.left[2]) > z and math.abs(gyroState.left[2]) > 0.1 then
-				z = gyroState.left[2]
-			end
-		end
-	else
+	local keyboardX, keyboardZ = 0, 0
+	if not self:isInterfaceBlockingKeyboardMovement() then
 		local up = Keybinds['PLAYER_1_MOVE_UP']:isDown()
 		local down = Keybinds['PLAYER_1_MOVE_DOWN']:isDown()
 		local left = Keybinds['PLAYER_1_MOVE_LEFT']:isDown()
 		local right = Keybinds['PLAYER_1_MOVE_RIGHT']:isDown()
 
 		if up then
-			z = z + 1
+			keyboardZ = keyboardZ + 1
 		end
 
 		if down then
-			z = z - 1
+			keyboardZ = keyboardZ - 1
 		end
 
 		if left then
-			x = x + 1
+			keyboardX = keyboardX + 1
 		end
 
 		if right then
-			x = x - 1
+			keyboardX = keyboardX - 1
 		end
 
 		didPressKey = up or down or left or right
+
+		if math.abs(keyboardX) + math.abs(keyboardZ) > 0 then
+			local flickTime = love.timer.getTime() - self.previousKeyboardFlickTime
+
+			self.currentKeyboardFlickDirection:from(keyboardX, 0, keyboardZ)
+			if self.currentKeyboardFlickDirection:dot(self.previousKeyboardFlickDirection) > 0.5 and
+			   flickTime >= minFlickIntervalSeconds and flickTime <= maxFlickIntervalSeconds
+			then
+				isDodging = true
+			end
+
+			self.hadPotentialKeyboardFlickInput = true
+		elseif self.hadPotentialKeyboardFlickInput then
+			self.hadPotentialKeyboardFlickInput = false
+			self.previousKeyboardFlickDirection:from(self.currentKeyboardFlickDirection:get())
+			self.previousKeyboardFlickTime = love.timer.getTime()
+		end
 	end
 
+	local joystickX, joystickZ = 0, 0
 	do
 		local xAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadMoveXAxis")
 		local yAxisKeybind = Config.get("Input", "KEYBIND", "type", "world", "name", "gamepadMoveYAxis")
 		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "world", "name", "axisSensitivity")
 
-		local inputProvider = self:getUIView():getInputProvider()
+		local uiView = self:getUIView()
+		local inputProvider = uiView:getInputProvider()
 		local currentJoystick = inputProvider:getCurrentJoystick()
+
 		if currentJoystick and not self:isInterfaceBlockingGamepadMovement() then
 			local xAxis = inputProvider:getGamepadAxis(currentJoystick, xAxisKeybind)
 			local yAxis = inputProvider:getGamepadAxis(currentJoystick, yAxisKeybind)
 
 			if math.abs(xAxis) > axisSensitivity then
-				x = x + -math.sign(xAxis)
+				joystickX = -math.sign(xAxis)
 			end
 
 			if math.abs(yAxis) > axisSensitivity then
-				z = z + -math.sign(yAxis)
+				joystickZ = -math.sign(yAxis)
 			end
+		end
+
+		if math.abs(joystickX) + math.abs(joystickZ) > 0 then
+			local flickTime = love.timer.getTime() - self.previousJoystickFlickTime
+
+			self.currentJoystickFlickDirection:from(joystickX, 0, joystickZ)
+			if self.currentJoystickFlickDirection:dot(self.previousJoystickFlickDirection) > 0.5 and
+			   flickTime >= minFlickIntervalSeconds and flickTime <= maxFlickIntervalSeconds
+			then
+				isDodging = true
+			end
+
+			self.hadPotentialJoystickFlickInput = true
+		elseif self.hadPotentialJoystickFlickInput then
+			self.hadPotentialJoystickFlickInput = false
+			self.previousJoystickFlickDirection:from(self.currentJoystickFlickDirection:get())
+			self.previousJoystickFlickTime = love.timer.getTime()
 		end
 	end
 
-	x = math.clamp(x, -1, 1)
-	z = math.clamp(z, -1, 1)
+	if math.abs(joystickX) + math.abs(joystickZ) > 0 and
+	   math.abs(keyboardX) + math.abs(keyboardZ) == 0
+	then
+		self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_GAMEPAD)
+	elseif math.abs(joystickX) + math.abs(joystickZ) == 0 and
+	       math.abs(keyboardX) + math.abs(keyboardZ) > 0
+	then
+		self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_MOUSE_KEYBOARD)
+	end
 
-	local isMoving = math.abs(x) > 0 or math.abs(z) > 0
+	x = -math.clamp(joystickX + keyboardX, -1, 1)
+	z = -math.clamp(joystickZ + keyboardZ, -1, 1)
+
+	local isMoving = math.abs(x) + math.abs(z) > 0
 	if isMoving then
+		self.quickDodgeDirection:from(x, 0, z)
+
 		local rotation = self:getCamera():getLocalRotation()
 		local forward = rotation:getNormal():transformVector(Vector.UNIT_Z):getNormal()
 		if forward.z < 0 then
@@ -2475,21 +2692,38 @@ function DemoApplication:updatePlayerMovement()
 		if not focusedWidget or
 		   not focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput")
 		then
-			if didPressKey then
-				self:getUIView():setCurrentInputScheme(UIView.INPUT_SCHEME_MOUSE_KEYBOARD)
-			end
+			self.currentPlayerDirection = Vector(x, 0, z):getNormal():keep()
 
-			player:move(x, z)
+			if isDodging then
+				self.previousFlickTime = love.timer.getTime()
+				self.currentDodgeDirection:from(x, 0, z)
+				player:startDodge(self.currentDodgeDirection)
+			else
+				local dot = self.currentDodgeDirection:dot(self.currentPlayerDirection)
+				if not (player:getIsDodging() and dot > 0.5) then
+					local flickDuration = love.timer.getTime() - self.previousFlickTime
+					if flickDuration > flickInputStallIntervalSeconds then
+						if player:getIsDodging() then
+							player:stopDodge()
+						end
+
+						player:move(x, z)
+					else
+						player:move(0, 0)
+					end
+				end
+			end
 
 			self.stationaryDuration = 0
 		else
 			player:move(0, 0)
 		end
-
-		self.currentPlayerDirection = Vector(x, 0, z):getNormal():keep()
 	else
 		player:move(0, 0)
 	end
+
+	self.wasPlayerMoving = self.isPlayerMoving
+	self.isPlayerMoving = isMoving
 end
 
 function DemoApplication:hideToolTip()
@@ -2586,9 +2820,7 @@ function DemoApplication:updatePatchNotes()
 	end
 end
 
-function DemoApplication:update(delta)
-	Application.update(self, delta)
-
+function DemoApplication:_updateDemo(delta)
 	self.stationaryDuration = self.stationaryDuration + delta
 
 	--Pool.getCurrent():update()
@@ -2600,8 +2832,6 @@ function DemoApplication:update(delta)
 	self:updateToolTip(delta)
 
 	self:updateNearbyShimmer(delta)
-
-	self.cameraController:update(delta)
 
 	if self.titleScreen then
 		self.titleScreen:update(delta)
@@ -2638,7 +2868,15 @@ function DemoApplication:update(delta)
 		end
 	end
 
+	self.cameraController:update(delta)
+
 	self:updatePatchNotes()
+end
+
+function DemoApplication:update(delta)
+	Application.update(self, delta)
+
+	self:measure("DemoApplication.update", self._updateDemo, self, delta)
 end
 
 function DemoApplication:draw(delta)

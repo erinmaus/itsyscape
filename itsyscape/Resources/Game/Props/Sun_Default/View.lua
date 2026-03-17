@@ -119,35 +119,43 @@ function Sun:load()
 	self:_updateColor()
 end
 
-function Sun:_updateColor()
-	local state = self:getProp():getState()
-	if state.color then
-		local color = Color(unpack(state.color))
+do
+	local color = Color()
+	local previousSkyColor = Color()
+	local currentSkyColor = Color()
+	function Sun:_updateColor()
+		local state = self:getProp():getState()
+		if state.color then
+			color:from(unpack(state.color))
 
-		if self.sun then
-			self.sun:getMaterial():setColor(color)
+			if self.sun then
+				self.sun:getMaterial():setColor(color)
+			end
+
+			if self.particles then
+				self.particles:getMaterial():setColor(color)
+			end
 		end
 
-		if self.particles then
-			self.particles:getMaterial():setColor(color)
+		if state.currentSkyColor and state.previousSkyColor then
+			previousSkyColor:from(unpack(state.previousSkyColor))
+			currentSkyColor:from(unpack(state.currentSkyColor))
+
+			self.skyCube:setTopClearColor(previousSkyColor)
+			self.skyCube:setBottomClearColor(currentSkyColor)
 		end
-	end
-
-	if state.currentSkyColor and state.previousSkyColor then
-		local previousSkyColor = Color(unpack(state.previousSkyColor))
-		local currentSkyColor = Color(unpack(state.currentSkyColor))
-
-		self.skyCube:setTopClearColor(previousSkyColor)
-		self.skyCube:setBottomClearColor(currentSkyColor)
 	end
 end
 
-function Sun:_updateLight()
-	local state = self:getProp():getState()
-	if state.normal then
-		local normal = -Vector(unpack(state.normal))
-		self.light:setColor(Color(0.25))
-		self.light:setDirection(normal)
+do
+	local normal = Vector()
+	function Sun:_updateLight()
+		local state = self:getProp():getState()
+		if state.normal then
+			normal:from(unpack(state.normal)):negate(normal)
+			self.light:setColor(Color(0.25))
+			self.light:setDirection(normal)
+		end
 	end
 end
 

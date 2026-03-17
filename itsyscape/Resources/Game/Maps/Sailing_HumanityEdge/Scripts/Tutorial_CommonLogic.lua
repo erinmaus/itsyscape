@@ -24,7 +24,7 @@ local GetPlayer = Mashina.Peep.GetPlayer {
 local AvoidCrowdingPlayer = Mashina.Step {
 	Mashina.Navigation.IsCrowding {
 		peep = PLAYER,
-		distance = 1
+		distance = 1.5
 	},
 
 	Mashina.Player.IsEnabled {
@@ -61,7 +61,7 @@ local AvoidCrowdingPlayerTarget = Mashina.Step {
 
 	Mashina.Navigation.IsCrowding {
 		peep = TARGET_TO_AVOID,
-		distance = 3
+		distance = 0.5
 	},
 
 	Mashina.Player.IsEnabled {
@@ -81,9 +81,39 @@ local AvoidCrowdingPlayerTarget = Mashina.Step {
 	}
 }
 
+local AvoidCrowdingSelfTarget = Mashina.Step {
+	Mashina.Try {
+		Mashina.Peep.HasCombatTarget {
+			[TARGET_TO_AVOID] = B.Output.target,
+		},
+
+		Mashina.Peep.WasAttacked {
+			[TARGET_TO_AVOID] = B.Output.aggressor
+		}
+	},
+
+	Mashina.Navigation.IsCrowding {
+		peep = TARGET_TO_AVOID,
+		distance = 0.5
+	},
+
+	Mashina.Peep.Strafe {
+		rotations = { Quaternion.Y_90, Quaternion.Y_180, Quaternion.Y_270 },
+		target = TARGET_TO_AVOID,
+		distance = 3
+	},
+
+	Mashina.Peep.Wait,
+
+	Mashina.Peep.LookAt {
+		target = TARGET_TO_AVOID
+	}
+}
+
 local AvoidCrowding = Mashina.ParallelTry {
 	AvoidCrowdingPlayerTarget,
-	AvoidCrowdingPlayer
+	AvoidCrowdingPlayer,
+	AvoidCrowdingSelfTarget
 }
 
 local AttackPlayerTarget = Mashina.Step {

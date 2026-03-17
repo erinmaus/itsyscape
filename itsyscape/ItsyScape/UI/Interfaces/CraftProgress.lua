@@ -8,9 +8,6 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local SceneNode = require "ItsyScape.Graphics.SceneNode"
-local AmbientLightSceneNode = require "ItsyScape.Graphics.AmbientLightSceneNode"
-local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local CloseButton = require "ItsyScape.UI.CloseButton"
 local Interface = require "ItsyScape.UI.Interface"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
@@ -19,84 +16,75 @@ local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
-local SceneSnippet = require "ItsyScape.UI.SceneSnippet"
 local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local StatBar = require "ItsyScape.UI.Interfaces.Components.StatBar"
 
 local CraftProgress = Class(Interface)
+
+CraftProgress.PROGRESS_BAR_HEIGHT = 32
+CraftProgress.ICON_SIZE = 64
 
 CraftProgress.CONTENT_WIDTH  = Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 CraftProgress.CONTENT_HEIGHT = Theme.calculateTiledSizeWithPadding(
 	Theme.DEFAULT_OUTER_PADDING,
 	Theme.calculateSizeWithPadding(
 		Theme.DEFAULT_OUTER_PADDING,
-		Theme.DEFAULT_ITEM_SIZE_WITH_PADDING,
-		Theme.DEFAULT_ICON_SIZE),
+		CraftProgress.ICON_SIZE,
+		Theme.CONTENT_LABEL_STYLE.fontSize,
+		CraftProgress.PROGRESS_BAR_HEIGHT),
 	1)
 
 CraftProgress.WINDOW_WIDTH  = CraftProgress.CONTENT_WIDTH
-CraftProgress.WINDOW_HEIGHT = Theme.calculateSize(Theme.TITLE_HEIGHT, CraftProgress.CONTENT_HEIGHT)
+CraftProgress.WINDOW_HEIGHT = Theme.calculateSize(Theme.MINI_TITLE_HEIGHT, CraftProgress.CONTENT_HEIGHT)
 
 function CraftProgress:new(...)
 	Interface.new(self, ...)
 
 	self:setSize(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
 
-	self.titlePanel = Theme.newTitlePanel(self, self.WINDOW_WIDTH)
-	self.titleLabel = Theme.newTitleLabel(self.titlePanel)
-	self.titleLabel:setZDepth(100)
-
-	self.contentPanel = Theme.newContentPanel(self, self.CONTENT_WIDTH, self.CONTENT_HEIGHT)
+	self.titlePanel, self.titleLabel = Theme.newMiniTitlePanelWithLabel(self, self.WINDOW_WIDTH)
+	self.contentPanel = Theme.newContentPanel(self, self.CONTENT_WIDTH, self.CONTENT_HEIGHT, self.titlePanel)
 
 	Theme.newCloseButton(self.titlePanel)
 
-	self.camera = ThirdPersonCamera()
-
-	self.sceneSnippet = SceneSnippet()
-	self.sceneSnippet:setSize(
-		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, Theme.TITLE_HEIGHT),
-		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, Theme.TITLE_HEIGHT))
-	self.sceneSnippet:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
-	self.sceneSnippet:setCamera(self.camera)
-	self.titlePanel:addChild(self.sceneSnippet)
-
-	local parentNode = SceneNode()
-	local ambientLight = AmbientLightSceneNode()
-	ambientLight:setAmbience(1)
-	ambientLight:setParent(parentNode)
-
-	self.sceneSnippet:setParentNode(parentNode)
-	self.sceneSnippet:setRoot(parentNode)
-
-	self.itemPanel = Theme.newItemParent(self.contentPanel, Panel)
+	self.itemPanel = Theme.newItemParent(
+		self.contentPanel,
+		Panel,
+		self.ICON_SIZE)
 	self.itemPanel:setPosition(
 		Theme.DEFAULT_OUTER_PADDING,
 		Theme.DEFAULT_OUTER_PADDING)
 
-	self.item = Theme.addItemIconChild(self.itemPanel)
+	self.item = Theme.addItemIconChild(
+		self.itemPanel,
+		Theme.DEFAULT_INNER_PADDING,
+		self.ICON_SIZE)
 
 	self.itemNameLabel = Label()
 	self.itemNameLabel:setStyle(Theme.CONTENT_TITLE_LABEL_STYLE, LabelStyle)
 	self.itemNameLabel:setPosition(
-		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.ICON_SIZE),
 		Theme.DEFAULT_OUTER_PADDING)
 	self.contentPanel:addChild(self.itemNameLabel)
 
 	self.itemDescriptionLabel = Label()
 	self.itemDescriptionLabel:setStyle(Theme.CONTENT_LABEL_STYLE, LabelStyle)
 	self.itemDescriptionLabel:setPosition(
-		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, self.ICON_SIZE),
 		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_TITLE_LABEL_STYLE.fontSize))
 	self.contentPanel:addChild(self.itemDescriptionLabel)
 
 	self.progressBar = StatBar()
-	self.progressBar:setNamedColors("ui.resource.progress", "ui.resource.remainder")
+	self.progressBar:setNamedColors("ui.resource.remainder", "ui.resource.progress")
 	self.progressBar:setSize(
 		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, self.WINDOW_WIDTH),
-		Theme.DEFAULT_ICON_SIZE)
+		CraftProgress.PROGRESS_BAR_HEIGHT)
 	self.progressBar:setPosition(
 		Theme.DEFAULT_OUTER_PADDING,
-		Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING))
+		Theme.calculateSizeWithPadding(
+			Theme.DEFAULT_OUTER_PADDING,
+			self.ICON_SIZE,
+			Theme.CONTENT_LABEL_STYLE.fontSize))
 	self.contentPanel:addChild(self.progressBar)
 
 	self.progressBarLabel = Label()
@@ -111,7 +99,7 @@ function CraftProgress:performLayout()
 
 	local width, height = itsyrealm.graphics.getScaledMode()
 	local selfWidth, selfHeight = self:getSize()
-	self:setPosition((width - selfWidth) / 2, height / 4 - selfHeight / 2)
+	self:setPosition((width - selfWidth) / 2, (height / 2 - selfHeight) / 2)
 end
 
 function CraftProgress:tick()
@@ -132,41 +120,6 @@ function CraftProgress:tick()
 	end
 
 	self.titleLabel:setText(state.action and state.action.verb or "Crafting")
-end
-
-function CraftProgress:updateTitleScene()
-	local gameView = self:getView():getGameView()
-
-	local state = self:getState()
-
-	local targetType
-	local targetID
-	if not state.target or state.target.type == "none" then
-		targetType = "actor"
-		targetID = gameView:getGame():getPlayer():getActor():getID()
-	else
-		targetType = state.target.type
-		targetID = state.target.id
-	end
-
-	local target
-	if targetType == "actor" then
-		target = gameView:getActorByID(targetID)
-	elseif targetType == "prop" then
-		target = gameView:getPropByID(targetID)
-	end
-
-	if not target then
-		target = gameView:getGame():getPlayer():getActor()
-	end
-
-	Theme.setSceneSnippet(self.sceneSnippet, self.camera, gameView, target)
-end
-
-function CraftProgress:update(delta)
-	Interface.update(self, delta)
-
-	self:updateTitleScene()
 end
 
 return CraftProgress

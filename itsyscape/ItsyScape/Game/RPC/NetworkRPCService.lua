@@ -67,14 +67,6 @@ function NetworkRPCService:handleNetworkEvent(e)
 	return nil
 end
 
-function NetworkRPCService:sendNetworkEvent(clientID, packet)
-	self.outputChannel:push({
-		type = "send",
-		client = clientID,
-		data = packet
-	})
-end
-
 function NetworkRPCService:sendBatchNetworkEvent(clientID, batch)
 	self.outputChannel:push({
 		type = "batch",

@@ -50,6 +50,7 @@ function SimpleStaticView:load()
 			local _, group = self:getModelFilename()
 			self.decoration:fromGroup(mesh:getResource(), group)
 			self.decoration:getMaterial():setTextures(self.texture)
+			self.decoration:getMaterial():setOutlineThreshold(0.5)
 			self.decoration:setParent(root)
 		end)
 end

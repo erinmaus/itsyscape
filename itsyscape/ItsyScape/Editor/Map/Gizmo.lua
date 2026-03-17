@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Color = require "ItsyScape.Graphics.Color"
@@ -80,8 +81,9 @@ function Gizmo.Operation:distance(x, y, camera, sceneNode)
 	return math.sqrt(minDistance)
 end
 
-function Gizmo.Operation:setLines(connected, lines)
+function Gizmo.Operation:setLines(connected, rotate, lines)
 	self.linesConnected = connected
+	self.linesRotate = rotate
 	self.lines = lines
 end
 
@@ -92,14 +94,23 @@ function Gizmo.Operation:setShape(start, rotate, shape)
 end
 
 function Gizmo.Operation:_getTransformedLines(lines, camera, sceneNode)
-	local world = sceneNode:getTransform():getGlobalTransform()
+	local world = sceneNode:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 	local offset = sceneNode:getTransform():getLocalOffset()
 	local center = Vector(world:transformPoint(offset:get()))
+
+	local rotation
+	if self.linesRotate then
+		local _, r = MathCommon.decomposeTransform(world)
+		rotation = r
+	else
+		rotation = Quaternion.IDENTITY
+	end
 
 	local l = {}
 	do
 		for _, point in ipairs(lines) do
-			local x, y = camera:project(point + center):get()
+			local p = rotation:transformVector(point) + center
+			local x, y = camera:project(p):get()
 
 			table.insert(l, x)
 			table.insert(l, y)
@@ -110,7 +121,7 @@ function Gizmo.Operation:_getTransformedLines(lines, camera, sceneNode)
 end
 
 function Gizmo.Operation:_getTransformedShape(shape, camera, sceneNode)
-	local world = sceneNode:getTransform():getGlobalTransform()
+	local world = sceneNode:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 	local offset = sceneNode:getTransform():getLocalOffset()
 	local center = Vector(world:transformPoint(offset:get()))
 
@@ -196,7 +207,7 @@ function Gizmo.BoundingBoxOperation:update(sceneNode, size)
 end
 
 function Gizmo.BoundingBoxOperation:buildMesh(sceneNode, size)
-	local world = sceneNode:getTransform():getGlobalTransform()
+	local world = sceneNode:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 	local center = Vector(world:transformPoint(0, 0, 0))
 
 	local halfSize = size / 2
@@ -222,13 +233,13 @@ function Gizmo.BoundingBoxOperation:buildMesh(sceneNode, size)
 		Vector(min.x, max.y, max.z), Vector(min.x, min.y, max.z),
  	}
 
- 	self:setLines(false, lines)
+ 	self:setLines(false, false, lines)
 end
 
 Gizmo.TranslationAxisOperation = Class(Gizmo.Operation)
 Gizmo.TranslationAxisOperation.LENGTH = 2
 Gizmo.TranslationAxisOperation.SHAPE_SIZE = 16
-Gizmo.TranslationAxisOperation.MOVE_DISTANCE = 32
+Gizmo.TranslationAxisOperation.MOVE_DISTANCE = 4
 Gizmo.TranslationAxisOperation.SNAP_DISTANCE = 0.25
 
 function Gizmo.TranslationAxisOperation:new(axis, x, y, z)
@@ -248,7 +259,7 @@ end
 function Gizmo.TranslationAxisOperation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
 	local distance, axis
 	do
-		local world = sceneNode:getTransform():getGlobalTransform()
+		local world = sceneNode:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local center = Vector(world:transformPoint(sceneNode:getTransform():getLocalOffset():get()))
 		local v1 = camera:project(center)
 		local v2 = camera:project(center + self.axis * self.LENGTH)
@@ -258,7 +269,10 @@ function Gizmo.TranslationAxisOperation:move(currentX, currentY, previousX, prev
 		local previousPoint = Vector(previousX, previousY, 0)
 		local movementDirection = (currentPoint - previousPoint):getNormal()
 
-		distance = (currentPoint - previousPoint):getLength() * math.sign(-movementDirection:dot(axisDirection)) / self.MOVE_DISTANCE
+		local currentPointWorldSpace = camera:unproject(currentPoint)
+		local screenToCenterDistance = currentPointWorldSpace:distance(center)
+
+		distance = (currentPoint - previousPoint):getLength() * math.sign(-movementDirection:dot(axisDirection)) / (screenToCenterDistance / self.MOVE_DISTANCE)
 
 		if self.axis:getLengthSquared() > 1 then
 			axis = -(self.xAxis * Vector(movementDirection.x) + self.yAxis * Vector(movementDirection.y))
@@ -296,7 +310,7 @@ end
 function Gizmo.TranslationAxisOperation:buildMesh(sceneNode, size)
 	local endPoint = (self.axis:getNormal()) * self.LENGTH
 
-	self:setLines(false, {
+	self:setLines(false, false, {
 		Vector(0),
 		endPoint
 	})
@@ -314,7 +328,7 @@ end
 Gizmo.RotationAxisOperation = Class(Gizmo.Operation)
 Gizmo.RotationAxisOperation.SEGMENTS = 32
 Gizmo.RotationAxisOperation.STEP_ANGLE = math.rad(45)
-Gizmo.RotationAxisOperation.MOVE_DISTANCE = 64
+Gizmo.RotationAxisOperation.MOVE_DISTANCE = 16
 
 function Gizmo.RotationAxisOperation:new(axis)
 	Gizmo.Operation.new(self)
@@ -330,7 +344,7 @@ end
 function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
 	local angle
 	do
-		local world = sceneNode:getTransform():getGlobalTransform()
+		local world = sceneNode:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local center = Vector(world:transformPoint(sceneNode:getTransform():getLocalOffset():get()))
 		local centerX, centerY = camera:project(center):get()
 		local differenceCurrentX, differenceCurrentY = centerX - currentX, centerY - currentY
@@ -364,7 +378,7 @@ function Gizmo.RotationAxisOperation:move(currentX, currentY, previousX, previou
 		local snappedXYZ = (currentXYZ * self.axis / self.STEP_ANGLE):floor() * self.STEP_ANGLE
 		currentRotation = Quaternion.fromEulerXYZ((invertAxis * currentXYZ + snappedXYZ):get())
 	else
-		currentRotation = transform:getLocalRotation()
+		currentRotation = rotation * transform:getLocalRotation()
 	end
 
 	transform:setLocalRotation(currentRotation:getNormal())
@@ -381,7 +395,6 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 	else
 		size = size:min(Vector(5, 5, 5))
 	end
-	size = size * 2
 	size = math.max(size:get())
 	size = size + Vector(0, 1, 2)
 
@@ -403,13 +416,13 @@ function Gizmo.RotationAxisOperation:buildMesh(sceneNode, size)
 		table.insert(lines, point)
 	end
 
-	self:setLines(true, lines)
+	self:setLines(true, true, lines)
 end
 
 Gizmo.ScaleAxisOperation = Class(Gizmo.Operation)
 Gizmo.ScaleAxisOperation.LENGTH = 2
 Gizmo.ScaleAxisOperation.SHAPE_SIZE = 16
-Gizmo.ScaleAxisOperation.MOVE_DISTANCE = 32
+Gizmo.ScaleAxisOperation.MOVE_DISTANCE = 8
 Gizmo.ScaleAxisOperation.SNAP_DISTANCE = 0.25
 
 function Gizmo.ScaleAxisOperation:new(axis)
@@ -426,7 +439,7 @@ end
 function Gizmo.ScaleAxisOperation:move(currentX, currentY, previousX, previousY, camera, sceneNode, snap)
 	local distance
 	do
-		local world = sceneNode:getTransform():getGlobalTransform()
+		local world = sceneNode:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
 		local center = Vector(world:transformPoint(sceneNode:getTransform():getLocalOffset():get()))
 		local v1 = camera:project(center)
 		local v2 = camera:project(center + self.axis * self.LENGTH)
@@ -465,7 +478,7 @@ end
 function Gizmo.ScaleAxisOperation:buildMesh(sceneNode, size)
 	local endPoint = (self.axis:getNormal()) * self.LENGTH
 
-	self:setLines(false, {
+	self:setLines(false, false, {
 		Vector(0),
 		endPoint
 	})

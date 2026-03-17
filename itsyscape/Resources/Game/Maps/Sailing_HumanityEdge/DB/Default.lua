@@ -29,7 +29,7 @@ end
 M["Art_Rage_Fire1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 139.406250,
+		PositionX = 139.251616,
 		PositionY = 3.000000,
 		PositionZ = 167.437500,
 		RotationX = 0.000000,
@@ -53,7 +53,7 @@ end
 M["Art_Rage_Fire2"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 141.156250,
+		PositionX = 141.906256,
 		PositionY = 3.000000,
 		PositionZ = 168.375000,
 		RotationX = 0.000000,
@@ -149,9 +149,9 @@ end
 M["Art_Rage_Fire6"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 143.000000,
+		PositionX = 146.820828,
 		PositionY = 3.000000,
-		PositionZ = 175.000000,
+		PositionZ = 177.022785,
 		RotationX = 0.000000,
 		RotationY = 0.000000,
 		RotationZ = 0.000000,
@@ -695,6 +695,198 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "CaesiumRock_Default",
 		MapObject = M["CaesiumRock_Default4"]
+	}
+end
+
+M["ColorfulFire1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 151.000000,
+		PositionY = 0.000000,
+		PositionZ = 163.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 2.603331,
+		ScaleY = 2.603331,
+		ScaleZ = 2.603331,
+		Name = "ColorfulFire1",
+		Map = M._MAP,
+		Resource = M["ColorfulFire1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire1"]
+	}
+end
+
+M["ColorfulFire2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 149.000000,
+		PositionY = 1.000000,
+		PositionZ = 151.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 2.070767,
+		ScaleY = 2.070767,
+		ScaleZ = 2.070767,
+		Name = "ColorfulFire2",
+		Map = M._MAP,
+		Resource = M["ColorfulFire2"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire2"]
+	}
+end
+
+M["ColorfulFire3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 161.000000,
+		PositionY = 0.000000,
+		PositionZ = 157.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 2.049866,
+		ScaleY = 2.049866,
+		ScaleZ = 2.049866,
+		Name = "ColorfulFire3",
+		Map = M._MAP,
+		Resource = M["ColorfulFire3"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire3"]
+	}
+end
+
+M["ColorfulFire4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 141.000000,
+		PositionY = 2.000000,
+		PositionZ = 155.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 2.166417,
+		ScaleY = 2.166417,
+		ScaleZ = 2.166417,
+		Name = "ColorfulFire4",
+		Map = M._MAP,
+		Resource = M["ColorfulFire4"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire4"]
+	}
+end
+
+M["ColorfulFire5"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 149.000000,
+		PositionY = 1.000000,
+		PositionZ = 167.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.891891,
+		ScaleY = 1.891891,
+		ScaleZ = 1.891891,
+		Name = "ColorfulFire5",
+		Map = M._MAP,
+		Resource = M["ColorfulFire5"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire5"]
+	}
+end
+
+M["ColorfulFire6"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 165.000000,
+		PositionY = 2.000000,
+		PositionZ = 169.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 2.195891,
+		ScaleY = 2.195891,
+		ScaleZ = 2.195891,
+		Name = "ColorfulFire6",
+		Map = M._MAP,
+		Resource = M["ColorfulFire6"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire6"]
+	}
+end
+
+M["ColorfulFire7"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 167.000000,
+		PositionY = 3.000000,
+		PositionZ = 149.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.829544,
+		ScaleY = 1.829544,
+		ScaleZ = 1.829544,
+		Name = "ColorfulFire7",
+		Map = M._MAP,
+		Resource = M["ColorfulFire7"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire7"]
+	}
+end
+
+M["ColorfulFire8"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155.000000,
+		PositionY = 0.000000,
+		PositionZ = 159.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 4.500000,
+		ScaleY = 4.500000,
+		ScaleZ = 4.500000,
+		Name = "ColorfulFire8",
+		Map = M._MAP,
+		Resource = M["ColorfulFire8"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "ColorfulFire",
+		MapObject = M["ColorfulFire8"]
 	}
 end
 
@@ -1566,7 +1758,7 @@ M["Rowboat_Default1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 179.468700,
-		PositionY = 64.250000,
+		PositionY = 208.000000,
 		PositionZ = 181.141067,
 		RotationX = 0.000000,
 		RotationY = 0.382683,
@@ -1847,6 +2039,54 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "UraniumRock_Default",
 		MapObject = M["UraniumRock_Default7"]
+	}
+end
+
+M["YendorianRuins_Pillar1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 99.000000,
+		PositionY = 5.000000,
+		PositionZ = 177.000000,
+		RotationX = 0.000000,
+		RotationY = 0.000000,
+		RotationZ = 0.000000,
+		RotationW = 1.000000,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YendorianRuins_Pillar1",
+		Map = M._MAP,
+		Resource = M["YendorianRuins_Pillar1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YendorianRuins_Pillar",
+		MapObject = M["YendorianRuins_Pillar1"]
+	}
+end
+
+M["YendorianRuins_Rock1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 137.000000,
+		PositionY = 11.000000,
+		PositionZ = 107.000000,
+		RotationX = 0.000000,
+		RotationY = 0.799610,
+		RotationZ = 0.000000,
+		RotationW = 0.600520,
+		ScaleX = 1.000000,
+		ScaleY = 1.000000,
+		ScaleZ = 1.000000,
+		Name = "YendorianRuins_Rock1",
+		Map = M._MAP,
+		Resource = M["YendorianRuins_Rock1"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "YendorianRuins_Rock",
+		MapObject = M["YendorianRuins_Rock1"]
 	}
 end
 

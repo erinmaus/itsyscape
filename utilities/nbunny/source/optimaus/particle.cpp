@@ -451,11 +451,13 @@ public:
 
 	int update(float delta)
 	{
+		bool is_running = running();
+
 		nbunny::ParticleEmissionStrategy::update(delta);
 
 		int count = 0;
 
-		if (running())
+		if (is_running)
 		{
 			current_delay -= delta;
 			if (current_delay <= 0.0f)
@@ -704,11 +706,11 @@ nbunny::ParticleSceneNode::ParticleSceneNode(int reference) :
 		{ "VertexColor", love::graphics::vertex::DATA_FLOAT, 4 },
 	}),
 	quad({
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) },
-		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3(-1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f), glm::vec4(1.0f) },
+		{ glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f), glm::vec4(1.0f) },
 		{ glm::vec3( 1.0f,  1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f), glm::vec4(1.0f) }
 	})
 {
@@ -829,7 +831,7 @@ void nbunny::ParticleSceneNode::build(const glm::quat& inverse_rotation, const g
 		auto a_position = view_world_transform * glm::vec4(a.position, 1.0f);
 		auto b_position = view_world_transform * glm::vec4(b.position, 1.0f);
 
-		return a_position.z > b_position.z;
+		return a_position.z < b_position.z;
 	});
 
 	std::size_t i = 0;

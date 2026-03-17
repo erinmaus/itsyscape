@@ -12,6 +12,7 @@ local Function = require "ItsyScape.Common.Function"
 local Class = require "ItsyScape.Common.Class"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local Body = require "ItsyScape.Game.Body"
 local Equipment = require "ItsyScape.Game.Equipment"
 local NullActor = require "ItsyScape.Game.Null.Actor"
@@ -57,8 +58,15 @@ end
 function ActorView.Animatable:setColor(value)
 	for _, slot in pairs(self.actor.skins) do
 		for i = 1, #slot do
-			if slot[i].model then
-				slot[i].model:getMaterial():setColor(value)
+			local s = slot[i]
+			local material = s.instance and s.instance:getMaterial()
+			local color = material and material:getProperty("color")
+			local model = s.model
+
+			if model and color then
+				model:getMaterial():setColor(color * value)
+			elseif model then
+				model:getMaterial():setColor(value)
 			end
 		end
 	end
@@ -220,6 +228,10 @@ function ActorView.Animatable:update()
 			self.sounds[sound] = nil
 		end
 	end
+end
+
+function ActorView.Animatable:pokeCamera(event, ...)
+	self.actor:getGameView():getGame():getPlayer():onPokeCamera(event, ...)
 end
 
 ActorView.CombinedTexture = Class()
@@ -486,6 +498,7 @@ function ActorView.CombinedModel:new(actorView, shader)
 	self.sceneNode:getMaterial():setShader(self.shader)
 
 	self.isUpdating = 0
+	self.isSkinDirty = false
 end
 
 function ActorView.CombinedModel:getShader()
@@ -719,7 +732,8 @@ function ActorView:new(actor, actorID)
 	self.combinedModelSceneNodes = {}
 
 	self.layer = false
-	self.position = false
+	self.previousPosition = Vector(0)
+	self.position = Vector(0)
 	self.rotation = Quaternion():keep()
 
 	self.animations = {}
@@ -782,7 +796,8 @@ function ActorView:new(actor, actorID)
 	actor.onDamage:register(self._onDamage)
 
 	self._onHUDMessage = function(_, message, ...)
-		self:flash(message, ...)
+		local arguments = RPCState.merge({ ... })
+		self:flash(message, unpack(arguments, 1, select("#", ...)))
 	end
 	actor.onHUDMessage:register(self._onHUDMessage)
 
@@ -798,7 +813,7 @@ function ActorView:getActor()
 end
 
 function ActorView:getIsImmediate()
-	return Class.isCompatibleType(self.actor, NullActor)
+	return Class.isCompatibleType(self.actor, NullActor) or (_APP and _APP:getUIView():getInterface("DebugManipulate")) 
 end
 
 function ActorView:attach(game)
@@ -861,7 +876,6 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 	   (a.instance and definition:getResource():getFadesIn())
 	then
 		a.next = {
-			cacheRef = animation,
 			definition = definition:getResource(),
 			priority = priority,
 			time = time
@@ -872,7 +886,6 @@ function ActorView:_loadAnimation(a, definition, slot, animation, priority, time
 			a.instance:stop()
 		end
 
-		a.cacheRef = animation
 		a.definition = definition:getResource()
 		a.instance = self.instances[animation:getFilename()] or a.definition:play(self.animatable)
 		a.time = time or 0
@@ -896,6 +909,11 @@ end
 
 function ActorView:_stopAnimation(slot)
 	local animation = self.animations[slot]
+	if (animation and animation.definition and animation.definition:getFadesOut()) then
+		animation.next = false
+		return
+	end
+
 	if animation then
 		self.animatable:removePlayingAnimation(animation.id)
 	end
@@ -913,9 +931,9 @@ function ActorView:playAnimation(slot, animation, priority, time)
 
 	if priority and animation then
 		if self:getIsImmediate() then
-			self:_loadAnimation(a, self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
+			self:_loadAnimation(a, self.game:getResourceManager():loadCacheRef(animation), slot, animation:clone(), priority, time)
 		else
-			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.definitions[animation:getFilename()] or self.game:getResourceManager():loadCacheRef(animation), slot, animation, priority, time)
+			self.game:getResourceManager():queueAsyncEvent(self._loadAnimation, self, a, self.definitions[animation:getFilename()] or self.game:getResourceManager():loadCacheRef(animation), slot, animation:clone(), priority, time)
 		end
 
 		self.animations[slot] = a
@@ -1026,6 +1044,11 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 				if slot.instance:getIsReflective() then
 					slot.model:getMaterial():setIsReflectiveOrRefractive(true)
 					slot.model:getMaterial():setReflectionPower(slot.instance:getReflectionPower())
+					slot.model:getMaterial():setReflectionDistance(slot.instance:getReflectionDistance())
+				end
+
+				if slot.instance:getMaterial() then
+					slot.instance:getMaterial():apply(slot.model, resourceManager, slot.texture)
 				end
 
 				local transform = slot.model:getTransform()
@@ -1081,7 +1104,8 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 
 						table.insert(slot.particles, {
 							sceneNode = p,
-							attach = particles[i].attach
+							attach = particles[i].attach,
+							position = particles[i].position and Vector(unpack(particles[i].position)) or Vector()
 						})
 					end
 				end
@@ -1126,6 +1150,8 @@ function ActorView:_doApplySkin(slotNodes, slot, generation)
 	if coroutine.running() then
 		self.currentApplySkin = self.currentApplySkin - 1
 	end
+
+	self.isSkinDirty = true
 end
 
 function ActorView:applySkin(slot, slotNodes)
@@ -1193,9 +1219,9 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	if priority then
 		local s = {
 			slot = slot,
-			definition = skin,
+			definition = skin:clone(),
 			priority = priority,
-			config = config or {}
+			config = RPCState.merge(config or {})
 		}
 
 		table.insert(slotNodes, s)
@@ -1221,13 +1247,19 @@ function ActorView:changeSkin(slot, priority, skin, config)
 	self.skins[slot] = slotNodes
 end
 
+function ActorView:getCurrentMapPosition(delta, result)
+	result = result or Vector()
+	self.previousPosition:lerp(self.position, delta, result)
+	return result
+end
+
 function ActorView:_getPosition(position, layer)
 	position = position or self.position or Vector.ZERO
 	layer = layer or self.layer or 1
 
 	local curves = self.game:getMapCurves(layer)
 	if curves then
-		return MapCurve.transformAll(position, curves)
+		return MapCurve.transformAll(position, nil, curves)
 	end
 
 	return position
@@ -1249,17 +1281,28 @@ end
 
 function ActorView:move(position, layer, instant)
 	local previousLayer = self.layer
-	local previousPosition = self.position
 
-	self.position = position
+	self.previousPosition:from(self.position:get())
+	self.position:from(position:get())
 	self.layer = layer
+
+	local parent = self.game:getMapSceneNode(layer)
+	if previousLayer and layer and previousLayer ~= layer then
+		local previousParent = self.game:getMapSceneNode(previousLayer)
+		local previousTransform = previousParent and previousParent:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		local currentTransform = parent and parent:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+
+		local absolutePosition = self.previousPosition:transform(previousTransform)
+		local localPosition = absolutePosition:inverseTransform(currentTransform)
+		self.sceneNode:getTransform():setPreviousTransform(localPosition)
+	end
 
 	if instant then
 		local currentPosition = self:_getPosition(position, layer)
 		self.sceneNode:getTransform():setPreviousTransform(currentPosition)
+		self.previousPosition:from(self.position:get())
 	end
 
-	local parent = self.game:getMapSceneNode(layer)
 	if parent ~= self.sceneNode:getParent() then
 		self.sceneNode:setParent(parent)
 	end
@@ -1268,13 +1311,13 @@ end
 function ActorView:face(direction, rotation)
 	if not rotation then
 		if math.sign(direction.x) < 0 then
-			rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi)
+			self.rotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi, self.rotation)
 		else
-			rotation = Quaternion.IDENTITY
+			self.rotation:from(Quaternion.IDENTITY:get())
 		end
+	else
+		self.rotation:from(rotation:get())
 	end
-
-	self.rotation = rotation:keep()
 end
 
 function ActorView:damage(damageType, damage)
@@ -1311,8 +1354,9 @@ function ActorView:flash(message, anchor, ...)
 	self.sprites[sprite] = true
 end
 
-function ActorView:tick()
+function ActorView:tick(delta)
 	self.sceneNode:getTransform():setLocalScale(self.actor:getScale())
+	self.previousPosition:lerp(self.position, delta, self.previousPosition)
 end
 
 function ActorView:update(delta)
@@ -1335,6 +1379,10 @@ function ActorView:draw()
 		return
 	end
 
+	if not self.isSkinDirty then
+		return
+	end
+
 	for _, slotNodes in pairs(self.skins) do
 		for _, slot in ipairs(slotNodes) do
 			local modelSceneNode = slot.model
@@ -1343,9 +1391,12 @@ function ActorView:draw()
 				local hasTransform = slot.instance:getHasTransform()
 				local isForward = material:getIsFullLit() or material:getIsTranslucent()
 				local isTextureCompatible = material:getNumTextures() ~= 1 or (material:getNumTextures() == 1 and material:getTexture(1):isCompatibleType(TextureResource))
+				local isReflective = material:getIsReflectiveOrRefractive()
+				local hasOverrideMaterial = not not slot.instance:getMaterial()
 				local isImmediate = self:getIsImmediate()
+				local texture = material:getTexture(1)
 
-				if hasTransform or isForward or isMultiTexture or isImmediate then
+				if hasTransform or isForward or isMultiTexture or isReflective or hasOverrideMaterial or not texture then
 					modelSceneNode:setParent(slot.sceneNode)
 				else
 					local texture = material:getTexture(1)
@@ -1401,6 +1452,8 @@ function ActorView:draw()
 			end
 		end
 	end
+
+	self.isSkinDirty = false
 end
 
 function ActorView:getBoneTransform(boneName)
@@ -1442,11 +1495,14 @@ function ActorView:getLocalBonePosition(boneName, position, rotation)
 		return Vector.ZERO
 	end
 
+	local inverseBindPoseTransform = bone:getInverseBindPose()
+
 	local composedTransform = love.math.newTransform()
 	composedTransform:applyQuaternion(rotation:get())
 	composedTransform:apply(boneTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
 
-	return Vector(composedTransform:transformPoint(position:get()))
+	return position:transform(composedTransform)
 end
 
 function ActorView:decomposeBoneLocalTransform(boneName)
@@ -1454,11 +1510,27 @@ function ActorView:decomposeBoneLocalTransform(boneName)
 	return MathCommon.decomposeTransform(boneTransform)
 end
 
+function ActorView:getBoneWorldTransform(boneName)
+	local nodeTransform = self.sceneNode:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
+	local boneTransform = self:getLocalBoneTransform(boneName)
+	local bone = self:getSkeleton():getBoneByName(boneName)
+	if not bone then
+		return nodeTransform
+	end
+
+	local composedTransform = love.math.newTransform()
+	composedTransform:apply(nodeTransform)
+	composedTransform:apply(boneTransform)
+	composedTransform:applyQuaternion((-Quaternion.X_90):getNormal():get())
+
+	return composedTransform
+end
+
 function ActorView:getBoneWorldPosition(boneName, position, rotation)
 	position = position or Vector.ZERO
 	rotation = rotation or Quaternion.IDENTITY
 
-	local nodeTransform = self.sceneNode:getTransform():getGlobalTransform()
+	local nodeTransform = self.sceneNode:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
 	local boneTransform = self:getLocalBoneTransform(boneName)
 	local bone = self:getSkeleton():getBoneByName(boneName)
 	if not bone then
@@ -1479,7 +1551,6 @@ end
 function ActorView:nextAnimation(animation)
 	local oldID = animation.id
 
-	animation.cacheRef = animation.next.cacheRef
 	animation.definition = animation.next.definition
 	animation.instance = animation.definition:play(self.animatable)
 	animation.time = animation.next.time or 0
@@ -1533,7 +1604,7 @@ function ActorView:updateAnimations(delta)
 				for j = 1, #slotNodes[i].particles do
 					local p = slotNodes[i].particles[j]
 					if p.attach then
-						local localPosition = self:getLocalBonePosition(p.attach)
+						local localPosition = self:getLocalBonePosition(p.attach, p.position)
 						p.sceneNode:updateLocalPosition(localPosition)
 					end
 				end

@@ -99,7 +99,6 @@ do
 		ColorBlue = 120,
 		NearDistance = 15,
 		FarDistance = 25,
-		FollowTarget = 1,
 		Resource = M["Light_Fog"]
 	}
 end
@@ -118,6 +117,13 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "GroundFog",
 		MapObject = M["GroundFog"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 255,
+		ColorGreen = 255,
+		ColorBlue = 255,
+		Resource = M["GroundFog"]
 	}
 end
 

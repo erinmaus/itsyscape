@@ -24,6 +24,13 @@ function Button:getIsFocusable()
 	return true
 end
 
+function Button:blur(...)
+	self.isPressed["keyboard"] = nil
+	self.isPressed["gamepad"] = nil
+
+	Widget.blur(self, ...)
+end
+
 function Button:mouseEnter(x, y, top)
 	if top then
 		self.isMouseOver = true
@@ -55,12 +62,29 @@ function Button:mouseRelease(x, y, button, ...)
 	Widget.mouseRelease(self, x, y, button, ...)
 end
 
+function Button:keyDown(key, ...)
+	if key == "return" or key == "space" then
+		self.isPressed["keyboard"] = (self.isPressed["keyboard"] or 0) + 1
+	end
+end
+
 function Button:keyUp(key, ...)
-	if key == "enter" or key == "space" then
-		self:onClick("keyboard")
+	if key == "return" or key == "space" then
+		self.isPressed["keyboard"] = (self.isPressed["keyboard"] or 0) - 1
+		if self.isPressed["keyboard"] <= 0 then
+			self.isPressed["keyboard"] = nil
+		end
+
+		self:onClick(1)
 	end
 
 	Widget.keyUp(self, key, ...)
+end
+
+function Button:gamepadPress(joystick, button)
+	self.isPressed["gamepad"] = (self.isPressed["gamepad"] or 0) + 1
+
+	Widget.gamepadPress(self, joystick, button)
 end
 
 function Button:gamepadRelease(joystick, button)
@@ -71,6 +95,11 @@ function Button:gamepadRelease(joystick, button)
 		elseif button == inputProvider:getKeybind("gamepadSecondaryAction") then
 			self:onClick(2)
 		end
+	end
+
+	self.isPressed["gamepad"] = (self.isPressed["gamepad"] or 0) - 1
+	if self.isPressed["gamepad"] <= 0 then
+		self.isPressed["gamepad"] = nil
 	end
 
 	Widget.gamepadRelease(self, joystick, button)

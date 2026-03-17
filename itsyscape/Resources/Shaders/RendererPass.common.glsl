@@ -23,3 +23,5 @@ mat4 getWorldViewProjection()
 {
     return scape_ProjectionMatrix * scape_ViewMatrix * scape_WorldMatrix;
 }
+
+#include "Resources/Shaders/GlobalWallHack.common.glsl"

@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Equipment = require "ItsyScape.Game.Equipment"
+local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local Action = require "ItsyScape.Peep.Action"
 local InventoryBehavior = require "ItsyScape.Peep.Behaviors.InventoryBehavior"
@@ -103,6 +104,8 @@ function Equip:perform(state, peep, item, target)
 
 	local s, r = transaction:commit()
 	if not s then
+		Utility.Peep.notify(peep, "ui.notification.inventory.equipItemInventoryFull")
+
 		io.stderr:write("error: ", r, "\n")
 		return false, "transaction failed"
 	end

@@ -106,6 +106,8 @@ function Moon:load()
 		function(model)
 			self.moonExterior:getMaterial():setTextures(self.exteriorTexture)
 			self.moonExterior:getTransform():setLocalScale(Vector(4))
+			self.moonExterior:getTransform():setLocalRotation(Quaternion.Y_180)
+			self.moonExterior:getMaterial():setIsFullLit(true)
 			self.moonExterior:fromGroup(model:getResource(), "Moon")
 		end)
 
@@ -116,27 +118,32 @@ function Moon:load()
 			local whiteTexture = self:getGameView():getWhiteTexture()
 			self.moonInterior:getMaterial():setTextures(whiteTexture)
 			self.moonInterior:getTransform():setLocalScale(Vector(2.5))
+			self.moonInterior:getTransform():setLocalRotation(Quaternion.Y_180)
+			self.moonInterior:getMaterial():setIsFullLit(true)
 			self.moonInterior:fromGroup(model:getResource(), "Moon")
 
 			self:_updateColor()
 		end)
 end
 
-function Moon:_updateColor()
-	local state = self:getProp():getState()
-	if state.color then
-		local color = Color(unpack(state.color))
+do
+	local color = Color()
+	function Moon:_updateColor()
+		local state = self:getProp():getState()
+		if state.color then
+			color:from(unpack(state.color))
 
-		if self.moonExterior then
-			self.moonExterior:getMaterial():setColor(Color(1, 1, 1, color.a))
-		end
+			if self.moonExterior then
+				self.moonExterior:getMaterial():setAlpha(color.a)
+			end
 
-		if self.moonInterior then
-			self.moonInterior:getMaterial():setColor(color)
-		end
+			if self.moonInterior then
+				self.moonInterior:getMaterial():setColor(color)
+			end
 
-		if self.particles then
-			self.particles:getMaterial():setColor(color)
+			if self.particles then
+				self.particles:getMaterial():setColor(color)
+			end
 		end
 	end
 end

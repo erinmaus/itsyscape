@@ -68,7 +68,7 @@ end
 
 function Variables:new(filename)
 	self.filename = filename
-	self.modifiedTime = -1
+	self.modifiedTime = -math.huge
 	self.paths = {}
 
 	self:_tryUpdate()
@@ -112,18 +112,24 @@ function Variables:_updatePaths()
 	end
 end
 
-function Variables:_tryUpdate()
-	local info = love.filesystem.getInfo(self.filename)
-	if info and info.modifiedTime ~= self.modifiedTime then
-		self.exists = true
-		self.root = json.decode(love.filesystem.read(self.filename))
-		self.modifiedTime = info.modtime or -1
+do
+	local _info = {}
+	function Variables:_tryUpdate()
+		local info = love.filesystem.getInfo(self.filename, _info)
+		if info then
+			self.exists = true
 
-		self:_updatePaths()
-	else
-		self.exists = false
-		self.root = {}
-		self.modifiedTime = -1
+			if info.modtime ~= self.modifiedTime then
+				self.root = json.decode(love.filesystem.read(self.filename))
+				self.modifiedTime = info.modtime or -1
+
+				self:_updatePaths()
+			end
+		else
+			self.exists = false
+			self.root = {}
+			self.modifiedTime = -1
+		end
 	end
 end
 

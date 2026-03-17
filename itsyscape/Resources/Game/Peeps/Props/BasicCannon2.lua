@@ -102,7 +102,7 @@ function BasicCannon:ready(director, game)
 	self:poke("tilt", 0.5, 0.5)
 end
 
-function BasicCannon:onFire(peep, ammo, path, duration)
+function BasicCannon:onFire(peep, target, ammo, path, duration)
 	local gameDB = self:getDirector():getGameDB()
 
 	local mapScript = Utility.Peep.getMapScript(self)
@@ -150,7 +150,7 @@ function BasicCannon:onFire(peep, ammo, path, duration)
 	sailingResource.resource = ammoItemMappingRecord:get("SailingItem")
 
 	cannonballPeep:listen("ready", function()
-		cannonballPeep:poke("launch", peep, self, path, duration)
+		cannonballPeep:poke("launch", peep, target, self, path, duration)
 	end)
 
 

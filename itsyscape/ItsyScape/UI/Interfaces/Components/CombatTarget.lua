@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Color = require "ItsyScape.Graphics.Color"
 local Utility = require "ItsyScape.Game.Utility"
+local Equipment = require "ItsyScape.Game.Equipment"
 local Variables = require "ItsyScape.Game.Variables"
 local Drawable = require "ItsyScape.UI.Drawable"
 local Label = require "ItsyScape.UI.Label"
@@ -18,6 +19,7 @@ local Widget = require "ItsyScape.UI.Widget"
 local StandardHealthBar = require "ItsyScape.UI.Interfaces.Components.StandardHealthBar"
 local StandardZealOrb = require "ItsyScape.UI.Interfaces.Components.StandardZealOrb"
 local Particles = require "ItsyScape.UI.Particles"
+local ToolTip = require "ItsyScape.UI.ToolTip"
 
 local CombatTarget = Class(Widget)
 CombatTarget.ALIGN_LEFT = "left"
@@ -96,6 +98,29 @@ function CombatTarget:performLayout()
 	end
 end
 
+local function getEquipmentAndSkillToolTipSuffix(stats, skills)
+	local r = {}
+	table.insert(r, "Stats")
+	for _, stat in ipairs(Equipment.STATS) do
+		if stats[stat] and stats[stat] ~= 0 then
+			table.insert(r, string.format("%s: %d", stat, stats[stat]))
+		end
+	end
+	table.insert(r, "Skills")
+	for _, skill in ipairs(skills) do
+		if skill.level > 1 or skill.boost > 1 then
+			table.insert(r, string.format("%s skill: %d/%d (+%d)", skill.id, skill.level + skill.boost, skill.level, skill.boost))
+		end 
+	end
+	return unpack(r)
+end
+
+local function examine(target, ...)
+	local s = { ... }
+	local description = table.concat(s, "\n")
+	_APP:getUIView():examine(target, description)
+end
+
 function CombatTarget:updateTarget(targetInfo)
 	local healthBarType = targetInfo.meta.healthBarTypeName and require(targetInfo.meta.healthBarTypeName) or StandardHealthBar
 	if self.healthBarType ~= healthBarType then
@@ -106,6 +131,29 @@ function CombatTarget:updateTarget(targetInfo)
 		self.healthBarType = healthBarType
 		self.healthBar = healthBarType()
 		self:addChild(self.healthBar)
+
+		if _DEBUG then
+			self.healthBar.onMousePress:register(function(_, button)
+				if button == 2 then
+					examine(unpack(self.healthBar:getToolTip()))
+				end
+			end)
+		end
+	end
+
+	if _DEBUG and targetInfo.dps then
+		self.healthBar:setToolTip(
+			"Accuracy",
+			string.format("Level %s, bonus %d", targetInfo.dps.accuracy.level, targetInfo.dps.accuracy.stat),
+			string.format("Attack roll: %d", targetInfo.dps.accuracy.attackRoll),
+			string.format("Defense roll: %d", targetInfo.dps.accuracy.defenseRoll),
+			"Damage",
+			string.format("Level %d, bonus %d", targetInfo.dps.damage.level, targetInfo.dps.damage.stat),
+			string.format("Min/max: %d/%d", targetInfo.dps.damage.min, targetInfo.dps.damage.max),
+			string.format("Damage multiplier: %0.4f", targetInfo.dps.damage.damageMultiplier),
+			"Stats",
+			string.format("Weapon: %s", targetInfo.dps.weapon.id),
+			getEquipmentAndSkillToolTipSuffix(targetInfo.dps.bonuses, targetInfo.dps.skills))
 	end
 
 	local zealOrbType = targetInfo.meta.zealOrbTypeName and require(targetInfo.meta.zealOrbTypeName) or StandardZealOrb

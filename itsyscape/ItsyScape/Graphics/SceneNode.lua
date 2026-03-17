@@ -46,6 +46,8 @@ function SceneNode:onWillRender(func)
 		self.willRender = false
 	end
 
+	self._handle:setWillRender(not not self.willRender)
+
 	return oldWillRender
 end
 
@@ -190,17 +192,15 @@ end
 
 function SceneNode:beforeDraw(renderer, delta)
 	love.graphics.push()
-	love.graphics.applyTransform(self.transform:getGlobalDeltaTransform(delta))
 
 	if self.willRender then
 		self.willRender(renderer, delta)
 	end
 
-	love.graphics.setColor(self.material:getColor():get())
+	love.graphics.setColor(self.material:getHandle():getColor())
 end
 
 function SceneNode:afterDraw(renderer, delta)
-	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.pop()
 end
 

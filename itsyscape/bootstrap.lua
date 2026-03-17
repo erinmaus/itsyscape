@@ -36,6 +36,18 @@ _ITSYREALM_META = {
 	debug = _ITSYREALM_DEBUG
 }
 
+itsyrealm = { language = {} }
+do
+	local locale = "en-US"
+	function itsyrealm.language.setLocale(locale)
+		locale = locale or "en-US"
+	end
+
+	function itsyrealm.language.getLocale(locale)
+		return locale
+	end
+end
+
 math.randomseed(os.time())
 
 _MOBILE = love.system.getOS() == "iOS" or love.system.getOS() == "Android"
@@ -181,24 +193,26 @@ end
 Log.debug("ItsyRealm meta: %s", Log.dump(_ITSYREALM_META))
 require("jit").off()
 
-local _collectgarbage = collectgarbage
-local gcStops = 0
+-- local _collectgarbage = collectgarbage
+-- local gcStops = 0
 
-function collectgarbage(opt, arg)
-	if opt == "stop" then
-		if gcStops == 0 then
-			_collectgarbage("stop")
-		end
+-- function collectgarbage(opt, arg)
+-- 	if opt == "stop" then
+-- 		if gcStops == 0 then
+-- 			Log.info("Disabling garbage collector...")
+-- 			_collectgarbage("stop")
+-- 		end
 
-		gcStops = gcStops + 1
-	elseif opt == "restart" then
-		assert(gcStops >= 1)
-		gcStops = math.max(gcStops - 1, 0)
+-- 		gcStops = gcStops + 1
+-- 	elseif opt == "restart" then
+-- 		assert(gcStops >= 1)
+-- 		gcStops = math.max(gcStops - 1, 0)
 
-		if gcStops == 0 then
-			return _collectgarbage("restart")
-		end
-	else
-		return _collectgarbage(opt, arg)
-	end
-end
+-- 		if gcStops == 0 then
+-- 			Log.info("Enabling garbage collector...")
+-- 			return _collectgarbage("restart")
+-- 		end
+-- 	else
+-- 		return _collectgarbage(opt, arg)
+-- 	end
+-- end

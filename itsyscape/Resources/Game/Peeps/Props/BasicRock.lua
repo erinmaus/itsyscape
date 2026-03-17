@@ -24,18 +24,22 @@ function BasicRock:new(...)
 
 	self:addBehavior(PropResourceHealthBehavior)
 
-	self:addPoke('mined')
-	self:addPoke('resourceObtained')
-	self:addPoke('resourceHit')
+	self:addPoke("mine")
+	self:addPoke("resourceObtained")
+	self:addPoke("resourceHit")
+	self:addPoke("depleted")
+	self:addPoke("spawned")
+
+	self.mineCount = 0
 end
 
 function BasicRock:spawnOrPoofTile(tile, i, j, mode)
-	if mode == 'spawn' then
-		tile:pushFlag('impassable')
-		tile:pushFlag('shoot')
-	elseif mode == 'poof' then
-		tile:popFlag('impassable')
-		tile:popFlag('shoot')
+	if mode == "spawn" then
+		tile:pushFlag("impassable")
+		tile:pushFlag("shoot")
+	elseif mode == "poof" then
+		tile:popFlag("impassable")
+		tile:popFlag("shoot")
 	end
 end
 
@@ -53,9 +57,46 @@ function BasicRock:ready(director, game)
 			local h = self:getBehavior(PropResourceHealthBehavior)
 			if h then
 				h.maxProgress = health:get("Health") or 1
+
+				if h.maxProgress == 0 then
+					self:deplete()
+				else
+					self:spawn()
+				end
 			end
 		end
 	end
+end
+
+function BasicRock:onSpawned()
+	local health = self:getBehavior(PropResourceHealthBehavior)
+	if health then
+		health.currentProgress = 0
+	end
+end
+
+function BasicRock:spawn()
+	self:poke("spawn")
+end
+
+function BasicRock:deplete()
+	self:poke("depleted")
+end
+
+function BasicRock:onDepleted()
+	local resource = Utility.Peep.getResource(self)
+	if resource then
+		local gameDB = self:getDirector():getGameDB()
+		local p = gameDB:getRecord("GatherableProp", {
+			Resource = resource
+		})
+
+		self.spawnCooldown = p:get("SpawnTime") or 60
+	end
+end
+
+function BasicRock:onResourceObtained(e)
+	self:poke("depleted")
 end
 
 function BasicRock:onResourceHit(e)
@@ -66,20 +107,14 @@ function BasicRock:onResourceHit(e)
 			health.maxProgress,
 			health.currentProgress)
 
-		local resource = Utility.Peep.getResource(self)
-		if resource then
-			local gameDB = self:getDirector():getGameDB()
-			local p = gameDB:getRecord("GatherableProp", {
-				Resource = resource
-			})
-
-			self.spawnCooldown = p:get("SpawnTime") or 60
-		end
-
-		local e = { peep = e.peep }
-		self:poke('mined', e)
-		self:poke('resourceObtained', e)
+		self:poke("resourceObtained", e)
 	end
+
+	self:poke("mine", e)
+end
+
+function BasicRock:previewMine()
+	self.mineCount = self.mineCount + 1
 end
 
 function BasicRock:getPropState()
@@ -89,7 +124,8 @@ function BasicRock:getPropState()
 	local progress = math.floor(health.currentProgress / health.maxProgress * 100)
 	result.resource = {
 		progress = progress,
-		depleted = progress >= 100
+		depleted = health.maxProgress == 0 or progress >= 100,
+		whacks = self.mineCount
 	}
 
 	return result
@@ -100,11 +136,7 @@ function BasicRock:update(director, game)
 
 	if self.spawnCooldown then
 		if self.spawnCooldown <= 0 then
-			local health = self:getBehavior(PropResourceHealthBehavior)
-			if health then
-				health.currentProgress = 0
-			end
-
+			self:spawn()
 			self.spawnCooldown = nil
 		else
 			self.spawnCooldown = self.spawnCooldown - game:getDelta()

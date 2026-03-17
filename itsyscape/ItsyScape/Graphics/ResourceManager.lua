@@ -15,11 +15,11 @@ local Resource = require "ItsyScape.Graphics.Resource"
 
 local ResourceManager = Class()
 ResourceManager.DESKTOP_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 120
-ResourceManager.LOADING_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 20
+ResourceManager.LOADING_FRAME_DURATION     = _DEBUG == "plus" and 1 or 1 / 10
 ResourceManager.MOBILE_FRAME_DURATION      = 1 / 10
 
 ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME = _DEBUG == "plus" and 1 or 2 / 1000
-ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = _DEBUG == "plus" and 1 or 10 / 1000
+ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = _DEBUG == "plus" and 1 or 5 / 1000
 
 ResourceManager.FILE_IO_THREADS = 4
 
@@ -48,6 +48,11 @@ function ResourceManager.View:_poll()
 		local pending = self.pending[currentIndex]
 
 		if pending.ready then
+			currentIndex = currentIndex + 1
+			if currentIndex > #self.pending then
+				self.isDone = true
+			end
+
 			if not self.cancelled[pending] then
 				if pending.resource then
 					pending.callback(pending.resource)
@@ -55,8 +60,6 @@ function ResourceManager.View:_poll()
 					pending.callback()
 				end
 			end
-
-			currentIndex = currentIndex + 1
 		end
 
 		coroutine.yield()
@@ -68,6 +71,14 @@ end
 function ResourceManager.View:_done(index, resource)
 	self.pending[index].ready = true
 	self.pending[index].resource = resource
+end
+
+function ResourceManager.View:load(...)
+	return self.resourceManager:load(...)
+end
+
+function ResourceManager.View:loadCacheRef(...)
+	return self.resourceManager:loadCacheRef(...)
 end
 
 function ResourceManager.View:queue(resourceType, filename, callback, ...)
@@ -143,6 +154,10 @@ function ResourceManager:new()
 
 		table.insert(self.fileIOThreads, fileIOThread)
 	end
+end
+
+function ResourceManager:_getIsEditor()
+	return Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication")
 end
 
 function ResourceManager:getMaxTimeForSyncResource()
@@ -248,7 +263,7 @@ function ResourceManager:update()
 				end
 
 				if _LOG_WRITE_ALL then
-					Log.debug("Tried loading resource '%s'.", pending.filename)
+					Log.debug("Tried loading resource '%s'; took %f ms.", pending.filename, (after - before) * 1000)
 				end
 			end
 		end
@@ -295,14 +310,18 @@ function ResourceManager:update()
 				else
 					index = index + 1
 				end
+
+				if _LOG_WRITE_ALL and _DEBUG then
+					Log.debug("Ran async event '%s'; took %f ms.", pending.callback, (after - before) * 1000)
+					Log.debug("Current async event stack: %s", debug.traceback(callback))
+				end
+			end
+
+			if index > #self.pendingAsyncEvents and self:_getIsEditor() then
+				index = 1
 			end
 
 			currentTime = love.timer.getTime()
-
-			if _LOG_WRITE_ALL and _DEBUG then
-				Log.debug("Ran async event '%s'.", pending.callback)
-				Log.debug("Current async event stack: %s", debug.traceback(callback))
-			end
 		end
 
 		if _LOG_WRITE_ALL then
@@ -366,7 +385,7 @@ function ResourceManager:update()
 	until currentTime > pendingSyncEventBreakTime or elapsedTimeForSingleResource > self.maxTimeForSyncResource
 
 	if _LOG_WRITE_ALL and c > 0 then
-		Log.debug("Ran async event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)
+		Log.debug("Ran sync event(s), %d pending; %d iterations.", c, #self.pendingSyncEvents, c)
 	end
 
 	if currentTime and currentTime > pendingSyncEventBreakTime + self.frameDuration then
@@ -505,6 +524,10 @@ end
 function ResourceManager:_queue(resourceType, filename, async, callback, ...)
 	if not Class.isDerived(resourceType, Resource) then
 		error("expected Resource-derived type")
+	end
+
+	if type(filename) ~= "string" then
+		error("expected 'filename' to be string")
 	end
 
 	local load = Function(self._load, self, resourceType, filename, ...)

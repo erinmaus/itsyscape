@@ -14,6 +14,7 @@ local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local CloudBehavior = require "ItsyScape.Peep.Behaviors.CloudBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local Cloud = Class(Prop)
 Cloud.MIN_NUM_LUMPS = 2
@@ -41,6 +42,10 @@ function Cloud:ready(...)
 	local movement = self:getBehavior(MovementBehavior)
 	movement.noClip = true
 	movement.maxSpeed = math.huge
+
+	local static = self:getBehavior(StaticBehavior)
+	static.static = false
+	static.type = StaticBehavior.PASSABLE
 
 	self.currentCloudID = 0
 	self.cloudState = {}

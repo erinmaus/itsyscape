@@ -8,27 +8,45 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Controller = require "ItsyScape.UI.Controller"
+local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 
 local ActionCommandController = Class(Controller)
 
-function ActionCommandController:new(peep, director, prop, action, attack)
+function ActionCommandController:new(peep, director, prop, action, t, attack)
 	Controller.new(self, peep, director)
 
-	local Fish1 = require "Resources.Game.ActionCommands.Fish1"
+	local ActionCommandType = Utility.Skilling.getActionCommandType(prop, action)
+
 	self.prop = prop
 	self.attack = attack
-	self.actionCommand = Fish1(action)
-	self.actionCommand.onHit:register(self.hit, self)
+	self.actionCommand = ActionCommandType and ActionCommandType(action, peep, prop, t)
+
+	if self.actionCommand then
+		self.actionCommand.onHit:register(self.hit, self)
+		self.actionCommand.onParticles:register(self.particles, self)
+	end
 
 	self:update(0)
 end
 
+function ActionCommandController:close()
+	if self.actionCommand then
+		self.actionCommand:close()
+	end
+end
+
 function ActionCommandController:hit(_, spread)
 	if self.attack then
-		self.attack(self:getPeep(), spread)
+		local damage = self.attack(self:getPeep(), spread)
+		self.actionCommand:onDamage(damage)
 	end
+end
+
+function ActionCommandController:particles(_, particles, x, y, z)
+	self:send("showParticles", particles, x, y, z)
 end
 
 function ActionCommandController:poke(actionID, actionIndex, e)
@@ -36,7 +54,12 @@ function ActionCommandController:poke(actionID, actionIndex, e)
 		self:axis(e)
 	elseif actionID == "button" then
 		self:button(e)
+	elseif actionID == "key" then
+		self:key(e)
+	elseif actionID == "control" then
+		self:control(e)
 	elseif actionID == "close" then
+		self:getPeep():getCommandQueue():clear()
 		self:getGame():getUI():closeInstance(self)
 	else
 		Controller.poke(self, actionID, actionIndex, e)
@@ -59,18 +82,46 @@ function ActionCommandController:button(e)
 	end
 end
 
+function ActionCommandController:key(e)
+	if e.type == "down" then
+		self.actionCommand:onKeyDown(e.controller, e.value)
+	elseif e.type == "up" then
+		self.actionCommand:onKeyUp(e.controller, e.value)
+	end
+end
+
+function ActionCommandController:control(e)
+	if e.type == "down" then
+		self.actionCommand:onControlDown(e.value)
+	elseif e.type == "up" then
+		self.actionCommand:onControlUp(e.value)
+	end
+end
+
 function ActionCommandController:pull()
 	local prop = self.prop:getBehavior(PropReferenceBehavior)
 	prop = prop and prop.prop
 
+	local actor = self.prop:getBehavior(ActorReferenceBehavior)
+	actor = actor and actor.actor
+
 	return {
+		actorID = actor and actor:getID(),
 		propID = prop and prop:getID(),
 		current = self.currentInterface,
-		previous = self.previousInterface
+		previous = self.previousInterface,
+		message = self.actionCommand and self.actionCommand:getMessage()
 	}
 end
 
 function ActionCommandController:update(delta)
+	Controller.update(self, delta)
+
+	if not self.actionCommand then
+		self:getGame():getUI():closeInstance(self)
+		return
+	end
+
 	self.actionCommand:update(delta)
 
 	self.previousInterface = self.currentInterface or self.actionCommand:serialize()

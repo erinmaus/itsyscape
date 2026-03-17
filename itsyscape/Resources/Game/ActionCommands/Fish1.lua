@@ -8,33 +8,40 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
-local Config = require "ItsyScape.Game.Config"
-local Color = require "ItsyScape.Graphics.Color"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local ActionCommand = require "ItsyScape.Game.ActionCommand"
+local Config = require "ItsyScape.Game.Config"
+local Utility = require "ItsyScape.Game.Utility"
+local Color = require "ItsyScape.Graphics.Color"
+local Probe = require "ItsyScape.Peep.Probe"
 
 local Fish = Class(ActionCommand)
-Fish.HIT_INTERVAL = 0.25 
-Fish.OFFSET = 16
-Fish.VELOCITY = 2
+Fish.HIT_INTERVAL = 0.5
+Fish.VELOCITY = 8
+Fish.MIN_DISTANCE = 0.25
+Fish.NEAR_DISTANCE = 0.5
 
-function Fish:new(action)
-	ActionCommand.new(self, action)
+Fish.MAP = "Skilling_Fishing1"
+Fish.FISH_OVERRIDE = false
 
-	self:getRoot():setSize(256, 48)
+function Fish:new(...)
+	ActionCommand.new(self, ...)
 
-	self.bar = ActionCommand.Bar()
-	self.bar:setSize(256, 48)
-	self.bar:setBackgroundColor(Color(0, 0, 1))
-	self:addChild(self.bar)
+	self:getRoot():setSize(540, 400)
 
-	self.fish = ActionCommand.Icon()
-	self.fish:setIcon(string.format("Resources/Game/Items/%s/Icon.png", self:getOutputItem()))
-	self.fish:setSize(48, 48)
-	self:addChild(self.fish)
+	self.map = ActionCommand.Map()
+	self.map:setSize(540, 400)
+	self:addChild(self.map)
 
 	self.rectangleContainer = ActionCommand.Component()
+	self.rectangleContainer:setPosition(-24, -24)
 	self.rectangleContainer:setSize(48, 48)
-	self:addChild(self.rectangleContainer)
+	self.map:addChild(self.rectangleContainer)
+
+	self.toolIcon = ActionCommand.Item()
+	self.toolIcon:setSize(48, 48)
+	self.toolIcon:setItem(self:getToolResource())
+	self.rectangleContainer:addChild(self.toolIcon)
 
 	self.innerRectangle = ActionCommand.Rectangle()
 	self.innerRectangle:setLineWidth(2)
@@ -48,22 +55,38 @@ function Fish:new(action)
 	self.rectangleContainer:addChild(self.outerRectangle)
 
 	self.rectangleButton = ActionCommand.Button()
-	self.rectangleButton:setStandardButton("mouse_horizontal")
-	self.rectangleButton:setGamepadButton("stick_l_horizontal")
+	self.rectangleButton:setStandardButton("keyboard_arrows")
+	self.rectangleButton:setGamepadButton("stick_l")
 	self.rectangleButton:setPosition(0, 56)
 	self.rectangleButton:setSize(48, 48)
 	self.rectangleContainer:addChild(self.rectangleButton)
 
-	self.hitTimer = 0
-	self:moveFish()
+	self.mapLayer, self.mapScript = self:newMap(self.MAP, function(mapLayer, mapScript)
+		self.map:setMap(mapScript)
 
-	self.cursorX = 0.5
-	self.cursorXVelocity = 0
+		local fishActor = Utility.spawnActorAtAnchor(mapScript, self.FISH_OVERRIDE or self:getOutputItem(), "Anchor_Spawn")
+		self.fish = fishActor and fishActor:getPeep()
+
+		local instance = Utility.Peep.getInstance(mapScript)
+		local mapGroup = instance:getMapGroup(mapLayer)
+
+		self.cursor = self:getDirector():probe(
+			self:getPeep():getLayerName(),
+			Probe.mapGroup(mapGroup),
+			Probe.namedMapObject("Cursor"))[1]
+
+		self.rectangleContainer:setTarget(self.cursor)
+	end) 
+
+	self.hitTimer = 0
 end
 
-function Fish:moveFish()
-	self.oldFishTargetX = self.newFishTargetX or 0
-	self.newFishTargetX = love.math.random(0, self:getRoot():getWidth())
+function Fish:close()
+	ActionCommand.close(self)
+
+	if self.fish then
+		Utility.Peep.poof(self.fish)
+	end
 end
 
 function Fish:hit()
@@ -71,38 +94,108 @@ function Fish:hit()
 		return
 	end
 
-	local distance = math.abs(self.rectangleContainer:getX() - self.fish:getX())
-	local delta = 1 - math.clamp(distance / (self.rectangleContainer:getWidth() / 2))
-	self:onHit(delta)
+	self:onHit(love.math.random())
+
+	self.fish:poke("reel", { peep = self:getPeep(), tool = self:getTool() })
+	self:getGame():getStage():fireProjectile("FishingSplash", Vector.ZERO, self.fish)
 
 	self.hitTimer = self.HIT_INTERVAL
-	self:moveFish()
 end
 
-function Fish:onButtonDown(controller, button)
-	ActionCommand.onButtonDown(self, controller, button)
+function Fish:updateCursorPositionSize(delta)
+	if not self.cursor then
+		return
+	end
 
-	if (controller == "mouse" and button == 1) or
-	   (controller == "gamepad" and button == "a")
-	then
+	local x, y = self:getInputDirection()
+	local velocityX, velocityY = self.VELOCITY * x, self.VELOCITY * y
+
+	local currentPosition = Utility.Peep.getPosition(self.cursor)
+	currentPosition = currentPosition + Vector(velocityX * delta, 0, velocityY * delta)
+
+	local map = Utility.Peep.getMap(self.cursor)
+	currentPosition.x = math.clamp(currentPosition.x, 0, map:getWidth() * map:getCellSize())
+	currentPosition.z = math.clamp(currentPosition.z, 0, map:getHeight() * map:getCellSize())
+	currentPosition.y = map:getInterpolatedHeight(currentPosition.x, currentPosition.z) + 0.5
+
+	Utility.Peep.setPosition(self.cursor, currentPosition)
+
+	self.map:setOffset(Vector(currentPosition.x, 0, currentPosition.z))
+end
+
+function Fish:calculateDistance()
+	if not (self.cursor and self.fish) then
+		return math.huge
+	end
+
+	if not (self.cursor:getIsReady() and self.fish:getIsReady()) then
+		return math.huge
+	end
+
+	local cursorFishDistance = Utility.Peep.getAbsoluteDistance(self.cursor, self.fish)
+	return cursorFishDistance
+end
+
+function Fish:onControlDown()
+	self:tryHit()
+end
+
+function Fish:tryHit()
+	local distance = self:calculateDistance()
+
+	if distance <= self.MIN_DISTANCE then
 		self:hit()
 	end
 end
 
-function Fish:onXAxis(controller, value)
-	ActionCommand.onXAxis(controller, value)
+function Fish:updateCursorColor(distance)
+	local goColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.hit"))
+	local warmColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.warm"))
+	local readyColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.resource.ready"))
 
-	if controller == "mouse" then
-		self.cursorXVelocity = 0
-		self.cursorX = value
+	local isHot = distance <= self.MIN_DISTANCE
+	local isWarm = not isHot and distance <= self.NEAR_DISTANCE
+	local isCold = not (isHot or isWarm)
+
+	if isHot then
+		self.innerRectangle:setColor(goColor)
+		self.outerRectangle:setColor(goColor)
+
+		self.rectangleButton:setControl("poke")
+		self.rectangleButton:setGamepadButton()
+		self.rectangleButton:setStandardButton()
 	else
-		local axisSensitivity = Config.get("Input", "KEYBIND", "type", "ui", "name", "axisSensitivity") or 0
-		if math.abs(value) > axisSensitivity then
-			self.cursorXVelocity = value
-		else
-			self.cursorXVelocity = 0
-		end
+		self.rectangleButton:setControl()
+		self.rectangleButton:setGamepadButton("stick_l")
+		self.rectangleButton:setStandardButton("keyboard_arrows")
 	end
+
+	if isWarm then
+		local delta = (distance - self.MIN_DISTANCE) / (self.NEAR_DISTANCE - self.MIN_DISTANCE)
+		local color = readyColor:lerp(warmColor, delta)
+
+		self.innerRectangle:setColor(color)
+		self.outerRectangle:setColor(color)
+	end
+
+	if isCold then
+		self.innerRectangle:setColor(readyColor)
+		self.outerRectangle:setColor(readyColor)
+	end
+
+	self.stateIsHot = isHot
+	self.stateIsWarm = isWarm
+	self.stateIsCold = isCold
+end
+
+function Fish:getMessage()
+	if self.stateIsCold or self.stateIsWarm then
+		return "ui.actionCommand.fish.findFish"
+	elseif self.stateIsHot then
+		return "ui.actionCommand.fish.smashButton"
+	end
+
+	return "ui.actionCommand.fish.findFish"
 end
 
 function Fish:update(delta)
@@ -110,45 +203,17 @@ function Fish:update(delta)
 
 	local s = math.sin(love.timer.getTime() * math.pi / 4) * 4 + 64
 
-	self.cursorX = math.clamp(self.cursorX + self.cursorXVelocity * self.VELOCITY * delta, -1, 1)
-	local rectangleContainerX = (self.cursorX + 1) / 2 * self:getRoot():getWidth()
-	self.rectangleContainer:setX(rectangleContainerX - self.rectangleContainer:getWidth() / 2)
-
 	self.innerRectangle:setSize(s, s)
 	self.innerRectangle:setPosition(
-		(self.rectangleContainer:getWidth() - s) / 2,
-		(self.rectangleContainer:getWidth() - s) / 2)
+		((self.outerRectangle:getSize() + 4) - (s + 4)) / 2,
+		((self.outerRectangle:getSize() + 4) - (s + 4)) / 2)
 
 	self.hitTimer = math.max(self.hitTimer - delta, 0)
 
-	local x = math.lerp(self.oldFishTargetX, self.newFishTargetX, 1 - math.clamp(self.hitTimer / self.HIT_INTERVAL))
-	x = x + math.sin(love.timer.getTime() * math.pi) * Fish.OFFSET
+	self:updateCursorPositionSize(delta)
 
-	self.fish:setX(x - self.fish:getWidth() / 2)
-
-	local distance = self.rectangleContainer:getX() - self.fish:getX()
-	if math.abs(distance) <= self.rectangleContainer:getWidth() / 2 then
-		self.rectangleButton:setStandardButton("mouse_left")
-		self.rectangleButton:setGamepadButton("a")
-	else
-		self.rectangleButton:setStandardButton("mouse_horizontal")
-		self.rectangleButton:setGamepadButton("stick_l_horizontal")
-	end
-
-	local goColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.attackable"))
-	local readyColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.interactive"))
-	local inactiveColor = Color.fromHexString(Config.get("Config", "COLOR", "color", "world.shimmer.unselected"))
-
-	if self.hitTimer > 0 then
-		self.innerRectangle:setColor(inactiveColor)
-		self.outerRectangle:setColor(inactiveColor)
-	elseif math.abs(distance) <= self.rectangleContainer:getWidth() / 2 then
-		self.innerRectangle:setColor(goColor)
-		self.outerRectangle:setColor(goColor)
-	else
-		self.innerRectangle:setColor(readyColor)
-		self.outerRectangle:setColor(readyColor)
-	end
+	local distance = self:calculateDistance()
+	self:updateCursorColor(distance)
 end
 
 return Fish

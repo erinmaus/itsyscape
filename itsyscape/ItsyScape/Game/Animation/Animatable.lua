@@ -117,4 +117,8 @@ function Animatable:setTransform(index, transform, animation, time)
 	Class.ABSTRACT()
 end
 
+function Animatable:pokeCamera(poke, ...)
+	-- Not required.
+end
+
 return Animatable

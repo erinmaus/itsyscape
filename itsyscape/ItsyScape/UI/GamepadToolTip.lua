@@ -188,8 +188,17 @@ function GamepadToolTip:getHasBackground()
 	return self.hasBackground
 end
 
+function GamepadToolTip:inputSchemeChanged(...)
+	Panel.inputSchemeChanged(self, ...)
+
+	self:performLayout()
+end
+
 function GamepadToolTip:_applyVariant()
 	local uiView = self:getParentData(UIView)
+	if not uiView then
+		return
+	end
 
 	local inputScheme
 	if not uiView then
@@ -211,7 +220,7 @@ function GamepadToolTip:_applyVariant()
 		local controlManager = uiView:getControlManager()
 		local control = controlManager:get(self.controlName)
 		if control then
-			self.gamepadIcon:setButtonIDs(control:getButtons())
+			self.gamepadIcon:setButtonIDs(control:getButtons(inputScheme))
 		end
 	end
 
@@ -242,7 +251,7 @@ function GamepadToolTip:_applyVariant()
 		end
 
 		if variant.message then
-			self:setText(variant.message)
+			self.label:setText(variant.message)
 		end
 
 		if variant.speed then
@@ -336,6 +345,10 @@ function GamepadToolTip:performLayout()
 end
 
 function GamepadToolTip:setText(value)
+	if value == self:getText() then
+		return
+	end
+
 	Panel.setText(self, value)
 	self:performLayout()
 end

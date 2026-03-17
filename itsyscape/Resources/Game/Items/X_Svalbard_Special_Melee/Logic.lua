@@ -13,8 +13,8 @@ local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 
 local SvalbardMeleeSpecial = Class(MeleeWeapon)
 
-function SvalbardMeleeSpecial:onAttackHit(peep, target)
-	local attack = MeleeWeapon.onAttackHit(self, peep, target)
+function SvalbardMeleeSpecial:onAttackHit(peep, target, ...)
+	local attack = MeleeWeapon.onAttackHit(self, peep, target, ...)
 	peep:poke('heal', {
 		hitPoints = attack:getDamage() * 2 
 	})

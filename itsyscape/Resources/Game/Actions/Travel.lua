@@ -31,8 +31,8 @@ function Travel:perform(state, player, target)
 	   self:canPerform(state, Travel.FLAGS) and
 	   self:canTransfer(state, Travel.FLAGS)
 	then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
+		local walk = Utility.Peep.getWalk(player, position, layer, 2.5, { asCloseAsPossible = true })
 
 		if walk then
 			local travel = CallbackCommand(self.travel, self, state, player, target)
@@ -60,8 +60,7 @@ function Travel:teleport(state, peep, target)
 
 	local position = map:getTileCenter(p.i, p.j)
 
-	Utility.Peep.setPosition(peep, position)
-	Utility.Peep.setLayer(peep, p.layer)
+	Utility.Peep.teleport(peep, position, p.layer)
 
 	target:poke("teleport", peep)
 end
@@ -109,8 +108,8 @@ function Travel:travel(state, peep, target)
 		end
 
 		local position = Vector(Utility.Map.getAnchorPosition(self:getGame(), map, record:get("Anchor")))
-		Utility.Peep.setPosition(peep, position)
 		Utility.orientateToAnchor(peep, mapScriptResource, record:get("Anchor"))
+		Utility.Peep.teleport(peep, position)
 	else
 		local arguments = record:get("Arguments")
 		if arguments and arguments ~= "" then
@@ -133,7 +132,7 @@ function Travel:travel(state, peep, target)
 				self:getGame(),
 				map,
 				destination))
-			Utility.Peep.setPosition(peep, anchorPosition)
+			Utility.Peep.teleport(peep, anchorPosition)
 		else
 			local instance = Utility.Peep.getInstance(peep)
 			local raid = instance:getRaid()

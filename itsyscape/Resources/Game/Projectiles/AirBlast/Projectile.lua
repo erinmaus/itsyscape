@@ -159,7 +159,7 @@ function AirBlast:update(elapsed)
 		local alpha = math.abs(math.sin(delta * math.pi)) * AirBlast.ALPHA_MULTIPLIER
 		alpha = math.min(alpha, 1)
 
-		local rotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition)
+		local rotation = Quaternion.lookAt(self.hitPosition, self.spawnPosition)
 
 		self.airWave:getTransform():setLocalRotation(rotation)
 		self.airWave:getTransform():setLocalTranslation(self.spawnPosition)

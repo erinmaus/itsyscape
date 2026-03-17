@@ -19,6 +19,7 @@
 #include "nbunny/optimaus/resource.hpp"
 #include "nbunny/optimaus/scene.hpp"
 #include "nbunny/optimaus/static_mesh.hpp"
+#include "nbunny/optimaus/map_probe.hpp"
 
 namespace nbunny
 {
@@ -59,6 +60,7 @@ namespace nbunny
 
 		struct Vertex
 		{
+			float feature_index;
 			glm::vec3 feature_position;
 			glm::quat feature_rotation;
 			glm::vec3 feature_scale;
@@ -68,6 +70,8 @@ namespace nbunny
 			float layer;
 			glm::vec4 color;
 		};
+
+		std::vector<Vertex> buffer;
 
 		enum
 		{
@@ -99,6 +103,9 @@ namespace nbunny
 			DecorationSceneNode& from,
 			DecorationSceneNode& to,
 			float delta);
+
+		void update_bounds();
+		void update_bounds(const MapCurve& map_curve);
 
 		void draw(Renderer& renderer, float delta) override;
 	};

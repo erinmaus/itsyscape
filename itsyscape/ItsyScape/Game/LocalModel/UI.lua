@@ -12,6 +12,7 @@ local UI = require "ItsyScape.Game.Model.UI"
 local RPCState = require "ItsyScape.Game.RPC.State"
 local DebugStats = require "ItsyScape.Graphics.DebugStats"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalUI = Class(UI)
 
@@ -29,6 +30,8 @@ end
 
 function LocalUI:new(game)
 	UI.new(self)
+
+	self[NPooledBuffer.ID] = 0
 
 	self.game = game
 	self.interfaces = {}
@@ -175,6 +178,7 @@ function LocalUI:_open(peep, interfaceID, blocking, ...)
 
 	self.onPush(self, interfaceID, i.n, state, controller:getPlayer())
 	self.onOpen(self, interfaceID, i.n, controller:getPlayer())
+	self:onRefresh(interfaceID, i.n)
 
 	peep:poke("openInterface", interfaceID, i.n, blocking)
 	Analytics:openedInterface(peep, interfaceID, blocking)
@@ -252,7 +256,8 @@ function LocalUI:update(delta)
 			local state = self.pullDebugStats:measure(interface)
 			if not RPCState.deepEquals(self.uiStates[interface], state) then
 				self.uiStates[interface] = state
-				self.onPush(self, id, n, self.pullDebugStats:measure(interface))
+				self:onPush(id, n, state)
+				self:onRefresh(id, n)
 			end
 		end
 	end

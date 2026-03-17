@@ -10,6 +10,7 @@
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
 local Utility = require "ItsyScape.Game.Utility"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 
@@ -22,11 +23,20 @@ function Interface:new(id, index, view)
 	self.index = index
 	self.view = view
 	self.onClose = Callback()
+	self.onClose:register(self.detach, self)
 
 	self:setID(id)
 end
 
+function Interface:T(...)
+	return self.view:T(...)
+end
+
 function Interface:attach()
+	-- Nothing.
+end
+
+function Interface:detach()
 	-- Nothing.
 end
 
@@ -45,12 +55,25 @@ function Interface:getIndex()
 	return self.index
 end
 
+function Interface:refresh(state)
+	-- Nothing.
+end
+
 function Interface:tick()
 	-- Nothing.
 end
 
+function Interface:simulatePoke(actionID, ...)
+	self:poke(actionID, nil, {
+		n = select("#", ...),
+		...
+	})
+end
+
 -- Called when the interface is poked.
 function Interface:poke(actionID, actionIndex, e)
+	e = RPCState.merge(e)
+
 	if actionIndex == nil then
 		local func = self[actionID]
 		if func then

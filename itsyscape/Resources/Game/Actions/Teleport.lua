@@ -29,8 +29,8 @@ function Teleport:perform(state, player, target)
 	   self:canPerform(state, Teleport.FLAGS) and
 	   self:canTransfer(state, Teleport.FLAGS)
 	then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2, { asCloseAsPossible = true })
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
+		local walk = Utility.Peep.getWalk(player, position, layer, 2, { asCloseAsPossible = true })
 
 		if walk then
 			local teleport = CallbackCommand(self.teleport, self, state, player, target)

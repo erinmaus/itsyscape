@@ -59,7 +59,7 @@ function GamepadGridLayout:focus(reason)
 		return
 	end
 
-	if self.previousFocusedWidget and self.previousFocusedWidget:getParent() == self then
+	if self.previousFocusedWidget and self.previousFocusedWidget:getParent() == self and reason ~= "reset" then
 		inputProvider:setFocusedWidget(self.previousFocusedWidget, reason)
 	elseif self:getNumChildren() > 0 then
 		for i = 1, self:getNumChildren() do
@@ -121,21 +121,20 @@ function GamepadGridLayout:_tryScroll(widget)
 	self:setScroll(scrollX, scrollY)
 end
 
-function GamepadGridLayout:gamepadDirection(directionX, directionY)
-	GridLayout.gamepadDirection(self, directionX, directionY)
-
+function GamepadGridLayout:tryFocusNext(directionX, directionY)
 	local inputProvider = self:getInputProvider()
 	if not inputProvider then
 		return
 	end
 
-	if not self.currentFocusedWidget then
+	local focusedWidget = self.currentFocusedWidget or self.previousFocusedWidget
+	if not focusedWidget then
 		inputProvider:setFocusedWidget(self:getChildAt(1), "select")
 		return
 	end
 
-	local focusedWidgetX, focusedWidgetY = self.currentFocusedWidget:getAbsolutePosition()
-	local focusedWidgetWidth, focusedWidgetHeight = self.currentFocusedWidget:getSize()
+	local focusedWidgetX, focusedWidgetY = focusedWidget:getAbsolutePosition()
+	local focusedWidgetWidth, focusedWidgetHeight = focusedWidget:getSize()
 
 	local focusableWidget
 	local focusableWidgetDistance = math.huge
@@ -152,7 +151,7 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 
 			if ((directionX ~= 0 and math.zerosign(dx) == directionX) or
 			    (directionY ~= 0 and math.zerosign(dy) == directionY)) and
-			   self.currentFocusedWidget ~= widget
+			   focusedWidget ~= widget
 			then
 				local distance = math.sqrt(dx ^ 2 + dy ^ 2)
 
@@ -164,7 +163,7 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 
 			if ((directionX ~= 0 and math.zerosign(dx) == -directionX) or
 			    (directionY ~= 0 and math.zerosign(dy) == -directionY)) and
-			   self.currentFocusedWidget ~= widget
+			   focusedWidget ~= widget
 			then
 				dx = math.floor(dx)
 				dy = math.floor(dy)
@@ -193,6 +192,12 @@ function GamepadGridLayout:gamepadDirection(directionX, directionY)
 	else
 		self:onWrapFocus(nil, directionX, directionY)
 	end
+end
+
+function GamepadGridLayout:gamepadDirection(directionX, directionY)
+	GridLayout.gamepadDirection(self, directionX, directionY)
+
+	self:tryFocusNext(directionX, directionY)
 end
 
 return GamepadGridLayout

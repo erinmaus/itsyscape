@@ -34,7 +34,7 @@ vec4 position(mat4 modelViewProjection, vec4 vertexPosition)
 {
 	frag_Normal = normalize(mat3(scape_NormalMatrix) * VertexNormal);
 	frag_Texture = VertexTexture;
-	frag_Color = ConstantColor;
+	frag_Color = VertexColor * ConstantColor;
 
 	vec3 localPosition = vec3(0.0);
 	vec4 projectedPosition = vec4(0.0);

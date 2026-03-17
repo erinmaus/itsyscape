@@ -43,18 +43,18 @@ function Open:perform(state, player, prop, channel)
 			end
 		end
 
-		local i, j, k = Utility.Peep.getTileAnchor(prop, 0, 0)
-		local s, t, r = Utility.Peep.getTileAnchor(player)
-		local distance = math.sqrt((s - i) ^ 2 + (j - t) ^ 2)
+		local position, layer = Utility.Peep.getTileAnchor(prop, player, 0, 0)
+		local otherPosition, otherLayer = Utility.Peep.getTileAnchor(player, player)
+		local distance = position:distance(otherPosition)
 		local walk
 		if not channel then
 			walk = Utility.Peep.getWalk(
 				player,
-				i, j, k, 2,
+				position, layer, 0,
 				{ canUseObjects = true, asCloseAsPossible = false })
 		end
 
-		if (walk or distance < 3 or not channel) and k == r then
+		if (walk or distance < 3 or not channel) and layer == otherLayer then
 			local open = CallbackCommand(function()
 				local movement = player:getBehavior(MovementBehavior)
 				movement.acceleration = Vector.ZERO

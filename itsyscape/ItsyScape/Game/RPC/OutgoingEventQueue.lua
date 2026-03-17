@@ -10,8 +10,7 @@
 local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
-local NEventQueue = require "nbunny.gamemanager.eventqueue"
-local NVariant = require "nbunny.gamemanager.variant"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local OutgoingEventQueue = Class()
 
@@ -28,17 +27,27 @@ OutgoingEventQueue.IGNORED_FIELDS = {
 	["key"] = true
 }
 
-function OutgoingEventQueue:new()
+function OutgoingEventQueue:new(gameManager)
 	self.n = 0
 	self.queue = {}
 
-	self.serializedQueue = EventQueue.newBuffer()
+	self.serializedQueue, self.serializedConfig = EventQueue.newBuffer(gameManager)
 	self.timestamp = 0
+
+	self.gc = newproxy(true)
+	getmetatable(self.gc).__gc = function()
+		NPooledBuffer.free(self.serializedQueue)
+	end
+end
+
+function OutgoingEventQueue:getSerializationConfig()
+	return self.serializedConfig
 end
 
 function OutgoingEventQueue:tick()
 	self.n = 0
-	self.serializedQueue:reset()
+
+	NPooledBuffer.reset(self.serializedQueue)
 end
 
 function OutgoingEventQueue:_getTimestamp()
@@ -70,20 +79,6 @@ function OutgoingEventQueue:push(...)
 	return self:_push(self:_newEvent(), ...)
 end
 
-function OutgoingEventQueue:_marshalValue(value)
-	if not Class.isClass(value) then
-		return value
-	end
-
-	for _, instanceTypeName in ipairs(self.INSTANCE_TYPES) do
-		if Class.isCompatibleType(value, require(instanceTypeName)) then
-			return { __interface = instanceTypeName, __id = value.getID and value:getID() or 0 }
-		end
-	end
-
-	return value
-end
-
 function OutgoingEventQueue:_push(e, field, value, ...)
 	if field then
 		e[field] = value
@@ -92,16 +87,14 @@ function OutgoingEventQueue:_push(e, field, value, ...)
 			e.__serialized[field] = value
 		end
 
-		if type(value) == "table" and field == "value" then
-			for i = 1, value.n do
-				value.arguments[i] = self:_marshalValue(value.arguments[i])
-			end
-		end
-		
 		return self:_push(e, ...)
 	end
 
-	return self.serializedQueue:encode(e.__serialized)
+	return NPooledBuffer.perform(
+		NPooledBuffer.encode,
+		self.serializedQueue,
+		self.serializedConfig,
+		e.__serialized)
 end
 
 function OutgoingEventQueue:pushCreate(interface, id)
@@ -166,7 +159,11 @@ function OutgoingEventQueue:pull(otherE)
 		e[k] = v
 	end
 
-	self.serializedQueue:encode(otherE)
+	return NPooledBuffer.perform(
+		NPooledBuffer.encode,
+		self.serializedQueue,
+		self.serializedConfig,
+		e)
 end
 
 function OutgoingEventQueue:length()
@@ -182,7 +179,7 @@ function OutgoingEventQueue:get(index)
 end
 
 function OutgoingEventQueue:toBuffer()
-	return self.serializedQueue:tostring()
+	return self.serializedQueue
 end
 
 return OutgoingEventQueue

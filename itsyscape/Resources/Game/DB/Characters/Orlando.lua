@@ -159,7 +159,7 @@ ItsyScape.Meta.PeepStat {
 }
 
 ItsyScape.Meta.PeepStat {
-	Skill = ItsyScape.Resource.Skill "Firemaking",
+	Skill = ItsyScape.Resource.Skill "Alchemy",
 	Value = ItsyScape.Utility.xpForLevel(50),
 	Resource = Orlando
 }

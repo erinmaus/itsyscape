@@ -741,6 +741,132 @@ function BaseCombatHUD:_updateFoodThingies()
 	end
 end
 
+function BaseCombatHUD:newEquipmentThingies(name, equipmentState)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:newEquipmentButton(equipmentState)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:updateEquipmentButton(equipmentState, button)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:finishEquipmentThingies(name, thingiesWidget)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:equip(index)
+	local state = self:getState()
+
+	local equipment = state.equipment[index]
+	if not equipment then
+		return
+	end
+
+	self:getView():playItemSoundEffect(equipment, { id = -1, type = "Equip" })
+	self:sendPoke("equip", nil, { key = equipment.key })
+end
+
+function BaseCombatHUD:_initEquipmentThingies()
+	self:_unregisterThingies(BaseCombatHUD.THINGIES_EQUIPMENT)
+
+	local state = self:getState()
+	local equipmentState = state.equipment
+
+	local equipmentThingie = { buttons = {} }
+	equipmentThingie.widget = self:newEquipmentThingies(BaseCombatHUD.THINGIES_EQUIPMENT, equipmentState)
+
+	for i, equipment in ipairs(equipmentState) do
+		local button = self:newEquipmentButton(equipment)
+		button.onClick:register(self.equip, self, i)
+
+		equipmentThingie.widget:addChild(button)
+		table.insert(equipmentThingie.buttons, button)
+	end
+
+	self:finishEquipmentThingies(BaseCombatHUD.THINGIES_EQUIPMENT, equipmentThingie.widget)
+	self:_registerThingies(BaseCombatHUD.THINGIES_EQUIPMENT, equipmentThingie)
+end
+
+function BaseCombatHUD:_updateEquipmentThingies()
+	local state = self:getState()
+	local equipmentState = state.equipment
+	local buttons = self:_getThingies(BaseCombatHUD.THINGIES_EQUIPMENT).buttons
+
+	for i, equipment in ipairs(equipmentState) do
+		local button = buttons[i]
+		if button then
+			self:updateEquipmentButton(button, equipment)
+			button:setID(string.format("BaseCombatHUD-Equipment-%s", equipment.id))
+		end
+	end
+end
+
+function BaseCombatHUD:newSpellThingies(name, spellsState)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:newSpellButton(spellsState)
+	return Class.ABSTRACT()
+end
+
+function BaseCombatHUD:updateSpellButton(spellsState, button)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:finishSpellThingies(name, thingiesWidget)
+	Class.ABSTRACT()
+end
+
+function BaseCombatHUD:castSpell(index)
+	local state = self:getState()
+
+	local spell = state.spells[index]
+	if not spell then
+		return
+	end
+
+	self:sendPoke("castSpell", nil, { id = spell.id })
+end
+
+function BaseCombatHUD:_initSpellThingies()
+	print(">>> _initSpellThingies")
+	self:_unregisterThingies(BaseCombatHUD.THINGIES_SPELLS)
+
+	local state = self:getState()
+	local spellsState = state.spells
+
+	local spellsThingie = { buttons = {} }
+	spellsThingie.widget = self:newSpellThingies(BaseCombatHUD.THINGIES_SPELLS, spellsState)
+
+	for i, spell in ipairs(spellsState) do
+		local button = self:newSpellButton(spell)
+		button.onClick:register(self.castSpell, self, i)
+
+		spellsThingie.widget:addChild(button)
+		table.insert(spellsThingie.buttons, button)
+	end
+
+	self:finishSpellThingies(BaseCombatHUD.THINGIES_SPELLS, spellsThingie.widget)
+	self:_registerThingies(BaseCombatHUD.THINGIES_SPELLS, spellsThingie)
+end
+
+function BaseCombatHUD:_updateSpellThingies()
+	local state = self:getState()
+	local spellsState = state.spells
+	local buttons = self:_getThingies(BaseCombatHUD.THINGIES_SPELLS).buttons
+
+	for i, spell in ipairs(spellsState) do
+		local button = buttons[i]
+		if button then
+			self:updateSpellButton(button, spell)
+			button:setID(string.format("BaseCombatHUD-Spell-%s", spell.id))
+		end
+	end
+end
+
 function BaseCombatHUD:newStanceThingies(name)
 	return Class.ABSTRACT()
 end
@@ -819,11 +945,14 @@ function BaseCombatHUD:updateThingies()
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS)
 	self:_updatePowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 	self:_updateFoodThingies()
+	self:_updateEquipmentThingies()
+	self:_updateSpellThingies()
 	self:_updateStanceThingies()
 end
 
-function BaseCombatHUD:refresh()
+function BaseCombatHUD:refreshState()
 	self.wasRefreshed = true
+	self:updateQuickHeal()
 	self:refreshThingies()
 end
 
@@ -831,6 +960,8 @@ function BaseCombatHUD:refreshThingies()
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_OFFENSIVE_POWERS)
 	self:_initPowersThingies(BaseCombatHUD.THINGIES_DEFENSIVE_POWERS)
 	self:_initFoodThingies()
+	self:_initEquipmentThingies()
+	self:_initSpellThingies()
 	self:_initStanceThingies()
 
 	self:resetEvents()
@@ -1048,15 +1179,16 @@ function BaseCombatHUD:updateTurnOrder()
 	end
 end
 
-function BaseCombatHUD:tick()
-	Interface.tick(self)
+function BaseCombatHUD:activateQuickAttack()
+	self:sendPoke("activateQuickAttack", nil, {})
+end
 
-	if self.dirtyState.quickHeal then
-		self:updateQuickHeal()
+function BaseCombatHUD:previewControlUp(control)
+	Interface.previewControlUp(self, control)
+
+	if control:is("quickAttack") then
+		self:activateQuickAttack()
 	end
-	table.clear(self.dirtyState)
-
-	self:updateTurnOrder()
 end
 
 function BaseCombatHUD:_updateDebug()
@@ -1068,12 +1200,15 @@ function BaseCombatHUD:_updateDebug()
 	self.wasDebugKeydown = isDebugKeydown
 end
 
-function BaseCombatHUD:update(delta)
-	Interface.update(self, delta)
+function BaseCombatHUD:tick()
+	Interface.tick(self)
 
-	if not self.menu then
-		self:_createMenu()
+	if self.dirtyState.quickHeal or self.dirtyState.food then
+		self:updateQuickHeal()
 	end
+	table.clear(self.dirtyState)
+
+	self:updateTurnOrder()
 
 	self:updateEvents()
 
@@ -1104,6 +1239,15 @@ function BaseCombatHUD:update(delta)
 	self:toggleTargetInfo(showTarget)
 
 	self:updateThingies()
+end
+
+
+function BaseCombatHUD:update(delta)
+	Interface.update(self, delta)
+
+	if not self.menu then
+		self:_createMenu()
+	end
 end
 
 return BaseCombatHUD

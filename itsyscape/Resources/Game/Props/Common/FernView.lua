@@ -109,7 +109,7 @@ function FernView:load()
 						local z = math.sin(angle)
 
 						local position = Vector(x * radius, 0, z * radius)
-						local rotation = Quaternion.lookAt(Vector(x, 0, z), Vector.ZERO, Vector.UNIT_Z) * tilt
+						local rotation = Quaternion.lookAt(Vector(x, 0, z), Vector.ZERO, Vector.UNIT_Y) * tilt
 						rotation = rotation:getNormal()
 
 						frondDecoration:add("Fronds", position, rotation, scale)

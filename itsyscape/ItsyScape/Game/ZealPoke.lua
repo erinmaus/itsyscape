@@ -16,13 +16,17 @@ ZealPoke.TYPE_TARGET_LOST   = "TARGET_LOST"
 ZealPoke.TYPE_STANCE_SWITCH = "STANCE_SWITCH"
 ZealPoke.TYPE_USE_POWER     = "USE_POWER"
 ZealPoke.TYPE_LOST_POWER    = "LOST_POWER"
+ZealPoke.TYPE_CAST_SPELL    = "CAST_SPELL"
 ZealPoke.TYPE_ATTACK        = "ATTACK"
 ZealPoke.TYPE_DEFEND        = "DEFEND"
+ZealPoke.TYPE_STRATEGY      = "STRATEGY"
 
 function ZealPoke:new(zealPokeType)
 	self.type = zealPokeType
 	self.zeal = 0
 	self.multiplier = 1
+	self.currentForcePositive = 0
+	self.currentForceNegative = 0
 	self.offset = 0
 end
 
@@ -39,7 +43,12 @@ function ZealPoke:getZeal()
 end
 
 function ZealPoke:getEffectiveZeal()
-	return math.clamp(self.zeal * self.multiplier + self.offset, -1, 1)
+	local sign = math.zerosign(self.currentForcePositive - self.currentForceNegative)
+	local zeal = math.clamp(self.zeal * self.multiplier + self.offset, -1, 1)
+	if (zeal < 0 and sign == 1) or (zeal > 0 and sign == -1) then
+		zeal = -zeal
+	end
+	return zeal
 end
 
 function ZealPoke:addMultiplier(value)
@@ -48,6 +57,14 @@ end
 
 function ZealPoke:addOffset(value)
 	self.offset = self.offset + value
+end
+
+function ZealPoke:forcePositive()
+	self.currentForcePositive = self.currentForcePositive + 1
+end
+
+function ZealPoke:forceNegative()
+	self.currentForceNegative = self.currentForceNegative + 1
 end
 
 function ZealPoke.onTargetSwitch(t)
@@ -115,6 +132,17 @@ function ZealPoke.onLosePower(t)
 	return event
 end
 
+function ZealPoke.onCastSpell(t)
+	assert(type(t) == "table")
+
+	local event = ZealPoke(ZealPoke.TYPE_CAST_SPELL)
+	event.spell = t.spell or false
+	event.weapon = t.weapon or false
+	event.zeal = t.zeal or 0
+
+	return event
+end
+
 function ZealPoke.onAttack(t)
 	assert(type(t) == "table")
 
@@ -153,6 +181,20 @@ end
 
 function ZealPoke:getPower()
 	return self.power
+end
+
+function ZealPoke.onStrategy(t)
+	assert(type(t) == "table")
+
+	local event = ZealPoke(ZealPoke.TYPE_STRATEGY)
+	event.grade = t.grade or false
+	event.zeal = t.zeal or 0
+
+	return event
+end
+
+function ZealPoke:getGrade()
+	return self.grade
 end
 
 return ZealPoke

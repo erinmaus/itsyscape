@@ -78,6 +78,37 @@ do
 	}
 end
 
+M["Light_Moon"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 0,
+		PositionY = 0,
+		PositionZ = 0,
+		Name = "Light_Moon",
+		Map = M._MAP,
+		Resource = M["Light_Moon"]
+	}
+
+	ItsyScape.Meta.PropMapObject {
+		Prop = ItsyScape.Resource.Prop "DirectionalLight_Default",
+		MapObject = M["Light_Moon"]
+	}
+
+	ItsyScape.Meta.Light {
+		ColorRed = 100,
+		ColorGreen = 100,
+		ColorBlue = 100,
+		Resource = M["Light_Moon"]
+	}
+
+	ItsyScape.Meta.DirectionalLight {
+		DirectionX = 4,
+		DirectionY = 3,
+		DirectionZ = 4,
+		Resource = M["Light_Moon"]
+	}
+end
+
 M["Light_Fog"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
@@ -1204,10 +1235,10 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 169,
+		PositionX = 173,
 		PositionY = 3,
 		PositionZ = 31,
-		Direction = -1,
+		Direction = 1,
 		Name = "CapnRaven_PirateBodyGuard1",
 		Map = M._MAP,
 		Resource = M["CapnRaven_PirateBodyGuard1"]
@@ -1248,10 +1279,10 @@ do
 	}
 
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 173,
+		PositionX = 169,
 		PositionY = 3,
 		PositionZ = 31,
-		Direction = 1,
+		Direction = -1,
 		Name = "CapnRaven_PirateBodyGuard2",
 		Map = M._MAP,
 		Resource = M["CapnRaven_PirateBodyGuard2"]
@@ -1296,6 +1327,18 @@ do
 	ItsyScape.Meta.PropMapObject {
 		Prop = ItsyScape.Resource.Prop "BalsaTree_Default",
 		MapObject = M["BalsaTree"]
+	}
+end
+
+M["Anchor_Tutorial_LightFire"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 71,
+		PositionY = 5,
+		PositionZ = 151,
+		Name = "Anchor_Tutorial_LightFire",
+		Map = M._MAP,
+		Resource = M["Anchor_Tutorial_LightFire"]
 	}
 end
 
@@ -1643,9 +1686,15 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
+		State = "mining-idle",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_MineLogic.lua",
 		IsDefault = 1,
+		Resource = M["MiningKnight1"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
 		Resource = M["MiningKnight1"]
 	}
 
@@ -1693,9 +1742,15 @@ do
 	}
 
 	ItsyScape.Meta.PeepMashinaState {
-		State = "idle",
+		State = "mining-idle",
 		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_MineLogic.lua",
 		IsDefault = 1,
+		Resource = M["MiningKnight2"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "idle",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Knight_IdleLogic.lua",
 		Resource = M["MiningKnight2"]
 	}
 
@@ -1706,8 +1761,46 @@ do
 	}
 end
 
+M["Yenderling"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Yenderling",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 155,
+		PositionY = 0,
+		PositionZ = 159,
+		Name = "Yenderling",
+		Map = M._MAP,
+		Resource = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "ExtraterrestrialYenderling",
+		MapObject = M["Yenderling"]
+	}
+
+	ItsyScape.Meta.PeepMashinaState {
+		State = "begin-attack",
+		Tree = "Resources/Game/Maps/Sailing_HumanityEdge/Scripts/Tutorial_Yenderling_BeginAttackLogic.lua",
+		IsDefault = 1,
+		Resource = M["Yenderling"]
+	}
+end
+
 M["AzatiteMeteor"] = ItsyScape.Resource.MapObject.Unique()
 do
+	ItsyScape.Meta.MapObjectGroup {
+		MapObjectGroup = "Tutorial_Meteor",
+		Map = M._MAP,
+		IsInstanced = 1,
+		MapObject = M["AzatiteMeteor"]
+	}
+
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 155,
 		PositionY = 0,
@@ -1913,6 +2006,24 @@ do
 		Z2 = 187,
 		Map = M._MAP,
 		Resource = M["Passage_Scout"]
+	}
+end
+
+M["Anchor_FindYendorianScout"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 46,
+		PositionY = 3,
+		PositionZ = 168,
+		Name = "Anchor_FindYendorianScout",
+		Map = M._MAP,
+		Resource = M["Anchor_FindYendorianScout"]
+	}
+
+	ItsyScape.Meta.KeyItemLocationHint {
+		Map = M._MAP,
+		MapObject = M["Anchor_FindYendorianScout"],
+		KeyItem = ItsyScape.Resource.KeyItem "Tutorial_FoundScout"
 	}
 end
 
@@ -2805,3 +2916,204 @@ do
 		Resource = M["KnightCommander"]
 	}
 end
+
+M["WarfMite1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 85,
+		PositionY = 3,
+		PositionZ = 175,
+		Name = "WarfMite1",
+		Map = M._MAP,
+		Resource = M["WarfMite1"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite1"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["WarfMite1"]
+	}
+end
+
+M["WarfMite2"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 65,
+		PositionY = 3,
+		PositionZ = 181,
+		Name = "WarfMite2",
+		Map = M._MAP,
+		Resource = M["WarfMite2"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite2"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["WarfMite2"]
+	}
+end
+
+M["WarfMite3"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 51,
+		PositionY = 3,
+		PositionZ = 181,
+		Name = "WarfMite3",
+		Map = M._MAP,
+		Resource = M["WarfMite3"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite3"]
+	}
+
+	ItsyScape.Meta.Equipment {
+		AccuracyCrush = -1000,
+		DefenseStab = -1000,
+		DefenseSlash = -1000,
+		DefenseCrush = -1000,
+		DefenseMagic = -1000,
+		DefenseRanged = -1000,
+		StrengthMelee = 0,
+		Slot = ItsyScape.Utility.Equipment.PLAYER_SLOT_SELF,
+		Resource = M["WarfMite3"]
+	}
+end
+
+M["WarfMite4"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = 39,
+		PositionY = 3,
+		PositionZ = 175,
+		Name = "WarfMite4",
+		Map = M._MAP,
+		Resource = M["WarfMite4"]
+	}
+
+	ItsyScape.Meta.PeepMapObject {
+		Peep = ItsyScape.Resource.Peep "WarfMite",
+		MapObject = M["WarfMite4"]
+	}
+end
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire1"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire1"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire2"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire2"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire3"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire3"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire4"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire4"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire5"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire5"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire6"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire6"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire7"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire7"]
+}
+
+ItsyScape.Meta.Light {
+	ColorRed = 51,
+	ColorGreen = 157,
+	ColorBlue = 128,
+	Resource = M["ColorfulFire8"]
+}
+
+ItsyScape.Meta.PointLight {
+	Attenuation = 2,
+	Resource = M["ColorfulFire8"]
+}
+

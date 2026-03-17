@@ -90,12 +90,12 @@ function Decoration.Feature:serialize()
 		rotation = { self:getHandle():getRotation() },
 		scale = { self:getHandle():getScale() },
 		color = { self:getHandle():getColor() },
-		texture = self:getHandle():getTexture(),
+		texture = self:getHandle():getTexture() + 1,
 		material = self.material
 	}
 end
 
-function Decoration.Feature:map(func, staticMesh, index)
+function Decoration.Feature:map(func, staticMesh, index, ray)
 	local transform = love.math.newTransform()
 
 	local position = self:getPosition()
@@ -115,6 +115,16 @@ function Decoration.Feature:map(func, staticMesh, index)
 		scale.z)
 
 	local group = self:getID()
+
+	if ray then
+		local min, max = staticMesh:computeBounds(group)
+		min = min:min(Vector(-0.001))
+		max = max:max(Vector(0.001))
+
+		if not ray:hitBounds(min, max, transform) then
+			return
+		end
+	end
 
 	-- Assumes indices 1-3 are vertex positions and 4-6 are normal. Bad.
 	if staticMesh:hasGroup(group) then
@@ -225,6 +235,33 @@ function Decoration:remove(feature)
 	return self:getHandle():removeFeature(feature:getHandle())
 end
 
+function Decoration:clean(E)
+	E = E or 0.0001
+
+	local c = 0
+	for i = #self.features, 1, -1 do
+		local sourceFeature = self.features[i]
+		for j = i - 1, 1, -1 do
+			local otherFeature = self.features[j]
+
+			if sourceFeature:getID() == otherFeature:getID() and
+			   sourceFeature:getPosition():distance(otherFeature:getPosition()) <= E and
+			   sourceFeature:getRotation():distance(otherFeature:getRotation()) <= E and
+			   sourceFeature:getScale():distance(otherFeature:getScale()) <= E and
+			   sourceFeature:getColor():toHexString() == otherFeature:getColor():toHexString() and
+			   sourceFeature:getTexture() == otherFeature:getTexture() and
+			   sourceFeature:getMaterial() == otherFeature:getMaterial()
+			then
+				self:getHandle():removeFeature(otherFeature:getHandle())
+				table.remove(self.features, j)
+				c = c + 1
+			end
+		end
+	end
+
+	return c
+end
+
 function Decoration:toString()
 	local r = StringBuilder()
 
@@ -308,11 +345,11 @@ Decoration.RAY_TEST_RESULT_FEATURE = 1
 Decoration.RAY_TEST_RESULT_POSITION = 2
 Decoration.RAY_TEST_RESULT_INDEX = 3
 
-function Decoration:map(func, staticMesh)
+function Decoration:map(func, staticMesh, ray)
 	local result = {}
 
 	for feature, index in self:iterate() do
-		feature:map(func, staticMesh, index)
+		feature:map(func, staticMesh, index, ray)
 	end
 end
 
@@ -328,7 +365,7 @@ function Decoration:testRay(ray, staticMesh)
 				index
 			})
 		end
-	end, staticMesh)
+	end, staticMesh, ray)
 
 	return result
 end

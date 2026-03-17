@@ -37,14 +37,16 @@ function OpenCraftWindow:perform(state, player, prop)
 			value = nil
 		end
 
-		local i, j, k = Utility.Peep.getTileAnchor(prop)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5)
+		local position, layer = Utility.Peep.getTileAnchor(prop, player)
+		local walk = Utility.Peep.getWalk(player, position, layer, 2.5)
 		local face = CallbackCommand(Utility.Peep.face, player, prop)
 
 		if walk then
 			local open = OpenInterfaceCommand("CraftWindow2", true, prop, key, value, target:get("ActionType"))
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, face, open, perform)
+			local command = CompositeCommand(function()
+				return Utility.Peep.hasAction(prop, self:getAction(), "world")
+			end, walk, face, open, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

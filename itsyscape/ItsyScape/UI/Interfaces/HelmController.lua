@@ -21,7 +21,7 @@ local HelmController = Class(Controller)
 
 HelmController.CAMERA_OFFSET   = Vector(0, 60, 2)
 HelmController.CAMERA_DISTANCE = 80
-HelmController.CAMERA_ROTATION = Quaternion.Y_180 * Quaternion.X_180 * Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 6)
+HelmController.CAMERA_ROTATION = Quaternion.Y_180 * Quaternion.X_180 * Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 6)
 
 function HelmController:new(peep, director, helm)
 	Controller.new(self, peep, director)

@@ -7,10 +7,10 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
-local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
 local EventQueue = require "ItsyScape.Game.RPC.EventQueue"
 local RPCService = require "ItsyScape.Game.RPC.RPCService"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local ChannelRPCService = Class(RPCService)
 ChannelRPCService.CLIENT_ID = 0
@@ -21,31 +21,25 @@ function ChannelRPCService:new(inputChannel, outputChannel, isBlocking)
 	self.inputChannel = inputChannel
 	self.outputChannel = outputChannel
 	self.isBlocking = isBlocking or false
-	self.queue = EventQueue.newBuffer()
+end
+
+function ChannelRPCService:connect(gameManager)
+	RPCService.connect(self, gameManager)
+
+	self.queue, self.queueConfig = EventQueue.newBuffer(gameManager)
 end
 
 function ChannelRPCService:sendBatch(channel, e)
-	self.outputChannel:push(e)
-end
+	local message = NPooledBuffer.new(table.clear)
+	NPooledBuffer.copy(e, message)
 
-function ChannelRPCService:send(channel, e)
-	self.outputChannel:push(buffer.encode({ e }))
+	self.outputChannel:push(message)
 end
 
 function ChannelRPCService:_pop()
-	if #self.queue > 0 then
-		local event = self.queue:decode()
+	if NPooledBuffer.pending(self.queue) then
+		local event = NPooledBuffer.perform(NPooledBuffer.decode, self.queue, self.queueConfig)
 		event.clientID = ChannelRPCService.CLIENT_ID
-
-		if event.value then
-			for i = 1, event.value.n do
-				local v = event.value.arguments[i]
-				if type(v) == "table" and v.__interface and v.__id then
-					local instance = self:getGameManager():getInstance(v.__interface, v.__id)
-					event.value.arguments[i] = instance and instance:getInstance() or nil
-				end
-			end
-		end
 
 		return event
 	end
@@ -64,8 +58,13 @@ function ChannelRPCService:receive(c)
 		end
 
 		if e then
-			if type(e) == "string" then
-				self.queue:set(e)
+			if type(e) == "userdata" then
+				NPooledBuffer.reset(self.queue)
+				NPooledBuffer.copy(e, self.queue)
+				NPooledBuffer.restart(self.queue)
+				NPooledBuffer.free(e)
+
+				self.queueConfig.inputTablePool, self.queueConfig.outputTablePool = self.queueConfig.outputTablePool, self.queueConfig.inputTablePool
 			end
 
 			result = self:_pop()

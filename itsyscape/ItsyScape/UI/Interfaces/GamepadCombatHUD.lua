@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Tween = require "ItsyScape.Common.Math.Tween"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Config = require "ItsyScape.Game.Config"
 local Weapon = require "ItsyScape.Game.Weapon"
 local Color = require "ItsyScape.Graphics.Color"
@@ -22,11 +24,14 @@ local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local RichTextLabel = require "ItsyScape.UI.RichTextLabel"
 local RichTextLabelStyle = require "ItsyScape.UI.RichTextLabelStyle"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local SpiralLayout = require "ItsyScape.UI.SpiralLayout"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
 local BaseCombatHUD = require "ItsyScape.UI.Interfaces.BaseCombatHUD"
 local GamepadCirclePanel = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanel"
+local GamepadCircleCursor = require "ItsyScape.UI.Interfaces.Components.GamepadCircleCursor"
+local GamepadCirclePanelZap = require "ItsyScape.UI.Interfaces.Components.GamepadCirclePanelZap"
 local PendingPowerIcon = require "ItsyScape.UI.Interfaces.Components.PendingPowerIcon"
 local RechargingPowerBar = require "ItsyScape.UI.Interfaces.Components.RechargingPowerBar"
 
@@ -38,10 +43,15 @@ function GamepadCombatHUD.StandardInterfaceContainer:getOverflow()
 	return true
 end
 
-GamepadCombatHUD.SPIRAL_OFFSET             = 32
+GamepadCombatHUD.SPIRAL_OFFSET_X           = 32
+GamepadCombatHUD.SPIRAL_OFFSET_Y           = 0
 GamepadCombatHUD.SPIRAL_OUTER_RADIUS       = 192
 GamepadCombatHUD.SPIRAL_INNER_RADIUS       = 144
 GamepadCombatHUD.SPIRAL_INNER_PANEL_RADIUS = 144
+
+GamepadCombatHUD.SPIRAL_INNER_RADIUS_OPEN  = 96
+GamepadCombatHUD.SPIRAL_OUTER_RADIUS_OPEN  = 64
+GamepadCombatHUD.SPIRAL_OPEN_DURATION      = 1 / 2
 
 GamepadCombatHUD.SELECTED_BUTTON_SIZE = 68
 GamepadCombatHUD.DEFAULT_BUTTON_SIZE  = 52
@@ -51,6 +61,9 @@ GamepadCombatHUD.SELECTED_ICON_SIZE = 64
 GamepadCombatHUD.DEFAULT_ICON_SIZE  = 48
 GamepadCombatHUD.MINIMUM_ICON_SIZE  = 24
 GamepadCombatHUD.ICON_OFFSET        = 2
+
+GamepadCombatHUD.MINIMUM_BUTTON_SIZE_OPEN = 48
+GamepadCombatHUD.MINIMUM_ICON_SIZE_OPEN   = 48
 
 GamepadCombatHUD.MIN_ICON_ALPHA     = 0.25
 GamepadCombatHUD.MAX_ICON_ALPHA     = 1
@@ -171,6 +184,10 @@ function GamepadCombatHUD:new(...)
 	self.thingiesStack = {}
 	self.thingiesProperties = {}
 
+	self.minimumButtonSize = self.MINIMUM_BUTTON_SIZE
+	self.minimumIconSize = self.MINIMUM_ICON_SIZE
+	self.currentThingiesOpenElapsedTime = 0
+
 	BaseCombatHUD.new(self, ...)
 
 	self:_initCommon()
@@ -181,7 +198,14 @@ function GamepadCombatHUD:restoreFocus()
 		return false
 	end
 
-	self:focusChild(self:getMenu())
+	if #self.thingiesStack >= 1 then
+		local current = self.thingiesStack[#self.thingiesStack]
+		if current == self.FEATURE_MENU then
+			self:openMenu()
+		else
+			self:restoreThingiesFocus(current)
+		end
+	end
 end
 
 function GamepadCombatHUD:onSwitchCombatStyle(oldCombatStyle, newCombatStyle)
@@ -316,17 +340,31 @@ function GamepadCombatHUD:_initCommon()
 	self.pendingPowerMenuIcon:setSize(self.DEFAULT_ICON_SIZE, self.DEFAULT_ICON_SIZE)
 end
 
+function GamepadCombatHUD:restoreThingiesFocus(name)
+	local thingiesWidget = self:getThingiesWidget(name)
+
+	self:focusChild(thingiesWidget)
+
+	local angle = self.thingiesAngles[name]
+	if angle then
+		thingiesWidget:setCurrentAngle(angle)
+	end
+end
+
 function GamepadCombatHUD:openThingies(name, targetWidget)
 	local didOpen = BaseCombatHUD.openThingies(self, name, targetWidget)
 	if didOpen then
 		local thingiesWidget = self:getThingiesWidget(name)
-		local angle = self.thingiesAngles[name]
-		if angle then
-			thingiesWidget:setCurrentAngle(angle)
-		end
 
 		self:addChild(thingiesWidget)
-		self:focusChild(thingiesWidget)
+		self:restoreThingiesFocus(name)
+
+		local currentThingiesName = self.thingiesStack[#self.thingiesStack]
+		if currentThingiesName ~= name then
+			self.currentThingiesOpenElapsedTime = 0
+		end
+
+		self.lastOpenedThingiesMenu = thingiesWidget
 	end
 
 	return didOpen
@@ -353,6 +391,13 @@ function GamepadCombatHUD:openMenu()
 
 		self:layoutSpiralMenu(menu)
 		self:updateStandardThingiesInterface(menu)
+
+		local currentThingiesName = self.thingiesStack[#self.thingiesStack]
+		if currentThingiesName ~= self.FEATURE_MENU then
+			self.currentThingiesOpenElapsedTime = 0
+		end
+
+		self.lastOpenedThingiesMenu = menu
 	end
 end
 
@@ -421,13 +466,25 @@ function GamepadCombatHUD:flee()
 	end
 end
 
-function GamepadCombatHUD:layoutSpiralMenu(spiralMenu)
-	local width, height = itsyrealm.graphics.getScaledMode()
+do
+	local position = Vector()
+	function GamepadCombatHUD:layoutSpiralMenu(spiralMenu)
+		local camera = self:getView():getGameView():getCamera()
+		local player = self:getView():getGame():getPlayer():getActor()
+		camera:project(player:getPosition(), position)
 
-	local _, outerRadius = spiralMenu:getRadius()
-	spiralMenu:setPosition(
-		width / 2 + outerRadius / 2 + self.SPIRAL_OFFSET,
-		height / 2 + outerRadius / 2 + self.SPIRAL_OFFSET)
+		local _, outerRadius = spiralMenu:getRadius()
+		local spiralMenuSize = outerRadius * 2
+		local x = position.x + outerRadius + self.SPIRAL_OFFSET_X
+		local y = position.y + outerRadius + self.SPIRAL_OFFSET_Y
+
+		local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
+
+		x = math.min(math.max(x, 0), screenWidth - spiralMenuSize)
+		y = math.min(math.max(y, 0), screenHeight - spiralMenuSize)
+
+		spiralMenu:setPosition(x, y)
+	end
 end
 
 function GamepadCombatHUD:openSpiralMenu(spiralMenu)
@@ -493,6 +550,17 @@ function GamepadCombatHUD:addSpiralMenuRichTextLabel(menu)
 	local innerPanel = menu:getInnerPanel()
 	innerPanel:setData("label", label)
 	innerPanel:addChild(label)
+end
+
+function GamepadCombatHUD:addSpiralMenuCursor(name, spiralMenu)
+	if self.thingiesAngles[name] then
+		spiralMenu:setCurrentAngle(self.thingiesAngles[name])
+	end
+
+	local cursor = GamepadCircleCursor()
+	cursor:setTargetLayout(spiralMenu)
+
+	spiralMenu:getInnerPanel():addChild(cursor)
 end
 
 function GamepadCombatHUD:addStandardThingiesInterface(menu, getDataCallback)
@@ -624,6 +692,8 @@ function GamepadCombatHUD:finishSpiralMenu(name, spiralMenu)
 
 		spiralMenu:addChild(button)
 	end
+
+	self:addSpiralMenuCursor(name, spiralMenu)
 end
 
 function GamepadCombatHUD:newSpiralButton()
@@ -641,7 +711,15 @@ function GamepadCombatHUD:newSpiralButton()
 	button:addChild(icon)
 	button:setData("icon", icon)
 
+	button.onClick:register(self._zapButton, self)
+
 	return button
+end
+
+function GamepadCombatHUD:_zapButton(button, index)
+	if index == 1 then
+		GamepadCirclePanelZap.zap(button)
+	end
 end
 
 function GamepadCombatHUD:layoutSpiralButton(button, delta)
@@ -653,12 +731,12 @@ function GamepadCombatHUD:layoutSpiralButton(button, delta)
 	local buttonSize, iconSize, alpha
 	if button:getIsFocused() then
 		alpha = 1
-		buttonSize = math.lerp(self.MINIMUM_BUTTON_SIZE, self.SELECTED_BUTTON_SIZE, delta)
-		iconSize = math.lerp(self.MINIMUM_ICON_SIZE, self.SELECTED_ICON_SIZE, delta)
+		buttonSize = math.lerp(self.minimumButtonSize, self.SELECTED_BUTTON_SIZE, delta)
+		iconSize = math.lerp(self.minimumIconSize, self.SELECTED_ICON_SIZE, delta)
 	else
 		alpha = 1
-		buttonSize = math.lerp(self.MINIMUM_BUTTON_SIZE, self.DEFAULT_BUTTON_SIZE, delta)
-		iconSize = math.lerp(self.MINIMUM_ICON_SIZE, self.DEFAULT_ICON_SIZE, delta)
+		buttonSize = math.lerp(self.minimumButtonSize, self.DEFAULT_BUTTON_SIZE, delta)
+		iconSize = math.lerp(self.minimumIconSize, self.DEFAULT_ICON_SIZE, delta)
 	end
 
 	local panel = button:getData("panel")
@@ -779,6 +857,7 @@ end
 
 function GamepadCombatHUD:finishMenu(menu)
 	menu:setNumVisibleOptions(menu:getNumOptions())
+	self:addSpiralMenuCursor(self.FEATURE_MENU, menu)
 end
 
 function GamepadCombatHUD:updateMenuButton(name, button)
@@ -1012,6 +1091,150 @@ function GamepadCombatHUD:finishFoodThingies(name, spiralMenu)
 	self:finishSpiralMenu(name, spiralMenu)
 end
 
+function GamepadCombatHUD:_onEquipmentVisible(_, child, delta)
+	self:layoutSpiralButton(child, delta)
+end
+
+function GamepadCombatHUD:_onEquipmentSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local state = self:getState()
+	local equipmentState = state.equipment[index]
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	if not equipmentState then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Gather and craft more equipment!" }
+		})
+	else
+		label:setText({
+			{ t = "header", equipmentState.name },
+			equipmentState.description
+		})
+	end
+end
+
+function GamepadCombatHUD:_updateEquipmentThingiesInterface(name)
+	local result = {
+		titleText = self:getThingiesName(name),
+		icon = "Resources/Game/UI/Icons/Common/Equipment.png"
+	}
+
+	return result
+end
+
+function GamepadCombatHUD:newEquipmentThingies(name)
+	local foodSpiral = self:newSpiralMenu(name)
+	foodSpiral.onChildVisible:register(self._onEquipmentVisible, self)
+	foodSpiral.onChildSelected:register(self._onEquipmentSelected, self)
+
+	self:addSpiralMenuRichTextLabel(foodSpiral)
+	self:addStandardThingiesInterface(foodSpiral, self._updateEquipmentThingiesInterface)
+
+	return foodSpiral
+end
+
+function GamepadCombatHUD:newEquipmentButton(equipmentState)
+	local button = self:newSpiralButton()
+
+	local itemIcon = ItemIcon()
+	button:addChild(itemIcon)
+
+	button:removeChild(button:getData("icon"))
+	button:setData("icon", itemIcon)
+
+	return button
+end
+
+function GamepadCombatHUD:updateEquipmentButton(button, equipmentState)
+	local icon = button:getData("icon")
+	icon:setItemID(equipmentState.id)
+	icon:setItemCount(equipmentState.count)
+end
+
+function GamepadCombatHUD:finishEquipmentThingies(name, spiralMenu)
+	self:finishSpiralMenu(name, spiralMenu)
+end
+
+function GamepadCombatHUD:_onSpellVisible(_, child, delta)
+	self:layoutSpiralButton(child, delta)
+end
+
+function GamepadCombatHUD:_onSpellSelected(menu, current)
+	if not current then
+		return
+	end
+
+	local index = menu:getFocusedOptionIndex()
+
+	local state = self:getState()
+	local spellState = state.spells[index]
+
+	local innerPanel = menu:getInnerPanel()
+	local label = innerPanel:getData("label")
+
+	if not spellState then
+		label:setText({
+			{ t = "header", color = { 0.4, 0.4, 0.4, 1.0 }, "Nothing" },
+			{ t = "text", color = { 0.4, 0.4, 0.4, 1.0 }, "Gather runes and level magic to access more spells!" }
+		})
+	else
+		label:setText({
+			{ t = "header", spellState.name },
+			spellState.description
+		})
+	end
+end
+
+function GamepadCombatHUD:_updateSpellThingiesInterface(name)
+	local result = {
+		titleText = self:getThingiesName(name),
+		icon = "Resources/Game/UI/Icons/Common/Spell.png"
+	}
+
+	return result
+end
+
+function GamepadCombatHUD:newSpellThingies(name)
+	local spellSpiral = self:newSpiralMenu(name)
+	spellSpiral.onChildVisible:register(self._onSpellVisible, self)
+	spellSpiral.onChildSelected:register(self._onSpellSelected, self)
+
+	self:addSpiralMenuRichTextLabel(spellSpiral)
+	self:addStandardThingiesInterface(spellSpiral, self._updateSpellThingiesInterface)
+
+	return spellSpiral
+end
+
+function GamepadCombatHUD:newSpellButton(spellState)
+	local button = self:newSpiralButton()
+
+	local spellIcon = SpellIcon()
+	button:addChild(spellIcon)
+
+	button:removeChild(button:getData("icon"))
+	button:setData("icon", spellIcon)
+
+	return button
+end
+
+function GamepadCombatHUD:updateSpellButton(button, spellState)
+	local icon = button:getData("icon")
+	icon:setSpellID(spellState.id)
+	icon:setSpellActive(spellState.active)
+end
+
+function GamepadCombatHUD:finishSpellThingies(name, spiralMenu)
+	self:finishSpiralMenu(name, spiralMenu)
+end
+
 function GamepadCombatHUD:getStanceInfo(style, stance)
 	if not style or not stance then
 		return "???", {}
@@ -1135,6 +1358,23 @@ end
 
 function GamepadCombatHUD:update(delta)
 	BaseCombatHUD.update(self, delta)
+
+	local previousTime = self.currentThingiesOpenElapsedTime
+	self.currentThingiesOpenElapsedTime = math.min(self.currentThingiesOpenElapsedTime + delta, self.SPIRAL_OPEN_DURATION)
+	if previousTime < self.currentThingiesOpenElapsedTime then
+		if self.lastOpenedThingiesMenu then
+			local delta = Tween.bounceOut(math.clamp(self.currentThingiesOpenElapsedTime / self.SPIRAL_OPEN_DURATION))
+			self.minimumButtonSize = math.lerp(self.MINIMUM_BUTTON_SIZE_OPEN, self.MINIMUM_BUTTON_SIZE, delta)
+			self.minimumIconSize = math.lerp(self.MINIMUM_ICON_SIZE_OPEN, self.MINIMUM_ICON_SIZE, delta)
+
+			self.lastOpenedThingiesMenu:setRadius(
+				math.lerp(self.SPIRAL_INNER_RADIUS_OPEN, self.SPIRAL_INNER_RADIUS, delta),
+				math.lerp(self.SPIRAL_OUTER_RADIUS_OPEN, self.SPIRAL_OUTER_RADIUS, delta))
+		end
+	else
+		self.minimumButtonSize = self.MINIMUM_BUTTON_SIZE
+		self.minimumIconSize = self.MINIMUM_ICON_SIZE
+	end
 end
 
 return GamepadCombatHUD

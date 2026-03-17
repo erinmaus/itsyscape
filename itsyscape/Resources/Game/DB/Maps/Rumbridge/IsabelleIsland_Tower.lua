@@ -780,6 +780,59 @@ do
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
 	}
+
+	ItsyScape.Meta.MakeOffset {
+		OffsetY = 1.85,
+		Resource = ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone"
+	}
+
+	local CraftAction = ItsyScape.Action.OpenCraftWindow()
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Craft",
+		XProgressive = "Crafting",
+		Language = "en-US",
+		Action = CraftAction
+	}
+
+	ItsyScape.Meta.DelegatedActionTarget {
+		CategoryKey = "Wood",
+		Action = CraftAction
+	}
+
+	ItsyScape.Resource.Prop "Desk_Isabelle_DragonBone" {
+		CraftAction
+	}
+end
+
+do
+	local Desk = ItsyScape.Resource.Prop "Desk_Isabelle" {
+		-- Nothing.
+	}
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Desk
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 3,
+		SizeZ = 1.5,
+		MapObject = Desk
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite desk",
+		Language = "en-US",
+		Resource = Desk
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Better not be reading or writing anything inappropriate on a desk that fine!",
+		Language = "en-US",
+		Resource = Desk
+	}
 end
 
 do
@@ -860,13 +913,13 @@ do
 	}
 
 	ItsyScape.Meta.ResourceName {
-		Value = "Isabelle's desk chair",
+		Value = "Exquisite comfy chair",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Of course Isabelle could afford such a comfy chair.",
+		Value = "Sitting on that is like floating on a cloud, with the added benefit of awesome lumbar support!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "ComfyChair_Isabelle"
 	}
@@ -926,7 +979,7 @@ do
 	}
 
 	ItsyScape.Meta.ResourceDescription {
-		Value = "Lights the way.",
+		Value = "An oil-powered lamp. Wouldn't want the job to go through and top all of these lamps up!",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Lamp_IsabelleTower"
 	}
@@ -952,6 +1005,24 @@ do
 		ItsyScape.Action.UseCraftWindow()
 	}
 
+	ItsyScape.Meta.ArtisanProperty {
+		Count = 1,
+		Property = ItsyScape.Resource.ArtisanProperty "CommonFurnaceFire_Smelt",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ArtisanProperty {
+		Count = 1,
+		Property = ItsyScape.Resource.ArtisanProperty "NuclearHeat_Smelt",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.ArtisanProperty {
+		Count = 1,
+		Property = ItsyScape.Resource.ArtisanProperty "DragonHeat_Smelt",
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
 	ItsyScape.Meta.PeepID {
 		Value = "Resources.Game.Peeps.Props.BasicFurnace",
 		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
@@ -959,9 +1030,14 @@ do
 
 	ItsyScape.Meta.MapObjectSize {
 		SizeX = 3,
-		SizeY = 3,
+		SizeY = 1.5,
 		SizeZ = 1.5,
 		MapObject = ItsyScape.Resource.Prop "Furnace_Isabelle"
+	}
+
+	ItsyScape.Meta.MakeOffset {
+		OffsetY = 0.5,
+		Resource = ItsyScape.Resource.Prop "Furnace_Isabelle"
 	}
 
 	ItsyScape.Meta.ResourceName {
@@ -1045,5 +1121,336 @@ do
 		Value = "Lights the way.",
 		Language = "en-US",
 		Resource = ItsyScape.Resource.Prop "Brazier_Isabelle"
+	}
+end
+
+do
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.CutsceneDoor",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 6,
+		SizeY = 4,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "One door of many in this tower worth the yearly salary of a common family of folks.",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerSmallDoor"
+	}
+end
+
+do
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BasicDoor",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 12,
+		SizeY = 12,
+		SizeZ = 1.5,
+		MapObject = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Isabelle Tower entrance door",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Who knew doors could be an intimidating display of wealth and power?",
+		Language = "en-US",
+		Resource = ItsyScape.Resource.Prop "IsabelleIslandTowerLargeDoor"
+	}
+end
+
+do
+	local Plinth = ItsyScape.Resource.Prop "Plinth_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Plinth
+	}
+
+	ItsyScape.Meta.PropAnchor {
+		OffsetI = 0,
+		OffsetJ = 1,
+		Resource = Plinth
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 1.5,
+		SizeZ = 1.5,
+		MapObject = Plinth
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Plinth",
+		Language = "en-US",
+		Resource = Plinth
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancy plinth to describe a museum exhibit.",
+		Language = "en-US",
+		Resource = Plinth
+	}
+end
+
+do
+	local Exhibit = ItsyScape.Resource.Prop "GiantSquidTentacleExhibit"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 7.5,
+		SizeZ = 3.5,
+		MapObject = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Giant squid tentacle",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A tank containing a giant squid tentacle.",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+end
+
+do
+	local Exhibit = ItsyScape.Resource.Prop "AmuletOfYendor"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 1.5,
+		SizeY = 1,
+		SizeZ = 1.5,
+		MapObject = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Amulet of Yendor",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A replica of a mythical amulet once believed to grant godhood to those who possess it.",
+		Language = "en-US",
+		Resource = Exhibit
+	}
+end
+
+do
+	local Table = ItsyScape.Resource.Prop "Table_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Table
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2.5,
+		SizeY = 2,
+		SizeZ = 2.5,
+		MapObject = Table
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite table",
+		Language = "en-US",
+		Resource = Table
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "That's probably one expensive table.",
+		Language = "en-US",
+		Resource = Table
+	}
+end
+
+do
+	local LongTable = ItsyScape.Resource.Prop "LongTable_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = LongTable
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 2,
+		SizeZ = 7,
+		MapObject = LongTable
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite long table",
+		Language = "en-US",
+		Resource = LongTable
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "A fancy table for important meetings.",
+		Language = "en-US",
+		Resource = LongTable
+	}
+end
+
+do
+	local Bookshelf = ItsyScape.Resource.Prop "Shelf_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.FurnitureProp",
+		Resource = Bookshelf
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 4,
+		SizeZ = 0.5,
+		MapObject = Bookshelf
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite bookshelf",
+		Language = "en-US",
+		Resource = Bookshelf
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Full of books on all kinds of subjects.",
+		Language = "en-US",
+		Resource = Bookshelf
+	}
+end
+
+do
+	local Staircase = ItsyScape.Resource.Prop "IsabelleIslandTowerSpiralStaircase"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.PassableProp",
+		Resource = Staircase
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Runic stairs",
+		Language = "en-US",
+		Resource = Staircase
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Stairs made from rune stones.",
+		Language = "en-US",
+		Resource = Staircase
+	}
+end
+
+do
+	local Rug = ItsyScape.Resource.Prop "Rug_Isabelle"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.BlockingProp",
+		Resource = Rug
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 4,
+		SizeY = 0.5,
+		SizeZ = 8,
+		MapObject = Rug
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Exquisite gilded rug",
+		Language = "en-US",
+		Resource = Rug
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Of course it's gilded and made from the finest fabrics money can buy - wouldn't want to spill coffee on that!",
+		Language = "en-US",
+		Resource = Rug
+	}
+end
+
+do
+	local Orrery = ItsyScape.Resource.Prop "Orrery"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.Props.TimedSkyProp",
+		Resource = Orrery
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 3.5,
+		SizeY = 7.5,
+		SizeZ = 3.5,
+		MapObject = Orrery
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Anachronistic orrery",
+		Language = "en-US",
+		Resource = Orrery
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "An orrery from antiquity, when humans thought the universe was geocentric. Since then, it has been repaired and updated with a more modern rendition after the cataclysmic event that began the Age of Humanity.",
+		Language = "en-US",
+		Resource = Orrery
+	}
+end
+
+do
+	local ParadoxGate = ItsyScape.Resource.Prop "ParadoxGate"
+
+	ItsyScape.Meta.PeepID {
+		Value = "Resources.Game.Peeps.ParadoxGate.ParadoxGate",
+		Resource = ParadoxGate
+	}
+
+	ItsyScape.Meta.MapObjectSize {
+		SizeX = 2,
+		SizeY = 7,
+		SizeZ = 2,
+		MapObject = ParadoxGate
+	}
+
+	ItsyScape.Meta.ResourceName {
+		Value = "Paradox gate",
+		Language = "en-US",
+		Resource = ParadoxGate
+	}
+
+	ItsyScape.Meta.ResourceDescription {
+		Value = "Powers portals.",
+		Language = "en-US",
+		Resource = ParadoxGate
 	}
 end

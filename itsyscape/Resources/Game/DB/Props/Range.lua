@@ -35,13 +35,20 @@ ItsyScape.Resource.Prop "CookingRange_Default" {
 }
 
 ItsyScape.Meta.PeepID {
-	Value = "Resources.Game.Peeps.Props.FurnitureProp",
+	Value = "Resources.Game.Peeps.Props.BasicRange",
+	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
+}
+
+ItsyScape.Meta.MakeOffset {
+	OffsetX = -0.65,
+	OffsetY = 1,
+	OffsetZ = 0,
 	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
 }
 
 ItsyScape.Meta.MapObjectSize {
-	SizeX = 1.5,
-	SizeY = 2,
+	SizeX = 3.5,
+	SizeY = 1,
 	SizeZ = 1.5,
 	MapObject = ItsyScape.Resource.Prop "CookingRange_Default"
 }
@@ -58,3 +65,20 @@ ItsyScape.Meta.ResourceDescription {
 	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
 }
 
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "CommonStoveTop_Cook",
+	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "CommonOven_Cook",
+	Resource = ItsyScape.Resource.Prop "CookingRange_Default"
+}

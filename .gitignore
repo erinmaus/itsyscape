@@ -18,5 +18,7 @@ cmake*
 itsyscape/version.meta
 itsyscape/.tone
 itsyscape/Resources/Game/Dialog/*/Dialog.json
+itsyscape/Resources/Game/Books/*/Book.json
 itsyscape/Resources/Game/TileSets/*/Cache/
 *.mapmesh
+.clocignore

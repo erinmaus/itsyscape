@@ -17,14 +17,14 @@ function TextInputRenderer:new(resources)
 	WidgetRenderer.new(self, resources)
 
 	self.defaultStyle = TextInputStyle({
-		active = "Resources/Renderers/Widget/TextInput/Default-Active.9.png",
-		inactive = "Resources/Renderers/Widget/TextInput/Default-Inactive.9.png",
-		hover = "Resources/Renderers/Widget/TextInput/Default-Hover.9.png",
-		color = { 0, 0, 0, 1 },
-		selectionColor = { 1, 1, 1, 0.5 },
+		inactive = "Resources/Game/UI/TextInputs/Default-Inactive.png",
+		active = "Resources/Game/UI/TextInputs/Default-Active.png",
+		hover = "Resources/Game/UI/TextInputs/Default-Hover.png",
 		font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-		fontSize = _MOBILE and 26 or 24,
-		padding = 4
+		fontSize = 32,
+		color = { 0.2, 0.2, 0.2, 0.2 },
+		align = "center",
+		textShadow = true
 	}, resources)
 end
 

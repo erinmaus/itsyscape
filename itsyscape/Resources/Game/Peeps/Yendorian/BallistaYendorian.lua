@@ -53,15 +53,4 @@ function BallistaYendorian:ready(director, game)
 	Utility.Peep.equipXWeapon(self, "YendorianBoltStrike")
 end
 
-function BallistaYendorian:update(...)
-	BaseYendorian.update(self, ...)
-
-	if Utility.Peep.face3D(self) then
-		local rotation = self:getBehavior(RotationBehavior)
-		if rotation.rotation then
-			rotation.rotation = rotation.rotation * Quaternion.fromAxisAngle(Vector.UNIT_Y, -math.pi / 3)
-		end
-	end
-end
-
 return BallistaYendorian

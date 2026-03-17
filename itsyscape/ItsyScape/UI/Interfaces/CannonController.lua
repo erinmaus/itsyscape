@@ -19,7 +19,7 @@ local CannonController = Class(Controller)
 
 CannonController.CAMERA_OFFSET   = Vector(0, 4, 2)
 CannonController.CAMERA_DISTANCE = 20
-CannonController.CAMERA_ROTATION = Quaternion.Y_180 * Quaternion.X_180 * Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 16)
+CannonController.CAMERA_ROTATION = Quaternion.Y_180 * Quaternion.X_180 * Quaternion.fromAxisAngle(Vector.UNIT_X, math.pi / 16)
 
 function CannonController:new(peep, director,cannon)
 	Controller.new(self, peep, director)
@@ -57,7 +57,7 @@ end
 function CannonController:fire(e)
 	self:updatePath()
 
-	self.cannon:poke("fire", self:getPeep(), "ItsyCannonball", self.currentPath, self.currentPathDuration)
+	self.cannon:poke("fire", self:getPeep(), nil, "ItsyCannonball", self.currentPath, self.currentPathDuration)
 	self:getPlayer():pokeCamera("shake", 0.5)
 
 	self:getGame():getUI():closeInstance(self)

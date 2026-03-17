@@ -103,19 +103,26 @@ function MoonDebrisRing:getIsStatic()
 	return false
 end
 
-function MoonDebrisRing:tick()
-	PropView.tick(self)
+do
+	local y = Quaternion()
+	local z = Quaternion()
+	local rotation = Quaternion()
+	local color = Color()
+	function MoonDebrisRing:tick()
+		PropView.tick(self)
 
-	local offset = self:getProp():getState().offset or 0
-	local y = Quaternion.fromAxisAngle(Vector.UNIT_Y, (love.timer.getTime() + offset) * (math.pi / 1024))
-	local z = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 3)
+		local offset = self:getProp():getState().offset or 0
+		local y = Quaternion.fromAxisAngle(Vector.UNIT_Y, (love.timer.getTime() + offset) * (math.pi / 1024), y)
+		local z = Quaternion.fromAxisAngle(Vector.UNIT_Z, math.pi / 3, z)
+		z:product(y, rotation):normalize(rotation)
 
-	local rotation = (z * y):getNormal()
-	self:getRoot():getTransform():setLocalRotation(rotation)
+		self:getRoot():getTransform():setLocalRotation(rotation)
 
-	local state = self:getProp():getState()
-	if state.currentSkyColor then
-		self.particles:getMaterial():setColor(Color(unpack(state.currentSkyColor)))
+		local state = self:getProp():getState()
+		if state.currentSkyColor then
+			color = color:from(unpack(state.currentSkyColor))
+			self.particles:getMaterial():setColor(color)
+		end
 	end
 end
 

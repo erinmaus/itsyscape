@@ -1,0 +1,12 @@
+{
+	"ui.notification.default": "Lorem ipsum...",
+	"ui.notification.combat.targetOutOfRange": "The foe is out of range! Get closer.",
+	"ui.notification.combat.targetFlyingAndOutOfRange": "The foe is flying and out of range of your weapon!",
+	"ui.notification.combat.switchClassLoadoutInventoryFull": "Your inventory doesn't have enough space to switch your loadout!",
+	"ui.notification.combat.switchClassLoadoutEquipActionFailed": "Couldn't equip all your gear because some requirements were not met.",
+	"ui.notification.inventory.inventoryFull": "Couldn't do that because your inventory is full.",
+	"ui.notification.inventory.dequipItemInventoryFull": "Couldn't dequip gear because your inventory is full.",
+	"ui.notification.inventory.equipItemInventoryFull": "Couldn't equip gear because current gear needs to be dequipped and your inventory is full.",
+	"ui.notification.inventory.pickUpItemInventoryFull": "Couldn't pick up item because your inventory is full.",
+
+}

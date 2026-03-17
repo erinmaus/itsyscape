@@ -377,6 +377,7 @@ local Charge = Mashina.Step {
 
 	Mashina.Peep.PokeSelf {
 		event = "dashStart",
+		poke = CURRENT_TARGET,
 	},
 
 	Mashina.Multiply {
@@ -448,6 +449,8 @@ local Charge = Mashina.Step {
 
 					Mashina.Peep.AttackWithXWeapon {
 						target = CHARGE_HIT,
+						is_special = true,
+						special_attack_interval = 2,
 						x_weapon = "Keelhauler_Dash"
 					}
 				}

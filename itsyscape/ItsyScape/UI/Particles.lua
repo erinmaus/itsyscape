@@ -41,7 +41,11 @@ function Particles:getOverflow()
 end
 
 function Particles:setTintColor(value)
-	self.tintColor = value
+	if not value then
+		self.tintColor:from(1)
+	else
+		self.tintColor:from(value:get())
+	end
 end
 
 function Particles:getTintColor()
@@ -82,6 +86,10 @@ function Particles:_initParticleSystem(particleSystemProperties)
 		else
 			Log.error("Attribute '%s' is not a particle attribute.", attribute)
 		end
+	end
+
+	if particleSystemProperties.Offset then
+		particleSystem:setOffset(unpack(particleSystemProperties.Offset))
 	end
 
 	self.particleSystem = particleSystem
@@ -143,7 +151,10 @@ function Particles:draw(resources, state)
 	end
 
 	love.graphics.setColor(self.tintColor:get())
-	itsyrealm.graphics.uncachedDraw(self.particleSystem)
+
+	if self.particleSystem then
+		itsyrealm.graphics.uncachedDraw(self.particleSystem)
+	end
 
 	if not self:getOverflow() then
 		itsyrealm.graphics.resetPseudoScissor()

@@ -34,7 +34,7 @@ AncientKaradon.STATE_TARGET = 'target'
 AncientKaradon.SWIM_RADIUS = 1
 AncientKaradon.SWIM_SPEED  = math.pi / 2
 
-AncientKaradon.DIVE_OFFSET_Y         = 7.5
+AncientKaradon.DIVE_OFFSET_Y         = 4.5
 AncientKaradon.DIVE_DURATION_SECONDS = 1.5
 
 function AncientKaradon:new(resource, name, ...)
@@ -127,17 +127,6 @@ function AncientKaradon:onReceiveAttack(attack)
 	if not isPlayer then
 		return
 	end
-
-	local isOpen = Utility.UI.isOpen(aggressor, "BossHUD")
-	if isOpen then
-		return
-	end
-
-	Utility.UI.openInterface(
-		aggressor,
-		"BossHUD",
-		false,
-		self)
 end
 
 function AncientKaradon:onDive()
@@ -147,6 +136,14 @@ function AncientKaradon:onDive()
 	self.currentDiveTime = 0
 	self.startDiveY = Utility.Peep.getPosition(self).y
 	self.targetDiveY = self.startDiveY - AncientKaradon.DIVE_OFFSET_Y
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	local splashPosition = Utility.Peep.getAbsolutePosition(self)
+	stage:fireProjectile(
+		"CannonballSplash",
+		Vector.ZERO,
+		Vector(splashPosition.x, splashPosition.y - AncientKaradon.DIVE_OFFSET_Y, splashPosition.z),
+		Utility.Peep.getLayer(self))
 end
 
 function AncientKaradon:onSwim()
@@ -177,6 +174,14 @@ function AncientKaradon:onRise(target)
 			"Resources/Game/Animations/SFX_AncientKaradon_Roar/Script.lua")
 		actor:playAnimation('x-karadon', 1, animation)
 	end
+
+	local stage = self:getDirector():getGameInstance():getStage()
+	local splashPosition = Utility.Peep.getAbsolutePosition(self)
+	stage:fireProjectile(
+		"CannonballSplash",
+		Vector.ZERO,
+		Vector(splashPosition.x, splashPosition.y + AncientKaradon.DIVE_OFFSET_Y, splashPosition.z),
+		Utility.Peep.getLayer(self))
 end
 
 function AncientKaradon:onTarget()
@@ -200,7 +205,7 @@ function AncientKaradon:update(...)
 		local mu = Tween.sineEaseOut(math.min(self.currentDiveTime / AncientKaradon.DIVE_DURATION_SECONDS, 1))
 		local currentPosition = startPosition:lerp(endPosition, mu)
 
-		Utility.Peep.setPosition(self, currentPosition, true)
+		Utility.Peep.setPosition(self, currentPosition)
 
 		if self.currentDiveTime > AncientKaradon.DIVE_DURATION_SECONDS then
 			if self.currentAnimationState == AncientKaradon.STATE_DIVE then

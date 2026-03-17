@@ -12,19 +12,26 @@ local Spell = require "ItsyScape.Game.Spell"
 
 local CombatSpell = Class(Spell)
 
+CombatSpell.DEFAULT_STRENGTH_BONUS = 1
+CombatSpell.DEFAULT_ZEAL_COST      = 0.1
+
 function CombatSpell:new(...)
 	Spell.new(self, ...)
+
+	self.strengthBonus = self.DEFAULT_STRENGTH_BONUS
+	self.zealCost = self.DEFAULT_ZEAL_COST
+
+	local gameDB = self:getGame():getGameDB()
+	local resource = self:getResource()
+	local record = gameDB:getRecord("CombatSpell", { Resource = resource }, 1)
+	if record then
+		self.strengthBonus = record:get("Strength")
+		self.zealCost = record:get("ZealCost")
+	end
 end
 
 function CombatSpell:getStrengthBonus()
-	local gameDB = self:getGame():getGameDB()
-	local resource = self:getResource()
-	local record = gameDB:getRecords("CombatSpell", { Resource = resource }, 1)[1]
-	if record then
-		return record:get("Strength") or 1
-	end
-
-	return 1
+	return self.strengthBonus
 end
 
 function CombatSpell:applyDamageRoll(damageRoll)
@@ -41,6 +48,10 @@ end
 
 function CombatSpell:getProjectile(peep)
 	return self:getResource().name
+end
+
+function CombatSpell:getZealCost(peep)
+	return self.zealCost
 end
 
 function CombatSpell:cast(peep, target)

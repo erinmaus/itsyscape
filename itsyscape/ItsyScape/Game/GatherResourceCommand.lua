@@ -53,7 +53,9 @@ end
 
 function GatherResourceCommand:onBegin(peep)
 	if peep:hasBehavior(PlayerBehavior) then
-		self.isInterfaceOpen, self.interfaceIndex = Utility.UI.openInterface(peep, "ActionCommand", false, self.prop, self.action, Function(self.attack, self))
+		self.isInterfaceOpen, self.interfaceIndex = Utility.UI.openInterface(peep, "ActionCommand", false, self.prop, self.action, {
+			tool = self.tool
+		}, Function(self.attack, self))
 	else
 		self.isInterfaceOpen = false
 	end
@@ -80,6 +82,10 @@ function GatherResourceCommand:onBegin(peep)
 end
 
 function GatherResourceCommand:showTool(peep)
+	if Utility.Peep.getEquippedWeapon(peep) == self.tool then
+		return
+	end
+
 	if self.skin then
 		local currentWeapon = Utility.Peep.getEquippedWeapon(peep)
 		if currentWeapon then
@@ -115,6 +121,10 @@ function GatherResourceCommand:showTool(peep)
 end
 
 function GatherResourceCommand:hideTool(peep)
+	if Utility.Peep.getEquippedWeapon(peep) == self.tool then
+		return
+	end
+
 	if self.slot then
 		local actor = peep:getBehavior(ActorReferenceBehavior)
 		if actor and actor.actor then
@@ -178,10 +188,12 @@ function GatherResourceCommand:attack(peep, spread)
 
 		local damage
 		if spread then
-			damage = math.lerp(damageRoll:getMinHit(), damageRoll:getMaxHit(), spread)
+			damage = math.lerp(damageRoll:getMinHit(), damageRoll:getMaxHit(), math.abs(spread))
+			damage = damage * math.sign(spread)
 		else
 			damage = damageRoll:roll()
 		end
+
 
 		self.prop:poke('resourceHit', {
 			tool = self.tool,
@@ -195,7 +207,11 @@ function GatherResourceCommand:attack(peep, spread)
 			skill = self.skill,
 			prop = self.prop
 		})
+
+		return damage
 	end
+
+	return 0
 end
 
 return GatherResourceCommand

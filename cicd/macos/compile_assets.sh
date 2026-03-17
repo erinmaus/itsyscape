@@ -2,6 +2,10 @@
 
 set -xe
 
+pushd ../..
+make LUAJIT="$(pwd)/cicd/macos/build/LuaJIT/src/luajit" all
+popd
+
 rm -rf ./staging/itsyrealm
 cp -r ../../itsyscape ./staging/itsyrealm
 cp -r ./staging/ext/B ./staging/itsyrealm/B
@@ -9,8 +13,11 @@ cp -r ./staging/ext/devi ./staging/itsyrealm/devi
 cp -r ./staging/ext/nomicon ./staging/itsyrealm/nomicon
 cp -r ./staging/ext/slick ./staging/itsyrealm/slick
 
-LOVE_BINARY="$(pwd)/itsyrealm/ItsyRealm.app/Contents/MacOS/ItsyRealm"
-"$LOVE_BINARY" --fused --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
+
+if [ -z "$SKIP_TILESET" ]; then
+	LOVE_BINARY="$(pwd)/itsyrealm/ItsyRealm.app/Contents/MacOS/ItsyRealm"
+	"$LOVE_BINARY" --fused --f:anonymous --debug --main ItsyScape.BuildLargeTileSetsApplication
+fi
 
 cp -vr "$HOME/Library/Application Support/ItsyRealm/Resources/"* ./staging/itsyrealm/Resources
 
@@ -20,3 +27,6 @@ cd ../..
 
 cd ./staging/itsyrealm
 zip -0 -oXqr ../itsyrealm.love .
+
+cd ..
+rm -fr itsyrealm

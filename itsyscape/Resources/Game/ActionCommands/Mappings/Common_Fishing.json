@@ -1,0 +1,34 @@
+[
+	{
+		"actionCommand": "Fish1",
+
+		"actionType": "Fish",
+		"mapObjects": [
+			{ "map": "Sailing_HumanityEdge", "name": "LightningStormfish_Default1" },
+			{ "map": "Sailing_HumanityEdge", "name": "LightningStormfish_Default2" },
+			{ "map": "Sailing_HumanityEdge", "name": "LightningStormfish_Default3" }
+		]
+	},
+	{
+		"actionCommand": "Fish1",
+
+		"actionType": "Fish",
+		"requirements": [
+			{
+				"resource": "Fishing",
+				"resourceType": "Skill",
+				"minLevel": 1,
+				"maxLevel": 9
+			}
+		]
+	},
+	{
+		"actionCommand": "FishAncientKaradon",
+
+		"resources": [
+			{ "name": "AncientKaradonFishingSpotProxy", "type": "Prop" }
+		],
+
+		"actionType": "Fish"
+	}
+]

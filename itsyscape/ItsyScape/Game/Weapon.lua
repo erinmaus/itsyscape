@@ -8,15 +8,21 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Utility = require "ItsyScape.Game.Utility"
 local CurveConfig = require "ItsyScape.Game.CurveConfig"
 local AttackPoke = require "ItsyScape.Peep.AttackPoke"
+local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
+local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local EquipmentBonusesBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBonusesBehavior"
+local Peep = require "ItsyScape.Peep.Peep"
+local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
-local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Weapon = Class(Equipment)
@@ -48,12 +54,21 @@ Weapon.BONUSES       = {
 	["None"]   = true
 }
 
+Weapon.DODGE_BEHAVIOR_AVOID     = "avoid"
+Weapon.DODGE_BEHAVIOR_CHARGE    = "charge"
+Weapon.DODGE_BEHAVIOR_KNOCKBACK = "knockback"
+
 Weapon.DamageRoll = Class()
 
 function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 	local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 
 	purpose = purpose or Weapon.PURPOSE_KILL
+
+	local gameDB = peep:getDirector():getGameDB()
+	local xWeaponBoost = gameDB:getRecord("XWeaponBoost", {
+		Resource = gameDB:getResource(weapon:getID(), "Item")
+	})
 
 	self.weapon = weapon
 	self.peep = peep
@@ -107,7 +122,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 		end
 
 		self.stat = skill
-		self.bonus = (bonuses[bonusType] or 0)
+		self.bonus = (bonuses[bonusType] or 0) + (xWeaponBoost and xWeaponBoost:get("StrengthBonus") or 0)
 	elseif purpose == Weapon.PURPOSE_TOOL then
 		self.bonus = 0
 
@@ -159,7 +174,7 @@ function Weapon.DamageRoll:new(weapon, peep, purpose, target)
 			local styleBonus = weapon:getBonusForStance(peep)
 
 			local accuracyBonusName = "Accuracy" .. styleBonus
-			local accuracyBonus = bonuses[accuracyBonusName] or 0
+			local accuracyBonus = (bonuses[accuracyBonusName] or 0) + (xWeaponBoost and xWeaponBoost:get("AccurayBonus") or 0)
 			local accuracyTier = math.max(CurveConfig.StyleBonus:solvePlus(accuracyBonus * 3) - 10, 0)
 
 			local defenseBonusName = "Defense" .. styleBonus
@@ -316,6 +331,17 @@ function Weapon.AttackRoll:new(weapon, peep, target, bonus)
 		accuracyBonus = bonuses[k] or 0
 
 		self.accuracyBonusType = k
+	end
+
+	do
+		local gameDB = peep:getDirector():getGameDB()
+		local xWeaponResource = gameDB:getResource(weapon:getID(), "Item")
+		local xWeaponBoost = xWeaponResource and gameDB:getRecord("XWeaponBoost", {
+			Resource = xWeaponResource
+		})
+
+		self.alwaysHits = xWeaponBoost and xWeaponBoost:get("AlwaysHits") ~= 0
+		accuracyBonus = accuracyBonus + (xWeaponBoost and xWeaponBoost:get("AccurayBonus") or 0)
 	end
 
 	self.accuracyBonus = accuracyBonus
@@ -475,6 +501,10 @@ function Weapon.AttackRoll:roll()
 	return attackRoll > defenseRoll, attackRoll, defenseRoll
 end
 
+function Weapon:pokeRollAttack(peep, target, roll)
+	peep:poke("rollAttack", roll)
+end
+
 -- Rolls an attack.
 function Weapon:rollAttack(peep, target, bonus)
 	local roll = Weapon.AttackRoll(self, peep, target, bonus)
@@ -522,6 +552,10 @@ function Weapon:applyDamageModifiers(roll, purpose)
 	end
 end
 
+function Weapon:pokeRollDamage(peep, target, roll)
+	peep:poke("rollDamage", roll)
+end
+
 function Weapon:rollDamage(peep, purpose, target)
 	local roll = Weapon.DamageRoll(self, peep, purpose, target)
 	self:applyDamageModifiers(roll)
@@ -540,42 +574,55 @@ function Weapon:getAttackRange(peep)
 	return 1
 end
 
-function Weapon:onAttackHit(peep, target)
-	local roll = self:rollDamage(peep, Weapon.PURPOSE_KILL, target)
+function Weapon:pokeHeal(peep, target, e)
+	target:poke("heal", e)
+end
+
+function Weapon:pokeReceiveAttack(peep, target, attack)
+	target:poke("receiveAttack", attack, peep)
+end
+
+function Weapon:pokeInitiateAttack(peep, target, attack)
+	peep:poke("initiateAttack", attack, target)
+end
+
+function Weapon:onAttackHit(peep, target, attackRoll, a, d)
+	local damageRoll = self:rollDamage(peep, Weapon.PURPOSE_KILL, target)
 	do
-		if roll:getSelf() then
-			for effect in roll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-				effect:dealDamage(roll)
+		if damageRoll:getSelf() then
+			for effect in damageRoll:getSelf():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				effect:dealDamage(damageRoll)
 			end
 		end
 
-		if roll:getTarget() then
-			for effect in roll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
-				effect:receiveDamage(roll)
+		if damageRoll:getTarget() then
+			for effect in damageRoll:getTarget():getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				effect:receiveDamage(damageRoll)
 			end
 		end
 	end
 
-	local damage = roll:roll()
+	local damage = damageRoll:roll()
 	local attack = AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
+		damageRoll = damageRoll,
+		attackRoll = attackRoll,
+		accuracyAttackRoll = a,
+		accuracyDefenseRoll = d,
 		damage = damage,
 		aggressor = peep,
 		delay = self:getDelay(peep, target)
 	})
 
 	if damage < 0 then
-		target:poke('heal', {
-			hitPoints = -damage
-		})
+		self:pokeHeal(peep, target, { hitPoints = -damage })
 	else
-
-		target:poke('receiveAttack', attack, peep)
-		peep:poke('initiateAttack', attack, target)
+		self:pokeReceiveAttack(peep, target, attack)
+		self:pokeInitiateAttack(peep, target, attack)
 	end
 
-	self:dealtDamage(peep, target, attack, roll)
+	self:dealtDamage(peep, target, attack, damageRoll)
 	self:applyCooldown(peep, target)
 
 	return attack
@@ -585,17 +632,26 @@ function Weapon:dealtDamage(peep, target, attack, roll)
 	-- Nothing.
 end
 
-function Weapon:onAttackMiss(peep, target)
-	local attack = AttackPoke({
+function Weapon:getMissAttackPoke(peep, target, attackRoll, a, d)
+	attackRoll = attackRoll or self:rollAttack(peep, target, self:getBonusForStance(peep))
+
+	return AttackPoke({
 		attackType = self:getBonusForStance(peep):lower(),
 		weaponType = self:getWeaponType(),
+		attackRoll = attackRoll,
+		accuracyAttackRoll = a or 0,
+		accuracyDefenseRoll = d or 1,
 		damage = 0,
 		aggressor = peep,
 		delay = self:getDelay(peep, target)
 	})
+end
 
-	target:poke('receiveAttack', attack, peep)
-	peep:poke('initiateAttack', attack, target)
+function Weapon:onAttackMiss(peep, target, attackRoll, a, d)
+	local attack = self:getMissAttackPoke(peep, target, attackRoll, a, d)
+
+	self:pokeReceiveAttack(peep, target, attack)
+	self:pokeInitiateAttack(peep, target, attack)
 
 	self:applyCooldown(peep, target)
 
@@ -608,7 +664,6 @@ function Weapon:getModifiedCooldown(peep, target)
 		return 0
 	end
 
-	local cooldown = self:getCooldown(peep)
 	do
 		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
 			cooldown = effect:applyToSelfWeaponCooldown(peep, cooldown)
@@ -624,6 +679,27 @@ function Weapon:getModifiedCooldown(peep, target)
 	return cooldown
 end
 
+function Weapon:getModifiedDodgeCooldown(peep, target)
+	local cooldown = self:getDodgeCooldown(peep)
+	if cooldown == 0 then
+		return 0
+	end
+
+	do
+		for effect in peep:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+			cooldown = effect:applyToSelfDodgeCooldown(peep, cooldown)
+		end
+
+		if target then
+			for effect in target:getEffects(require "ItsyScape.Peep.Effects.CombatEffect") do
+				cooldown = effect:applyToTargetDodgeCooldown(target, cooldown)
+			end
+		end
+	end
+
+	return cooldown
+end
+
 function Weapon:applyCooldown(peep, target)
 	local cooldown = self:getModifiedCooldown(peep, target)
 	local _, c = peep:addBehavior(AttackCooldownBehavior)
@@ -631,14 +707,107 @@ function Weapon:applyCooldown(peep, target)
 	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
 end
 
+function Weapon:applyDodgeCooldown(peep)
+	local cooldown = self:getDodgeCooldown(peep)
+	local _, c = peep:addBehavior(DodgeCooldownBehavior)
+	c.cooldown = math.max(c.cooldown, cooldown)
+	c.ticks = peep:getDirector():getGameInstance():getCurrentTime()
+end
+
+function Weapon:getDodgeRange(peep, target)
+	return self:getAttackRange(peep)
+end
+
+function Weapon:getDodgeCooldown(peep)
+	return 1
+end
+
+function Weapon:adjustDodgeDirection(peep, target, direction)
+	if self:getDodgeBehavior() == Weapon.DODGE_BEHAVIOR_AVOID then
+		return -direction
+	end
+
+	return direction
+end
+
+function Weapon:getDodgeBehavior(peep, target)
+	return Weapon.DODGE_BEHAVIOR_AVOID
+end
+
+function Weapon:pokeDodge(peep, target)
+	peep:poke("dodge", target)
+end
+
+function Weapon:performDodge(peep, target, direction, speed, distance)
+	if self:getDodgeBehavior() == Weapon.DODGE_BEHAVIOR_CHARGE then
+		if Class.isCompatibleType(target, Peep) then
+			local targetRelativePosition = Utility.Peep.getRelativePosition(peep, target)
+			local distanceToTarget = Utility.Peep.getPosition(peep):distance(targetRelativePosition)
+			distance = math.min(distance, distanceToTarget)
+		end
+	end
+
+	local _, dodge = peep:addBehavior(CombatDodgeBehavior)
+	dodge.direction = direction
+	dodge.speed = speed
+	dodge.currentDistance = 0
+	dodge.maximumDistance = distance
+	dodge.dodgeBehavior = self:getDodgeBehavior()
+
+	self:pokeDodge(peep, target)
+end
+
+function Weapon:dodge(peep, target)
+	local cooldown = peep:getBehavior(DodgeCooldownBehavior)
+	if cooldown and cooldown.cooldown > 0 then
+		return false
+	end
+
+	if peep:hasBehavior(CombatDodgeBehavior) then
+		return false
+	end
+
+	if Utility.Peep.isDisabled(peep) then
+		return false
+	end
+
+	local direction
+	if Class.isCompatibleType(target, Peep) then
+		direction = Utility.Peep.getPosition(peep):direction(Utility.Peep.getRelativePosition(peep, target))
+		direction = self:adjustDodgeDirection(peep, target, direction)
+	elseif Class.isCompatibleType(target, Vector) then
+		direction = Utility.Peep.getPosition(peep):direction(target)
+	else
+		return false
+	end
+
+	if direction:getLengthSquared() == 0 then
+		return false
+	end
+
+	local dodgeSpeed = peep:hasBehavior(MovementBehavior) and peep:getBehavior(MovementBehavior).dodgeSpeed
+	if not dodgeSpeed or dodgeSpeed <= 0 then
+		return false
+	end
+
+	self:performDodge(peep, target, direction, dodgeSpeed, self:getDodgeRange(peep, target))
+
+	self:applyDodgeCooldown(peep, target)
+	return true
+end
+
 function Weapon:perform(peep, target)
 	local roll = self:rollAttack(peep, target, self:getBonusForStance(peep))
 
 	local s, a, d = roll:roll()
 	if s then
-		self:onAttackHit(peep, target, a, d)
+		self:onAttackHit(peep, target, roll, a, d)
 	else
-		self:onAttackMiss(peep, target, a, d)
+		self:onAttackMiss(peep, target, roll, a, d)
+	end
+
+	if target then
+		target:removeBehavior(PendingStrategyGradeBehavior)
 	end
 
 	return true
@@ -665,6 +834,10 @@ function Weapon:getWeaponType()
 	return 'none'
 end
 
+function Weapon:canCastSpells()
+	return false
+end
+
 function Weapon:getDelay(peep, target)
 	if peep:hasBehavior(PlayerBehavior) then
 		return 0
@@ -680,5 +853,7 @@ end
 function Weapon:getProjectile(peep)
 	return nil
 end
+
+Weapon.UNARMED = Weapon()
 
 return Weapon

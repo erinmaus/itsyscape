@@ -22,6 +22,10 @@ local DraggableButton = require "ItsyScape.UI.DraggableButton"
 local Drawable = require "ItsyScape.UI.Drawable"
 local DrawableRenderer = require "ItsyScape.UI.DrawableRenderer"
 local FocusBoundary = require "ItsyScape.UI.FocusBoundary"
+local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
+local GamepadIconRenderer = require "ItsyScape.UI.GamepadIconRenderer"
+local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
+local GamepadSink = require "ItsyScape.UI.GamepadSink"
 local Icon = require "ItsyScape.UI.Icon"
 local IconRenderer = require "ItsyScape.UI.IconRenderer"
 local Interface = require "ItsyScape.UI.Interface"
@@ -30,9 +34,6 @@ local ItemIconRenderer = require "ItsyScape.UI.ItemIconRenderer"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local LabelRenderer = require "ItsyScape.UI.LabelRenderer"
-local GamepadPokeMenu = require "ItsyScape.UI.GamepadPokeMenu"
-local GamepadIcon = require "ItsyScape.UI.GamepadIcon"
-local GamepadIconRenderer = require "ItsyScape.UI.GamepadIconRenderer"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelRenderer = require "ItsyScape.UI.PanelRenderer"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
@@ -82,9 +83,24 @@ function itsyrealm.graphics.setUIScale(value)
 	end
 end
 
+function itsyrealm.graphics.getCoordinatesFromMouse(xFrom ,xTo, yTo, yFrom)
+	xFrom = xFrom or -math.pi * 2
+	xTo = xTo or math.pi * 2
+	yFrom = yFrom or -math.pi * 2
+	yTo = yTo or math.pi * 2
+
+	local width, height = love.graphics.getWidth(), love.graphics.getHeight()
+	local mouseX, mouseY = love.mouse.getPosition()
+
+	local verticalValue = math.lerp(xFrom, xTo, mouseX / width)
+	local horizontalValue = math.lerp(yFrom, yTo, mouseY / height)
+
+	return verticalValue, horizontalValue
+end
+
 local _mode
 function itsyrealm.graphics.getScaledMode()
-	local currentWidth, currentHeight = love.window.getMode(_mode)
+	local currentWidth, currentHeight = love.graphics.getWidth(), love.graphics.getHeight()
 	local desiredWidth, desiredHeight = UIView.WIDTH, UIView.HEIGHT
 	local paddingX, paddingY = 0, 0
 
@@ -822,7 +838,7 @@ function itsyrealm.graphics.stop()
 end
 
 function itsyrealm.graphics.clearPseudoScissor()
-	local w, h = love.window.getMode()
+	local w, h = love.graphics.getWidth(), love.graphics.getHeight()
 
 	graphicsState.pseudoScissor.n = 1
 	graphicsState.pseudoScissor[1][1] = 0
@@ -1220,6 +1236,7 @@ function UIView:new(gameView)
 	ui.onOpen:register(self.open, self)
 	ui.onClose:register(self.close, self)
 	ui.onPoke:register(self.poke, self)
+	ui.onRefresh:register(self.refresh, self)
 
 	self.controlManager = ControlManager(self)
 
@@ -1293,7 +1310,8 @@ end
 function UIView:_onBlur(_, widget)
 	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
-	if not interface or interface:getRootParent() ~= self.root then
+	if not (interface and Class.isCompatibleType(interface:getData(GamepadSink), GamepadSink) and interface:getRootParent() == self.root) then
+		self.hasPendingInterfaceFocus = true
 		return
 	end
 
@@ -1320,8 +1338,8 @@ end
 function UIView:_onFocus(_, widget)
 	local focusBoundary = widget:getParentOfType(FocusBoundary)
 	local interface = widget:getParentOfType(Interface)
-
-	if not interface or interface:getRootParent() ~= self.root then
+	if not (interface and Class.isCompatibleType(interface:getData(GamepadSink), GamepadSink) and interface:getRootParent() == self.root) then
+		self.hasPendingInterfaceFocus = false
 		return
 	end
 
@@ -1338,14 +1356,18 @@ function UIView:_onFocus(_, widget)
 	end
 
 	self.hasPendingInterfaceFocus = false
+
+	if self.previousFocusedWidget ~= widget then
+		self.previousFocusedWidget = nil
+	end
 end
 
 function UIView:enableInputScheme(inputScheme)
-	self.currentInputSchemes[inputScheme]= true
+	self.currentInputSchemes[inputScheme] = true
 end
 
 function UIView:disableInputScheme(inputScheme)
-	self.currentInputSchemes[inputScheme]= nil
+	self.currentInputSchemes[inputScheme] = nil
 end
 
 function UIView:hasInputScheme(inputScheme)
@@ -1370,7 +1392,13 @@ end
 function UIView:setCurrentInputScheme(value)
 	if self:isInputSchemeValid(value) then
 		self:enableInputScheme(value)
+
+		local previousInputScheme = self.currentInputScheme
 		self.currentInputScheme = value
+
+		if previousInputScheme ~= self.currentInputScheme then
+			self.root:inputSchemeChanged(self.currentInputScheme, previousInputScheme)
+		end
 	end
 end
 
@@ -1455,6 +1483,10 @@ function UIView:getInterface(interfaceID, index)
 end
 
 function UIView:open(ui, interfaceID, index)
+	if self:getInterface(interfaceID, index) then
+		return
+	end
+
 	local TypeName = string.format("ItsyScape.UI.Interfaces.%s", interfaceID)
 	local Type = require(TypeName)
 
@@ -1494,6 +1526,13 @@ function UIView:poke(ui, interfaceID, index, actionID, actionIndex, e)
 		actionIndex = actionIndex,
 		e = e
 	})
+end
+
+function UIView:refresh(ui, interfaceID, index)
+	local interface = self:getInterface(interfaceID, index)
+	if interface then
+		interface:refresh(self:pull(interfaceID, index))
+	end
 end
 
 function UIView:keyDown(...)
@@ -1758,6 +1797,12 @@ function UIView:playItemSoundEffect(itemState, itemActionState)
 	return false
 end
 
+function UIView:T(key, values)
+	return Utility.Text.get(itsyrealm.language.getLocale(), key, values) or
+	       Utility.Text.get("en-US", key, values) or
+	       key
+end
+
 function UIView:examine(a, b, w)
 	local object, description
 	if a and b then
@@ -1880,7 +1925,11 @@ end
 
 function UIView:_onPokeMenuClosed(pokeMenu)
 	if self.pokeMenu == pokeMenu and self.previousFocusedWidget then
-		self.inputProvider:setFocusedWidget(self.previousFocusedWidget, "select")
+		local currentFocusedWidget = self.inputProvider:getFocusedWidget()
+		if currentFocusedWidget == nil then
+			self.inputProvider:setFocusedWidget(self.previousFocusedWidget, "select")
+		end
+
 		self.previousFocusedWidget = nil
 	end
 
@@ -1936,6 +1985,7 @@ function UIView:tick()
 end
 
 function UIView:update(delta)
+	self.controlManager:update()
 	self.inputProvider:update(delta)
 
 	if self.pendingPokeMenu then

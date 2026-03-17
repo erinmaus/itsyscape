@@ -8,7 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 
-BoneCraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
+local BoneCraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
 
 ItsyScape.Meta.ActionVerb {
 	Value = "Craft",

@@ -42,13 +42,17 @@ uniform Image scape_DiffuseTexture;
 
 varying highp vec2 frag_ScreenCoord;
 
-const float TARGET_HUE = 30.0 / 360.0;
+const float TARGET_HUE = 120.0 / 360.0;
 const float TARGET_HUE_WIDTH = 30.0 / 360.0;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {
     vec3 hsl = rgb_to_hsl(Texel(scape_ScreenTexture, frag_ScreenCoord).rgb);
-    float distanceFromTargetHue = clamp(abs(hsl.x - TARGET_HUE) / TARGET_HUE_WIDTH, 0.0, 1.0);
-    hsl.y *= 1.0 - distanceFromTargetHue;
-    return vec4(hsl_to_rgb(hsl.xyz) * color.rgb, color.a) * Texel(scape_DiffuseTexture, textureCoordinate);
+    float distanceFromTargetHue = clamp((hsl.x - TARGET_HUE) / TARGET_HUE_WIDTH, -1.0, 1.0);
+    hsl.r = (30.0 / 360.0) + TARGET_HUE_WIDTH * distanceFromTargetHue;
+    hsl.r = mod(hsl.r, 1.0);
+    hsl.z = min(hsl.z + 0.2 * abs(distanceFromTargetHue), 1.0);
+
+    vec3 result = clamp(hsl_to_rgb(hsl.xyz) * color.rgb, vec3(0.0), vec3(1.0));
+    return vec4(result, color.a) * Texel(scape_DiffuseTexture, textureCoordinate);
 }

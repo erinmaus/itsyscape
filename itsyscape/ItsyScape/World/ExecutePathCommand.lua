@@ -16,6 +16,7 @@ local TilePathNode = require "ItsyScape.World.TilePathNode"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 
 local ExecutePathCommand = Class(Command)
 
@@ -39,7 +40,7 @@ function ExecutePathCommand:getPath()
 end
 
 function ExecutePathCommand:getIsFinished()
-	return self.peep and not self.peep:hasBehavior(TargetTileBehavior)
+	return self.peep and not (self.peep:hasBehavior(TargetTileBehavior) or self.peep:hasBehavior(TargetPositionBehavior))
 end
 
 function ExecutePathCommand:cancel()
@@ -57,7 +58,7 @@ function ExecutePathCommand:step(peep)
 		if map then
 			local target = self.path:getNodeAtIndex(-1)
 			if target then
-				local center = map:getTileCenter(target.i, target.j) * Vector.PLANE_XZ
+				local center = (target.position or map:getTileCenter(target.i, target.j)) * Vector.PLANE_XZ
 				local distance = (center - (Utility.Peep.getPosition(peep) * Vector.PLANE_XZ)):getLength()
 
 				if distance <= self.distance then
@@ -74,11 +75,7 @@ end
 
 function ExecutePathCommand:onBegin(peep)
 	if self:step(peep) then
-		peep:poke('walk', {
-			i = i,
-			j = j,
-			k = k
-		})
+		peep:poke('walk', {})
 
 		self.path:activate(peep)
 	end
@@ -88,10 +85,17 @@ end
 
 function ExecutePathCommand:onInterrupt(peep)
 	local targetTile = peep:getBehavior(TargetTileBehavior)
+	local targetPosition = peep:getBehavior(TargetPositionBehavior)
 	if targetTile and targetTile.pathNode then
 		targetTile.pathNode:interrupt(peep)
 	elseif targetTile then
 		peep:removeBehavior(TargetTileBehavior)
+	end
+
+	if targetPosition and targetPosition.pathNode then
+		targetPosition.pathNode:interrupt(peep)
+	elseif targetPosition then
+		peep:removeBehavior(TargetPositionBehavior)
 	end
 
 	self:cancel()

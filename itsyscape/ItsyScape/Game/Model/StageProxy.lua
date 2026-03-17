@@ -98,6 +98,22 @@ StageProxy.stopUpdateMapSky:link(
 	"onUnloadMap",
 	Event.Argument("layer"))
 
+StageProxy.MAP_META = "mapMeta"
+StageProxy.updateMapMeta = Event.Set(
+	StageProxy.MAP_META,
+	Event.KeyArgument("layer", true),
+	Event.Argument("meta"))
+StageProxy.updateMapMeta:link(
+	"onMapMetaUpdated",
+	Event.Argument("layer"),
+	Event.Argument("meta"))
+StageProxy.stopUpdateMapMeta = Event.Unset(
+	StageProxy.MAP_META,
+	Event.KeyArgument("layer", true))
+StageProxy.stopUpdateMapMeta:link(
+	"onUnloadMap",
+	Event.Argument("layer"))
+
 -- StageProxy.MAP_LINK = "mapLink"
 -- StageProxy.linkMap = Event.Set(
 -- 	StageProxy.MAP_LINK,
@@ -115,48 +131,36 @@ StageProxy.stopUpdateMapSky:link(
 -- 	"onMapUnlinked",
 -- 	Event.Argument("layer"))
 
-StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, stage, id, actor, isMoving)
-	if isMoving then
-		Log.engine("Actor '%s' (%d) is moving between instances; not emitting create.", actor:getName(), actor:getID())
-		return
+StageProxy.spawnActor = Event.Create(ActorProxy, function(event, gameManager, impl, stage, ...)
+	local success, actor = impl(stage, ...)
+	if success then
+		local instance = gameManager:newInstance("ItsyScape.Game.Model.Actor", actor:getID(), actor)
+		ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", actor:getID(), actor, gameManager)
+		instance:update(true)
 	end
 
-	local instance = gameManager:newInstance("ItsyScape.Game.Model.Actor", actor:getID(), actor)
-	ActorProxy:wrapServer("ItsyScape.Game.Model.Actor", actor:getID(), actor, gameManager)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, actor)
-	instance:update(true)
+	return success, actor
 end, Event.Argument("id"), Event.Argument("actor", true))
 StageProxy.spawnActor:link("onActorSpawned")
-StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, stage, actor, isMoving, layer)
-	if isMoving then
-		Log.engine("Actor '%s' (%d) is moving between instances; not emitting destroy.", actor:getName(), actor:getID())
-		return
-	end
-
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, actor, layer)
+StageProxy.killActor = Event.Destroy(ActorProxy, function(event, gameManager, impl, stage, actor)
+	impl(stage, actor)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Actor", actor:getID())
 end, Event.Argument("actor", true), Event.Argument("layer", true))
 StageProxy.killActor:link("onActorKilled")
 
-StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, stage, id, prop, isMoving)
-	if isMoving then
-		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
-		return
+StageProxy.placeProp = Event.Create(PropProxy,function(event, gameManager, impl, stage, ...)
+	local success, prop = impl(stage, ...)
+	if success then
+		local instance = gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
+		PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
+		instance:update(true)
 	end
 
-	local instance = gameManager:newInstance("ItsyScape.Game.Model.Prop", prop:getID(), prop)
-	PropProxy:wrapServer("ItsyScape.Game.Model.Prop", prop:getID(), prop, gameManager)
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, id, prop)
-	instance:update(true)
+	return success, prop
 end, Event.Argument("id"), Event.Argument("prop", true))
 StageProxy.placeProp:link("onPropPlaced")
-StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, stage, prop, isMoving, layer)
-	if isMoving then
-		Log.engine("Prop '%s' (%d) is moving between instances; not emitting create.", prop:getName(), prop:getID())
-		return
-	end
-
-	gameManager:invokeCallback("ItsyScape.Game.Model.Stage", 0, event, stage, prop, layer)
+StageProxy.removeProp = Event.Destroy(PropProxy, function(event, gameManager, impl, stage, prop)
+	impl(stage, prop)
 	gameManager:destroyInstance("ItsyScape.Game.Model.Prop", prop:getID())
 end, Event.Argument("prop", true), Event.Argument("layer", true))
 StageProxy.removeProp:link("onPropRemoved")

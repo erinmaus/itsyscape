@@ -5,7 +5,7 @@ ItsyScape.Resource.Item "IronFlamethrowerTank" {
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(10)
 		}
 	},
@@ -76,7 +76,7 @@ ItsyScape.Resource.Item "IronFlamethrowerGun" {
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(10)
 		}
 	},

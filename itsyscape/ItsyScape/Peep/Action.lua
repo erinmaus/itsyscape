@@ -46,6 +46,10 @@ function Action:getGameDB()
 	return self.gameDB
 end
 
+function Action:getDirector()
+	return self.game:getDirector()
+end
+
 function Action:getAction()
 	return self.action
 end

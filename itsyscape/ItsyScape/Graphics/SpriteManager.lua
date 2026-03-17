@@ -7,6 +7,7 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local sort = require "batteries.sort"
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 
@@ -56,6 +57,10 @@ function SpriteManager:add(spriteID, node, offset, ...)
 				numNodesOfType = numNodesOfType + 1
 			end
 		end
+	end
+
+	if type(offset) == "number" then
+		offset = Vector(0, offset, 0)
 	end
 
 	local sprite = Type(self, node, offset + numNodesOfType * Vector(0, 0.5, 0))
@@ -154,13 +159,14 @@ function SpriteManager:draw(scene, camera, delta)
 		positions[sprite] = Vector(x, y, z)
 	end
 
-	table.sort(self.sprites, function(a, b)
+	sort.stable_sort(self.sprites, function(a, b)
 		local i = positions[a]
 		local j = positions[b]
 		return i.z > j.z
 	end)
 
 	local width, height = love.graphics.getScaledMode()
+	love.graphics.push("all")
 	love.graphics.setBlendMode('alpha')
 	love.graphics.origin()
 	love.graphics.scale(scaleX, scaleY, 1)
@@ -176,6 +182,8 @@ function SpriteManager:draw(scene, camera, delta)
 			sprite:draw(position, time)
 		end
 	end
+
+	love.graphics.pop()
 end
 
 return SpriteManager

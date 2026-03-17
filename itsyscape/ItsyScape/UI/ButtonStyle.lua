@@ -84,7 +84,7 @@ function ButtonStyle:draw(widget)
 		if type(widget.isPressed) == 'boolean' then
 			isPressed = widget.isPressed
 		elseif type(widget.isPressed) == 'table' then
-			isPressed = #widget.isPressed > 0
+			isPressed = next(widget.isPressed) ~= nil
 		else
 			isPressed = false
 		end

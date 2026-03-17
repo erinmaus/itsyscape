@@ -8,18 +8,23 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local Utility = require "ItsyScape.Game.Utility"
 local ActorView = require "ItsyScape.Graphics.ActorView"
 local PropView = require "ItsyScape.Graphics.PropView"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
 local CloseButton = require "ItsyScape.UI.CloseButton"
 local Interface = require "ItsyScape.UI.Interface"
+local Icon = require "ItsyScape.UI.Icon"
 local ItemIcon = require "ItsyScape.UI.ItemIcon"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
+local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
+local SpellIcon = require "ItsyScape.UI.SpellIcon"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
 
 local Theme = {}
@@ -38,7 +43,54 @@ Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING = Theme.DEFAULT_BUTTON_SIZE + Theme.DEFAU
 Theme.CONTENT_WIDTH  = GamepadContentTab.WIDTH
 Theme.CONTENT_HEIGHT = GamepadContentTab.HEIGHT
 
+Theme.CONTENT_SCROLL_SPEED_UNITS = GamepadContentTab.WIDTH
+Theme.CONTENT_SCROLL_SPEED_DURATION = 0.25
+
 Theme.TITLE_HEIGHT = 128
+Theme.MINI_TITLE_HEIGHT = 48 + Theme.DEFAULT_OUTER_PADDING * 2
+
+Theme.CONTENT_WINDOW_WIDTH = Theme.CONTENT_WIDTH * 2 + Theme.DEFAULT_OUTER_PADDING * 3
+Theme.CONTENT_WINDOW_HEIGHT = Theme.MINI_TITLE_HEIGHT + Theme.CONTENT_HEIGHT + Theme.DEFAULT_OUTER_PADDING * 2
+
+Theme.DEFAULT_INACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/Button-Default.png",
+	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
+Theme.DEFAULT_ACTIVE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png",
+	pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
+Theme.DEFAULT_ALTERNATE_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/AlternateButtonActive-Default.png",
+	pressed = "Resources/Game/UI/Buttons/AlternateButtonActive-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/AlternateButtonActive-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
+
+Theme.DEFAULT_DANGEROUS_BUTTON_STYLE = {
+	inactive = "Resources/Game/UI/Buttons/CloseButton-Default.png",
+	pressed = "Resources/Game/UI/Buttons/CloseButton-Pressed.png",
+	hover = "Resources/Game/UI/Buttons/CloseButton-Hover.png",
+	color = { 1, 1, 1, 1 },
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	textShadow = true,
+	padding = 4
+}
 
 Theme.WINDOW_TITLE_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/WindowTitle.png"
@@ -50,6 +102,59 @@ Theme.WINDOW_TITLE_LABEL_STYLE = {
 	color = { 1, 1, 1, 1 },
 	textShadow = true
 }
+
+Theme.STANDARD_CONSTRAINTS_CONFIG = {
+	headerFontSize = 22,
+	headerColor = { 1, 1, 1, 1 },
+	headerShadow = true,
+	constraintFontSize = 20,
+	constraintColor = { 1, 1, 1, 1 },
+	constraintShadow = true,
+	outerPadding = Theme.DEFAULT_INNER_PADDING,
+	innerPadding = Theme.DEFAULT_INNER_PADDING
+}
+
+function Theme.override(a, b, e)
+	e = e or {}
+	assert(not (e[a] or e[b]), "cyclic table")
+	assert(not (getmetatable(a) or getmetatable(b)), "only simple types allowed")
+
+	if a then
+		e[a] = true
+	end
+
+	if b then
+		e[b] = true
+	end
+
+	local result = {}
+
+	if a then
+		for k, v in pairs(a) do
+			if type(v) == "table" then
+				result[k] = Theme.override(v, nil, e)
+			else
+				result[k] = v
+			end
+		end
+	end
+
+	if b then
+		for k, v in pairs(b) do
+			if type(v) == "table" then
+				if type(a[k]) == "table" then
+					result[k] = Theme.override(a[k], v, e)
+				else
+					result[k] = Theme.override(v, nil, e)
+				end
+			else
+				result[k] = v
+			end
+		end
+	end
+
+	return result
+end
 
 function Theme.newTitlePanel(parent, windowWidth)
 	windowWidth = windowWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
@@ -65,6 +170,35 @@ function Theme.newTitlePanel(parent, windowWidth)
 	return panel
 end
 
+function Theme.newMiniTitlePanelWithLabel(parent, windowWidth, icon)
+	windowWidth = windowWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
+
+	local panel = Panel()
+	panel:setSize(windowWidth, Theme.MINI_TITLE_HEIGHT)
+	panel:setStyle(Theme.WINDOW_TITLE_PANEL_STYLE, PanelStyle)
+
+	if icon then
+		icon:setSize(Theme.DEFAULT_ICON_SIZE, Theme.DEFAULT_ICON_SIZE)
+		icon:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+		panel:addChild(icon)
+	end
+
+	local label = Label()
+	label:setStyle(Theme.WINDOW_TITLE_LABEL_STYLE, LabelStyle)
+	if icon then
+		label:setPosition(Theme.calculateSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_ICON_SIZE), Theme.DEFAULT_OUTER_PADDING)
+	else
+		label:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+	end
+	panel:addChild(label)
+
+	if parent then
+		parent:addChild(panel)
+	end
+
+	return panel, label
+end
+
 local function onCloseButtonClicked(button, buttonIndex)
 	if buttonIndex == 1 then
 		local parent = button:getParentOfType(Interface)
@@ -75,15 +209,20 @@ local function onCloseButtonClicked(button, buttonIndex)
 	end
 end
 
-function Theme.newCloseButton(parent)
-	local width = parent:getSize()
+function Theme.newCloseButton(parent, includeDefaultAction)
+	includeDefaultAction = includeDefaultAction == nil and true or includeDefaultAction
+
+	local width, height = parent:getSize()
+	local buttonSize = math.min(height - Theme.DEFAULT_OUTER_PADDING * 2, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
 
 	local button = CloseButton()
-	button:setSize(Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING, Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING)
+	button:setSize(buttonSize, buttonSize)
 	button:setPosition(
-		width - Theme.DEFAULT_OUTER_PADDING - Theme.DEFAULT_BUTTON_SIZE_WITH_PADDING,
+		width - Theme.DEFAULT_OUTER_PADDING - buttonSize,
 		Theme.DEFAULT_OUTER_PADDING)
-	button.onClick:register(onCloseButtonClicked)
+	if includeDefaultAction then
+		button.onClick:register(onCloseButtonClicked)
+	end
 
 	parent:addChild(button)
 
@@ -103,13 +242,19 @@ Theme.WINDOW_CONTENT_PANEL_STYLE = {
 	image = "Resources/Game/UI/Panels/WindowContent.png"
 }
 
-function Theme.newContentPanel(parent, contentWidth, contentHeight)
+function Theme.newContentPanel(parent, contentWidth, contentHeight, titlePanel)
 	contentWidth = contentWidth or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_WIDTH, 2)
 	contentHeight = contentHeight or Theme.calculateTiledSizeWithPadding(Theme.DEFAULT_OUTER_PADDING, Theme.CONTENT_HEIGHT, 1)
 
+	local titleHeight = Theme.TITLE_HEIGHT
+	if titlePanel then
+		local w, h = titlePanel:getSize()
+		titleHeight = h
+	end
+
 	local panel = Panel()
-	panel:setSize(contentWidth, Theme.TITLE_HEIGHT)
-	panel:setPosition(0, Theme.TITLE_HEIGHT)
+	panel:setSize(contentWidth, contentHeight)
+	panel:setPosition(0, titleHeight)
 	panel:setStyle(Theme.WINDOW_CONTENT_PANEL_STYLE, PanelStyle)
 
 	if parent then
@@ -129,9 +274,13 @@ Theme.ITEM_PANEL_STYLE = {
 	image = "Resources/Game/UI/Buttons/ItemButton-Default.png"
 }
 
+Theme.GROUP_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/WindowGroup.png"
+}
+
 Theme.CONTENT_TITLE_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/SemiBold.ttf",
-	fontSize = 16,
+	fontSize = 24,
 	color = { 1, 1, 1, 1 },
 	lineHeight = 0.8,
 	textShadow = true
@@ -139,22 +288,37 @@ Theme.CONTENT_TITLE_LABEL_STYLE = {
 
 Theme.CONTENT_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 16,
+	fontSize = 22,
 	color = { 1, 1, 1, 1 },
 	textShadow = true
+}
+
+Theme.BUTTON_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 20,
+	color = { 1, 1, 1, 1 },
+	align = "center",
+	textShadow = true,
+	spaceLines = true
 }
 
 Theme.PROGRESS_BAR_LABEL_STYLE = {
 	color = { 1, 1, 1, 1 },
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 16,
+	fontSize = 26,
 	textShadow = true,
 	spaceLines = true
 }
 
-function Theme.newItemParent(parent, Type)
+Theme.SCENE_BORDER_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/SceneBorder.png"
+}
+
+function Theme.newItemParent(parent, Type, size)
 	local instance = Type()
-	instance:setSize(Theme.DEFAULT_ITEM_SIZE_WITH_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
+	instance:setSize(
+		size or Theme.DEFAULT_ITEM_SIZE_WITH_PADDING,
+		size or Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
 
 	if Type == Panel then
 		instance:setStyle(Theme.ITEM_PANEL_STYLE, PanelStyle)
@@ -167,18 +331,23 @@ function Theme.newItemParent(parent, Type)
 	return instance
 end
 
-function Theme.addItemIconChild(parent)
-	parent:setSize(Theme.DEFAULT_ITEM_SIZE_WITH_PADDING, Theme.DEFAULT_ITEM_SIZE_WITH_PADDING)
+function Theme.addItemIconChild(parent, padding, size)
+	padding = padding or Theme.DEFAULT_INNER_PADDING
+	size = size or Theme.DEFAULT_ITEM_SIZE_WITH_PADDING
+
+	parent:setSize(size, size)
 
 	local icon = ItemIcon()
-	icon:setSize(Theme.DEFAULT_ICON_SIZE, Theme.DEFAULT_ICON_SIZE)
-	icon:setPosition(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
+	icon:setSize(
+		Theme.calculateInnerSize(padding, size),
+		Theme.calculateInnerSize(padding, size))
+	icon:setPosition(padding, padding)
 	parent:addChild(icon)
 
 	return icon
 end
 
-function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset)
+function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset, zoom)
 	local view = gameView:getView(object)
 
 	local node, min, max
@@ -192,16 +361,71 @@ function Theme.setSceneSnippet(sceneSnippet, camera, gameView, object, offset)
 		return false
 	end
 
-	local offset = offset or Vector.UNIT_Y
+	offset = offset or Vector.UNIT_Y
+	zoom = zoom or 2
+
 	local distance = math.max(max.x - min.x, max.y - min.y, max.z - min.z)
 
 	sceneSnippet:setChildNode(node)
 	camera:copy(gameView:getCamera())
-	camera:setPosition(Vector.ZERO:transform(node:getTransform():getGlobalTransform(_APP:getFrameDelta())) + (offset * distance / 2))
-	camera:setRotation(-node:getTransform():getLocalRotation())
-	camera:setDistance(distance * 2 + 2)
+	camera:setPosition(Vector.ZERO:transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + offset)
+	camera:setOverridePosition()
+	camera:setVerticalRotation(math.clamp(camera:getVerticalRotation(), -math.pi / 8 - math.pi / 2, math.pi / 8 - math.pi / 2))
+	if camera:getDistance() == 0 then
+		camera:setRotation(Quaternion.IDENTITY)
+		camera:setVerticalRotation(-math.pi / 2)
+		camera:setHorizontalRotation(0)
+
+		camera:setRotation(-node:getTransform():getLocalRotation())
+	else
+ 		camera:setRotation(-camera:getRotation() * -node:getTransform():getLocalRotation())
+ 	end
+
+	camera:setDistance(distance * zoom)
+
+	local width, height = sceneSnippet:getSize()
+	camera:setWidth(width)
+	camera:setHeight(height)
 
 	return true
+end
+
+function Theme.setSceneSnippetMap(sceneSnippet, camera, gameView, layer, offset, zoom)
+	local view = gameView:getView(object)
+
+	local node = gameView:getMapSceneNode(layer)
+	local map = gameView:getMap(layer)
+
+	if not (node and map) then
+		return false
+	end
+
+	local maxX = map and (map:getWidth() * map:getCellSize()) or 8
+	local maxZ = map and (map:getHeight() * map:getCellSize()) or 8
+
+	offset = offset or Vector.UNIT_Y
+	zoom = zoom or 2
+
+	local distance = math.max(maxX, maxZ)
+
+	sceneSnippet:setChildNode(node)
+	camera:copy(gameView:getCamera())
+	camera:setPosition(Vector(maxX / 2, -distance / 2, maxZ / 2):transform(node:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())) + (offset * distance / 2))
+	camera:setOverridePosition()
+	camera:setRotation(camera:getRotation() * -node:getTransform():getLocalRotation())
+	camera:setDistance(distance * zoom + 2)
+
+	local width, height = sceneSnippet:getSize()
+	camera:setWidth(width)
+	camera:setHeight(height)
+
+	return true
+end
+
+function Theme.calculateTileSizeWithPadding(padding, size, n)
+	n = n or 1
+
+	return math.floor((size - padding * (n + 1)) / n)
 end
 
 function Theme.calculateTiledSizeWithPadding(padding, size, n)
@@ -236,7 +460,210 @@ end
 
 function Theme.calculateRemainingSizeWithPadding(padding, outerSize, ...)
 	local innerSize = Theme.calculateSizeWithPadding(padding, ...)
-	return math.floor(math.max(outerSize - innerSize - padding * 2, 0))
+	return math.floor(math.max(outerSize - innerSize - padding, 0))
+end
+
+Theme.DEFAULT_TEXT_INPUT_STYLE = {
+	inactive = "Resources/Game/UI/TextInputs/Default-Inactive.png",
+	active = "Resources/Game/UI/TextInputs/Default-Active.png",
+	hover = "Resources/Game/UI/TextInputs/Default-Hover.png",
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
+	fontSize = 32,
+	color = { 0.2, 0.2, 0.2, 0.2 },
+	padding = 0,
+	textShadow = true
+}
+
+function Theme.layoutScrollablePanelWithGridLayout(panel, elementWidth, elementHeight)
+	local panelWidth, panelHeight = panel:getSize()
+	local innerPanel = panel:getInnerPanel()
+
+	innerPanel:setUniformSize(true, elementWidth, elementHeight)
+	innerPanel:setSize(panelWidth, 0)
+	innerPanel:setWrapContents(true)
+	innerPanel:performLayout()
+
+	local scrollableWidth, scrollableHeight = innerPanel:getSize()
+	local hasScrollbars = scrollableHeight > panelHeight
+	local paddingX = innerPanel:getPadding()
+
+	if hasScrollbars then
+		innerPanel:setUniformSize(
+			true,
+			Theme.calculateRemainingSizeWithPadding(paddingX / 2, elementWidth, ScrollablePanel.DEFAULT_SCROLL_SIZE),
+			elementHeight)
+		innerPanel:setSize(panelWidth, 0)
+		innerPanel:performLayout()
+
+		scrollableWidth, scrollableHeight = innerPanel:getSize()
+	end
+
+	panel:setScrollSize(scrollableWidth, scrollableHeight)
+
+	do
+		local scrollX, scrollY = panel:getScroll()
+
+		if scrollY > scrollableHeight - panelHeight then
+			scrollY = 0
+		end
+
+		if scrollX > scrollableWidth - panelWidth then
+			scrollX = 0
+		end
+
+		panel:setScroll(scrollX, scrollY)
+	end
+
+	return hasScrollbars
+end
+
+Theme.DEFAULT_TEXT_INPUT_HEIGHT = 48
+
+Theme.ERROR_NOTIFICATION_PANEL_STYLE = {
+	image = "Resources/Game/UI/Panels/Notification.png"
+}
+
+Theme.ERROR_NOTIFICATION_LABEL_STYLE = {
+	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
+	fontSize = 26,
+	color = { 1, 1, 1, 1 },
+	textShadow = true,
+	center = true,
+	spaceLines = true,
+	padding = Theme.DEFAULT_OUTER_PADDING
+}
+
+local _action = { id = { value = 1 } }
+function Theme.getIconLabelForAction(action, gameDB)
+	local brochure = gameDB:getBrochure()
+
+	if type(action) == "number" then
+		_action.id.value = action
+		action = _action
+	end
+
+	local item, quantity
+	local prop, peep, spell, prayer, power, sailing
+	for output in brochure:getOutputs(action) do
+		local outputResource = brochure:getConstraintResource(output)
+		local outputType = brochure:getResourceTypeFromResource(outputResource)
+		if outputType.name == "Item" then
+			item = outputResource
+			quantity = output.count
+			break
+		end
+	end
+
+	for resource in brochure:findResourcesByAction(action) do
+		local resourceType = brochure:getResourceTypeFromResource(resource)
+		if resourceType.name == "Prop" or resourceType.name == "SailingCrew" then
+			prop = resource
+			break
+		elseif resourceType.name == "Peep" then
+			peep = resource
+			break
+		elseif resourceType.name == "Spell" then
+			spell = resource
+			break
+		elseif resourceType.name == "Effect" then
+			prayer = resource
+			break
+		elseif resourceType.name == "Power" then
+			power = resource
+			break
+		elseif resourceType.name == "SailingItem" then
+			sailing = resource
+			break
+		end
+	end
+
+	if not item then
+		for input in brochure:getInputs(action) do
+			local inputResource = brochure:getConstraintResource(input)
+			local inputType = brochure:getResourceTypeFromResource(inputResource)
+			if inputType.name == "Item" then
+				item = inputResource
+				quantity = input.count
+				break
+			end
+		end
+	end
+
+	if not item then
+		for resource in brochure:findResourcesByAction(action) do
+			local resourceType = brochure:getResourceTypeFromResource(resource)
+			if resourceType.name == "Item" then
+				item = resource
+				quantity = 1
+				break
+			end
+		end
+	end
+
+	local icon, label, description
+	if item or peep or prop or prayer or power or sailing or spell then
+		if spell then
+			icon = SpellIcon()
+			icon:setSpellID(spell.name)
+			icon:setSpellEnabled(true)
+		elseif prayer then
+			icon = Icon()
+			icon:setIcon(string.format("Resources/Game/Effects/%s/Icon.png", prayer.name))
+		elseif sailing then
+			icon = Icon()
+			icon:setIcon(string.format("Resources/Game/SailingItems/%s/Icon.png", sailing.name))
+		elseif item then
+			icon = ItemIcon()
+			icon:setItemID(item.name)
+			if quantity > 1 then
+				icon:setItemCount(quantity)
+			end
+		elseif power then
+			icon = Icon()
+			icon:setIcon(string.format("Resources/Game/Powers/%s/Icon.png", power.name))
+			icon:setPosition(4, 4)
+		end
+
+		label = Label()
+		if peep then
+			label:setText(Utility.getName(peep, gameDB))
+			description = Utility.getDescription(peep, gameDB)
+		elseif prop then
+			label:setText(Utility.getName(prop, gameDB))
+			description = Utility.getDescription(prop, gameDB)
+		elseif spell then
+			label:setText(Utility.getName(spell, gameDB))
+			description = Utility.getDescription(spell, gameDB)
+		elseif prayer then
+			label:setText(Utility.getName(prayer, gameDB))
+			description = Utility.getDescription(prayer, gameDB)
+		elseif power then
+			label:setText(Utility.getName(power, gameDB))
+			description = Utility.getDescription(power, gameDB)
+		elseif sailing then
+			label:setText(Utility.getName(sailing, gameDB))
+			description = Utility.getDescription(sailing, gameDB)
+		else
+			label:setText(Utility.getName(item, gameDB))
+			description = Utility.getDescription(item, gameDB)
+		end
+	end
+
+	if not icon then
+		icon = ItemIcon()
+		icon:setItemID("Null")
+	end
+
+	if not label then
+		label = Label()
+		label:setText("???")
+	end
+
+	if not description then
+		description = "..."
+	end
+
+	return icon, label, description
 end
 
 return Theme

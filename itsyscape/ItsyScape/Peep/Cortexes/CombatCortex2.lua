@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
 local CombatPower = require "ItsyScape.Game.CombatPower"
+local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Config = require "ItsyScape.Game.Config"
 local Equipment = require "ItsyScape.Game.Equipment"
 local Weapon = require "ItsyScape.Game.Weapon"
@@ -19,19 +20,26 @@ local ZealPoke = require "ItsyScape.Game.ZealPoke"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
+local ActiveSpellBehavior = require "ItsyScape.Peep.Behaviors.ActiveSpellBehavior"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
 local AggressiveBehavior = require "ItsyScape.Peep.Behaviors.AggressiveBehavior"
+local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
+local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
-local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehavior"
+local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
+local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PendingPowerBehavior = require "ItsyScape.Peep.Behaviors.PendingPowerBehavior"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 local PowerRechargeBehavior = require "ItsyScape.Peep.Behaviors.PowerRechargeBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local CombatEffect = require "ItsyScape.Peep.Effects.CombatEffect"
 local TilePathNode = require "ItsyScape.World.TilePathNode"
 local WeaponBehavior = require "ItsyScape.Peep.Behaviors.WeaponBehavior"
@@ -48,6 +56,12 @@ CombatCortex.STRAFE_DIRECTIONS = {
 	{  0, -1 }
 }
 
+CombatCortex.DEFAULT_CLASS_SWITCH_ANIMATIONS = {
+	[Weapon.STYLE_ARCHERY] = "Human_SwapGear_ToArchery_1",
+	[Weapon.STYLE_MAGIC] = "Human_SwapGear_ToMagic_1",
+	[Weapon.STYLE_MELEE] = "Human_SwapGear_ToMelee_1"
+}
+
 function CombatCortex:new()
 	Cortex.new(self)
 
@@ -60,15 +74,16 @@ function CombatCortex:new()
 	self.nextTarget = {}
 	self.currentStance = {}
 	self.currentRoll = {}
+	self.previousCombatStyle = {}
 end
 
 function CombatCortex:addPeep(peep)
 	Cortex.addPeep(self, peep)
 
-	local rollInfo = { rolledAttack = false, rolledDamage = false, initiateAttack = false, receiveAttack = false }
+	local rollInfo = {}
 	self.currentRoll[peep] = rollInfo
 
-	function rollInfo.onRollAttack(_, roll)
+	function onRollAttack(_, roll)
 		rollInfo.accuracyRoll = roll
 		rollInfo.accuracyBonus = roll:getAccuracyBonus()
 		rollInfo.defenseBonus = roll:getDefenseBonus()
@@ -76,31 +91,59 @@ function CombatCortex:addPeep(peep)
 		rollInfo.rolledAttack = true
 	end
 
-	function rollInfo.onRollDamage(_, roll)
+	function onRollDamage(_, roll)
 		rollInfo.damageRoll = roll
 		rollInfo.baseHit = roll:getBaseHit()
 		rollInfo.damageSkillLevel = roll:getLevel()
 		rollInfo.rolledDamage = true
 	end
 
-	function rollInfo.onInitiateAttack(_, attack, target)
+	function onInitiateAttack(_, attack, target)
 		rollInfo.damageAttackPoke = attack
 		rollInfo.attackTarget = target 
 		rollInfo.damageDealt = attack:getDamage()
 		rollInfo.initiateAttack = true
 	end
 
-	function rollInfo.onReceiveAttack(_, attack, peep)
+	function onReceiveAttack(_, attack, aggressor)
 		rollInfo.defendAttackPoke = attack
-		rollInfo.defendAggressor = peep
+		rollInfo.defendAggressor = aggressor
 		rollInfo.damageReceived = attack:getDamage()
 		rollInfo.receiveAttack = true
+
+		if peep:hasBehavior(PendingStrategyGradeBehavior) then
+			self:_gradePeep(peep, aggressor, attack)
+		end
 	end
+
+	function onDodgeSuccess(_, aggressor)
+		local grade = Config.get("Combat", "STRATEGY_PERFECT_GRADE")
+		self:_giveGradeZeal(peep, aggressor, grade)
+	end
+
+	function reset()
+		table.clear(rollInfo)
+
+		rollInfo.rolledAttack = false
+		rollInfo.rolledDamage = false
+		rollInfo.initiateAttack = false
+		rollInfo.receiveAttack = false
+
+		rollInfo.onRollAttack = onRollAttack
+		rollInfo.onRollDamage = onRollDamage
+		rollInfo.onInitiateAttack = onInitiateAttack
+		rollInfo.onReceiveAttack = onReceiveAttack
+		rollInfo.onDodgeSuccess = onDodgeSuccess
+		rollInfo.reset = reset
+	end
+
+	reset()
 
 	peep:listen("rollAttack", rollInfo.onRollAttack)
 	peep:listen("rollDamage", rollInfo.onRollDamage)
 	peep:listen("initiateAttack", rollInfo.onInitiateAttack)
 	peep:listen("receiveAttack", rollInfo.onReceiveAttack)
+	peep:listen("dodgeSuccess", rollInfo.onDodgeSuccess)
 end
 
 function CombatCortex:removePeep(peep)
@@ -112,11 +155,13 @@ function CombatCortex:removePeep(peep)
 		peep:silence("rollDamage", rollInfo.onRollDamage)
 		peep:silence("initiateAttack", rollInfo.onInitiateAttack)
 		peep:silence("receiveAttack", rollInfo.onInitiateAttack)
+		peep:silence("dodgeSuccess", rollInfo.onDodgeSuccess)
 	end
 
 	self.currentTarget[peep] = nil
 	self.currentStance[peep] = nil
 	self.currentRoll[peep] = nil
+	self.previousCombatStyle[peep] = nil
 end
 
 function CombatCortex:_getPeepTarget(peep)
@@ -138,46 +183,50 @@ function CombatCortex:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 		return false
 	end
 
-	local selfSize = Utility.Peep.getSize(selfPeep)
+	local selfSize = Utility.Peep.getSize(selfPeep) * Utility.Peep.getScale(selfPeep)
 	selfSize = math.max(selfSize.x, selfSize.z)
-	local targetSize = Utility.Peep.getSize(targetPeep)
+	local targetSize = Utility.Peep.getSize(targetPeep) * Utility.Peep.getScale(targetPeep)
 	targetSize = math.max(targetSize.x, targetSize.z)
+
+	local adjustWeaponedRange = weaponRange
+	local flying = targetPeep:getBehavior(FlyingBehavior)
+	if flying and flying.isFlying then
+		adjustWeaponedRange = weaponRange - flying.range
+	end
+
+	local selfMovement = selfPeep:getBehavior(MovementBehavior)
+	local targetMovement = targetPeep:getBehavior(MovementBehavior)
+	local canMove = selfMovement and selfMovement.maxSpeed > 0 and targetMovement and targetMovement.maxSpeed > 0 
 
 	local status = selfPeep:getBehavior(CombatStatusBehavior)
 
 	local map = Utility.Peep.getMap(selfPeep)
-	local worldWeaponRange = self.TILE_TO_WORLD * (weaponRange + 1)
+	local worldWeaponRange = (self.TILE_TO_WORLD * adjustWeaponedRange + 1)
 
 	local distance = Utility.Peep.getAbsoluteDistance(selfPeep, targetPeep)
+	local canReachTarget = distance <= worldWeaponRange and worldWeaponRange > 0
+	local isOutOfRange = status and distance > (status.maxChaseDistance + worldWeaponRange) or worldWeaponRange <= 0
+	local isTooFar = distance > worldWeaponRange
+	local isTooClose = canMove and distance <= 0
+	local maybeCanReach = (isTooClose or isTooFar) and worldWeaponRange > 0
 
-	local canReachTarget = distance <= worldWeaponRange
-	local isTooFar = status and distance > (status.maxChaseDistance + worldWeaponRange)
-	local isTooClose = distance <= 0
-	return canReachTarget, isTooFar, isTooClose
+	return canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 end
 
-function CombatCortex:_getRelativeTile(selfPeep, targetPeep)
-	local selfMap = Utility.Peep.getMap(selfPeep)
-	local selfWorldTransform = Utility.Peep.getParentTransform(selfPeep)
+function CombatCortex:_getPeepSpell(peep, weapon)
+	local stance = peep:getBehavior(StanceBehavior)
+	if stance and stance.useSpell then
+		local activeSpell = peep:getBehavior(ActiveSpellBehavior)
+		if activeSpell
+		   and activeSpell.spell
+		   and activeSpell.spell:isCompatibleType(CombatSpell)
+		   and activeSpell.spell:canCast(peep):good()
+		then
+			return activeSpell.spell
+		end
+	end
 
-	local selfPosition = Utility.Peep.getPosition(selfPeep)
-	local targetAbsolutePosition = Utility.Peep.getAbsolutePosition(targetPeep)
-	local targetPosition = Vector(selfWorldTransform:inverseTransformPoint(targetAbsolutePosition:get()))
-
-	local _, s, t = selfMap:getTileAt(targetPosition.x, targetPosition.z)
-	local _, u, v = selfMap:getTileAt(selfPosition.x, selfPosition.z)
-
-	return s, t, u, v
-end
-
-function CombatCortex:_canPeepSeeTarget(selfPeep, targetPeep)
-	local selfMap = Utility.Peep.getMap(selfPeep)
-	local targetI, targetJ, selfI, selfJ = self:_getRelativeTile(selfPeep, targetPeep)
-
-	local isSameTile = targetI == selfI and targetJ == selfJ
-	local isLineOfSightClear = selfMap:lineOfSightPassable(selfI, selfJ, targetI, targetJ, true)
-
-	return isSameTile or isLineOfSightClear
+	return nil
 end
 
 function CombatCortex:_getPeepWeapon(peep)
@@ -198,16 +247,42 @@ function CombatCortex:_isPeepWithinRange(selfPeep, targetPeep)
 	local equippedWeapon = self:_getPeepWeapon(selfPeep)
 	local weaponRange = equippedWeapon:getAttackRange(selfPeep)
 
-	local canReachTarget, isTooFar, isTooClose = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
+	local canReachTarget, isTooFar, isTooClose, isOutOfRange, maybeCanReach = self:_canPeepReachTarget(selfPeep, targetPeep, weaponRange)
 	if not canReachTarget then
-		return false, isTooFar, isTooClose
+		return false, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 	end
 
-	if not self:_canPeepSeeTarget(selfPeep, targetPeep) then
-		return false, isTooFar, isTooClose
+	if not Utility.Combat.canSeeTarget(selfPeep, targetPeep) then
+		return false, isTooFar, isTooClose, isOutOfRange, maybeCanReach
 	end
 
-	return true, isTooFar, isTooClose
+	return true, isTooFar, isTooClose, isOutOfRange, maybeCanReach
+end
+
+function CombatCortex:updatePeepCombatStyle(peep)
+	local weapon = self:_getPeepWeapon(peep)
+	if weapon == self.defaultWeapon then
+		return
+	end
+
+	local currentCombatStyle = weapon:getStyle()
+	local previousCombatStyle = self.previousCombatStyle[peep]
+	if previousCombatStyle == currentCombatStyle then
+		return
+	end
+
+	if previousCombatStyle then
+		Utility.Peep.flash(peep, "ClassChange", 0, currentCombatStyle)
+	end
+
+	if previousCombatStyle and peep:hasBehavior(HumanoidBehavior) then
+		local animation = self.DEFAULT_CLASS_SWITCH_ANIMATIONS[currentCombatStyle]
+		if animation then
+			Utility.Peep.playAnimation(peep, "main-swap-gear", 500, animation)
+		end
+	end
+
+	self.previousCombatStyle[peep] = currentCombatStyle
 end
 
 function CombatCortex:updatePeepRecharge(delta, peep)
@@ -372,6 +447,10 @@ function CombatCortex:_tryUsePower(selfPeep, targetPeep, equippedWeapon)
 		return false
 	end
 
+	if not power:getIsInstant() and selfPeep:hasBehavior(CombatDodgeBehavior) then
+		return false
+	end
+
 	local didUsePower = power:perform(selfPeep, targetPeep)
 	selfPeep:removeBehavior(PendingPowerBehavior)
 
@@ -498,7 +577,7 @@ function CombatCortex:_getLevelZeal(averageLevel)
 	return zeal
 end
 
-function CombatCortex:_givePeepZeal(peep, target)
+function CombatCortex:_givePeepZeal(peep)
 	local rollInfo = self.currentRoll[peep]
 
 	if not rollInfo.initiateAttack then
@@ -509,7 +588,7 @@ function CombatCortex:_givePeepZeal(peep, target)
 	local maxCriticalMultiplier = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MAX_MULTIPLIER")
 	local criticalMultiplierStep = Config.get("Combat", "CRITICAL_FLUX_ZEAL_MULTIPLIER_STEP")
 
-	local criticalMultiplier = 1 + (((rollInfo.accuracyBonus * 3) / rollInfo.defenseBonus - 1) * criticalMultiplierStep)
+	local criticalMultiplier = 1 + ((((rollInfo.accuracyBonus or 0) * 3) / (rollInfo.defenseBonus or 0) - 1) * criticalMultiplierStep)
 	criticalMultiplier = math.clamp(criticalMultiplier, minCriticalMultiplier, maxCriticalMultiplier)
 
 	local currentStanceInfo = self.currentStance[peep]
@@ -579,6 +658,76 @@ function CombatCortex:_giveTargetZeal(selfPeep, targetPeep)
 			zeal = zeal
 		}))
 	end
+end
+
+function CombatCortex:_takeSpellZeal(peep, spell, weapon)
+	local zeal = -spell:getZealCost(peep, spell)
+	local zealSpellCostMultiplier = Config.get("Combat", "ZEAL_SPELL_COST_MULTIPLIER")
+
+	peep:poke("zeal", ZealPoke.onCastSpell({
+		spell = spell,
+		weapon = weapon,
+		zeal = zeal * zealSpellCostMultiplier
+	}))
+end
+
+function CombatCortex:_gradePeep(peep, aggressor, attack)
+	local damageRoll = attack:getDamageRoll()
+	if not damageRoll then
+		return
+	end
+
+	local maxHit = damageRoll:getMaxHit()
+	local damageReceived = attack:getDamage()
+
+	local minGrade = Config.get("Combat", "STRATEGY_DEFAULT_MIN_GRADE", "_", 0)
+	local maxGrade = Config.get("Combat", "STRATEGY_DEFAULT_MAX_GRADE", "_", 0)
+
+	local grade
+	if maxHit == 0 or damageReceived == 0 then
+		grade = maxGrade
+	else
+		local ratio = math.clamp(damageReceived / maxHit)
+		grade = math.lerp(minGrade, maxGrade, 1 - ratio)
+	end
+
+	self:_giveGradeZeal(peep, aggressor, grade)
+end
+
+function CombatCortex:_giveGradeZeal(peep, aggressor, grade)
+	local grades = Config.get("Combat", "STRATEGY_GRADES")
+	if not grades then
+		return
+	end
+
+	local currentGrade = grades[1], nextGrade
+	for i = 2, #grades do
+		local gradeInfo = grades[i]
+		if gradeInfo.grade > grade then
+			nextGrade = gradeInfo
+			break
+		end
+
+		currentGrade = gradeInfo
+	end
+
+	if not currentGrade then
+		return
+	end
+
+	Log.info("Peep '%s' passed strategy test from '%s' with '%d' grade.", peep:getName(), aggressor:getName(), grade)
+
+	local zeal
+	if currentGrade and nextGrade then
+		zeal = math.lerp(currentGrade.zeal, nextGrade.zeal, (grade - currentGrade.grade) / (nextGrade.grade - currentGrade.grade))
+	else
+		zeal = currentGrade.zeal
+	end
+
+	peep:poke("zeal", ZealPoke.onStrategy({
+		grade = grade,
+		zeal = zeal
+	}))
 end
 
 function CombatCortex:_updateAggressiveTarget(peep)
@@ -702,18 +851,18 @@ function CombatCortex:updatePeepCooldown(delta, peep)
 	end
 end
 
-function CombatCortex:_onPeepWalkCalculated(peep, success)
+function CombatCortex:_onPeepWalkCalculated(peep, success, cancelled)
 	local charge = peep:getBehavior(CombatChargeBehavior)
 	if charge then
 		charge.currentWalkID = false
 	end
 
-	if not success then
+	if not success and not cancelled then
 		peep:removeBehavior(CombatTargetBehavior)
 	end
 end
 
-function CombatCortex:movePeep(peep, i, j, k)
+function CombatCortex:movePeep(peep, position)
 	local target = self:_getPeepTarget(peep)
 	local charge = peep:getBehavior(CombatChargeBehavior)
 
@@ -721,20 +870,32 @@ function CombatCortex:movePeep(peep, i, j, k)
 		return
 	end
 
-	local currentI, currentJ = self:_getRelativeTile(peep, target)
+	local currentPosition = Utility.Peep.getRelativePosition(peep, target)
+	local currentI, currentJ = Utility.Peep.getRelativeTile(peep, target)
 	local currentK = Utility.Peep.getLayer(peep)
+
 	local previousI, previousJ, previousK = charge.i, charge.j, charge.k
 
-	local targetI = i or currentI
-	local targetJ = j or currentJ
-	local targetK = k or currentK
+	local targetI, targetJ, targetK
+	if position then
+		local map = Utility.Peep.getMap(peep)
+		local _, i, j = map:getTileAt(position.x, position.z)
+		targetI, targetJ = i, j
+		targetK = currentK
+	else
+		targetI = currentI
+		targetJ = currentJ
+		targetK = currentK
+	end
 
-	if targetI ~= previousI or targetJ ~= previousJ or targetK ~= previousK then
+	if not (targetI == previousI and targetJ == previousJ and targetK == previousK) or
+	   (charge.currentWalkID and not Utility.Peep.isWalkPending(charge.currentWalkID))
+	then
 		if charge.currentWalkID then
 			Utility.Peep.cancelWalk(charge.currentWalkID)
 		end
 
-		local callback, id = Utility.Peep.queueWalk(peep, targetI, targetJ, targetK, 0)
+		local callback, id = Utility.Peep.queueWalk(peep, position or currentPosition, targetK, 0)
 		charge.currentWalkID = id
 
 		callback:register(self._onPeepWalkCalculated, self, peep)
@@ -761,11 +922,13 @@ function CombatCortex:strafePeep(peep)
 		return
 	end
 
-	local targetI, targetJ, selfI, selfJ = self:_getRelativeTile(peep, target)
+	local selfPosition = Utility.Peep.getPosition(peep)
+	local targetPosition = Utility.Peep.getRelativePosition(peep, target)
+	local targetI, targetJ = Utility.Peep.getRelativeTile(peep, target)
 
 	local bestSelfStrafeDistance = math.huge
 	local bestTargetStrafeDistance = 0
-	local bestI, bestJ, bestIsPassable
+	local bestPosition, bestIsPassable
 
 	local map = Utility.Peep.getMap(peep)
 	local tiles = math.max(math.floor(strafeDistance / map:getCellSize()), 1)
@@ -775,28 +938,26 @@ function CombatCortex:strafePeep(peep)
 		local i = directionI * tiles + targetI
 		local j = directionJ * tiles + targetJ
 
-		local isPassable, realI, realJ = map:lineOfSightPassable(selfI, selfJ, i, j, false)
-		local targetDistance = math.abs(realI - targetI) + math.abs(realJ - targetJ)
-		local selfDistance = math.abs(realI - selfI) + math.abs(realJ - selfJ)
+		local isPassable, realPosition = Utility.Map.isPassable(peep, map:getTileCenter(i, j))
+		local targetDistance = targetPosition:distance(realPosition)
+		local selfDistance = selfPosition:distance(realPosition)
 
 		if isPassable then
 			if selfDistance < bestSelfStrafeDistance then
-				bestI = i
-				bestJ = j
+				bestPosition = map:getTileCenter(i, j)
 				bestSelfStrafeDistance = selfDistance
 				bestIsPassable = true
 			end
 		elseif not bestIsPassable then
 			if targetDistance > bestTargetStrafeDistance then
-				bestI = realI
-				bestJ = realJ
+				bestPosition = realPosition
 				bestTargetStrafeDistance = targetDistance
 			end
 		end
 	end
 
-	if bestI and bestJ then
-		self:movePeep(peep, bestI, bestJ)
+	if bestPosition then
+		self:movePeep(peep, bestPosition)
 	else
 		peep:removeBehavior(CombatChargeBehavior)
 	end
@@ -810,6 +971,7 @@ function CombatCortex:cancelCharge(peep)
 
 	peep:removeBehavior(CombatChargeBehavior)
 	peep:removeBehavior(TargetTileBehavior)
+	peep:removeBehavior(TargetPositionBehavior)
 end
 
 function CombatCortex:tickPeep(delta, peep)
@@ -821,28 +983,52 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
-	local isWithinRange, isTooFar, isTooClose = self:_isPeepWithinRange(peep, target)
+	self:_makePeepFaceTarget(peep, target)
+
+	local isWithinRange, isTooFar, isTooClose, isOutOfRange, maybeCanReach = self:_isPeepWithinRange(peep, target)
 	local isAttackable = self:_canPeepAttackTarget(peep, target)
-	if not isAttackable or isTooFar then
-		peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
-		peep:removeBehavior(CombatTargetBehavior)
+	if not isAttackable or isOutOfRange then
+		if peep:hasBehavior(PlayerBehavior) then
+			if isAttackable then
+				if not peep:hasBehavior(AttackCooldownBehavior) then
+					if not maybeCanReach and Utility.Peep.isFlying(target) then
+						Utility.Peep.notify(peep, "ui.notification.combat.targetFlyingAndOutOfRange")
+					else
+						Utility.Peep.notify(peep, "ui.notification.combat.targetOutOfRange")
+					end
+
+					local weapon = self:_getPeepWeapon(peep)
+					weapon:applyCooldown(peep, target)
+				end
+			else
+				peep:removeBehavior(CombatTargetBehavior)
+			end
+		else
+			peep:getCommandQueue(CombatCortex.QUEUE):interrupt()
+			peep:removeBehavior(CombatTargetBehavior)
+		end
+
 		return
 	elseif not isWithinRange then
-		peep:addBehavior(CombatChargeBehavior)
+		if not peep:hasBehavior(CombatChargeBehavior) then
+			peep:addBehavior(CombatChargeBehavior)
+			Utility.Peep.cancelWalk(peep)
+		end
+
 		self:movePeep(peep)
 		return
 	elseif isTooClose and not peep:hasBehavior(PlayerBehavior) then
-		if target:hasBehavior(CombatChargeBehavior) then
-			peep:removeBehavior(CombatChargeBehavior)
-		else
-			peep:addBehavior(CombatChargeBehavior)
+		if not target:hasBehavior(CombatChargeBehavior) then
+			if not peep:hasBehavior(CombatChargeBehavior) then
+				peep:addBehavior(CombatChargeBehavior)
+				Utility.Peep.cancelWalk(peep)
+			end
+
 			self:strafePeep(peep)
 		end
 	elseif peep:hasBehavior(CombatChargeBehavior) then
 		self:cancelCharge(peep)
 	end
-
-	self:_makePeepFaceTarget(peep, target)
 
 	if Utility.Peep.isDisabled(target) then
 		return
@@ -859,22 +1045,45 @@ function CombatCortex:tickPeep(delta, peep)
 		return
 	end
 
+	if peep:hasBehavior(CombatDodgeBehavior) or peep:hasBehavior(CombatChargeBehavior) then
+		return
+	end
+
 	local rollInfo = self.currentRoll[peep]
-	rollInfo.rolledAttack = false
-	rollInfo.rolledDamage = false
-	rollInfo.hit = false
+	rollInfo.reset()
+
+	if peep:hasBehavior(SpecialAttackBehavior) then
+		local specialAttack = peep:getBehavior(SpecialAttackBehavior)
+		specialAttack.attackInterval = specialAttack.attackInterval - 1
+
+		if specialAttack.attackInterval <= 0 then
+			peep:removeBehavior(SpecialAttackBehavior)
+		end
+	end
 
 	local success = weapon:perform(peep, target)
 	self:_updateAggressiveTarget(peep)
 
-	if not success then
+	if not success and success ~= nil then
 		return
+	end
+
+	local spell
+	if weapon:canCastSpells() then
+		spell = self:_getPeepSpell(peep, weapon)
+		if spell then
+			spell:cast(peep, target)
+		end
 	end
 
 	if not didUsePower then
 		self:_givePeepZeal(peep)
 	end
 	self:_giveTargetZeal(peep, target)
+
+	if spell then
+		self:_takeSpellZeal(peep, spell, weapon)
+	end
 
 	local projectile = weapon:getProjectile(peep)
 	if projectile then
@@ -888,6 +1097,7 @@ end
 function CombatCortex:tick(delta)
 	for peep in self:iterate() do
 		if Utility.Peep.isEnabled(peep) then
+			self:updatePeepCombatStyle(peep)
 			self:updatePeepRecharge(delta, peep)
 			self:updatePeepTarget(delta, peep)
 			self:updatePeepStance(delta, peep)

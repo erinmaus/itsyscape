@@ -18,6 +18,7 @@ local Config = require "ItsyScape.Game.Config"
 local CameraController = require "ItsyScape.Graphics.CameraController"
 local ThirdPersonCamera = require "ItsyScape.Graphics.ThirdPersonCamera"
 local Keybinds = require "ItsyScape.UI.Keybinds"
+local KeyboardSink = require "ItsyScape.UI.KeyboardSink"
 local GamepadSink = require "ItsyScape.UI.GamepadSink"
 
 local DefaultCameraController = Class(CameraController)
@@ -110,7 +111,6 @@ function DefaultCameraController:new(...)
 	self.currentDistance = self:getCamera():getDistance()
 
 	self.isTargetting = _CONF.targetCameraMode == nil and true or not not _CONF.targetCameraMode
-	self.isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
 	self.targetOpponentDistance = 0
 	_CONF.targetCameraMode = self.isTargetting
 
@@ -485,14 +485,18 @@ function DefaultCameraController:updateControls(delta)
 			self.isPanning = false
 			return
 		end
+
+		local keyboardSink = focusedWidget:getParentData(KeyboardSink)
+		if Class.isCompatibleType(keyboardSink, KeyboardSink) and keyboardSink:getIsBlockingCamera() then
+			self.isPanning = false
+			return
+		end
 	end
 
 	local upPressed = Keybinds['CAMERA_UP']:isDown()
 	local downPressed = Keybinds['CAMERA_DOWN']:isDown()
 	local leftPressed = Keybinds['CAMERA_LEFT']:isDown()
 	local rightPressed = Keybinds['CAMERA_RIGHT']:isDown()
-	local panDown = Keybinds['CAMERA_PAN']:isDown()
-	self.isPanning = panDown
 
 	local angle1 = self.isPanning and self.panningVerticalRotationOffset or self.cameraVerticalRotationOffset
 	do
@@ -528,6 +532,18 @@ function DefaultCameraController:updateControls(delta)
 end
 
 function DefaultCameraController:debugUpdate(delta)
+	local focusedWidget = self:getApp():getUIView():getInputProvider():getFocusedWidget()
+	if focusedWidget then
+		if focusedWidget:isCompatibleType(require "ItsyScape.UI.TextInput") then
+			return
+		end
+
+		local keyboardSink = focusedWidget:getParentData(KeyboardSink)
+		if Class.isCompatibleType(keyboardSink, KeyboardSink) and keyboardSink:getIsBlockingCamera() then
+			return
+		end
+	end
+
 	local isShiftDown = love.keyboard.isDown('lshift') or
 	                    love.keyboard.isDown('rshift')
 	local isCtrlDown = love.keyboard.isDown('lctrl') or
@@ -693,11 +709,63 @@ function DefaultCameraController:recenter()
 	self.currentCenter = nil
 end
 
+function DefaultCameraController:tryRecenter()
+	local player = self:getGame():getPlayer()
+	if not player then
+		return false
+	end
+
+	local actor = player:getActor()
+	if not actor then
+		return false
+	end
+
+
+	local _, _, layer = actor:getTile()
+	local group = self:getGameView():getMapGroup()
+
+	local recenter = false
+
+	local cutsceneTransition = self:getApp():getUIView():getInterface("CutsceneTransition")
+	if cutsceneTransition then
+		recenter = true
+	end
+
+	local instance = player:getInstanceID()
+	if instance ~= self.currentPlayerInstance then
+		self.currentPlayerInstance = instance
+		recenter = true
+	end
+
+	if layer ~= self.currentPlayerLayer and group ~= self.currentPlayerGroup then
+		self.currentPlayerLayer = layer
+		self.currentPlayerGroup = group
+		recenter = true
+	end
+
+	if recenter then
+		self:recenter()
+	end
+
+	return recenter
+end
+
+function DefaultCameraController:tick()
+	if self:tryRecenter() then
+		return
+	end
+
+	if not self.currentCenter then
+		self.currentCenter = self:getCenter()
+	end
+end
+
 function DefaultCameraController:updateCenter(delta)
-	self.currentCenter = (self.currentCenter or self:getCenter()):keep(self.currentCenter)
+	if not self.currentCenter then
+		return
+	end
 
 	local targetCenter = self:getCenter()
-
 	local direction = self.currentCenter:direction(targetCenter)
 	local minDistance = self.currentCenter:distance(targetCenter)
 
@@ -734,13 +802,8 @@ function DefaultCameraController:update(delta)
 	self:updateFirstPerson(delta)
 	self:updateCenter(delta)
 
-	local isFocusDown = Keybinds['PLAYER_1_CAMERA']:isDown()
-	if (isFocusDown ~= self.isFocusDown and isFocusDown) or _CONF.targetCameraMode ~= self.isTargetting then
-		if isFocusDown then
-			self.isTargetting = not self.isTargetting
-		else
-			self.isTargetting = _CONF.targetCameraMode
-		end
+	if _CONF.targetCameraMode ~= self.isTargetting then
+		self.isTargetting = _CONF.targetCameraMode
 
 		if self.isTargetting then
 			Log.info("Target camera mode enabled.")
@@ -750,9 +813,8 @@ function DefaultCameraController:update(delta)
 
 		_CONF.targetCameraMode = self.isTargetting
 	end
-	self.isFocusDown = isFocusDown
 
-	if self.isTargetting and self.isFirstPerson <= 0 then
+ 	if self.isTargetting and self.isFirstPerson <= 0 then
 		self:updateTargetDistance()
 	end
 
@@ -810,22 +872,18 @@ function DefaultCameraController:onLeaveFirstPerson()
 	self.isFirstPerson = (self.isFirstPerson or 1) - 1
 
 	if self.isFirstPerson <= 0 then
-		self.targetDistance = self.preFirstPersonTargetDistance
+		self.targetDistance = self.preFirstPersonTargetDistance or self.targetDistance
 		self.preFirstPersonTargetDistance = nil
 	end
 end
 
 function DefaultCameraController:onUpdateFirstPersonDirection(rotation, distance)
-	self.nextFirstPersonDirection = rotation:keep()
+	self.nextFirstPersonDirection = (self.nextFirstPersonDirection or Quaternion()):from(rotation:get())
 	self.targetDistance = distance or 0
 end
 
 function DefaultCameraController:onUpdateFirstPersonPosition(position)
-	self.nextFirstPersonPosition = position:keep()
-end
-
-function DefaultCameraController:onUpdateFirstPersonDistance(position)
-	self.nextFirstPersonPosition = position:keep()
+	self.nextFirstPersonPosition = (self.nextFirstPersonPosition or Vector()):from(position:get())
 end
 
 function DefaultCameraController:onMapRotationStick()
@@ -950,6 +1008,10 @@ function DefaultCameraController:_clampCenter(center)
 	end
 
 	local _, _, layer = actor:getTile()
+	while self:getGameView():getParentLayer(layer) do
+		layer = self:getGameView():getParentLayer(layer)
+	end
+
 	local map = self:getGameView():getMap(layer)
 	local mapSceneNode = self:getGameView():getMapSceneNode(layer)
 
@@ -1195,6 +1257,8 @@ function DefaultCameraController:draw()
 	if self.isFirstPerson <= 0 then
 		self:getCamera():setHorizontalRotation(horizontalOffset + self.currentElevationHorizontalRotationOffset)
 	end
+
+	self:getCamera():setIsWallHackEnabled(true)
 end
 
 return DefaultCameraController

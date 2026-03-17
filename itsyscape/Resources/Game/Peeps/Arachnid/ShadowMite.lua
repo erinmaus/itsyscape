@@ -16,6 +16,7 @@ local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceB
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local Mite = require "Resources.Game.Peeps.Arachnid.Mite"
@@ -79,7 +80,7 @@ function ShadowMite:update(director, game)
 		local targetPosition = Utility.Peep.getPosition(target)
 		distance = (selfPosition - targetPosition):getLength()
 
-		Utility.Peep.setPosition(self, selfPosition:lerp(targetPosition, game:getDelta()), true)
+		Utility.Peep.setPosition(self, selfPosition:lerp(targetPosition, game:getDelta()))
 	end
 
 	if distance < ShadowMite.DESPAWN_DISTANCE then
@@ -103,6 +104,7 @@ function ShadowMite:update(director, game)
 	end
 
 	self:removeBehavior(TargetTileBehavior)
+	self:removeBehavior(TargetPositionBehavior)
 end
 
 return ShadowMite

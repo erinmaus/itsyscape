@@ -10,16 +10,21 @@
 local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
 local Callback = require "ItsyScape.Common.Callback"
+local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
 local Cortex = require "ItsyScape.Peep.Cortex"
 local Peep = require "ItsyScape.Peep.Peep"
+local DoorBehavior = require "ItsyScape.Peep.Behaviors.DoorBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local PropReferenceBehavior = require "ItsyScape.Peep.Behaviors.PropReferenceBehavior"
 local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
 local Tile = require "ItsyScape.World.Tile"
+local NavigationMeshBuilder = require "ItsyScape.World.NavigationMeshBuilder"
 
 local MovementCortex = Class(Cortex)
 
@@ -37,9 +42,7 @@ MovementCortex.OFFSETS = {
 	{  0,  1 }
 }
 
--- Until we have pathfinding that takes into account a peep's size,
--- we need to clamp them to roughly a tile (with some wiggle room to make imperfect movement easier)
-MovementCortex.PEEP_RADIUS = 0.5
+MovementCortex.DEFAULT_PEEP_RADIUS = 0.5
 
 local function _isPassable(map, i, j, s, t)
 	return not map:getTile(s, t):hasStaticFlag("impassable")
@@ -50,6 +53,10 @@ function MovementCortex:new()
 
 	self:require(MovementBehavior)
 	self:require(PositionBehavior)
+
+	self.props = {}
+	self.pendingCollisionMaskUpdates = setmetatable({}, { __mode = "k" })
+	self.dirtyMeshLayers = {}
 end
 
 function MovementCortex:attach(director)
@@ -61,6 +68,7 @@ end
 function MovementCortex:detach()
 	local stage = self:getDirector():getGameInstance():getStage()
 	stage.onLoadMap:unregister(self._onLoadMap)
+	stage.onMapMetaUpdated:unregister(self._onMapMetaUpdated)
 	stage.onMapModified:unregister(self._onMapModified)
 	stage.onUnloadMap:unregister(self._onUnloadMap)
 
@@ -83,10 +91,16 @@ function MovementCortex:listen()
 	self.worlds = {}
 	self.peepsByLayer = {}
 	self.props = {}
-	self._onLoadMap = function(_, _, layer)
-		self:addWorld(layer)
+	self._onLoadMap = function(_, _, layer, _, _, meta)
+		self:addWorld(layer, meta)
 	end
 	stage.onLoadMap:register(self._onLoadMap)
+
+	self._onMapMetaUpdated = function(_, layer, meta)
+		self:updatePolygonMask(layer, meta)
+		self:updateWorld(layer)
+	end
+	stage.onMapMetaUpdated:register(self._onMapMetaUpdated)
 
 	self._onMapModified = function(_, _, layer)
 		self:updateWorld(layer)
@@ -101,7 +115,64 @@ function MovementCortex:listen()
 	self._filter = Callback.bind(self.filter, self)
 end
 
-function MovementCortex:addWorld(layer)
+function MovementCortex:updatePolygonMask(layer, meta)
+	local w = self.worlds[layer]
+
+	if not (meta and meta.polygonMask) then
+		if w.polygonMask then
+			w.world:remove(w.polygonMask)
+			w.polygonMask = nil
+		end
+
+		return
+	end
+
+	local chainShapes = {}
+	local polygonMask = {}
+	for _, polygon in ipairs(meta.polygonMask) do
+		local p = {}
+		local otherPolygon = {}
+
+		for _, point in ipairs(polygon) do
+			table.insert(otherPolygon, { unpack(point) })
+			table.insert(p, point[1])
+			table.insert(p, point[2])
+		end
+
+		table.insert(otherPolygon, { unpack(polygon[1]) })
+
+		table.insert(polygonMask, otherPolygon)
+		table.insert(chainShapes, slick.newChainShape(p))
+	end
+
+	local maskTile = w.polygonMaskTile
+	if not maskTile then
+		maskTile = Tile()
+		maskTile:setFlag("impassable")
+
+		w.polygonMaskTile = maskTile
+		w.polygonMask = polygonMask
+		w.world:add(maskTile, 0, 0, slick.newShapeGroup(unpack(chainShapes)))
+	else
+		w.world:update(maskTile, 0, 0, slick.newShapeGroup(unpack(chainShapes)))
+	end
+end
+
+function MovementCortex:getNavigationMesh(layer)
+	local w = self.worlds[layer]
+	return w and w.mesh, w and w.meshBuilder
+end
+
+function MovementCortex:getWorld(layer)
+	local w = self.worlds[layer]
+	return w and w.world
+end
+
+function MovementCortex:getProxy(peep)
+
+end
+
+function MovementCortex:addWorld(layer, meta)
 	local map = self:getDirector():getMap(layer)
 	local world = slick.newWorld(
 		map:getWidth() * map:getCellSize(),
@@ -117,8 +188,14 @@ function MovementCortex:addWorld(layer)
 		tiles = {},
 		peeps = {},
 		props = {},
-		layer = layer
+		polygons = {},
+		layer = layer,
+		meta = meta
 	}
+
+	if meta and meta.polygonMask then
+		self:updatePolygonMask(layer, meta)
+	end
 end
 
 function MovementCortex:addPeepToWorld(layer, peep)
@@ -130,16 +207,63 @@ function MovementCortex:addPeepToWorld(layer, peep)
 		self.peepsByLayer[peep] = Utility.Peep.getLayer(peep)
 
 		local position = Utility.Peep.getPosition(peep)
-		w.world:add(peep, position.x, position.z, slick.newCircleShape(0, 0, MovementCortex.PEEP_RADIUS))
+		local radius = peep:hasBehavior(DynamicBehavior) and peep:getBehavior(DynamicBehavior).radius or MovementCortex.DEFAULT_PEEP_RADIUS
+		w.world:add(peep, position.x, position.z, slick.newCircleShape(0, 0, radius))
 	end
+end
+
+function MovementCortex:updatePropCollisionMask(prop, e)
+	self.pendingCollisionMaskUpdates[prop] = { layer = Utility.Peep.getLayer(prop), mode = e.mode, tile = e.tile }
+end
+
+function MovementCortex:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
+	if collisionMaskUpdate.layer ~= layer then
+		return
+	end
+
+	local w = self.worlds[layer]
+	if not w then
+		return
+	end
+
+	local static = prop:getBehavior(StaticBehavior)
+	if not (static.static and static.type ~= StaticBehavior.PASSABLE) then
+		if w.polygons[prop] then
+			w.polygons[prop] = nil
+			self.dirtyMeshLayers[layer] = true
+		end
+
+		return
+	end
+
+	local entity = w.world:get(prop)
+	local shapeGroup = entity.shapes
+
+	local polygons = {}
+	for _, shape in ipairs(shapeGroup.shapes) do
+		local polygon = {}
+		for _, vertex in ipairs(shape.vertices) do
+			table.insert(polygon, { vertex.x, vertex.y })
+		end
+
+		if #shape.vertices >= 3 then
+			table.insert(polygon, { shape.vertices[1].x, shape.vertices[1].y })
+		end
+		table.insert(polygons, polygon)
+	end
+
+	w.polygons[prop] = NavigationMeshBuilder.Polygons(collisionMaskUpdate.tile, polygons)
+	self.dirtyMeshLayers[layer] = true
 end
 
 function MovementCortex:addPropToWorld(layer, prop)
 	self:removePropFromWorld(self.peepsByLayer[prop], prop)
 
+	self.props[prop] = true
+	prop:listen("collisionMaskUpdate", self.updatePropCollisionMask, self)
+
 	local w = self.worlds[layer]
 	if w then
-		w.props[prop] = true
 		self.peepsByLayer[prop] = Utility.Peep.getLayer(prop)
 		self.props[prop] = true
 
@@ -147,11 +271,26 @@ function MovementCortex:addPropToWorld(layer, prop)
 		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
 		local scale = Utility.Peep.getScale(prop)
 		local size = Utility.Peep.getSize(prop)
-		local offset = -size / 2
-		w.world:add(
-			prop,
-			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
-			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+		local static = prop:getBehavior(StaticBehavior)
+
+		local propInfo = {
+			position = Vector(position:get()),
+			rotation = 0,
+			scale = Vector(scale:get()),
+			size = Vector(size:get()),
+			staticType = static and static.type or StaticBehavior.IMPASSABLE,
+			static = not static or static.static
+		}
+
+		w.props[prop] = propInfo
+
+		if propInfo.static and propInfo.staticType ~= StaticBehavior.PASSABLE then
+			local offset = -size / 2
+			w.world:add(
+				prop,
+				slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
+				slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+		end
 	end
 end
 
@@ -164,15 +303,43 @@ function MovementCortex:updateProp(prop)
 
 	local w = self.worlds[layer]
 	if w then
+		local propInfo = w.props[prop]
 		local position = Utility.Peep.getPosition(prop)
 		local _, rotation, _ = Utility.Peep.getRotation(prop):getEulerXYZ()
 		local scale = Utility.Peep.getScale(prop)
 		local size = Utility.Peep.getSize(prop)
-		local offset = -size / 2
-		w.world:update(
-			prop,
-			slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
-			slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+		local static = prop:getBehavior(StaticBehavior)
+
+		if not (propInfo.position == position and
+			propInfo.rotation == rotation and
+			propInfo.scale == scale and
+			propInfo.size == size and
+			propInfo.staticType == (static and static.type or StaticBehavior.IMPASSABLE) and
+			propInfo.static == (not static or static.static))
+		then
+			propInfo.position:from(position:get())
+			propInfo.rotation = rotation
+			propInfo.scale:from(scale:get())
+			propInfo.size:from(size:get())
+			propInfo.staticType = static and static.type or StaticBehavior.IMPASSABLE
+			propInfo.static = not static or static.static
+
+			if propInfo.static and propInfo.staticType ~= StaticBehavior.PASSABLE then
+				local offset = -size / 2
+				w.world:update(
+					prop,
+					slick.newTransform(position.x, position.z, rotation, scale.x, scale.z),
+					slick.newRectangleShape(offset.x, offset.z, size.x, size.z))
+			elseif w.world:has(prop) then
+				w.world:remove(prop)
+			end
+		end
+
+		local collisionMaskUpdate = self.pendingCollisionMaskUpdates[prop]
+		if collisionMaskUpdate then
+			self.pendingCollisionMaskUpdates[prop] = nil
+			self:preparePropCollisionMaskUpdate(layer, prop, collisionMaskUpdate)
+		end
 	end
 end
 
@@ -203,15 +370,64 @@ function MovementCortex:removePropFromWorld(layer, prop)
 	end
 
 	w.props[prop] = nil
-	self.props[prop] = true
+	self.props[prop] = nil
+
+	prop:silence("collisionMaskUpdate", self.updatePropCollisionMask)
 
 	if w.world:has(prop) then
 		w.world:remove(prop)
 	end
 end
 
+local function merge(...)
+	local t = {}
+
+	for i = 1, select("#", ...) do
+		local o = select(i, ...)
+		if type(o) == "table" then
+			for k, v in pairs(o) do
+				t[k] = v
+			end
+		end
+	end
+
+	return t
+end
+
+function MovementCortex:updateNavigationMesh(layer)
+	if _APP and Class.isCompatibleType(_APP, require "ItsyScape.Editor.EditorApplication") then
+		return
+	end
+
+	local map = self:getDirector():getMap(layer)
+
+	local w = self.worlds[layer]
+	if not w then
+		return
+	end
+
+	local polygons = {}
+	if w.polygonMask then
+		local tile = Tile()
+		tile:setFlag("impassable")
+		tile:setFlag("polygon")
+
+		table.insert(polygons, NavigationMeshBuilder.Polygons(tile, w.polygonMask))
+	end
+
+	for _, polygon in pairs(w.polygons) do
+		table.insert(polygons, polygon)
+	end
+
+	local builder = NavigationMeshBuilder(map, polygons)
+    w.meshBuilder = builder
+    w.mesh = builder:getNavigationMesh()
+end
+
 function MovementCortex:updateWorld(layer)
 	local map = self:getDirector():getMap(layer)
+
+	self:updateNavigationMesh(layer)
 
 	local w = self.worlds[layer]
 	if not w then
@@ -222,6 +438,27 @@ function MovementCortex:updateWorld(layer)
 		if w.world:has(w.tiles[i]) then
 			w.world:remove(w.tiles[i])
 		end
+	end
+
+	local mapWidth = map:getWidth() * map:getCellSize()
+	local mapHeight = map:getHeight() * map:getCellSize()
+
+	local borderShape = slick.newPolylineShape({
+		{ 0, 0, mapWidth, 0 },
+		{ mapWidth, 0, mapWidth, mapHeight },
+		{ mapWidth, mapHeight, 0, mapHeight },
+		{ 0, mapHeight, 0, 0 }
+	})
+
+	local border = w.border
+	if not border then
+		border = Tile()
+		border:setFlag("impassable")
+
+		w.world:add(border, 0, 0, borderShape)
+		w.border = border
+	else
+		w.world:update(border, 0, 0, borderShape)
 	end
 
 	table.clear(w.tiles)
@@ -272,10 +509,27 @@ function MovementCortex:filter(item, other)
 	if Class.isCompatibleType(other, Tile) then
 		if other:hasStaticFlag("impassable") then
 			return "slide"
+		elseif other:hasFlag("door") then
+			for link in other:iterateLinks() do
+				local door = link:getBehavior(DoorBehavior)
+				if not (door and door.isOpen) then
+					return "slide"
+				end
+			end
 		end
 	elseif Class.isCompatibleType(other, Peep) then
 		local static = other:getBehavior(StaticBehavior)
 		if static and static.type == StaticBehavior.IMPASSABLE then
+			return "slide"
+		end
+
+		local door = other:getBehavior(DoorBehavior)
+		if door and not door.isOpen then
+			return "slide"
+		end
+
+		local dynamic = other:getBehavior(DynamicBehavior)
+		if dynamic and dynamic.type == StaticBehavior.IMPASSABLE then
 			return "slide"
 		end
 	end
@@ -332,6 +586,11 @@ function MovementCortex:update(delta)
 		self:updateProp(prop)
 	end
 
+	for layer in pairs(self.dirtyMeshLayers) do
+		self:updateNavigationMesh(layer)
+	end
+	table.clear(self.dirtyMeshLayers)
+
 	for peep in self:iterate() do
 		local movement = peep:getBehavior(MovementBehavior)
 		local position = peep:getBehavior(PositionBehavior)
@@ -387,7 +646,9 @@ function MovementCortex:update(delta)
 			velocity = self:accumulate(peep, self.accumulateVelocity, velocity)
 
 			local newPosition = position.position + velocity
-			if not movement.noClip then
+			local positionBeforeGravity = newPosition
+
+			if not movement.noClip and Utility.Peep.isEnabled(peep) then
 				newPosition = newPosition + gravity * delta
 			end
 
@@ -404,10 +665,26 @@ function MovementCortex:update(delta)
 			end
 
 			local isOnGround = movement.isOnGround
+			local groupHits = Utility.Map.castRay(peep, Ray(positionBeforeGravity + Vector(0, movement.maxStepHeight, 0), Vector(0, -1, 0)))
+
+			local groundStep
+			for i = 1, #groupHits do
+				local groupHit = groupHits[i]
+				local previousGroupHit = i > 1 and groupHits[i - 1]
+				if previousGroupHit and groupHit.position.y > previousGroupHit.position.y then
+					break
+				end
+
+				local s = groupHit.tile:getData("x-tileset-step")
+				if s then
+					groundStep = math.max(groundStep or -math.huge, s)
+				end
+			end
+
 			local y = map:getInterpolatedHeight(
 				position.position.x,
-				position.position.z) + movement.float
-			if not movement.noClip then
+				position.position.z) + movement.float + (groundStep or 0)
+			if not movement.noClip  then
 				if position.position.y < y then
 					if movement.bounce > 0 then
 						movement.acceleration.y = -movement.acceleration.y * movement.bounce
@@ -437,13 +714,15 @@ function MovementCortex:update(delta)
 				peep:poke("fall")
 			end
 
-			if movement.isOnGround then
-				position.position.y = y
-				movement.acceleration.y = 0
-				movement.velocity.y = 0
-			else
-				if not movement.noClip then
-					position.position.y = math.max(position.position.y, y)
+			if Utility.Peep.isEnabled(peep) then
+				if movement.isOnGround then
+					position.position.y = y
+					movement.acceleration.y = 0
+					movement.velocity.y = 0
+				else
+					if not movement.noClip then
+						position.position.y = math.max(position.position.y, y)
+					end
 				end
 			end
 

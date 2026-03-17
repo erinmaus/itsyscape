@@ -56,12 +56,12 @@ const glm::vec3& nbunny::SceneNodeTransform::get_previous_translation() const
 
 void nbunny::SceneNodeTransform::set_current_rotation(const glm::quat& value)
 {
-	current_rotation = value;
+	current_rotation = glm::normalize(value);
 }
 
 void nbunny::SceneNodeTransform::set_previous_rotation(const glm::quat& value)
 {
-	previous_rotation = value;
+	previous_rotation = glm::normalize(value);
 }
 
 const glm::quat& nbunny::SceneNodeTransform::get_current_rotation() const
@@ -180,6 +180,23 @@ nbunny::SceneNodeMaterial::SceneNodeMaterial(SceneNode& scene_node) :
 	scene_node(scene_node)
 {
 	// Nothing.
+}
+
+bool nbunny::SceneNodeMaterial::get_current_global_wall_hack_window(glm::vec4& result) const
+{
+	auto current_node = &get_scene_node();
+	while (current_node)
+	{
+		if (current_node->get_material().get_is_global_wall_hack_enabled())
+		{
+			result = current_node->get_material().get_global_wall_hack_window();
+			return true;
+		}
+
+		current_node = current_node->get_parent();
+	}
+
+	return false;
 }
 
 nbunny::SceneNode& nbunny::SceneNodeMaterial::get_scene_node()
@@ -416,6 +433,41 @@ void nbunny::SceneNodeMaterial::set_color(const glm::vec4& value)
 	color = value;
 }
 
+bool nbunny::SceneNodeMaterial::get_is_global_wall_hack_enabled() const
+{
+	return is_global_wall_hack_enabled;
+}
+
+void nbunny::SceneNodeMaterial::set_is_global_wall_hack_enabled(bool value)
+{
+	is_global_wall_hack_enabled = value;
+}
+
+const glm::vec4& nbunny::SceneNodeMaterial::get_global_wall_hack_window() const
+{
+	return global_wall_hack_window;
+}
+
+void nbunny::SceneNodeMaterial::set_global_wall_hack_window(const glm::vec4& value)
+{
+	global_wall_hack_window = value;
+}
+
+void nbunny::SceneNodeMaterial::set_glass_thickness(float value)
+{
+	glass_thickness = value;
+}
+
+float nbunny::SceneNodeMaterial::get_glass_thickness() const
+{
+	return glass_thickness;
+}
+
+bool nbunny::SceneNodeMaterial::get_is_glass() const
+{
+	return glass_thickness >= 0.0f;
+}
+
 const glm::vec4& nbunny::SceneNodeMaterial::get_outline_color() const
 {
 	return outline_color;
@@ -504,6 +556,11 @@ void nbunny::SceneNodeMaterial::apply_uniforms(ShaderCache& cache, love::graphic
 	{
 		cache.update_uniform(shader, i.first, i.second);
 	}
+
+	glm::vec4 window = glm::vec4(0.0);
+	get_current_global_wall_hack_window(window);
+
+	cache.update_uniform(shader, "scape_GlobalWallHackWindow", glm::value_ptr(window), sizeof(glm::vec4));
 }
 
 bool nbunny::SceneNodeMaterial::operator <(const SceneNodeMaterial& other) const
@@ -703,6 +760,16 @@ void nbunny::SceneNode::set_max(const glm::vec3& value)
 const glm::vec3& nbunny::SceneNode::get_max() const
 {
 	return max;
+}
+
+void nbunny::SceneNode::set_will_render(bool value)
+{
+	will_render = value;
+}
+
+bool nbunny::SceneNode::get_will_render() const
+{
+	return will_render;
 }
 
 float nbunny::SceneNode::calculate_screen_size_percent(const Camera& camera, float delta) const
@@ -1097,6 +1164,11 @@ const glm::vec3& nbunny::Camera::get_target_position() const
 	return target_position;
 }
 
+const glm::vec3& nbunny::Camera::get_forward() const
+{
+	return forward;
+}
+
 const glm::quat& nbunny::Camera::get_rotation() const
 {
 	return rotation;
@@ -1113,6 +1185,11 @@ void nbunny::Camera::move(const glm::vec3& eye_position, const glm::vec3& target
 {
 	this->eye_position = eye_position;
 	this->target_position = target_position;
+}
+
+void nbunny::Camera::direction(const glm::vec3& forward)
+{
+	this->forward = forward;
 }
 
 void nbunny::Camera::set_bounding_sphere_position(const glm::vec3& value)
@@ -1525,6 +1602,44 @@ static int nbunny_scene_node_material_get_color(lua_State* L)
 	return 4;
 }
 
+static int nbunny_scene_node_material_set_is_global_wall_hack_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_is_global_wall_hack_enabled(nbunny::lua::get<bool>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_is_global_wall_hack_enabled(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_is_global_wall_hack_enabled());
+
+    return 1;
+}
+
+static int nbunny_scene_node_material_set_global_wall_hack_window(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	float left = (float)luaL_checknumber(L, 2);
+	float right = (float)luaL_checknumber(L, 3);
+	float top = (float)luaL_checknumber(L, 4);
+	float bottom = (float)luaL_checknumber(L, 5);
+	material->set_global_wall_hack_window(glm::vec4(left, right, top, bottom));
+	return 0;
+}
+
+static int nbunny_scene_node_material_get_global_wall_hack_window(lua_State* L)
+{
+	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+	const auto& global_wall_hack_window = material->get_global_wall_hack_window();
+	lua_pushnumber(L, global_wall_hack_window.x); // left
+	lua_pushnumber(L, global_wall_hack_window.y); // right
+	lua_pushnumber(L, global_wall_hack_window.z); // top
+	lua_pushnumber(L, global_wall_hack_window.w); // bottom
+	return 4;
+}
+
 static int nbunny_scene_node_material_set_shimmer_color(lua_State* L)
 {
 	auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
@@ -1799,6 +1914,22 @@ static int nbunny_scene_node_material_get_is_shadow_caster(lua_State* L)
     return 1;
 }
 
+static int nbunny_scene_node_material_set_glass_thickness(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    material->set_glass_thickness(nbunny::lua::get<lua_Number>(L, 2));
+
+    return 0;
+}
+
+static int nbunny_scene_node_material_get_glass_thickness(lua_State* L)
+{
+    auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
+    nbunny::lua::push(L, material->get_glass_thickness());
+
+    return 1;
+}
+
 static int nbunny_scene_node_material_set_outline_threshold(lua_State* L)
 {
     auto material = nbunny::lua::get<nbunny::SceneNodeMaterial>(L, 1);
@@ -1957,6 +2088,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		{ "getIsCullDisabled", &nbunny_scene_node_material_get_is_cull_disabled },
 		{ "setIsShadowCaster", &nbunny_scene_node_material_set_is_shadow_caster },
 		{ "getIsShadowCaster", &nbunny_scene_node_material_get_is_shadow_caster },
+		{ "setGlassThickness", &nbunny_scene_node_material_set_glass_thickness },
+		{ "getGlassThickness", &nbunny_scene_node_material_get_glass_thickness },
 		{ "setOutlineThreshold", &nbunny_scene_node_material_set_outline_threshold },
 		{ "getOutlineThreshold", &nbunny_scene_node_material_get_outline_threshold },
 		{ "setIsReflectiveOrRefractive", &nbunny_scene_node_material_set_is_reflective_or_refractive },
@@ -1987,6 +2120,10 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenodematerial(lua_State* L)
 		{ "setFloatUniform", &nbunny_scene_node_material_send_float },
 		{ "setTextureUniform", &nbunny_scene_node_material_send_texture },
 		{ "unsetUniform", &nbunny_scene_node_material_unset_uniform },
+		{ "setIsGlobalWallHackEnabled", &nbunny_scene_node_material_set_is_global_wall_hack_enabled },
+		{ "getIsGlobalWallHackEnabled", &nbunny_scene_node_material_get_is_global_wall_hack_enabled },
+		{ "setGlobalWallHackWindow", &nbunny_scene_node_material_set_global_wall_hack_window },
+		{ "getGlobalWallHackWindow", &nbunny_scene_node_material_get_global_wall_hack_window },
 		{ "__lt", nbunny_scene_node_material_lt },
 		{ nullptr, nullptr }
 	};
@@ -2102,6 +2239,20 @@ static int nbunny_scene_node_get_max(lua_State* L)
 	return 3;
 }
 
+static int nbunny_scene_node_set_will_render(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	node->set_will_render(lua_toboolean(L, 2));
+	return 0;
+}
+
+static int nbunny_scene_node_get_will_render(lua_State* L)
+{
+	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
+	lua_pushboolean(L, node->get_will_render());
+	return 1;
+}
+
 static int nbunny_scene_node_tick(lua_State* L)
 {
 	auto node = nbunny::lua::get<nbunny::SceneNode*>(L, 1);
@@ -2208,6 +2359,8 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode(lua_State* L)
 		{ "setMin", &nbunny_scene_node_set_min },
 		{ "getMax", &nbunny_scene_node_get_max },
 		{ "setMax", &nbunny_scene_node_set_max },
+		{ "getWillRender", &nbunny_scene_node_get_will_render },
+		{ "setWillRender", &nbunny_scene_node_set_will_render },
 		{ "tick", &nbunny_scene_node_tick },
 		{ "tickChildren", &nbunny_scene_node_tick_children },
 		{ "frame", &nbunny_scene_node_frame },
@@ -2334,6 +2487,18 @@ static int nbunny_camera_move_target(lua_State* L)
 	float z = (float)luaL_checknumber(L, 4);
 
 	camera->move(camera->get_eye_position(), glm::vec3(x, y, z));
+
+	return 0;
+}
+
+static int nbunny_camera_direction(lua_State* L)
+{
+	auto camera = nbunny::lua::get<nbunny::Camera*>(L, 1);
+	float x = (float)luaL_checknumber(L, 2);
+	float y = (float)luaL_checknumber(L, 3);
+	float z = (float)luaL_checknumber(L, 4);
+
+	camera->direction(glm::vec3(x, y, z));
 
 	return 0;
 }
@@ -2488,6 +2653,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_camera(lua_State* L)
 		{ "getProjection", &nbunny_camera_get_projection },
 		{ "update", &nbunny_camera_update },
 		{ "moveTarget", &nbunny_camera_move_target },
+		{ "direction", &nbunny_camera_direction },
 		{ "updateBoundingSphere", &nbunny_camera_update_bounding_sphere },
 		{ "setClipPlane", &nbunny_camera_set_clip_plane },
 		{ "unsetClipPlane", &nbunny_camera_unset_clip_plane },

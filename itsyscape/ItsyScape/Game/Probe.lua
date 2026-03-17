@@ -15,8 +15,47 @@ local Vector = require "ItsyScape.Common.Math.Vector"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Utility = require "ItsyScape.Game.Utility"
 local Map = require "ItsyScape.World.Map"
+local MapCurve = require "ItsyScape.World.MapCurve"
 
 local Probe = Class()
+
+Probe.Tile = Class()
+
+function Probe.Tile:new(i, j, layer, tile, position)
+	self.i = i
+	self.j = j
+	self.layer = layer
+	self.tile = tile
+	self.position = (self.position or Vector()):from(position.x, position.y, position.z)
+end
+
+function Probe.Tile:getTile()
+	return self.i, self.j, self.layer, self.tile
+end
+
+function Probe.Tile:getPosition()
+	return self.position
+end
+
+Probe.Hit = Class()
+
+function Probe.Hit:new(object, position, depth)
+	self.object = object
+	self.position = (self.position or Vector()):from(position:get())
+	self.depth = depth
+end
+
+function Probe.Hit:getObject()
+	return self.object
+end
+
+function Probe.Hit:getPosition()
+	return self.position
+end
+
+function Probe.Hit:getDepth()
+	return self.depth
+end
 
 Probe.Item = Class()
 
@@ -87,9 +126,19 @@ function Probe:new(game, gameView, gameDB)
 
 	self.pendingActions = {}
 	self.pendingActionsCount = 0
+
 	self.actions = {}
 
 	self.probes = {}
+
+	self._hits = {}
+	self.freeHits = {}
+
+	self.items = {}
+	self.freeItems = {}
+
+	self.tiles = {}
+	self.freeTiles = {}
 
 	self.tile = false
 	self.layer = false
@@ -99,6 +148,33 @@ function Probe:new(game, gameView, gameDB)
 	self._sort = function(...)
 		return self:sort(...)
 	end
+
+	local s = Vector()
+	local t = Vector()
+	self._sortTile = function(a, b)
+		local i = a[Map.RAY_TEST_RESULT_POSITION]
+		local j = b[Map.RAY_TEST_RESULT_POSITION]
+
+		local mapA = self.gameView:getMapSceneNode(a.layer)
+		local mapTransformA = mapA and mapA:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		local mapB = self.gameView:getMapSceneNode(b.layer)
+		local mapTransformB = mapB and mapB:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+
+		s:from(i.x, i.y, i.z):transform(mapTransformA, s)
+		t:from(j.x, j.y, j.z):transform(mapTransformB, t)
+
+		local curvesA = self.gameView:getMapCurves(a.layer)
+		local curvesB = self.gameView:getMapCurves(b.layer)
+		s = MapCurve.transformAll(s, curvesA)
+		t = MapCurve.transformAll(t, curvesB)
+
+		local camera = self.gameView:getCamera()
+		return camera:compare(s, t)
+	end
+
+	self._sortDepth = function(a, b)
+		return a:getDepth() < b:getDepth()
+	end
 end
 
 function Probe:sort(a, b)
@@ -106,6 +182,21 @@ function Probe:sort(a, b)
 end
 
 function Probe:_reset()
+	for _, hit in ipairs(self._hits) do
+		table.insert(self.freeHits, hit)
+	end
+	table.clear(self._hits)
+
+	for _, item in ipairs(self.items) do
+		table.insert(self.freeItems, item)
+	end
+	table.clear(self.items)
+
+	for _, tile in ipairs(self.tiles) do
+		table.insert(self.freeTiles, tile)
+	end
+	table.clear(self.tiles)
+
 	table.clear(self.actions)
 	self.isDirty = false
 
@@ -235,67 +326,124 @@ function Probe:addAction(id, verb, type, objectID, objectType, object, descripti
 	return pendingAction
 end
 
+function Probe:getResults()
+	return self.results or {}
+end
+
+function Probe:hits()
+	return ipairs(self._hits)
+end
+
 function Probe:_all(callback, results)
+	self.results = results
+
 	self:getTile(results)
 	self:run(callback)
 end
 
 -- Probes all actions that can be performed.
 function Probe:all(callback)
+	self.results = {}
 	self.gameView:testMap(nil, self.ray, Function(self._all, self, callback))
 end
 
-function Probe:_run(callback)
-	self.pendingActionsCount = 0
-
-	local probe = self.gameView:getNProbe()
-
-	if self.isRay then
-		probe:setRay(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z)
-		probe:unsetCone()
-		probe:unsetCircle()
-	elseif self.isCone then
-		probe:setCone(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z, self.coneLength, self.coneRadius)
-		probe:unsetRay()
-		probe:unsetCircle()
-	elseif self.isCircle then
-		probe:setCircle(self.circlePosition.x, self.circlePosition.y, self.circlePosition.z, self.circleRadius)
-		probe:unsetCone()
-		probe:unsetRay()
+function Probe:_newHit(object, position, depth)
+	local hit = table.remove(self.freeHits)
+	if hit then
+		hit:new(object, position, depth)
 	else
-		return
+		hit = Probe.Hit(object, position, depth)
 	end
 
-	local tests = self.tests or Probe.TESTS
+	return hit
+end
 
-	local hits = probe:probe(_APP:getFrameDelta())
-	for i = 1, hits do
-		local interface, id, x, y, z, distance = probe:getHit(i - 1)
+function Probe:_newItem(item)
+	local item = table.remove(self.freeItems)
+	if item then
+		item:new(item)
+	else
+		item = Probe.Item(item)
+	end
 
-		if interface == "ItsyScape.Game.Model.Actor" and tests.actors then
-			local actor = self.gameView:getActorByID(id)
-			if actor then
-				self:_actor(actor, Vector(x, y, z), distance)
-			end
-		elseif interface == "ItsyScape.Game.Model.Prop" and tests.props then
-			local prop = self.gameView:getPropByID(id)
-			if prop then
-				self:_prop(prop, Vector(x, y, z), distance)
-			end
-		elseif interface == "X.Item" and tests.loot then
-			local item = self.game:getStage():getItem(id)
-			if item then
-				self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, Vector(x, y, z), distance)
+	table.insert(self.items, item)
+	return item
+end
+
+function Probe:_newTile(i, j, layer, t, position)
+	local tile = table.remove(self.freeTiles)
+	if tile then
+		tile:new(i, j, layer, t, position)
+	else
+		tile = Probe.Tile(i, j, layer, t, position)
+	end
+
+	table.insert(self.tiles, tile)
+	return tile
+end
+
+do
+	local point = Vector()
+	function Probe:_run(callback)
+		self.pendingActionsCount = 0
+
+		local probe = self.gameView:getNProbe()
+
+		if self.isRay then
+			probe:setRay(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z)
+			probe:unsetCone()
+			probe:unsetCircle()
+		elseif self.isCone then
+			probe:setCone(self.ray.origin.x, self.ray.origin.y, self.ray.origin.z, self.ray.direction.x, self.ray.direction.y, self.ray.direction.z, self.coneLength, self.coneRadius)
+			probe:unsetRay()
+			probe:unsetCircle()
+		elseif self.isCircle then
+			probe:setCircle(self.circlePosition.x, self.circlePosition.y, self.circlePosition.z, self.circleRadius)
+			probe:unsetCone()
+			probe:unsetRay()
+		else
+			return
+		end
+
+		local tests = self.tests or Probe.TESTS
+
+		local camera = self.gameView:getCamera()
+		local hits = probe:probe(_APP:getPreviousFrameDelta())
+		for i = 1, hits do
+			local interface, id, x, y, z, distance = probe:getHit(i - 1)
+			camera:project(point:from(x, y, z), point)
+			point.z = camera:toLinearDepth(point.z)
+
+			if interface == "ItsyScape.Game.Model.Actor" and tests.actors then
+				local actor = self.gameView:getActorByID(id)
+				if actor then
+					self:_actor(actor, point, distance)
+					table.insert(self._hits, self:_newHit(actor, point, point.z))
+				end
+			elseif interface == "ItsyScape.Game.Model.Prop" and tests.props then
+				local prop = self.gameView:getPropByID(id)
+				if prop then
+					self:_prop(prop, point, distance)
+					table.insert(self._hits, self:_newHit(prop, point, point.z))
+				end
+			elseif interface == "X.Item" and tests.loot then
+				local item = self.game:getStage():getItem(id)
+				if item then
+					self:_loot(item, item.tile.i, item.tile.j, item.tile.layer, point, distance)
+					table.insert(self._hits, self:_newHit(Probe.Item(item), point, point.z))
+				end
 			end
 		end
-	end
 
-	if tests.walk then
-		self:walk()
-	end
+		table.sort(self._hits, self._sortDepth)
 
-	if callback then
-		callback()
+		if tests.walk then
+			self:walk()
+		end
+
+		if callback then
+			callback()
+		end
 	end
 end
 
@@ -306,47 +454,73 @@ end
 -- Returns the tile this probe hit as a tuple in the form (i, j, layer).
 --
 -- If no tile was hit, returns (nil, nil, nil).
-function Probe:getTile(tiles)
-	if tiles then
-		local function sortFunc(a, b)
-			local i = a[Map.RAY_TEST_RESULT_POSITION]
-			local j = b[Map.RAY_TEST_RESULT_POSITION]
+do
+	local transformedPosition = Vector()
+	function Probe:getTile(tiles)
+		if tiles then
+			table.sort(tiles, self._sortTile)
 
-			local camera = self.gameView:getCamera()
-			local s = camera:project(Vector(i.x, i.y, i.z))
-			local t = camera:project(Vector(j.x, j.y, j.z))
-
-			return s.z < t.z
-		end
-		table.sort(tiles, sortFunc)
-
-		if self.layer then
-			for i = 1, #tiles do
-				if tiles[i].layer == layer then
-					self.tile = tiles[i]
-					self.layer = layer
-					break
+			local playerLayer
+			do
+				local playerActor = self.game:getPlayer() and self.game:getPlayer():getActor()
+				if playerActor then
+					local i, j, k = playerActor:getTile()
+					playerLayer = k
 				end
 			end
-		else
-			self.tile = tiles[1]
-			if self.tile then
-				self.layer = self.tile.layer or 1
+
+			local playerTile
+			for _, tile in ipairs(tiles) do
+				local i = tile[Map.RAY_TEST_RESULT_I]
+				local j = tile[Map.RAY_TEST_RESULT_J]
+				local layer = tile.layer
+				local position = tile[Map.RAY_TEST_RESULT_POSITION]
+				local t = tile[Map.RAY_TEST_RESULT_TILE]
+
+				local map = self.gameView:getMapSceneNode(layer)
+				local curves = self.gameView:getMapCurves(layer)
+				local mapTransform = map and map:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+				transformedPosition:from(position.x, position.y, position.z):transform(mapTransform, transformedPosition)
+				transformedPosition = MapCurve.transformAll(transformedPosition, curves)
+				local depth = self.gameView:getCamera():depth(transformedPosition)
+
+				table.insert(self._hits, self:_newHit(self:_newTile(i, j, layer, t, position), transformedPosition, depth))
+
+				if playerLayer and layer == playerLayer then
+					playerTile = tile
+				end
+			end
+
+			if self.layer then
+				for i = 1, #tiles do
+					if tiles[i].layer == self.layer then
+						self.tile = tiles[i]
+						break
+					end
+				end
+			elseif playerTile then
+				self.tile = playerTile
+				self.layer = self.tile.layer
 			else
-				self.layer = nil
+				self.tile = tiles[1]
+				if self.tile then
+					self.layer = self.tile.layer or 1
+				else
+					self.layer = nil
+				end
 			end
 		end
-	end
 
-	-- Gotta check again. No tile may have been found.
-	if not self.tile then
-		return nil, nil, nil
-	end
+		-- Gotta check again. No tile may have been found.
+		if not self.tile then
+			return nil, nil, nil
+		end
 
-	return self.tile[Map.RAY_TEST_RESULT_I],
-	       self.tile[Map.RAY_TEST_RESULT_J],
-	       self.layer,
-	       self.tile[Map.RAY_TEST_RESULT_POSITION]
+		return self.tile[Map.RAY_TEST_RESULT_I],
+		       self.tile[Map.RAY_TEST_RESULT_J],
+		       self.layer,
+		       self.tile[Map.RAY_TEST_RESULT_POSITION]
+	end
 end
 
 function Probe:_walk(i, j, k)
@@ -360,7 +534,12 @@ function Probe:walk()
 	end
 
 	local i, j, k, position = self:getTile()
-	if i and j and k then
+	if i and j and k and position then
+		position = Vector(position.x, position.y, position.z)
+		local m = self.gameView:getMapSceneNode(k)
+		local transform = m and m:getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+		position = position:transform(transform)
+
 		self:addAction(
 			-1,
 			"Walk",
@@ -369,7 +548,7 @@ function Probe:walk()
 			"client",
 			"here", -- lol
 			"Walk to this location.",
-			position.z,
+			self.gameView:getCamera():depth(position),
 			self._walk, self, i, j, k)
 
 		self.probes["walk"] = 1
@@ -427,7 +606,7 @@ function Probe:_loot(item, i, j, k, position, distance)
 		"item",
 		object,
 		description,
-		-position.z,
+		position.z,
 		self._take, self, i, j, k, item)
 
 	self:addAction(
@@ -438,7 +617,7 @@ function Probe:_loot(item, i, j, k, position, distance)
 		"item",
 		object,
 		description,
-		-position.z + (1 / 100),
+		position.z + (1 / 100),
 		self.onExamine, object, description, Probe.Item(item))
 
 	self.probes.loot = (self.probes.loot or 0) + 1
@@ -514,6 +693,12 @@ function Probe:_actor(actor, point, distance)
 		end
 	end
 
+	local min, max = actor:getBounds()
+	local size = max - min
+	if size.x < 0.01 or size.y < 0.01 or size.z < 0.01 then
+		return
+	end
+
 	for i = 1, #actions do
 		local action = self:addAction(
 			actions[i].id,
@@ -523,7 +708,7 @@ function Probe:_actor(actor, point, distance)
 			"actor",
 			actor:getName(),
 			actor:getDescription(),
-			-point.z + ((i / #actions) / 100),
+			point.z - (1 - (i / #actions) / 100),
 			self._poke, self, actions[i].id, actor, "world")
 
 
@@ -540,7 +725,7 @@ function Probe:_actor(actor, point, distance)
 		"actor",
 		actor:getName(),
 		actor:getDescription(),
-		-point.z + (((#actions + 1) / #actions) / 100),
+		point.z - ((1 - ((#actions + 1) / #actions)) / 100),
 		self.onExamine, actor:getName(), actor:getDescription(), actor)
 
 	self.probes.actor = (self.probes.actor or 0) + 1
@@ -551,6 +736,12 @@ function Probe:_prop(prop, point, distance)
 	local actions = prop:getActions("world")
 
 	if self.isCone and distance > self.coneLength then
+		return
+	end
+
+	local min, max = prop:getBounds()
+	local size = max - min
+	if size.x < 0.01 or size.y < 0.01 or size.z < 0.01 then
 		return
 	end
 
@@ -571,7 +762,7 @@ function Probe:_prop(prop, point, distance)
 	for i = 1, #actions do
 		local filter = Probe.PROP_FILTERS[actions[i].type:lower()]
 
-		local isHidden = propLayer ~= playerLayer
+		local isHidden = false
 		if filter then
 			isHidden = isHidden or filter(prop)
 		end
@@ -584,7 +775,7 @@ function Probe:_prop(prop, point, distance)
 			"prop",
 			prop:getName(),
 			prop:getDescription(),
-			-point.z + ((i / #actions) / 100),
+			point.z - (1 - (i / #actions) / 100),
 			self._poke, self, actions[i].id, prop, "world")
 		action.suppress = isHidden
 
@@ -598,7 +789,7 @@ function Probe:_prop(prop, point, distance)
 		"prop",
 		prop:getName(),
 		prop:getDescription(),
-		-point.z + (((#actions + 1) / #actions) / 100),
+		point.z - ((1 - ((#actions + 1) / #actions)) / 100),
 		self.onExamine, prop:getName(), prop:getDescription(), prop)
 
 	self.probes.prop = (self.probes.prop or 0) + 1

@@ -23,6 +23,19 @@ if _MOBILE then
 	end
 end
 
+itsyrealm.graphics = { impl = {} }
+itsyrealm.mouse = {}
+
+do
+	local Utility = require "ItsyScape.Game.Utility"
+
+	function itsyrealm.language.get(key, values)
+		return Utility.Text.get(itsyrealm.language.getLocale(), key, values) or
+		       Utility.Text.get("en-US", key, values) or
+		       key
+	end
+end
+
 local _GAME_THREAD_ERROR = false
 
 do
@@ -35,13 +48,144 @@ do
 		_ITSYREALM_VERSION)
 end
 
-itsyrealm = {
-	graphics = {
-		impl = {}
-	},
+-- do
+-- 	--local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+-- 	local Vector = require "ItsyScape.Common.Math.Vector"
+-- 	local Quaternion = require "ItsyScape.Common.Math.Quaternion"
+-- 	local e1 = {
+-- 		a = 123,
+-- 		b = {
+-- 			1, 2, 3,
+-- 			n = 3,
+-- 			[10] = 10
+-- 		},
+-- 		c = "foo",
+-- 		d = true,
+-- 		v = Vector(1)
+-- 	}
 
-	mouse = {}
-}
+-- 	local e2 = {
+-- 		a = 123,
+-- 		b = {
+-- 			1, 2, 3,
+-- 			n = 3,
+-- 			[10] = 10
+-- 		},
+-- 		c = "foo",
+-- 		d = true,
+-- 		v = Vector(1)
+-- 	}
+
+-- 	local NPooledBuffer = require "nbunny.pooledbuffer"
+-- 	local buffer = require "string.buffer"
+
+-- 	local PlayerStorage = require "ItsyScape.Game.PlayerStorage"
+-- 	local storage = PlayerStorage()
+-- 	storage:deserialize(love.filesystem.read("Player/Default.dat"))
+
+-- 	local m = { __index = {} }
+-- 	local a = setmetatable({ [NPooledBuffer.ID] = "abc123", bloop = 1, bleep = 1 }, m)
+-- 	e1 = storage:serialize()
+
+-- 	local p = NPooledBuffer.new(table.clear)
+
+-- 	local encodeConfig = {
+-- 		metatable = {
+-- 			Vector._METATABLE,
+-- 			Quaternion._METATABLE
+-- 		},
+-- 		proxy = {
+-- 			[m] = "ItsyScape.Game.Model.Actor"
+-- 		}
+-- 	}
+
+-- 	local buffer = buffer.new({
+-- 		metatable = {
+-- 			Vector._METATABLE,
+-- 			Quaternion._METATABLE
+-- 		}
+-- 	})
+
+-- 	local t = 0
+-- 	local N = 1000
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		NPooledBuffer.perform(NPooledBuffer.encode, p, encodeConfig, e1)
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	t = t / N
+-- 	print("encode time (nbunny)", t)
+
+-- 	local t = 0
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		buffer:encode({ n = 1, e1 })
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	t = t / N
+-- 	print("encode time (buffer)", t)
+
+-- 	local decodeConfig = {
+-- 		metatable = {
+-- 			Vector._METATABLE,
+-- 			Quaternion._METATABLE,
+-- 		},
+
+-- 		proxy = {
+-- 			[m] = "ItsyScape.Game.Model.Actor",
+-- 		},
+
+-- 		proxyInstances = {
+-- 			["ItsyScape.Game.Model.Actor"] = {
+-- 				["abc123"] = a
+-- 			}
+-- 		},
+
+-- 		inputTablePool = {},
+-- 		outputTablePool = {}
+-- 	}
+
+-- 	NPooledBuffer.restart(p)
+-- 	collectgarbage("stop")
+-- 	local t = 0
+-- 	local bm = collectgarbage("count")
+-- 	local t1, t2
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		t1 = NPooledBuffer.perform(NPooledBuffer.decode, p, decodeConfig)
+-- 		decodeConfig.inputTablePool, decodeConfig.outputTablePool = decodeConfig.outputTablePool, decodeConfig.inputTablePool
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	local am = collectgarbage("count")
+-- 	print("decode time (nbunny)", t / N, "memory", am - bm)
+-- 	local storage2 = PlayerStorage()
+-- 	local storage3 = PlayerStorage()
+-- 	storage3:deserialize(love.filesystem.read("Player/Default1.dat"))
+
+-- 	local x1 = require("ItsyScape.Game.RPC.State").merge({ metatable = {}, proxy = {} }, t1, storage3:serialize())
+-- 	storage2:deserialize(x1)
+-- 	love.filesystem.write("bla.txt", Log.dump(storage2:toString()))
+-- 	assert(require("ItsyScape.Game.RPC.State").deepEquals(x1, e1), "not equal!~!!")
+
+-- 	collectgarbage("stop")
+-- 	local t = 0
+-- 	local bm = collectgarbage("count")
+-- 	local t1, t2
+-- 	for i = 1, N do
+-- 		local b = love.timer.getTime()
+-- 		local q = buffer:decode()
+-- 		t1 = unpack(q, 1, q.n)
+-- 		local a = love.timer.getTime()
+-- 		t = t + (a - b) * 1000
+-- 	end
+-- 	local am = collectgarbage("count")
+-- 	print("decode time (nbunny)", t / N, "memory", am - bm)
+
+-- 	os.exit(0)
+-- end
 
 _ARGS = {}
 
@@ -265,12 +409,20 @@ function love.keypressed(...)
 			itsyrealm.graphics.disable()
 		elseif (select(1, ...) == "f6") then
 			if love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift') then
-				if isProfiling then
+				local mem = require("mem")
+				if not isProfiling then
+					_PROFILING = true
 					isProfiling = true
-					require("jit.p").stop()
+
+					mem:start()
 				else
+					_PROFILING = nil
 					isProfiling = false
-					require("jit.p").start("3lm1i1")
+					mem:stop()
+					mem:dump()
+
+					collectgarbage()
+					collectgarbage()
 				end
 			elseif love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl") then
 				local file = love.filesystem.read("settings.cfg")
@@ -333,7 +485,9 @@ end
 
 function love.quit()
 	if isProfiling then
-		require("jit.p").stop()
+		local mem = require("mem")
+		mem:stop()
+		mem:dump()
 	end
 
 	local result = _APP:quit()
@@ -376,6 +530,8 @@ function love.quit()
 end
 
 function itsyrealm.errorhandler()
+	debug.sethook()
+
 	if not love.graphics then
 		return function()
 			return 1
@@ -415,7 +571,7 @@ function itsyrealm.errorhandler()
 
 	local width, height, scale
 	do
-		local s, w, h, scaleX, scaleY = pcall(love.graphics.getScaledMode)
+		local s, w, h, scaleX, scaleY = pcall(itsyrealm.graphics.getScaledMode)
 		if s then
 			scale = math.min(scaleX, scaleY)
 			width = love.graphics.getWidth() / scale
@@ -565,7 +721,7 @@ function love.run()
 			end
 		end
 
-		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 0) / 1000) end
+		if love.timer then love.timer.sleep((_CONF.clientSleepMS or 1) / 1000) end
 
 		if _DEBUG then
 			NLuaRuntime.stopMeasurements()
@@ -574,19 +730,19 @@ function love.run()
 				NLuaRuntime.stopDebug()
 
 				do
-					local calls, totalTime = NLuaRuntime.getMeasurements()
+					local calls, totalTime, totalMemory = NLuaRuntime.getMeasurements()
 					local totalNumCalls = NLuaRuntime.getNumCalls()
 
 					local csv = {}
 					for method, stats in pairs(calls) do
-						table.insert(csv, string.format("%s, %d, %f", method, stats.calls, stats.time))
+						table.insert(csv, string.format("%s, %d, %f, %f", method, stats.calls, stats.time, stats.memory))
 					end
 
 					table.sort(csv, function(a, b)
 						return a < b
 					end)
 
-					Log.info("Nbunny function calls (%d total, %.2f ms):\n%s", totalNumCalls, totalTime * 1000, table.concat(csv, "\n"))
+					Log.info("Nbunny function calls (%d total, %.2f ms, %.2f kb):\n%s", totalNumCalls, totalTime * 1000, totalMemory, table.concat(csv, "\n"))
 				end
 
 				do

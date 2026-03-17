@@ -9,10 +9,17 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Weapon = require "ItsyScape.Game.Weapon"
-local Weapon = require "ItsyScape.Game.Weapon"
 local MeleeWeapon = require "ItsyScape.Game.MeleeWeapon"
 
 local Dagger = Class(MeleeWeapon)
+
+function Dagger:getDodgeBehavior()
+	return Weapon.DODGE_BEHAVIOR_AVOID
+end
+
+function Dagger:getDodgeRange(peep, target)
+	return 16
+end
 
 function Dagger:getBonusForStance(peep)
 	return Weapon.BONUS_STAB

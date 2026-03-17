@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Peeps/Props/BasicFurnace.lua
+-- Resources/Game/Peeps/Props/BasicFurnace.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -9,30 +9,21 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
-local Prop = require "ItsyScape.Peep.Peeps.Prop"
+local Utility = require "ItsyScape.Game.Utility"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local BasicArtisanStation = require "Resources.Game.Peeps.Props.BasicArtisanStation"
 
-local BasicFurnace = Class(Prop)
+local BasicFurnace = Class(BasicArtisanStation)
+
+BasicFurnace.COLLISION_IS_TALL = true
 
 function BasicFurnace:new(...)
-	Prop.new(self, ...)
+	BasicArtisanStation.new(self, ...)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(4.5, 4, 3.5)
 
 	self:addPoke("smelt")
-
-	self.smeltGeneration = 0
-end
-
-function BasicFurnace:onSmelt()
-	self.smeltGeneration = self.smeltGeneration + 1
-end
-
-function BasicFurnace:getPropState()
-	return {
-		generation = self.smeltGeneration
-	}
 end
 
 return BasicFurnace

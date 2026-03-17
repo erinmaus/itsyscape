@@ -56,6 +56,10 @@ function Instance.Map:getMaskID()
 	return self.maskID
 end
 
+function Instance.Map:setMeta(value)
+	self.meta = value
+end
+
 function Instance.Map:getMeta()
 	return self.meta
 end
@@ -402,6 +406,28 @@ function Instance:new(id, filename, stage)
 	end
 	stage.onMapSkyUpdated:register(self._onMapSkyUpdated)
 
+	self._onMapMetaUpdated = function(_, layer, meta)
+		if self:hasLayer(layer, true) then
+			Log.engine(
+				"Meta updated for map in instance %s (%d) on layer %d.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+
+			local map = self.maps[layer]
+			if map then
+				map:setMeta(meta)
+			end
+		else
+			Log.engine(
+				"Did not update meta for map in instance %s (%d) on layer %d; layer is not in instance.",
+				self:getFilename(),
+				self:getID(),
+				layer)
+		end
+	end
+	stage.onMapMetaUpdated:register(self._onMapMetaUpdated)
+
 	self._onMapLinked = function(_, layer, otherLayer)
 		if self:hasLayer(layer, true) and self:hasLayer(otherLayer, true) then
 			Log.engine(
@@ -458,25 +484,7 @@ function Instance:new(id, filename, stage)
 	self.actorsPendingRemovalByID = {}
 
 	self._onActorSpawned = function(_, actorID, actor)
-		if self:hasActor(actor) then
-			Log.engine(
-				"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor already in instance.",
-				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-			return
-		end
-
-		local instance = stage:getPeepInstance(actor:getPeep())
-		if instance == self then
-			Log.engine(
-				"Added actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
-				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-			table.insert(self.actors, actor)
-			self.actorsByID[actor:getID()] = actor
-		else
-			Log.engine(
-				"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor not in instance.",
-				actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
-		end
+		self:addActor(actor)
 	end
 	stage.onActorSpawned:register(self._onActorSpawned)
 
@@ -504,25 +512,7 @@ function Instance:new(id, filename, stage)
 	self.propsPendingRemovalByID = {}
 
 	self._onPropPlaced = function(_, propID, prop)
-		if self:hasProp(prop) then
-			Log.engine(
-				"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop already in instance.",
-				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-			return
-		end
-
-		local instance = stage:getPeepInstance(prop:getPeep())
-		if instance == self then
-			Log.engine(
-				"Added prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
-				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-			table.insert(self.props, prop)
-			self.propsByID[prop:getID()] = prop
-		else
-			Log.engine(
-				"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop not in instance.",
-				prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
-		end
+		self:addProp(prop)
 	end
 	stage.onPropPlaced:register(self._onPropPlaced)
 
@@ -830,6 +820,7 @@ function Instance:unload()
 	self.stage.onMapModified:unregister(self._onMapModified)
 	self.stage.onMapMoved:unregister(self._onMapMoved)
 	self.stage.onMapSkyUpdated:unregister(self._onMapSkyUpdated)
+	self.stage.onMapMetaUpdated:unregister(self._onMapMetaUpdated)
 	self.stage.onMapLinked:unregister(self._onMapLinked)
 	self.stage.onMapUnlinked:unregister(self._onMapUnlinked)
 	self.stage.onActorSpawned:unregister(self._onActorSpawned)
@@ -932,6 +923,14 @@ function Instance:getMapGroup(layer)
 	return self.layerToMapGroup[layer]
 end
 
+function Instance:iterateMapGroup(mapGroup)
+	return ipairs(self.mapGroups[mapGroup])
+end
+
+function Instance:iterateMapGroups()
+	return ipairs(self.mapGroups)
+end
+
 function Instance:getGlobalLayerFromLocalLayer(group, index)
 	index = index or 1
 
@@ -947,6 +946,21 @@ function Instance:getGlobalLayerFromLocalLayer(group, index)
 	return g[index]
 end
 
+function Instance:getLocalLayerFromGlobalLayer(group, layer)
+	local g = self.mapGroups[group]
+	if not g then
+		return 1
+	end
+
+	for localLayer, globalLayer in pairs(g) do
+		if globalLayer == layer then
+			return localLayer
+		end
+	end
+
+	return 1
+end
+
 function Instance:addLayer(layer, group, player)
 	if not self.layersByID[layer] then
 		Log.engine("Adding layer %d to instance %s (%d).", layer, self:getFilename(), self:getID())
@@ -956,6 +970,22 @@ function Instance:addLayer(layer, group, player)
 		if group and self.mapGroups[group] then
 			table.insert(self.mapGroups[group], layer)
 			self.layerToMapGroup[layer] = group
+		end
+
+		if not player then
+			for _, otherPlayer in self:iteratePlayers() do
+				local playerPeep = otherPlayer:getActor() and otherPlayer:getActor():getPeep()
+				if playerPeep then
+					for _, layer in self:iterateLayers() do
+						playerPeep:pushPoke("preloadActionCommands", layer)
+					end
+				end
+			end
+		else
+			local playerPeep = player:getActor() and player:getActor():getPeep()
+			if playerPeep then
+				playerPeep:pushPoke("preloadActionCommands", layer)
+			end
 		end
 	end
 end
@@ -1042,10 +1072,17 @@ function Instance:getMapScriptByLayer(layer)
 	return nil
 end
 
-function Instance:getMapScriptByMapFilename(filename)
+function Instance:getMapScriptByMapFilename(filename, player)
 	for _, mapScript in pairs(self.mapScripts) do
 		if mapScript:getFilename() == filename then
-			return mapScript:getPeep()
+			if player then
+				local instanced = mapScript:getPeep():getBehavior(InstancedBehavior)
+				if instanced and instanced.playerID == player:getID() then
+					return mapScript:getPeep()
+				end
+			else
+				return mapScript:getPeep()
+			end
 		end
 	end
 
@@ -1086,6 +1123,13 @@ function Instance:addPlayer(player, e)
 		if not self.partyLeader then
 			Log.info("No party leader; setting player to party instance.")
 			self:setPartyLeader(player)
+		end
+
+		local playerPeep = player:getActor() and player:getActor():getPeep()
+		if playerPeep then
+			for _, layer in self:iterateLayers() do
+				playerPeep:pushPoke("preloadActionCommands", layer)
+			end
 		end
 
 		return true
@@ -1137,6 +1181,28 @@ function Instance:iterateActors()
 	return ipairs(self.actors)
 end
 
+function Instance:addActor(actor)
+	if self:hasActor(actor) then
+		Log.engine(
+			"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor already in instance.",
+			actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
+		return
+	end
+
+	local instance = self.stage:getPeepInstance(actor:getPeep())
+	if instance == self then
+		Log.engine(
+			"Added actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
+			actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
+		table.insert(self.actors, actor)
+		self.actorsByID[actor:getID()] = actor
+	else
+		Log.engine(
+			"Did not add actor '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); actor not in instance.",
+			actor:getName(), actor:getPeepID(), actor:getID(), self:getFilename(), self:getID())
+	end
+end
+
 function Instance:hasActor(actor, player)
 	local hasActor = self.actorsByID[actor:getID()] ~= nil
 	if hasActor and player and actor:getPeep() then
@@ -1151,6 +1217,28 @@ end
 
 function Instance:iterateProps()
 	return ipairs(self.props)
+end
+
+function Instance:addProp(prop)
+	if self:hasProp(prop) then
+		Log.engine(
+			"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop already in instance.",
+			prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
+		return
+	end
+
+	local instance = self.stage:getPeepInstance(prop:getPeep())
+	if instance == self then
+		Log.engine(
+			"Added prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d).",
+			prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
+		table.insert(self.props, prop)
+		self.propsByID[prop:getID()] = prop
+	else
+		Log.engine(
+			"Did not add prop '%s' (resource/peep ID = %s, ID = %d) to instance %s (%d); prop not in instance.",
+			prop:getName(), prop:getPeepID(), prop:getID(), self:getFilename(), self:getID())
+	end
 end
 
 function Instance:hasProp(prop, player)
@@ -1247,7 +1335,7 @@ function Instance:_clearInstancedMap(layer)
 	end
 
 	for i = 1, #water do
-		self.stage:onWaterDrain(water:getKey(), water:getLayer())
+		self.stage:onWaterDrain(water[i]:getKey(), water[i]:getLayer())
 	end
 
 	local decorations = {}

@@ -1,0 +1,141 @@
+{
+	"book": {
+		"skeleton": "Skeleton.lskel",
+
+		"models": [
+			{
+				"model": "../Common/InnerCovers.lmesh",
+				"texture": "Book.png"
+			},
+			{
+				"model": "../Common/Spine.lmesh",
+				"texture": "Book.png",
+				"canvas": true
+			},
+			{
+				"model": "../Common/Pages.lmesh",
+				"texture": "Pages.png"
+			},
+			{
+				"model": "Clasp.lmesh",
+				"texture": "Clasp.png"
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
+		],
+
+		"knot": "spine_title"
+	},
+
+	"front": {
+		"skeleton": "Skeleton.lskel",
+
+		"models": [
+			{
+				"model": "../Common/Front.lmesh",
+				"texture": "Front.png",
+				"canvas": true
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
+		],
+
+		"knot": "front_cover_title"
+	},
+
+	"back": {
+		"skeleton": "Skeleton.lskel",
+
+		"models": [
+			{
+				"model": "../Common/Back.lmesh",
+				"texture": "Back.png"
+			}
+		],
+
+		"animations": [
+			{
+				"name": "book-open",
+				"animation": "Open.lanim"
+			}
+		]
+	},
+
+	"page": {
+		"models": [
+			{
+				"model": "../Common/Page.lmesh",
+				"texture": "Page.png",
+				"canvas": true
+			}
+		]
+	},
+
+	"pages": [
+		{
+			"id": 0,
+		},
+		{
+			"id": 1,
+			"knot": "page_1"
+		},
+		{
+			"id": 2,
+			"knot": "page_2"
+		},
+		{
+			"id": 3,
+			"knot": "page_3"
+		},
+		{
+			"id": 4,
+			"knot": "page_4"
+		},
+		{
+			"id": 5,
+			"knot": "page_5"
+		},
+		{
+			"id": 6,
+			"knot": "page_6"
+		},
+		{
+			"id": 7,
+			"knot": "page_7"
+		},
+		{
+			"id": 8,
+			"knot": "page_8"
+		},
+		{
+			"id": 9,
+			"knot": "page_9"
+		},
+		{
+			"id": 10,
+			"knot": "page_10"
+		},
+		{
+			"id": 11,
+			"knot": "page_11"
+		},
+		{
+			"id": 12,
+			"knot": "page_12"
+		},
+		{
+			"id": 13,
+			"knot": "page_13"
+		}
+	]
+}

@@ -29,6 +29,10 @@ function AttackPoke:new(t)
 	self.attackType = t.attackType or 'none'
 	self.weaponType = t.weaponType or 'none'
 	self.damageType = t.damageType or 'none'
+	self.damageRoll = t.damageRoll or false
+	self.attackRoll = t.attackRoll or false
+	self.accuracyAttackRoll = t.accuracyAttackRoll or 0
+	self.accuracyDefenseRoll = t.accuracyDefenseRoll or 0
 	self.damage = math.max(t.damage or 0, 0)
 	self.aggressor = t.aggressor or false
 	self.delay = t.delay or 0
@@ -44,6 +48,18 @@ end
 
 function AttackPoke:getDamageType()
 	return self.damageType
+end
+
+function AttackPoke:getAttackRoll()
+	return self.attackRoll
+end
+
+function AttackPoke:getDamageRoll()
+	return self.damageRoll
+end
+
+function AttackPoke:getAccuracyRolls()
+	return self.accuracyAttackRoll, self.accuracyDefenseRoll
 end
 
 function AttackPoke:getDamage()

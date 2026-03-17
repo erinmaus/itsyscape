@@ -24,8 +24,8 @@ function TrashHeapSmash:getBonusForStance(peep)
 	return Weapon.BONUS_CRUSH
 end
 
-function TrashHeapSmash:probe(ray)
-	local func = Musket.probe(self, ray)
+function TrashHeapSmash:probe(ray, peep, target)
+	local func = Musket.probe(self, ray, peep, target)
 	return function(p)
 		local resource = Utility.Peep.getResource(p)
 		return func(p) and (not resource or resource.name ~= "TrashHeap")

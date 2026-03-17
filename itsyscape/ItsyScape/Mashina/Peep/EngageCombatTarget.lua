@@ -18,6 +18,8 @@ local EngageCombatTarget = B.Node("EngageCombatTarget")
 EngageCombatTarget.AGGRESSOR = B.Reference()
 EngageCombatTarget.PEEP = B.Reference()
 EngageCombatTarget.INCLUDE_NPCS = B.Reference()
+EngageCombatTarget.REQUIRE_LINE_OF_SIGHT = B.Reference()
+EngageCombatTarget.SHOOT = B.Reference()
 
 function EngageCombatTarget:update(mashina, state, executor)
 	local peep = state[self.PEEP]
@@ -25,13 +27,21 @@ function EngageCombatTarget:update(mashina, state, executor)
 		return B.Status.Failure
 	end
 
+	local requireLineOfSight = state[self.REQUIRE_LINE_OF_SIGHT]
+	local shoot = state[self.SHOOT]
+
 	local aggressor = state[self.AGGRESSOR] or mashina
 
 	if not Utility.Peep.canPeepAttackTarget(aggressor, peep) then
 		return B.Status.Failure
 	end
 
+	if requireLineOfSight and not Utility.Combat.canSeeTarget(aggressor, peep, shoot) then
+		return B.Status.Failure
+	end
+
 	Utility.Peep.attack(aggressor, peep)
+	Log.info("'%s' attacked '%s'.", aggressor:getName(), peep:getName())
 
 	return B.Status.Success
 end

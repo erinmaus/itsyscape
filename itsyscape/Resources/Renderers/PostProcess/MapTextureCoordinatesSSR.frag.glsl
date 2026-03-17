@@ -9,7 +9,7 @@ uniform mat4 scape_ProjectionMatrix;
 uniform mat4 scape_InverseProjectionMatrix;
 uniform mat4 scape_ViewMatrix;
 uniform mat4 scape_InverseViewMatrix;
-uniform vec3 scape_CameraDirection;
+uniform mat4 scape_NormalMatrix;
 
 uniform float scape_MaxDistanceViewSpace;
 uniform float scape_Resolution;
@@ -18,8 +18,7 @@ uniform float scape_MaxSecondPassSteps;
 uniform float scape_MaxFirstPassSteps;
 
 //const float THICKNESS = 1.0; // boats in water
-const float THICKNESS = 0.11; // players / flat npcs
-const float CLIP_PLANE_Z = 2.0;
+const float THICKNESS = 0.25; // players / flat npcs
 
 vec4 toPixel(vec4 viewPosition)
 {
@@ -57,12 +56,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 	vec4 startPixel = toPixel(startViewSpace);
 	vec4 endPixel = toPixel(endViewSpace);
 
-	if (endViewSpace.z < CLIP_PLANE_Z)
-	{
-		return vec4(0.0);
-	}
-
-	if (startPixel.z < -1.0 || startPixel.z > 1.0 || endPixel.z < -1.0 || endPixel.z > 1.0)
+	if (startPixel.z < 0.0 || startPixel.z > 1.0 || endPixel.z < 0.0 || endPixel.z > 1.0)
 	{
 		return vec4(0.0);
 	}
@@ -84,7 +78,8 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 	vec2 currentPixel = startPixel.xy;
 	float viewDistance = startViewSpace.z;
 	float depth = THICKNESS;
-	for (int i = 0; i < int(currentDelta); ++i)
+	int currentDeltaSteps = int(currentDelta);
+	for (int i = 0; i < currentDeltaSteps; ++i)
 	{
 		currentPixel += increment;
 
@@ -94,7 +89,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 		vec2 difference = (currentPixel - startPixel.xy) / delta;
 		searchHit = clamp(useX * difference.x + (1.0 - useX) * difference.y, 0.0, 1.0);
 		viewDistance = (startViewSpace.z * endViewSpace.z) / mix(endViewSpace.z, startViewSpace.z, searchHit);
-		depth = viewDistance - localPosition.z;
+		depth = (localPosition.z - viewDistance);
 
 		if (depth > 0.0 && depth < THICKNESS)
 		{
@@ -116,7 +111,7 @@ vec4 ssr(vec3 surfacePosition, vec3 surfaceViewSpaceNormal, vec3 pivot, float ma
 		localTextureCoordinate = currentFragment * scape_TexelSize;
 		localPosition = toViewSpace(getWorldPosition(localTextureCoordinate));
 		viewDistance = (startViewSpace.z * endViewSpace.z) / mix(endViewSpace.z, startViewSpace.z, searchHit);
-		depth = viewDistance - localPosition.z;
+		depth = (localPosition.z - viewDistance);
 
 		if (depth > 0.0 && depth < THICKNESS)
 		{
@@ -164,10 +159,10 @@ void effect()
 	vec3 viewPosition = toViewSpace(worldPosition).xyz;
 	vec3 surfaceViewSpaceNormal = normalize(viewPosition);
 	vec3 normal = normalize(decodeGBufferNormal(Texel(scape_NormalTexture, textureCoordinate).rg));
-	normal = normalize(inverse(transpose(mat3(scape_ViewMatrix))) * normal);
+	normal = normalize(mat3(scape_NormalMatrix) * normal);
 
 	vec3 reflectionPivot = normalize(reflect(surfaceViewSpaceNormal, normal));
 	vec4 reflectionResult = ssr(viewPosition, surfaceViewSpaceNormal, reflectionPivot, reflectionProperties.y * scape_MaxDistanceViewSpace);
 	float reflectionAlpha = min(min(dFdx(reflectionResult.a) + reflectionResult.a, dFdy(reflectionResult.a) + reflectionResult.a), reflectionResult.a);
-	love_Canvases[0] = vec4(reflectionResult.xy, reflectionResult.a * reflectionAlpha * reflectionProperties.x, 1.0);
+	love_Canvases[0] = vec4(reflectionResult.xy, reflectionResult.a * reflectionAlpha * reflectionProperties.x, reflectionResult.z);
 }

@@ -8,9 +8,16 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Utility = require "ItsyScape.Game.Utility"
+local OldOneDescriptionBehavior = require "ItsyScape.Peep.Behaviors.OldOneDescriptionBehavior"
 
 local Power = Class()
+Power.RITE_CIRCLE_ELEVATION     = 0.1
+Power.RITE_CIRCLE_SIZE_BUMP     = 3
+Power.RITE_CIRCLE_MIN_SIZE      = 8
+Power.RITE_CIRCLE_FADE_DELAY    = 2
+Power.RITE_CIRCLE_FADE_DURATION = 0.5
 
 function Power:new(game, resource, ...)
 	self.game = game
@@ -88,6 +95,41 @@ function Power:perform(activator, target)
 	return true
 end
 
+function Power:showRiteCircle(activator, target)
+	local mapScript = Utility.Peep.getMapScript(activator)
+	if not mapScript then
+		return false
+	end
+
+	local position = Utility.Peep.getPosition(activator)
+
+	local glyphProp = Utility.spawnPropAtPosition(
+		mapScript,
+		"ProjectedGlyph",
+		position.x, position.y + self.RITE_CIRCLE_ELEVATION, position.z)
+	if not glyphProp then
+		return false
+	end
+
+	local glyphPeep = glyphProp:getPeep()
+
+	local size = Utility.Peep.getSize(activator)
+	size = size + self.RITE_CIRCLE_SIZE_BUMP
+	size = size:max(Vector(self.RITE_CIRCLE_MIN_SIZE))
+	Utility.Peep.setSize(glyphPeep, size)
+
+	local _, description = glyphPeep:addBehavior(OldOneDescriptionBehavior)
+	description.description = Utility.getOldOneDescription(
+		self.resource,
+		self.game:getGameDB())
+
+	glyphPeep:listen("finalize", function()
+		glyphPeep:pushPoke("fade", self.RITE_CIRCLE_FADE_DURATION, self.RITE_CIRCLE_FADE_DELAY)
+	end)
+
+	return true
+end
+
 function Power:activate(activator, target)
 	activator:poke('powerActivated', {
 		power = self,
@@ -103,7 +145,7 @@ function Power:activate(activator, target)
 		})
 	end
 
-	Utility.UI.openInterface(activator, "RiteCircle", false, self)
+	self:showRiteCircle(activator, target)
 end
 
 function Power:getCost(peep)

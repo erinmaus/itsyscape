@@ -53,14 +53,14 @@ function Keelhauler:ready(director, game)
 		"Keelhauler/Accents.lua")
 	Utility.Peep.Creep.applySkin(
 		self,
-		"x-body",
+		"x-body-stone",
 		Equipment.SKIN_PRIORITY_BASE,
-		"Keelhauler/Body.lua")
+		"Keelhauler/StoneBody.lua")
 	Utility.Peep.Creep.applySkin(
 		self,
-		"x-head",
+		"x-body-metal",
 		Equipment.SKIN_PRIORITY_BASE,
-		"Keelhauler/Head.lua")
+		"Keelhauler/MetalBody.lua")
 	Utility.Peep.Creep.applySkin(
 		self,
 		"x-accents-reflective",
@@ -77,7 +77,7 @@ function Keelhauler:ready(director, game)
 		Equipment.SKIN_PRIORITY_BASE,
 		"Keelhauler/Feathers_Bendy.lua")
 
-	Utility.Peep.equipXWeapon(self, "Keelhauler_MudSplash")
+	Utility.Peep.equipXWeapon(self, "Keelhauler_FireBreathe")
 
 	Creep.ready(self, director, game)
 end
@@ -86,10 +86,11 @@ function Keelhauler:onDashCharge()
 	self.isChargingDash = true
 end
 
-function Keelhauler:onDashStart()
+function Keelhauler:onDashStart(target)
 	self.isDashing = true
 	self.isChargingDash = false
 	self.hits = {}
+	self.dashTarget = target or false
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = self.RUN_SPEED
@@ -98,12 +99,21 @@ function Keelhauler:onDashStart()
 end
 
 function Keelhauler:onDashEnd()
+	if not self.isDashing then
+		return
+	end
+
 	self.isDashing = false
 
 	local movement = self:getBehavior(MovementBehavior)
 	movement.maxSpeed = self.WALK_SPEED
 
 	Utility.Peep.Creep.addAnimation(self, "animation-walk", "Keelhauler_Run")
+
+	if self.dashTarget and not self.hits[self.dashTarget] then
+		Utility.Combat.dodgeSuccess(self.dashTarget, self)
+		Utility.Peep.flash(self.dashTarget, "Dodge", Vector(0, 0.5, 0))
+	end
 end
 
 function Keelhauler:updateDash()

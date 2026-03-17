@@ -19,8 +19,8 @@ function RustyNeedle:getBonusForStance(peep)
 	return Weapon.BONUS_STAB
 end
 
-function RustyNeedle:onAttackHit(peep, target)
-	Zweihander.onAttackHit(self, peep, target)
+function RustyNeedle:onAttackHit(peep, target, ...)
+	Zweihander.onAttackHit(self, peep, target, ...)
 
 	local effect = target:getEffect(TetanusEffect)
 	if not effect then

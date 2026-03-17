@@ -17,8 +17,8 @@ local TextInput = require "ItsyScape.UI.TextInput"
 local Widget = require "ItsyScape.UI.Widget"
 
 local TerrainToolPanel = Class(Widget)
-TerrainToolPanel.WIDTH = 320
-TerrainToolPanel.HEIGHT = 64
+TerrainToolPanel.WIDTH = 368
+TerrainToolPanel.HEIGHT = 120
 TerrainToolPanel.SIZE_HILL = -1
 TerrainToolPanel.SIZE_SINGLE = 1
 
@@ -82,7 +82,16 @@ function TerrainToolPanel:new(application)
 	brushButton.onClick:register(self.makeBrush, self)
 	gridLayout:addChild(brushButton)
 
+	self.distanceInput = TextInput()
+	self.distanceInput:setSize(128, 48)
+	self.distanceInput:setText("1")
+	self.distanceInput.onValueChanged:register(function()
+		self.toolDistance = math.max(tonumber(self.distanceInput:getText()) or self.toolDistance, 0.1)
+	end)
+	gridLayout:addChild(self.distanceInput)
+
 	self.toolSize = 1
+	self.toolDistance = 1
 end
 
 function TerrainToolPanel:increaseSize(distance)

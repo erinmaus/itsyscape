@@ -111,9 +111,10 @@ function GroundFog:_build()
 	material:setIsFullLit(false)
 	material:setColor(Color(1))
 	material:setOutlineThreshold(-1)
+	material:setZBias(1)
 
 	local gameView = self:getGameView()
-	local _, layer = self.prop:getPosition()
+	local _, layer = self:getProp():getPosition()
 
 	local gameView = self:getGameView()
 	local _, _, canvas = gameView:getMapBumpCanvas(layer)
@@ -136,16 +137,24 @@ function GroundFog:_build()
 
 			coroutine.yield()
 		end
+
+		gameView:updateNodeCurve(layer, self.particles)
 	end)
 end
 
 function GroundFog:tick()
 	PropView.tick(self)
 
-	local _, layer = self.prop:getPosition()
+	local _, layer = self:getProp():getPosition()
 	if layer ~= self.currentLayer then
 		self:_build()
 		self.currentLayer = layer
+	end
+
+	local state = self:getProp():getState()
+	if state.color then
+		local r, g, b = unpack(state.color)
+		self.particles:getMaterial():getHandle():setColor(r, g, b, 1)
 	end
 end
 

@@ -17,9 +17,14 @@ GenericNotificationController.TIMEOUT = 5.0
 function GenericNotificationController:new(peep, director, message)
 	Controller.new(self, peep, director)
 
+	message = message or "ui.notification.default"
+
 	self.state = {
-		message = message or "Lorem ipsum..."
+		generation = 1,
+		message = self:T(message)
 	}
+
+	self.messages = { message }
 
 	self.time = GenericNotificationController.TIMEOUT
 
@@ -28,10 +33,20 @@ function GenericNotificationController:new(peep, director, message)
 end
 
 function GenericNotificationController:updateMessage(message)
-	message = message or "Lorem ipsum..."
+	self.state = {
+		generation = self.state.generation + 1,
+		message = self.state.message
+	}
 
-	self.state.message = self.state.message .. "\n\n" .. message
 	self.time = GenericNotificationController.TIMEOUT
+	if self.messages[#self.messages] == message then
+		return
+	end
+
+	message = message or "ui.notification.default"
+
+	self.state.message = self.state.message .. "\n\n" .. self:T(message)
+	table.insert(self.messages, message)
 
 	local player = Utility.Peep.getPlayerModel(self:getPeep())
 	player:pushMessage(nil, message)

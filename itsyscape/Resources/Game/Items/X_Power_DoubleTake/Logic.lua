@@ -31,7 +31,7 @@ function DoubleTake:onAttackHit(peep, target, ...)
 				target)
 		end
 	else
-		return ProxyXWeapon.onAttackHit(self, peep, target)
+		return ProxyXWeapon.onAttackHit(self, peep, target, ...)
 	end
 end
 

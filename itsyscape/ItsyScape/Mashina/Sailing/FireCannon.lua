@@ -19,6 +19,7 @@ local ShipCaptainBehavior = require "ItsyScape.Peep.Behaviors.ShipCaptainBehavio
 
 local FireCannon = B.Node("FireCannon")
 FireCannon.PEEP = B.Reference()
+FireCannon.TARGET = B.Reference()
 FireCannon.CANNON = B.Reference()
 FireCannon.CANNONBALL = B.Reference()
 
@@ -38,7 +39,7 @@ function FireCannon:update(mashina, state, executor)
 	local cannonballPath, cannonPathDuration = Sailing.Cannon.buildCannonballPath(cannon, properties)
 
 	Log.info("Peep '%s' is firing cannon '%s'!", peep:getName(), cannon:getName())
-	cannon:poke("fire", peep, "ItsyCannonball", cannonballPath, cannonPathDuration)
+	cannon:poke("fire", peep, target, "ItsyCannonball", cannonballPath, cannonPathDuration)
 
 	return B.Status.Success
 end	

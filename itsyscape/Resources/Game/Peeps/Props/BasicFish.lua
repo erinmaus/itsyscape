@@ -14,6 +14,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Sailing = require "ItsyScape.Game.Skills.Sailing"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 
 local BasicFish = Class(Prop)
@@ -36,6 +37,10 @@ function BasicFish:new(...)
 	self.center = Vector.ZERO
 	self.previousPosition = Vector.ZERO
 	self.timeOffset = love.math.random() * BasicFish.MAX_TIME_OFFSET
+
+	local static = self:getBehavior(StaticBehavior)
+	static.static = false
+	static.type = StaticBehavior.PASSABLE
 end
 
 function BasicFish:spawnOrPoof()
@@ -111,12 +116,14 @@ function BasicFish:update(director, game)
 	local currentPosition = Utility.Peep.getPosition(self)
 	local time = love.timer.getTime() + self.timeOffset
 
-	local oceanWorldPosition, oceanRotation
+	local oceanWorldPosition, oceanRotation, yOffset
 	if Sailing.Ocean.hasOcean(self) then
 		oceanWorldPosition, oceanRotation = Sailing.Ocean.getPositionRotation(self)
+		yOffset = self.Y_OFFSET
 	else
 		oceanWorldPosition = Vector(0, currentPosition.y, 0)
 		oceanRotation = Quaternion.IDENTITY
+		yOffset = 0
 	end
 
 	local rotation
@@ -132,7 +139,7 @@ function BasicFish:update(director, game)
 	do
 		local x = math.sin(time * math.pi / 2) * self.RADIUS - 1
 		local z = math.cos(time * math.pi / 2) * self.RADIUS - 1
-		translation = Vector(x, oceanWorldPosition.y + self.Y_OFFSET, z)
+		translation = Vector(x, oceanWorldPosition.y + yOffset, z)
 	end
 
 	if currentPosition ~= self.previousPosition then

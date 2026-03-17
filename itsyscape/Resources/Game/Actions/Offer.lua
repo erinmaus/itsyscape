@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local Utility = require "ItsyScape.Game.Utility"
 local CompositeCommand = require "ItsyScape.Peep.CompositeCommand"
 local CallbackCommand = require "ItsyScape.Peep.CallbackCommand"
@@ -32,14 +33,15 @@ function Offer:perform(state, player, target)
 	end
 
 	if target and self:canPerform(state) and self:canTransfer(state) then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
+		local walk = Utility.Peep.getWalk(player, position, layer, 2.5, { asCloseAsPossible = true })
 
 		if walk then
 			local restorePrayer = CallbackCommand(self.restorePrayer, self, player)
 			local transfer = CallbackCommand(Action.transfer, self, state, player)
 			local perform = CallbackCommand(Action.perform, self, state, player)
-			local command = CompositeCommand(true, walk, transfer, restorePrayer, perform)
+			local poke = target and CallbackCommand(target, poke, "offer", { peep = player, action = self }) or Function()
+			local command = CompositeCommand(true, walk, transfer, restorePrayer, poke, perform)
 
 			local queue = player:getCommandQueue()
 			return queue:interrupt(command)

@@ -7,7 +7,9 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local slick = require "slick"
 local Class = require "ItsyScape.Common.Class"
+local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Utility = require "ItsyScape.Game.Utility"
@@ -39,6 +41,10 @@ local TileSet = require "ItsyScape.World.TileSet"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local Spline = require "ItsyScape.Graphics.Spline"
 local ExecutePathCommand = require "ItsyScape.World.ExecutePathCommand"
+local NMap = require "nbunny.optimaus.map"
+local NMapCurve = require "nbunny.optimaus.mapcurve"
+local NTransformedMap = require "nbunny.optimaus.transformedmap"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 local LocalStage = Class(Stage)
 
@@ -47,6 +53,8 @@ LocalStage.PRELOAD_DURATION_MS = 100
 
 function LocalStage:new(game)
 	Stage.new(self)
+
+	self[NPooledBuffer.ID] = 0
 
 	self.game = game
 
@@ -76,10 +84,14 @@ function LocalStage:new(game)
 	table.insert(self.instances, self.dummyInstance)
 	self.instancesByLayer[1] = self.dummyInstance
 
-	self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
-	if self:_preloadMapObjects() then
-		self._preloadMapObjects = nil
-	end
+	self.pendingActionCommandInstances = {}
+
+	-- self._preloadMapObjects = coroutine.wrap(self.preloadMapObjects)
+	-- if self:_preloadMapObjects() then
+	-- 	self._preloadMapObjects = nil
+	-- end
+
+	self.maps = {}
 
 	self.skies = setmetatable({}, { __mode = "k" })
 end
@@ -281,8 +293,8 @@ function LocalStage:getPeepInstance(peep)
 		return self.dummyInstance
 	end
 
-	local id, filename = self:splitLayerNameIntoInstanceIDAndFilename(peep:getLayerName())
-	return self:getInstanceByFilenameAndID(filename, id) or self.dummyInstance
+	local layer = Utility.Peep.getLayer(peep)
+	return self:getInstanceByLayer(layer) or self.dummyInstance
 end
 
 function LocalStage:iterateItems()
@@ -435,17 +447,19 @@ function LocalStage:spawnActor(actorID, layer, layerName)
 		self.peeps[peep] = actor
 		self.actorsByID[actor:getID()] = actor
 
-		local function _onAssign()
-			local p = peep:getBehavior(PositionBehavior)
-			if p then
-				p.layer = layer
-			end
+		Utility.Peep.setLayer(peep, layer)
 
+		local function _onAssign()
 			self.onActorSpawned(self, realID, actor)
 
 			peep:silence('assign', _onAssign)
 		end
 		peep:listen('assign', _onAssign)
+
+		local instance = self:getInstanceByLayer(layer)
+		if instance then
+			instance:addActor(actor)
+		end
 
 		return true, actor
 	end
@@ -488,12 +502,14 @@ function LocalStage:placeProp(propID, layer, layerName)
 		self.peeps[peep] = prop
 		self.propsByID[prop:getID()] = prop
 
-		peep:listen('ready', function()
-			local p = peep:getBehavior(PositionBehavior)
-			if p then
-				p.layer = layer
-			end
+		Utility.Peep.setLayer(peep, layer)
 
+		local instance = self:getInstanceByLayer(layer)
+		if instance then
+			instance:addProp(prop)
+		end
+
+		peep:listen('ready', function()
 			self.onPropPlaced(self, self:lookupPropAlias(realID), prop)
 		end)
 
@@ -706,6 +722,7 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	if map then
 		self.game:getDirector():setMap(layer, map)
 		self.onLoadMap(self, filename, layer, tileSetID, maskID, meta)
+		self:newTransformedMap(layer, meta)
 
 		self:updateMap(layer, filename)
 	end
@@ -729,6 +746,60 @@ function LocalStage:loadMapFromFile(filename, layer, tileSetID, maskID, meta)
 	end
 end
 
+function LocalStage:newTransformedMap(layer, meta)
+	local map = self.game:getDirector():getMap(layer)
+	if not map then
+		return
+	end
+
+	local pretransformedMap = NMap(map:getWidth(), map:getHeight(), map:getCellSize())
+	pretransformedMap:update(map)
+
+	local triangles
+	do
+		local polygonMask = meta and meta.polygonMask
+		if polygonMask then
+			local contours = {}
+			for _, polygon in ipairs(polygonMask) do
+				local contour = {}
+				for _, point in ipairs(polygon) do
+					table.insert(contour, point[1])
+					table.insert(contour, point[2])
+				end
+
+				table.insert(contours, contour)
+			end
+
+			triangles = slick.triangulate(contours)
+			for i, triangle in ipairs(triangles) do
+				local newTriangle = {}
+				for j = 1, #triangle, 2 do
+					local x, z = triangle[j], triangle[j + 1]
+					local y = map:getInterpolatedHeight(x, z)
+
+					table.insert(newTriangle, x)
+					table.insert(newTriangle, y)
+					table.insert(newTriangle, z)
+				end
+				triangles[i] = newTriangle
+			end
+		end
+	end
+
+	local curve = meta and meta.curve and NMapCurve(meta.curve)
+	local transformedMap = NTransformedMap(pretransformedMap, curve, triangles)
+
+	self.maps[layer] = {
+		width = map:getWidth(),
+		height = map:getHeight(),
+		cellSize = map:getCellSize(),
+		triangles = triangles,
+		pretransformedMap = pretransformedMap,
+		curve = curve,
+		transformedMap = transformedMap
+	}
+end
+
 function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	local map = Map(width, height, Stage.CELL_SIZE)
 
@@ -741,13 +812,15 @@ function LocalStage:newMap(width, height, tileSetID, maskID, layer, meta)
 	self.game:getDirector():setMap(layer, map)
 	self.onLoadMap(self, map, layer, tileSetID, maskID, meta)
 
+	self:newTransformedMap(layer, meta)
 	self:updateMap(layer, map)
 
 	return map
 end
 
 function LocalStage:updateMap(layer, map, i, j, w, h)
-	map = map or self.game:getDirector():getMap(layer)
+	local realMap = self.game:getDirector():getMap(layer)
+	map = map or realMap
 
 	if map then
 		if type(map) ~= "string" then
@@ -756,13 +829,39 @@ function LocalStage:updateMap(layer, map, i, j, w, h)
 
 		self.onMapModified(self, map, layer, i, j, w, h)
 	end
+
+	local m = self.maps[layer]
+	if m and realMap then
+		if not (m.width == realMap:getWidth() and m.height == realMap:getHeight() and m.cellSize == realMap:getCellSize()) then
+			m.pretransformedMap = NMap(realMap:getWidth(), realMap:getHeight(), realMap:getCellSize())
+		end
+		m.pretransformedMap:update(realMap)
+
+		m.transformedMap = NTransformedMap(m.pretransformedMap, m.curve, m.triangles)
+	end
 end
 
-function LocalStage:updateSky(instance, properties)
-	if not RPCState.deepEquals(self.skies[instance], properties) then
-		self.skies[instance] = properties
+function LocalStage:updateMapMeta(layer, meta)
+	local m = self.maps[layer]
+	if m then
+		m.curve = meta and meta.curve and NMapCurve(meta.curve)
+		m.transformedMap = NTransformedMap(m.pretransformedMap, m.curve)
+	end
 
-		for _, layer in instance:iterateLayers() do
+	self:onMapMetaUpdated(layer, meta)
+end
+
+function LocalStage:updateSky(instance, group, properties)
+	local skies = self.skies[instance]
+	if not skies then
+		skies = {}
+		self.skies[instance] = skies
+	end
+
+	if not RPCState.deepEquals(skies[group], properties) then
+		skies[group] = properties
+
+		for _, layer in instance:iterateMapGroup(group) do
 			self:onMapSkyUpdated(layer, properties)
 		end
 	end
@@ -771,6 +870,7 @@ end
 function LocalStage:unloadMap(layer)
 	local map = self.game:getDirector():getMap(layer)
 	if map then
+		self.maps[layer] = nil
 		self.onUnloadMap(self, layer)
 		self.game:getDirector():setMap(layer, nil)
 	end
@@ -1052,8 +1152,8 @@ function LocalStage:movePeep(peep, path, anchor, e)
 		if previousLayer ~= layer then
 			Log.engine("Layer different; firing travel event.")
 			peep:poke('travel', {
-				from = filename,
-				to = filename
+				from = previousLayer,
+				to = layer
 			})
 		end
 
@@ -1061,7 +1161,7 @@ function LocalStage:movePeep(peep, path, anchor, e)
 	end
 
 	if Class.isType(anchor, Vector) then
-		Utility.Peep.setPosition(peep, anchor)
+		Utility.Peep.teleport(peep, anchor)
 	else
 		local gameDB = self.game:getGameDB()
 		local map = gameDB:getResource(filename, "Map")
@@ -1072,17 +1172,15 @@ function LocalStage:movePeep(peep, path, anchor, e)
 			})
 
 			if mapObject then
-				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
-				Utility.Peep.setPosition(peep, Vector(x, y, z))
-
 				local direction = mapObject:get("Direction")
 				Utility.Peep.setFacing(peep, direction)
 				
+				local x, y, z = mapObject:get("PositionX"), mapObject:get("PositionY"), mapObject:get("PositionZ")
 				local localLayer = math.max(mapObject:get("Layer"), 1)
 				local mapGroup = instance:getMapGroup(instance:getBaseLayer())
 				local globalLayer = instance:getGlobalLayerFromLocalLayer(localLayer)
 
-				Utility.Peep.setLayer(peep, globalLayer)
+				Utility.Peep.teleport(peep, Vector(x, y, z), globalLayer)
 			end
 		end
 	end
@@ -1149,6 +1247,8 @@ function LocalStage:movePeep(peep, path, anchor, e)
 
 				self:unloadInstance(previousInstance)
 			end
+
+			self.pendingActionCommandInstances[instance] = true
 		end
 	else
 		local actor = peep:getBehavior(ActorReferenceBehavior)
@@ -1167,6 +1267,70 @@ function LocalStage:movePeep(peep, path, anchor, e)
 	end
 
 	return instance
+end
+
+function LocalStage:preloadPlayerActionCommandsForPeep(instance, player, peep)
+	local director = self.game:getDirector()
+	local gameDB = self.game:getDirector():getGameDB()
+	local actionCommands = Utility.Skilling.getActionCommands(peep, director)
+
+	local maps = {}
+	if actionCommands and #actionCommands > 0 then
+		for _, actionCommand in ipairs(actionCommands) do
+			local actionCommandResource = gameDB:getResource(actionCommand.actionCommand, "ActionCommand")
+			local actionCommandMaps = actionCommandResource and gameDB:getRecords("ActionCommandMap", {
+				Resource = actionCommandResource
+			})
+
+			if actionCommandMaps then
+				for _, actionCommandMap in ipairs(actionCommandMaps) do
+					maps[actionCommandMap:get("Map").name] = true
+				end
+			end
+		end
+	end
+
+	for map in pairs(maps) do
+		local mapScript = instance:getMapScriptByMapFilename(map, player)
+		if not mapScript then
+			Log.info("Loading action command map '%s' for player '%s' (%d)...", map, player:getActor():getPeep():getName(), player:getID())
+
+			local _, actionCommandMapScript = Utility.Map.spawnMap(instance:getBaseMapScript(), map, Vector(0, 1000, 0), {
+				isInstancedToPlayer = true,
+				player = player
+			})
+
+			Utility.Peep.disable(actionCommandMapScript)
+		end
+	end
+end
+
+function LocalStage:preloadPlayerActionCommands(instance, player, layer)
+	local layerName = player:getActor():getPeep():getLayerName()
+	local director = self.game:getDirector()
+
+	local peeps = director:probe(
+		layerName,
+		function(peep)
+			if peep:hasBehavior(InstancedBehavior) and peep:getBehavior(InstancedBehavior).playerID ~= player:getID() then
+				return false
+			end
+
+			if Utility.Peep.getLayer(peep) ~= layer then
+				return false
+			end
+
+			return peep:hasBehavior(PropReferenceBehavior) or peep:hasBehavior(ActorReferenceBehavior)
+		end)
+
+	if #peeps == 0 then
+		return
+	end
+
+	Log.info("Preloading action commands for player '%s' in instance '%s' on on layer '%d'.", player:getActor() and player:getActor():getName() or "???", layerName, layer)
+	for _, peep in ipairs(peeps) do
+		self:preloadPlayerActionCommandsForPeep(instance, player, peep)
+	end
 end
 
 local function _sortLayers(a, b)
@@ -1188,7 +1352,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 
 	local layers = {}
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath)) do
-		local localLayer = item:match(".*(-?%d)%.lmap$")
+		local localLayer = item:match("^(%d+)%.lmap$")
 		if localLayer then
 			localLayer = tonumber(localLayer)
 
@@ -1213,11 +1377,16 @@ function LocalStage:loadMapResource(instance, filename, args)
 			tileSetID = meta[localLayer].tileSetID
 		end
 
-		local layerMeta = meta[localLayer] or {}
-
 		local globalLayer = self:newLayer(instance)
 		baseLayer = baseLayer or globalLayer
 		instance:addLayer(globalLayer, group, args.isInstancedToPlayer and args.player)
+
+		local layerMeta = meta[localLayer] or {}
+		layerMeta.layer = {
+			group = group,
+			globalLayer = globalLayer,
+			localLayer = localLayer
+		}
 
 		self:loadMapFromFile(directoryPath .. "/" .. filename, globalLayer, layerMeta.tileSetID, layerMeta.maskID, layerMeta)
 		self:spawnGround(layerName, globalLayer)
@@ -1235,17 +1404,23 @@ function LocalStage:loadMapResource(instance, filename, args)
 	do
 		local waterDirectoryPath = directoryPath .. "/Water"
 		for _, item in ipairs(love.filesystem.getDirectoryItems(waterDirectoryPath)) do
-			local data = "return " .. (love.filesystem.read(waterDirectoryPath .. "/" .. item) or "")
+			local localLayer = item:match(".*@(%d+)%.[^%.@]*$")
+			local layer = instance:getGlobalLayerFromLocalLayer(group, tonumber(localLayer) or 1)
+			local filename = waterDirectoryPath .. "/" .. item
+
+			local data = "return " .. (love.filesystem.read(filename) or "")
 			local chunk = assert(loadstring(data))
 			water = setfenv(chunk, {})() or {}
 
-			self.onWaterFlood(self, item, water, baseLayer)
+			self.onWaterFlood(self, filename, water, layer)
 		end
 	end
 
 	for _, item in ipairs(love.filesystem.getDirectoryItems(directoryPath .. "/Decorations")) do
 		local decorationName = item:match("(.*)%.ldeco$")
 		local splineName = item:match("(.*)%.lspline$")
+		local localLayer = item:match(".*@(%d+)%.[^%.@]*$")
+		local layer = instance:getGlobalLayerFromLocalLayer(group, tonumber(localLayer) or 1)
 		local filename = directoryPath .. "/Decorations/" .. item
 		local key = filename
 
@@ -1257,7 +1432,7 @@ function LocalStage:loadMapResource(instance, filename, args)
 		end
 
 		if decoration then
-			self:decorate(key, decoration, baseLayer)
+			self:decorate(key, decoration, layer)
 		end
 	end
 
@@ -1353,6 +1528,8 @@ function LocalStage:loadMapResource(instance, filename, args)
 			end
 		end
 	end
+
+	self.pendingActionCommandInstances[instance] = true
 
 	return baseLayer, mapScript
 end
@@ -1520,8 +1697,8 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 		end
 
 		if targetItem then
-			local path = player:findPath(i, j, layer)
-			if path then
+			local walkStep = Utility.Peep.getWalk(player:getActor():getPeep(), i, j, layer)
+			if walkStep then
 				local queue = player:getActor():getPeep():getCommandQueue()
 				local function condition()
 					if not broker:hasItem(targetItem) then
@@ -1545,14 +1722,14 @@ function LocalStage:takeItem(i, j, layer, ref, player)
 						targetItem:getID(), ref,
 						i, j, layer)
 
-					local walkStep = ExecutePathCommand(path)
 					local takeStep = TransferItemCommand(
 						broker,
 						targetItem,
 						playerInventory,
 						targetItem:getCount(),
 						'take',
-						true)
+						true,
+						"ui.notification.inventory.pickUpItemInventoryFull")
 
 					if peep:hasBehavior(PlayerBehavior) then
 						local playerModel = Utility.Peep.getPlayerModel(peep)
@@ -1717,6 +1894,40 @@ function LocalStage:quit()
 	end
 end
 
+function LocalStage:castAbsoluteMapRay(layer, ray)
+	local transform = self.mapTransformsByLayer[layer]
+	transform = transform and transform.transform
+
+	if not transform then
+		return {}
+	end
+
+	local transformedRay = ray:inverseTransform(transform)
+
+	local m = self.maps[layer]
+	if not m then
+		return {}
+	end
+
+	local tiles = m.transformedMap:castRay(
+		transformedRay.origin.x, transformedRay.origin.y, transformedRay.origin.z,
+		transformedRay.direction.x, transformedRay.direction.y, transformedRay.direction.z)
+
+	local map = self.game:getDirector():getMap(layer)
+
+	local result = {}
+	for _, tile in ipairs(tiles) do
+		table.insert(result, {
+			[Map.RAY_TEST_RESULT_TILE] = map:getTile(tile.i, tile.j),
+			[Map.RAY_TEST_RESULT_POSITION] = Vector(tile.x, tile.y, tile.z),
+			[Map.RAY_TEST_RESULT_I] = tile.i,
+			[Map.RAY_TEST_RESULT_J] = tile.j
+		})
+	end
+
+	return result
+end
+
 function LocalStage:updateMapPositions()
 	for i = 1, #self.instances do
 		local instance = self.instances[i]
@@ -1786,7 +1997,8 @@ function LocalStage:updateMapPositions()
 					scale = scale,
 					origin = origin,
 					disabled = disabled,
-					parentLayer = parentLayer
+					parentLayer = parentLayer,
+					transform = Utility.Peep.getMapTransform(mapScript)
 				}
 
 				if didMove then

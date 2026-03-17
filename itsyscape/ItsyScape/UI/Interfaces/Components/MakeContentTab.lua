@@ -27,6 +27,7 @@ local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local TextInputStyle = require "ItsyScape.UI.TextInputStyle"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 local EquipmentStatsPanel = require "ItsyScape.UI.Interfaces.Common.EquipmentStatsPanel"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
@@ -85,7 +86,7 @@ function MakeContentTab:new(interface)
 	self.makeLayout = GamepadGridLayout()
 	self.makeLayout:setPadding(self.PADDING, (self.MAKE_ROW_HEIGHT - self.MAKE_INPUT_HEIGHT) / 2)
 	self.makeLayout:setEdgePadding(false, true)
-	self.makeLayout:setSize(self.WIDTH - self.PADDING * 2, self.MAKE_ROW_HEIGHT)
+	self.makeLayout:setSize(self.WIDTH, self.MAKE_ROW_HEIGHT)
 	self.layout:addChild(self.makeLayout)
 
 	self.makeInput = GamepadNumberInput()
@@ -93,10 +94,10 @@ function MakeContentTab:new(interface)
 	self.makeInput:setNumDigits(2)
 	self.makeInput:setValue(1)
 	self.makeInput:setSize(
-		self.WIDTH - self.MAKE_INPUT_HEIGHT * 2 - self.PADDING * 3,
+		self.WIDTH - self.MAKE_INPUT_HEIGHT * 2 - self.PADDING,
 		self.MAKE_INPUT_HEIGHT)
 	self.makeInput:setZDepth(100)
-	self.makeInput.onSubmit:register(self.make, self)
+	self.makeInput.onSubmit:register(self.onMakeInputSubmit, self)
 	self.makeInput.onValueChanged:register(self.updateConstraints, self)
 	self.makeInput.onGamepadRelease:register(self.onMakeInputGamepadRelease, self)
 	self.makeLayout:addChild(self.makeInput)
@@ -109,7 +110,7 @@ function MakeContentTab:new(interface)
 
 	local constraintsGroup = Panel()
 	constraintsGroup:setStyle(self.GROUP_PANEL_STYLE, PanelStyle)
-	constraintsGroup:setSize(self.WIDTH - self.PADDING * 2, self.HEIGHT - self.MAKE_ROW_HEIGHT - self.PADDING * 3)
+	constraintsGroup:setSize(self.WIDTH, self.HEIGHT - self.MAKE_ROW_HEIGHT - self.PADDING * 3)
 	self.layout:addChild(constraintsGroup)
 
 	local constraintsGroupWidth, constraintsGroupHeight = constraintsGroup:getSize()
@@ -124,18 +125,13 @@ function MakeContentTab:new(interface)
 	constraintsGroup:addChild(self.constraintsPanel)
 
 	local constraintsPanelWidth = self.WIDTH - self.PADDING * 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE
-	local constraintsConfig = {
-		headerFontSize = 16,
-		constraintFontSize = 16,
-		padding = 0
-	}
 
-	self.inputsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.inputsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.inputsPanel:setText("Takes")
 	self.inputsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.inputsPanel)
 
-	self.outputsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.outputsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.outputsPanel:setText("Gives")
 	self.outputsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.outputsPanel)

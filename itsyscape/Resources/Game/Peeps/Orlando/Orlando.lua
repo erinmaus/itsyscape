@@ -22,6 +22,8 @@ local Orlando = Class(Player)
 function Orlando:new(resource, name, ...)
 	Player.new(self, resource, name or 'Orlando', ...)
 
+	Utility.Peep.makePlayer(self)
+
 	local status = self:getBehavior(CombatStatusBehavior)
 	status.maxChaseDistance = math.huge
 

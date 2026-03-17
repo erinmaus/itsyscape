@@ -62,11 +62,6 @@ function EquipmentInventoryProvider:assignKey(item)
 		if not s then
 			Log.warn("Couldn't run equip logic for '%s': %s", item:getID(), e)
 		end
-
-		self:getPeep():poke('equipItem', {
-			item = item,
-			count = item:getCount()
-		})
 	end
 
 	local gameDB = self.peep:getDirector():getGameDB()
@@ -103,6 +98,13 @@ function EquipmentInventoryProvider:assignKey(item)
 			end
 		end
 	end
+
+	self:getPeep():poke('equipItem', {
+		item = item,
+		logic = logic,
+		slot = equipmentRecord and equipmentRecord:get("EquipSlot") or false,
+		count = item:getCount()
+	})
 end
 
 function EquipmentInventoryProvider:onSpawn(item, count)
@@ -170,6 +172,8 @@ function EquipmentInventoryProvider:onTransferFrom(destination, item, count, pur
 
 	self:getPeep():poke('dequipItem', {
 		item = item,
+		logic = logic,
+		slot = broker:getItemTag(item, 'equip-slot') or false,
 		count = count
 	})
 end

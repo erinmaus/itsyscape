@@ -23,6 +23,7 @@ local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local ConstraintsPanel = require "ItsyScape.UI.Interfaces.Common.ConstraintsPanel"
 local EquipmentStatsPanel = require "ItsyScape.UI.Interfaces.Common.EquipmentStatsPanel"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
@@ -45,7 +46,7 @@ CraftInfoContentTab.ITEM_BUTTON_STYLE = {
 
 CraftInfoContentTab.ITEM_NAME_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/Serif/SemiBold.ttf",
-	fontSize = 16,
+	fontSize = 20,
 	color = { 1, 1, 1, 1 },
 	lineHeight = 0.8,
 	textShadow = true
@@ -53,7 +54,7 @@ CraftInfoContentTab.ITEM_NAME_LABEL_STYLE = {
 
 CraftInfoContentTab.ITEM_DESCRIPTION_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 16,
+	fontSize = 20,
 	color = { 1, 1, 1, 1 },
 	textShadow = true
 }
@@ -120,24 +121,18 @@ function CraftInfoContentTab:new(interface)
 	constraintsGroup:addChild(self.constraintsPanel)
 
 	local constraintsPanelWidth = self.WIDTH - self.PADDING * 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE
-	local constraintsConfig = {
-		headerFontSize = 16,
-		constraintFontSize = 16,
-		padding = 0
-	}
-
-	self.requirementsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.requirementsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.requirementsPanel:setText("Requirements")
 	self.requirementsPanel:setData("skillAsLevel", true)
 	self.requirementsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.requirementsPanel)
 
-	self.inputsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.inputsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.inputsPanel:setText("Ingredients")
 	self.inputsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.inputsPanel)
 
-	self.outputsPanel = ConstraintsPanel(self:getUIView(), constraintsConfig)
+	self.outputsPanel = ConstraintsPanel(self:getUIView(), Theme.STANDARD_CONSTRAINTS_CONFIG)
 	self.outputsPanel:setText("Products")
 	self.outputsPanel:setSize(constraintsPanelWidth)
 	self.constraintsPanel:addChild(self.outputsPanel)
@@ -146,6 +141,7 @@ function CraftInfoContentTab:new(interface)
 end
 
 function CraftInfoContentTab:gamepadScroll(x, y)
+	GamepadContentTab.gamepadScroll(self, x, y)
 	self.constraintsPanel:mouseScroll(x, y)
 end
 

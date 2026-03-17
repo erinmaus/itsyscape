@@ -37,13 +37,13 @@ SkillInfoContentTab.DESCRIPTION_HEIGHT = 128
 SkillInfoContentTab.SKILL_NAME_LABEL_STYLE = {
 	color = { 1, 1, 1, 1 },
 	font = "Resources/Renderers/Widget/Common/Serif/Regular.ttf",
-	fontSize = 26,
+	fontSize = 32,
 	textShadow = true
 }
 
 SkillInfoContentTab.SKILL_DESCRIPTION_LABEL_STYLE = {
 	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 16,
+	fontSize = 20,
 	color = { 1, 1, 1, 1 },
 	textShadow = true
 }
@@ -161,7 +161,7 @@ function SkillInfoContentTab:refresh(state)
 	local currentBaseLevel = self.skillValueLabel:getData("baseLevel")
 	if currentWorkingLevel ~= state.workingLevel or currentBaseLevel ~= state.baseLevel then
 		self.skillValueLabel:setText({
-			color,
+			workingLevelColor,
 			tostring(state.workingLevel),
 			"ui.stat.zero",
 			"/",

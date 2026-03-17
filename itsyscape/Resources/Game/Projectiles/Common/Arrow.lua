@@ -27,6 +27,7 @@ function Arrow:attach()
 	Projectile.attach(self)
 
 	self.duration = math.huge
+	self.didPlaySfx = false
 end
 
 function Arrow:getTextureFilename()
@@ -78,6 +79,14 @@ function Arrow:update(elapsed)
 		local mu = Tween.sineEaseOut(delta)
 		local position = self.spawnPosition:lerp(self.hitPosition, mu)
 
+		local distance = position:distance(self.hitPosition)
+		local hitSize = self:getTargetSize(self:getDestination())
+		local hitDistance = math.max(hitSize.x, hitSize.z) / 2
+		if distance < hitDistance and not self.didPlaySfx then
+			self.didPlaySfx = true
+			self:playAnimation(self:getDestination(), "SFX_ArrowHit")
+		end
+
 		local alpha = 0
 		if delta > 0.5 then
 			alpha = (delta - 0.5) / 0.5
@@ -89,8 +98,9 @@ function Arrow:update(elapsed)
 		position.y = position.y + self.y
 
 		local xRotation = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
-		local lookRotation = Quaternion.lookAt(self.spawnPosition, hitPosition)
-		local rotation = lookRotation * xRotation
+		local yRotation = Quaternion.fromAxisAngle(Vector.UNIT_Y, math.pi)
+		local lookRotation = Quaternion.lookAt(self.spawnPosition, self.hitPosition, -Vector.UNIT_Z)
+		local rotation = lookRotation * yRotation * xRotation
 
 		root:getTransform():setLocalTranslation(position)
 		root:getTransform():setLocalRotation(rotation)

@@ -11,8 +11,10 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Color = require "ItsyScape.Graphics.Color"
+local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local FontResource = require "ItsyScape.Graphics.FontResource"
 local ModelResource = require "ItsyScape.Graphics.ModelResource"
+local OldOneGlyphInstance = require "ItsyScape.Graphics.OldOneGlyphInstance"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
@@ -107,6 +109,10 @@ function Book.Part:getType()
 	return self.type
 end
 
+function Book.Part:getGlyphManager()
+	return self.book:getGlyphManager()
+end
+
 function Book.Part:getResourceManager()
 	return self.book:getResourceManager()
 end
@@ -128,8 +134,7 @@ function Book.Part:getDepthOffset()
 end
 
 function Book.Part:load()
-	self:getResourceManager():queueEvent(self.loadAnimations, self, self.config.animations or {})
-	self:getResourceManager():queueEvent(self.loadModels, self, self.config.models or {})
+	self:getResourceManager():queueEvent(self.loadSkeleton, self, self.config.animations or {})
 end
 
 function Book.Part:_pullTextureCoordinates(model)
@@ -196,7 +201,7 @@ function Book.Part:loadModel(modelConfig)
 					self:_pullTextureCoordinates(model)
 				end
 			end,
-			self.skeleton:getResource())
+			self.skeleton)
 
 		self:getResourceManager():queue(
 			TextureResource,
@@ -204,6 +209,10 @@ function Book.Part:loadModel(modelConfig)
 			function(resource)
 				model.texture = resource
 			end)
+
+		if modelConfig.material then
+			model.material = DecorationMaterial(modelConfig.material)
+		end
 
 		model.isCanvas = not not modelConfig.canvas
 	end
@@ -241,7 +250,7 @@ function Book.Part:loadAnimation(animationConfig)
 			function(resource)
 				animation.animation = resource:getResource()
 			end,
-		self.skeleton:getResource())
+		self.skeleton)
 
 		animation.bones = {}
 		for _, bone in ipairs(animationConfig.bones or {}) do
@@ -251,21 +260,115 @@ function Book.Part:loadAnimation(animationConfig)
 	table.insert(self.animations, animation)
 end
 
-function Book.Part:loadAnimations(animationsConfig)
-	if #animationsConfig == 0 then
-		animationsConfig = Book.DEFAULT_ANIMATIONS
-	end
-
+function Book.Part:loadSkeleton()
 	self:getResourceManager():queue(
 		SkeletonResource,
 		string.format("%s/%s", self:getBook():getBaseFilename(), self.config.skeleton or Book.DEFAULT_SKELETON),
 		function(resource)
 			self.skeleton = resource:getResource()
 
-			for _, animationConfig in ipairs(animationsConfig) do
-				self:loadAnimation(animationConfig)
-			end
+			self:getResourceManager():queueEvent(self.loadAnimations, self, self.config.animations or {})
+			self:getResourceManager():queueEvent(self.loadModels, self, self.config.models or {})
 		end)
+end
+
+function Book.Part:loadAnimations(animationsConfig)
+	if #animationsConfig == 0 then
+		animationsConfig = Book.DEFAULT_ANIMATIONS
+	end
+
+	for _, animationConfig in ipairs(animationsConfig) do
+		self:loadAnimation(animationConfig)
+	end
+end
+
+function Book.Part:_drawGlyphPass(glyph, projections, x, y, width, height, size, blendMode, offset, color, alpha)
+	local glyphManager = self:getGlyphManager()
+
+	love.graphics.push("all")
+	love.graphics.setBlendMode(blendMode, "alphamultiply")
+
+	local r, g, b = color:get()
+	love.graphics.setColor(r, g, b, alpha)
+
+	glyphManager:draw(
+		glyph,
+		projections,
+		x, y,
+		width, height,
+		math.max(width, height) / size,
+		offset)
+
+	love.graphics.pop()
+end
+
+function Book.Part:_drawGlyphs(pass, command, width, height)
+	local glyphManager = self:getGlyphManager()
+
+	local value = command.value or ""
+	local glyph = command.glyph
+
+	if not glyph then
+		if command.command == "glyphs" then
+			glyph = glyphManager:tokenize(value)
+		else
+			glyph = OldOneGlyphInstance(glyphManager:get(command.value), glyphManager)
+		end
+
+		glyph:layout()
+		command.glyph = glyph
+	end
+
+	local x = (command.x or 0) / 100 * width
+	local y = (command.y or 0) / 100 * height
+	local glyphWidth = command.width and (command.width / 100 * width) or width
+	local glyphHeight = command.height and (command.height / 100 * height) or height
+	local size = command.size or 2
+	local glyphColor = Color.fromHexString(command.glyphColor or "463779")
+	local glowColor = Color.fromHexString(command.glowColor or "f26722")
+	local outlineColor = Color.fromHexString(command.outlineColor or "000000")
+
+	love.graphics.push("all")
+
+	local time = self:getBook():getCurrentTime()
+	local planeNormal, planeD = glyphManager:getStandardPlane(time)
+	local projections = glyphManager:asyncProjectAll(command, glyph, planeNormal, planeD, time)
+
+	if pass == RendererPass.PASS_OUTLINE then
+		self:_drawGlyphPass(
+			glyph, projections, 
+			x, y, glyphWidth, glyphHeight, size,
+			"alpha",
+			0.5,
+			Color(1),
+			1)
+	else
+		self:_drawGlyphPass(
+			glyph, projections, 
+			x, y, glyphWidth, glyphHeight, size,
+			"add",
+			math.abs(math.sin(time / 8 * math.pi)) * 0.5 + 0.6,
+			glowColor,
+			0.5)
+
+		self:_drawGlyphPass(
+			glyph, projections, 
+			x, y, glyphWidth, glyphHeight, size,
+			"alpha",
+			0.5,
+			outlineColor,
+			1)
+
+		self:_drawGlyphPass(
+			glyph, projections, 
+			x, y, glyphWidth, glyphHeight, size,
+			"alpha",
+			command.command == "glyph" and 0.25 or 0,
+			glyphColor,
+			1)
+	end
+
+	love.graphics.pop()
 end
 
 function Book.Part:_drawText(pass, command, width, height)
@@ -547,6 +650,10 @@ function Book.Part:update(delta)
 				model.sceneNode:onWillRender(function(renderer, delta)
 					love.graphics.setFrontFaceWinding(self.frontFace)
 				end)
+
+				if model.material then
+					model.material:apply(model.sceneNode, self:getResourceManager())
+				end
 			end
 
 			self.skeleton:applyTransforms(model.transforms)
@@ -598,7 +705,9 @@ function Book.Part:_draw(left, right, top, bottom, pass, commands)
 	end
 
 	for _, command in ipairs(commands) do
-		if command.command == "text" then
+		if command.command == "glyphs" or command.command == "glyph" then
+			self:_drawGlyphs(pass, command, width, height)
+		elseif command.command == "text" then
 			self:_drawText(pass, command, width, height)
 		elseif command.command == "image" then
 			self:_drawImage(pass, command, width, height)
@@ -648,28 +757,18 @@ function Book.Part:draw(commands)
 	love.graphics.push("all")
 	love.graphics.origin()
 
-	love.graphics.setCanvas(model.canvas)
-	love.graphics.clear(0, 0, 0, 0)
+	love.graphics.setCanvas({ model.canvas, depthstencil = true })
+	love.graphics.clear(0, 0, 0, 0, 0, 1)
 	love.graphics.draw(model.texture:getResource())
 
 	self:_draw(left, right, top, bottom, RendererPass.PASS_NONE, commands)
 
 	if model.outlineCanvas then
-		love.graphics.setCanvas(model.outlineCanvas)
+		love.graphics.setCanvas({ model.outlineCanvas, depthstencil = true })
 		love.graphics.clear(0, 0, 0, 0)
 		love.graphics.draw(model.texture:getHandle():getPerPassTexture(TextureResource.PASSES.Outline))
 
 		self:_draw(left, right, top, bottom, RendererPass.PASS_OUTLINE, commands)
-	end
-
-	if love.keyboard.isDown("space") then
-		love.graphics.setCanvas()
-
-		if model.outlineCanvas then
-			model.outlineCanvas:newImageData():encode("png", string.format("%s_outline.png", self.type))
-		end
-
-		model.canvas:newImageData():encode("png", string.format("%s_diffuse.png", self.type))
 	end
 
 	love.graphics.pop()
@@ -844,6 +943,10 @@ function Book:getResource()
 	return self.resource
 end
 
+function Book:getGlyphManager()
+	return self.gameView:getGlyphManager()
+end
+
 function Book:getResourceManager()
 	if not self.resourceView or not self.resourceView:getIsPending() then
 		self.resourceView = self.gameView:getResourceManager():newView()
@@ -892,6 +995,19 @@ function Book:getIsOpeningOrClosing()
 	end
 
 	return false
+end
+
+function Book:getCurrentTime()
+	if self.previousTime and self.currentTime then
+		return math.lerp(self.previousTime, self.currentTime, _APP:getFrameDelta())
+	end
+
+	return love.timer.getTime()
+end
+
+function Book:tick(time)
+	self.previousTime = self.currentTime or time
+	self.currentTime = time
 end
 
 function Book:update(delta)

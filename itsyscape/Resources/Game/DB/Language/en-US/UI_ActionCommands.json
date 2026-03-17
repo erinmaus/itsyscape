@@ -1,0 +1,9 @@
+{
+	"ui.actionCommand.mine.hitButton": "Hit the correct button to the mine the rock!",
+	"ui.actionCommand.woodcutting.rotateToCursor": "Spin around the tree and find the sparkly spot!",
+	"ui.actionCommand.woodcutting.getCloser": "Just a little more!",
+	"ui.actionCommand.woodcutting.smashButton": "Smash that action button to chop the tree!",
+	"ui.actionCommand.fish.findFish": "Look around and find the fish!",
+	"ui.actionCommand.fish.getCloser": "Get closer!",
+	"ui.actionCommand.fish.smashButton": "Smash that action button to reel it in!",
+}

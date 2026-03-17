@@ -17,7 +17,7 @@ Buy.SCOPES = { ['buy'] = true }
 Buy.FLAGS = { ['item-inventory'] = true }
 Buy.ERROR_NO_INVENTORY    = "no inventory"
 Buy.ERROR_QUANTITY        = "can't buy anything"
-Buy.ERROR_INVENTROY_SPACE = "not enough inventory space"
+Buy.ERROR_INVENTORY_SPACE = "not enough inventory space"
 
 function Buy:canPerform(state)
 	return Action.canPerform(self, state, { ["item-inventory"] = true })
@@ -90,7 +90,7 @@ function Buy:perform(state, peep, quantity)
 				state:give(resourceType.name, resource.name, input.count * quantity, Buy.FLAGS)
 			end
 
-			return false, self.ERROR_INVENTROY_SPACE
+			return false, self.ERROR_INVENTORY_SPACE
 		end
 	end
 

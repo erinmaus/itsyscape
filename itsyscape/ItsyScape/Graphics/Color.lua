@@ -26,6 +26,28 @@ function Color:new(r, g, b, a)
 	self.a = math.max(math.min(a or 1), 0)
 end
 
+function Color:from(r, g, b, a)
+	a = a or 1
+	if r and g and b then
+		self.r = r
+		self.g = g
+		self.b = b
+		self.a = a
+	elseif r and not (g and b) then
+		self.r = r
+		self.g = r
+		self.b = r
+		self.a = a
+	else
+		self.r = r or 0
+		self.g = g or 0
+		self.b = b or 0
+		self.a = a
+	end
+
+	return self
+end
+
 function Color.fromHexString(color, alpha)
 	local red, green, blue = color:match("(%x%x)(%x%x)(%x%x)")
 
@@ -65,9 +87,15 @@ end
 -- Lerps two colors by delta.
 --
 -- delta is clamped to 0 .. 1 inclusive.
-function Color:lerp(other, delta)
+
+function Color:lerp(other, delta, result)
+	result = result or Color()
 	delta = math.max(math.min(delta, 1), 0)
-	return self * (1 - delta) + other * delta
+	return result:from(
+		self.r * (1 - delta) + other.r * delta,
+		self.g * (1 - delta) + other.g * delta,
+		self.b * (1 - delta) + other.b * delta,
+		self.a * (1 - delta) + other.a * delta)
 end
 
 -- Gets the components of the color in the order red, green, blue, and alpha.
@@ -77,7 +105,7 @@ function Color:get(multiplier)
 	return self.r * multiplier, self.g * multiplier, self.b * multiplier, self.a * multiplier
 end
 
-function Color:shiftHSL(h, s, l)
+function Color:shiftHSL(h, s, l, result)
 	h = h or 0
 	s = s or 0
 	l = l or 0
@@ -88,7 +116,7 @@ function Color:shiftHSL(h, s, l)
 	s = math.clamp(currentS + s)
 	l = math.clamp(currentL + l)
 
-	return Color.fromHSL(h, s, l)
+	return Color.fromHSL(h, s, l, result)
 end
 
 function Color:setHSL(h, s, l)
@@ -101,7 +129,7 @@ function Color:setHSL(h, s, l)
 	return Color.fromHSL(h, s, l)
 end
 
-function Color.fromHSL(h, s, l)
+function Color.fromHSL(h, s, l, result)
 	local w = (h % 1) * 6
 	local c = (1 - math.abs(2 * l - 1)) * s
 	local x = c * (1 - math.abs(w % 2 - 1))
@@ -128,7 +156,7 @@ function Color.fromHSL(h, s, l)
 		r = r + c
 	end
 
-	return Color(r, g, b)
+	return (result or Color()):from(r, g, b)
 end
 
 function Color:toHSL()

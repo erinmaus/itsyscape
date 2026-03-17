@@ -27,18 +27,18 @@ function Pick:perform(state, player, target)
 	}
 
 	if target and self:canPerform(state, FLAGS) then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
 		local asCloseAsPossible
 		do
 			local map = Utility.Peep.getMap(target)
-			if map:getTile(i, j):hasFlag('impassable') then
+			if map:getTileAt(position.x, position.z):hasFlag('impassable') then
 				asCloseAsPossible = true
 			else
 				asCloseAsPossible = false
 			end
 		end
 
-		local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = asCloseAsPossible })
+		local walk = Utility.Peep.getWalk(player, position, layer, 1.5, { asCloseAsPossible = asCloseAsPossible })
 
 		if walk then
 			local transfer = CallbackCommand(self.transfer, self, state, player)

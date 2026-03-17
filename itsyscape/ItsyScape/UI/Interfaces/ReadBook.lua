@@ -35,22 +35,17 @@ function ReadBook:new(...)
 	self.camera = ThirdPersonCamera()
 
 	local panel = Panel()
-	panel:setStyle(PanelStyle({ color = { Color.fromHexString("#ffffff"):get() } }))
+	panel:setStyle({ image = false }, PanelStyle)
 	panel:setSize(width, height)
 	panel:setIsSelfClickThrough(true)
 	self:addChild(panel)
-	
 
 	self.bookSceneSnippet = SceneSnippet()
 	self.bookSceneSnippet:setPosition(0, 0)
 	self.bookSceneSnippet:setSize(width, height)
 	self.bookSceneSnippet:setCamera(self.camera)
+	self.bookSceneSnippet:setDPIScale(1)
 	self:addChild(self.bookSceneSnippet)
-
-	local state = self:getState()
-	local resource = self:getView():getGame():getGameDB():getResource(state.resource, "Book")
-	self.book = Book(state.book, resource, self:getView():getGameView())
-	self.book:load()
 
 	local parentSceneNode = SceneNode()
 	parentSceneNode:getTransform():setLocalRotation(Quaternion.X_90)
@@ -65,10 +60,9 @@ function ReadBook:new(...)
 	directionalLight:setParent(parentSceneNode)
 
 	self.bookSceneSnippet:setParentNode(parentSceneNode)
-	self.bookSceneSnippet:setChildNode(self.book:getSceneNode())
 
 	self:setIsSelfClickThrough(true)
-	self.bookSceneSnippet:setIsSelfClickThrough()
+	self.bookSceneSnippet:setIsSelfClickThrough(true)
 
 	local label = Label()
 	label:setText("Book Is Open")
@@ -81,8 +75,29 @@ function ReadBook:new(...)
 	self.wasBDown = love.keyboard.isDown("b")
 end
 
+function ReadBook:prepareBook(state)
+	local resource = self:getView():getGame():getGameDB():getResource(state.resource, "Book")
+	self.book = Book(state.book, resource, self:getView():getGameView())
+	self.book:load()
+
+	self.bookSceneSnippet:setChildNode(self.book:getSceneNode())
+end
+
+function ReadBook:tick()
+	if not self.book then
+		return
+	end
+
+	local state = self:getState()
+	self.book:tick(state.time)
+end
+
 function ReadBook:update(delta)
 	Interface.update(self, delta)
+
+	if not self.book then
+		return
+	end
 
 	local isFDown = love.keyboard.isDown("f")
 	if not self.wasFDown and isFDown and not self.book:getIsOpeningOrClosing() then

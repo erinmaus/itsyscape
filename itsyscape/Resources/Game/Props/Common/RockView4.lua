@@ -213,6 +213,11 @@ function RockView:load()
 		end)
 
 	resources:queueEvent(function()
+		local rockMaterial = self:getRockMaterial()
+		if not rockMaterial then
+			return
+		end
+
 		local _, rockGroup = self:getRockModelFilename()
 
 		local node = DecorationSceneNode()
@@ -228,16 +233,17 @@ function RockView:load()
 		material:send(material.UNIFORM_FLOAT, "scape_TriplanarOffset", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_TriplanarExponent", 0)
 		material:send(material.UNIFORM_FLOAT, "scape_SpecularWeight", 1)
-
-		local rockMaterial = self:getRockMaterial()
-		if rockMaterial then
-			rockMaterial:apply(node, self:getResources())
-		end
+		rockMaterial:apply(node, self:getResources())
 
 		self.rockNode = node
 	end)
 
 	resources:queueEvent(function()
+		local oreMaterial = self:getOreMaterial()
+		if not oreMaterial then
+			return
+		end
+
 		local _, oreGroup = self:getOreModelFilename()
 
 		local node = DecorationSceneNode()
@@ -248,11 +254,7 @@ function RockView:load()
 		material:setTextures(self.oreTexture)
 		material:setShader(self.oreShader)
 		material:setOutlineThreshold(0.5)
-
-		local oreMaterial = self:getOreMaterial()
-		if oreMaterial then
-			oreMaterial:apply(node, self:getResources())
-		end
+		oreMaterial:apply(node, self:getResources())
 
 		self.oreNode = node
 	end)
@@ -260,6 +262,7 @@ function RockView:load()
 	local state = self:getProp():getState()
 	if state.resource then
 		self.progress = state.resource.progress or 0
+		self.whacks = state.resource.whacks or 0
 		self.depleted = state.resource.depleted
 
 		if self.depleted then
@@ -268,7 +271,7 @@ function RockView:load()
 			self:spawn(self.FADE_TIME_SECONDS)
 		end
 	else
-		self.progress = 0
+		self.whacks = 0
 		self:spawn(self.FADE_TIME_SECONDS)
 	end
 
@@ -313,12 +316,10 @@ function RockView:tick()
 				self:getProp())
 		end
 
-		if r.progress ~= self.progress then
-			if r.progress > self.progress then
-				self:hit(self.shakeTime)
-			end
-
-			self.progress = r.progress
+		if r.whacks ~= self.whacks then
+			self.whacks = r.whacks
+			self.progress = state.resource.progress or 0
+			self:hit(self.shakeTime)
 		end
 
 		if r.depleted ~= self.depleted then

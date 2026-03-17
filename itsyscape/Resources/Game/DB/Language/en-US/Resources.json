@@ -1,0 +1,20 @@
+{
+	"ArtisanProperty.CommonFurnaceFire_Smelt.description": "Needs a common furnace fire to smelt properly.",
+	"ArtisanProperty.CommonFurnaceFire_Smelt.name": "Common furnace fire",
+	"ArtisanProperty.NuclearHeat_Smelt.description": "Needs the heat of a nuclear reactor to smelt properly.",
+	"ArtisanProperty.NuclearHeat_Smelt.name": "Nuclear reactor heat",
+	"ArtisanProperty.DragonHeat_Smelt.description": "Takes the heat of a living dragon's flame sack to smelt.",
+	"ArtisanProperty.DragonHeat_Smelt.name": "Living dragon's heat",
+	"ArtisanProperty.BasicHammer.description": "Requires any kind of hammer.",
+	"ArtisanProperty.BasicHammer.name": "Hammer",
+	"ArtisanProperty.BasicKnife.description": "Requires any kind of knife.",
+	"ArtisanProperty.BasicKnife.name": "Knife",
+	"ArtisanProperty.SturdyAnvil_Smith.description": "Needs to be hammered on a sturdy anvil.",
+	"ArtisanProperty.SturdyAnvil_Smith.name": "Sturdy anvil",
+	"ArtisanProperty.CommonFire_Cook.description": "An open flame to roast fish and meats.",
+	"ArtisanProperty.CommonFire_Cook.name": "Open flame",
+	"ArtisanProperty.CommonStoveTop_Cook.description": "A basic stove top. Good for most dishes.",
+	"ArtisanProperty.CommonStoveTop_Cook.name": "Stove top",
+	"ArtisanProperty.CommonOven_Cook.description": "An oven for baking, roasting, and such.",
+	"ArtisanProperty.CommonOven_Cook.name": "Oven"
+}

@@ -22,6 +22,10 @@ function CameraController:getApp()
 	return self.app
 end
 
+function CameraController:getUIView()
+	return self.app:getUIView()
+end
+
 function CameraController:getGame()
 	return self.app:getGame()
 end
@@ -66,6 +70,10 @@ function CameraController:rotate(dx, dy)
 	-- Nothing.
 end
 
+function CameraController:tick()
+	-- Nothing.
+end
+
 function CameraController:update(delta)
 	-- Nothing.
 end
@@ -92,7 +100,7 @@ function CameraController:poke(event, ...)
 	if func then
 		func(self, ...)
 	else
-		Log.warn("Poke '%s' (transformed to '%s') not recognized.", event, name)
+		Log.warnOnce("Poke '%s' (transformed to '%s') not recognized.", event, name)
 	end
 end
 

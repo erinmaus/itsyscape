@@ -8,9 +8,11 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Transform = require "ItsyScape.Common.Math.Transform"
+local RPCState = require "ItsyScape.Game.RPC.State"
 local Color = require "ItsyScape.Graphics.Color"
 local DecorationMaterial = require "ItsyScape.Graphics.DecorationMaterial"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
@@ -33,8 +35,8 @@ EndlessWater.CELL_SIZE = 2
 
 -- Width and height of the water in the negative and positive dimensions.
 -- Basically goes from -W .. +W, and -H .. +H.
-EndlessWater.WIDTH  = 1
-EndlessWater.HEIGHT = 1
+EndlessWater.WIDTH  = 2
+EndlessWater.HEIGHT = 2
 
 EndlessWater.CANVAS_CELL_SIZE = 8
 EndlessWater.CANVAS_WIDTH = 128
@@ -60,6 +62,8 @@ EndlessWater.EXTENDED_MATERIAL = DecorationMaterial({
 	}
 })
 
+EndlessWater.VIEW_TRANSFORM = Quaternion.fromAxisAngle(Vector.UNIT_X, -math.pi / 2)
+
 function EndlessWater:new(prop, gameView)
 	PropView.new(self, prop, gameView)
 
@@ -71,6 +75,9 @@ function EndlessWater:new(prop, gameView)
 	self.masks = {}
 	self.maskBounds = {}
 	self.shadows = {}
+
+	self.previousShips = {}
+	self.currentShips = {}
 end
 
 function EndlessWater:load()
@@ -136,79 +143,18 @@ function EndlessWater:load()
 	self.bumpCanvas:setFilter("linear", "linear")
 end
 
-function EndlessWater:tick()
-	PropView.tick(self)
-
-	local state = self:getProp():getState()
-	local _, layer = self:getProp():getPosition()
-	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
-
-	local waterRimColor
-
-	local currentSkyProperties, previousSkyProperties = self:getGameView():getSkyProperties(layer)
-	if not (currentSkyProperties and previousSkyProperties) then
-		waterRimColor = Color(1, 1, 1, 1)
-	else
-		local previousAmbientColor = Color(unpack(previousSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
-		local currentAmbientColor = Color(unpack(currentSkyProperties.currentAmbientColor or { 1, 1, 1 }, 1, 3))
-
-		waterRimColor = previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta())
-	end
-
-	self.previousTime = self.currentTime
-	self.currentTime = state.time or 0
-
-	for _, water in ipairs(self.waters) do
-		local material = water:getMaterial()
-
-		if state.whirlpool and state.whirlpool.hasWhirlpool then
-			for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
-				local prop = state.whirlpool[v]
-				if prop and shader:hasUniform(k) then
-					material:send(material.UNIFORM_FLOAT, k, prop)
-				end
-			end
-
-			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 1.0)
-		else
-			material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 0.0)
-		end
-
-		if state.ocean and state.ocean.hasOcean then
-			water:setYOffset(state.ocean.offset)
-			water:setPositionTimeScale(state.ocean.positionTimeScale)
-			water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
-		end
-
-		material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
-		material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0)
-		material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
-		material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
-		material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
-		material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", state.ocean.offset)
-		material:send(material.UNIFORM_FLOAT, "scape_WindSpeedMultiplier", state.ocean.windSpeedMultiplier)
-		material:send(material.UNIFORM_FLOAT, "scape_WindPatternMultiplier", state.ocean.windPatternMultiplier)
-		material:send(material.UNIFORM_FLOAT, "scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()))
-
-		material:send(material.UNIFORM_TEXTURE, "scape_BumpTexture", self.bumpCanvas)
-		material:send(material.UNIFORM_TEXTURE, "scape_MaskTexture", self.shipCanvas)
-	end
-end
-
-function EndlessWater:updateShips(delta)
-	if not self.waterMesh then
-		return
-	end
-
+function EndlessWater:tickShipsState()
 	local state = self:getProp():getState()
 	local shipsState = state.ships
-
 	if not shipsState then
 		return
 	end
 
-	self.previousShips = self.currentShips
-	self.currentShips = {}
+	self.previousShips = RPCState.merge(self.currentShips, self.previousShips)
+
+	for _, shipState in pairs(self.currentShips) do
+		shipState.visited = false
+	end
 
 	for _, shipState in ipairs(shipsState) do
 		local previousShip = previousShips and previousShips[shipState.id]
@@ -231,129 +177,244 @@ function EndlessWater:updateShips(delta)
 			end
 		end
 
-		local currentShip = {
-			mask = shipState.mask,
-			state = shipState
-		}
+		local currentShip = self.currentShips[shipState.id]
+		if not currentShip then
+			currentShip = {}
+			self.currentShips[shipState.id] = currentShip
+		end
 
-		self.currentShips[shipState.id] = currentShip
+		currentShip.mask = shipState.mask
+		currentShip.state = RPCState.merge(shipState, currentShip.state)
+		currentShip.visited = true
 	end
 
-	love.graphics.push("all")
-	do
-		love.graphics.setCanvas({ self.shipCanvas, depth = true })
-		love.graphics.clear(0, 0, 0, 1)
+	for id, shipState in pairs(self.currentShips) do
+		if not shipState.visited then
+			self.currentShips[id] = nil
+			self.previousShips[id] = nil
+		end
+	end
+end
 
-		local currentTranslation = self.waterParent:getTransform():getLocalTranslation()
+do
+	local previousAmbientColor = Color()
+	local currentAmbientColor = Color()
+	local waterRimColor = Color()
+	local defaultColor = { 1, 1, 1 }
 
-		local projection = love.math.newTransform()
-		projection:ortho(
-			currentTranslation.x - EndlessWater.SIZE * 2,
-			currentTranslation.x + (EndlessWater.WIDTH * 2) * EndlessWater.SIZE * 2,
-			currentTranslation.z - EndlessWater.SIZE * 2,
-			currentTranslation.z + (EndlessWater.HEIGHT * 2) * EndlessWater.SIZE * 2,
-			-(state.ocean and state.ocean.offset * 2 or 32),
-			(state.ocean and state.ocean.offset * 2 or 32))
+	function EndlessWater:tick()
+		PropView.tick(self)
 
-		local view = love.math.newTransform()
-		view:rotate(1, 0, 0, -math.pi / 2)
+		self:tickShipsState()
 
-		local projectionView = projection * view
-
+		local state = self:getProp():getState()
 		local _, layer = self:getProp():getPosition()
 		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
 
-		self.shaderCache:bindShader(
-			self.waterShader,
-			"scape_ViewMatrix", view,
-			"scape_ProjectionMatrix", projection,
-			"scape_BumpForce", 0,
-			"scape_WindDirection", { windDirection:get() },
-			"scape_WindSpeed", windSpeed,
-			"scape_WindPattern", { windPattern:get() },
-			"scape_WindMaxDistance", state.ocean.offset,
-			"scape_WindSpeedMultiplier", state.ocean.windSpeedMultiplier,
-			"scape_WindPatternMultiplier", state.ocean.windPatternMultiplier,
-			"scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()),
-			"scape_YOffset", state.ocean and state.ocean.offset or 0)
-
-		love.graphics.setDepthMode("lequal", true)
-		for _, water in ipairs(self.waters) do
-			self.shaderCache:bindShader(
-				self.waterShader,
-				"scape_WorldMatrix", water:getTransform():getGlobalTransform())
-
-			love.graphics.draw(self.waterMesh:getMesh())
-
-			local material = water:getMaterial()
-			material:send(material.UNIFORM_FLOAT, "scape_BumpProjectionViewMatrix", Transform.getMatrix(projectionView))
+		local currentSkyProperties, previousSkyProperties = self:getGameView():getSkyProperties(layer)
+		if not (currentSkyProperties and previousSkyProperties) then
+			waterRimColor:from(1, 1, 1, 1)
+		else
+			previousAmbientColor:from(unpack(previousSkyProperties.currentAmbientColor or defaultColor, 1, 3))
+			currentAmbientColor:from(unpack(currentSkyProperties.currentAmbientColor or defaultColor, 1, 3))
+			previousAmbientColor:lerp(currentAmbientColor, _APP:getPreviousFrameDelta(), waterRimColor)
 		end
 
-		self.shaderCache:bindShader(
-			self.shipShader,
-			"scape_ViewMatrix", view,
-			"scape_ProjectionMatrix", projection)
+		self.previousTime = self.currentTime
+		self.currentTime = state.time or 0
 
-		love.graphics.setDepthMode("lequal", true)
-		local worldTransform = love.math.newTransform()
-		for _, currentShip in pairs(self.currentShips) do
-			local previousShip = self.previousShips and self.previousShips[currentShip.state.id]
-			previousShip = previousShip or self.currentShips[currentShip.state.id]
+		for _, water in ipairs(self.waters) do
+			local material = water:getMaterial()
 
-			local meshResource = self.masks[currentShip.mask]
-			local mesh = meshResource and meshResource:getResource():getMesh("hull.exterior")			
-			if mesh then
-				local meshBounds = self.maskBounds[currentShip.mask]
-				local realSize = meshBounds.max - meshBounds.min
-				local adjustedSize = realSize + Vector(EndlessWater.MASK_SIZE_OFFSET, 0, EndlessWater.MASK_SIZE_OFFSET)
+			if state.whirlpool and state.whirlpool.hasWhirlpool then
+				for k, v in pairs(EndlessWater.WHIRLPOOL_PROPS) do
+					local prop = state.whirlpool[v]
+					if prop and shader:hasUniform(k) then
+						material:send(material.UNIFORM_FLOAT, k, prop)
+					end
+				end
 
-				local currentPosition = Vector(unpack(currentShip.state.position))
-				local currentRotation = Quaternion(unpack(currentShip.state.rotation))
-				local currentScale = Vector(unpack(currentShip.state.scale))
-				local currentOrigin = Vector(unpack(currentShip.state.origin))
-				local previousPosition = Vector(unpack(previousShip.state.position))
-				local previousRotation = Quaternion(unpack(previousShip.state.rotation))
-				local previousScale = Vector(unpack(previousShip.state.scale))
-				local previousOrigin = Vector(unpack(previousShip.state.origin))
-
-				local frameDelta = _APP:getPreviousFrameDelta()
-				local position = previousPosition:lerp(currentPosition, frameDelta)
-				local rotation = previousRotation:slerp(currentRotation, frameDelta)
-				local scale = previousScale:lerp(currentScale, frameDelta)
-				local origin = previousOrigin:lerp(currentOrigin, frameDelta)
-				scale = scale * (adjustedSize / realSize)
-
-				worldTransform:reset()
-				worldTransform:translate((position + origin):get())
-				worldTransform:scale(scale:get())
-				worldTransform:applyQuaternion(rotation:get())
-
-				self.shaderCache:bindShader(
-					self.shipShader,
-					"scape_WorldMatrix", worldTransform)
-
-				love.graphics.draw(mesh)
+				material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 1.0)
+			else
+				material:send(material.UNIFORM_FLOAT, "scape_WhirlpoolAlpha", 0.0)
 			end
+
+			if state.ocean and state.ocean.hasOcean then
+				water:setYOffset(state.ocean.offset)
+				water:setPositionTimeScale(state.ocean.positionTimeScale)
+				water:setTextureTimeScale(unpack(state.ocean.textureTimeScale))
+			end
+
+			material:send(material.UNIFORM_FLOAT, "scape_SkyColor", waterRimColor:get())
+			material:send(material.UNIFORM_FLOAT, "scape_BumpForce", 0)
+			material:send(material.UNIFORM_FLOAT, "scape_WindDirection", windDirection:get())
+			material:send(material.UNIFORM_FLOAT, "scape_WindSpeed", windSpeed)
+			material:send(material.UNIFORM_FLOAT, "scape_WindPattern", windPattern:get())
+			material:send(material.UNIFORM_FLOAT, "scape_WindMaxDistance", state.ocean and state.ocean.offset or 0)
+			material:send(material.UNIFORM_FLOAT, "scape_WindSpeedMultiplier", state.ocean and state.ocean.windSpeedMultiplier or 0)
+			material:send(material.UNIFORM_FLOAT, "scape_WindPatternMultiplier", state.ocean and state.ocean.windPatternMultiplier or 0)
+			material:send(material.UNIFORM_FLOAT, "scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()))
+
+			material:send(material.UNIFORM_TEXTURE, "scape_BumpTexture", self.bumpCanvas)
+			material:send(material.UNIFORM_TEXTURE, "scape_MaskTexture", self.shipCanvas)
 		end
 	end
-
-	love.graphics.pop()
 end
 
-function EndlessWater:update(delta)
-	PropView.update(self, delta)
+do
+	local currentPosition = Vector()
+	local currentRotation = Quaternion()
+	local currentScale = Vector()
+	local currentOrigin = Vector()
+	local previousPosition = Vector()
+	local previousRotation = Quaternion()
+	local previousScale = Vector()
+	local previousOrigin = Vector()
+	local position = Vector()
+	local rotation = Quaternion()
+	local scale = Vector()
+	local origin = Vector()
+	local realSize = Vector()
+	local adjustedSize = Vector()
+	local scaledSize = Vector()
+	local maskOffset = Vector()
+	local windDirectionUniform = {}
+	local windPatternUniform = {}
 
-	local camera = self:getGameView():getRenderer():getCamera()
-	local position = camera:getPosition()
+	local projectionTransform = love.math.newTransform()
+	local viewTransform = love.math.newTransform()
+	local projectionViewTransform = love.math.newTransform()
+	local worldTransform = love.math.newTransform()
 
-	local i = math.floor(position.x / (EndlessWater.SIZE * EndlessWater.CELL_SIZE))
-	local j = math.floor(position.z / (EndlessWater.SIZE * EndlessWater.CELL_SIZE))
-	local x = (i + 0.5) * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
-	local z = (j + 0.5) * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
+	function EndlessWater:updateShips(delta)
+		if not self.waterMesh then
+			return
+		end
 
-	self.waterParent:getTransform():setLocalTranslation(Vector(position.x, 0, position.z))
+		local state = self:getProp():getState()
+		love.graphics.push("all")
+		do
+			love.graphics.setCanvas({ self.shipCanvas, depth = true })
+			love.graphics.clear(0, 0, 0, 1)
 
-	self:updateShips(delta)
+			local currentTranslation = self.waterParent:getTransform():getLocalTranslation()
+
+			local width = (EndlessWater.WIDTH * 2 - 0.5) * EndlessWater.SIZE * EndlessWater.CELL_SIZE
+			local height = (EndlessWater.HEIGHT * 2 - 0.5) * EndlessWater.SIZE * EndlessWater.CELL_SIZE
+
+			MathCommon.makeOrthoTransform(
+				currentTranslation.x - width / 2,
+				currentTranslation.x + width / 2 ,
+				currentTranslation.z + height / 2,
+				currentTranslation.z - height / 2,
+				-(state.ocean and state.ocean.offset * 2 or 32),
+				(state.ocean and state.ocean.offset * 2 or 32),
+				projectionTransform)
+
+			MathCommon.makeRotationTransform(EndlessWater.VIEW_TRANSFORM, viewTransform)
+
+			projectionViewTransform:reset()
+			projectionViewTransform:apply(projectionTransform)
+			projectionViewTransform:apply(viewTransform)
+
+			local _, layer = self:getProp():getPosition()
+			local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+			windDirectionUniform[1], windDirectionUniform[2], windDirectionUniform[3] = windDirection:get()
+			windPatternUniform[1], windPatternUniform[2], windPatternUniform[3] = windPattern:get()
+
+			self.shaderCache:bindShader(
+				self.waterShader,
+				"scape_ViewMatrix", viewTransform,
+				"scape_ProjectionMatrix", projectionTransform,
+				"scape_BumpForce", 0,
+				"scape_WindDirection", windDirectionUniform,
+				"scape_WindSpeed", windSpeed,
+				"scape_WindPattern", windPatternUniform,
+				"scape_WindMaxDistance", state.ocean and state.ocean.offset,
+				"scape_WindSpeedMultiplier", state.ocean and state.ocean.windSpeedMultiplier,
+				"scape_WindPatternMultiplier", state.ocean and state.ocean.windPatternMultiplier,
+				"scape_Time", math.lerp(self.previousTime or self.currentTime or 0, self.currentTime or 0, _APP:getPreviousFrameDelta()),
+				"scape_YOffset", state.ocean and state.ocean.offset or 0)
+
+			love.graphics.setDepthMode("lequal", true)
+			for _, water in ipairs(self.waters) do
+				self.shaderCache:bindShader(
+					self.waterShader,
+					"scape_WorldMatrix", water:getTransform():getGlobalTransform())
+
+				love.graphics.draw(self.waterMesh:getMesh())
+
+				local material = water:getMaterial()
+				material:send(material.UNIFORM_FLOAT, "scape_BumpProjectionViewMatrix", Transform.getMatrix(projectionViewTransform))
+			end
+
+			self.shaderCache:bindShader(
+				self.shipShader,
+				"scape_ViewMatrix", viewTransform,
+				"scape_ProjectionMatrix", projectionTransform)
+
+			love.graphics.setDepthMode("gequal", true)
+			local worldTransform = love.math.newTransform()
+			for _, currentShip in pairs(self.currentShips) do
+				local previousShip = self.previousShips[currentShip.state.id] or self.currentShips[currentShip.state.id]
+
+				local meshResource = self.masks[currentShip.mask]
+				local mesh = meshResource and meshResource:getResource():getMesh("hull.exterior")			
+				if mesh then
+					local meshBounds = self.maskBounds[currentShip.mask]
+					meshBounds.max:subtract(meshBounds.min, realSize)
+					realSize:add(maskOffset:from(EndlessWater.MASK_SIZE_OFFSET, 0, EndlessWater.MASK_SIZE_OFFSET), adjustedSize)
+
+					currentPosition:from(unpack(currentShip.state.position))
+					currentRotation:from(unpack(currentShip.state.rotation))
+					currentScale:from(unpack(currentShip.state.scale))
+					currentOrigin:from(unpack(currentShip.state.origin))
+					previousPosition:from(unpack(previousShip.state.position))
+					previousRotation:from(unpack(previousShip.state.rotation))
+					previousScale:from(unpack(previousShip.state.scale))
+					previousOrigin:from(unpack(previousShip.state.origin))
+
+					local frameDelta = _APP:getPreviousFrameDelta()
+					previousPosition:lerp(currentPosition, frameDelta, position)
+					previousRotation:slerp(currentRotation, frameDelta, rotation):normalize(rotation)
+					previousScale:lerp(currentScale, frameDelta, scale)
+					previousOrigin:lerp(currentOrigin, frameDelta, origin)
+
+					scale:product(adjustedSize:divide(realSize, scaledSize), scale)
+					position:add(origin, position)
+
+					MathCommon.makeTransform(position, rotation, scale, nil, worldTransform)
+
+					self.shaderCache:bindShader(
+						self.shipShader,
+						"scape_WorldMatrix", worldTransform)
+
+					love.graphics.draw(mesh)
+				end
+			end
+		end
+
+		love.graphics.pop()
+	end
+end
+
+do
+	local translation = Vector()
+	function EndlessWater:update(delta)
+		PropView.update(self, delta)
+
+		local camera = self:getGameView():getRenderer():getCamera()
+		local position = camera:getPosition()
+
+		local i = math.floor(position.x / (EndlessWater.SIZE * EndlessWater.CELL_SIZE))
+		local j = math.floor(position.z / (EndlessWater.SIZE * EndlessWater.CELL_SIZE))
+		local x = i * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
+		local z = j * (EndlessWater.SIZE * EndlessWater.CELL_SIZE)
+
+		self.waterParent:getTransform():setLocalTranslation(translation:from(x, 0, z))
+
+		self:updateShips(delta)
+	end
 end
 
 return EndlessWater

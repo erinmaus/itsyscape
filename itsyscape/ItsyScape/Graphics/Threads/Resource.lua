@@ -57,8 +57,17 @@ while true do
 			else
 				local b = love.timer.getTime()
 				local file = love.filesystem.read(request.filename)
-				s, e = loadstring("return " .. (file or "nil"))
-				l = { type = request.type, id = request.id, table = buffer.encode(assert(setfenv(s, {}))() or {}) }
+				local s, e = loadstring("return " .. (file or "nil"), request.filename)
+
+				local result
+				if not s then
+					Log.warn("Could not parse '%s': %s", request.filename, e)
+					result = {}
+				else
+					result = assert(setfenv(s, {}))() or {}
+				end
+
+				l = { type = request.type, id = request.id, table = buffer.encode(result) }
 				local a = love.timer.getTime()
 				Log.engine("Loaded Lua file '%s' in %.2f ms.", cacheFilename, (a - b) * 1000)
 			end

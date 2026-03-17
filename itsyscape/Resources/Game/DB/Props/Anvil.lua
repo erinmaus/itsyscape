@@ -57,6 +57,24 @@ ItsyScape.Resource.Prop "Anvil_Default2" {
 	ItsyScape.Action.UseCraftWindow()
 }
 
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "BasicHammer",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "BasicKnife",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
+}
+
+ItsyScape.Meta.ArtisanProperty {
+	Count = 1,
+	Property = ItsyScape.Resource.ArtisanProperty "SturdyAnvil_Smith",
+	Resource = ItsyScape.Resource.Prop "Anvil_Default2"
+}
+
 ItsyScape.Meta.PropAnchor {
 	OffsetI = 0,
 	OffsetJ = 0,

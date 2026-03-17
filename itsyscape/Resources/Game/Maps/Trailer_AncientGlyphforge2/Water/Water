@@ -1,0 +1,10 @@
+{
+	layer = 1,
+	texture = "LightFoamyWater1",
+	i = 1,
+	j = 1,
+	width = 64,
+	height = 64,
+	y = -0.5,
+	finesse = 4
+}

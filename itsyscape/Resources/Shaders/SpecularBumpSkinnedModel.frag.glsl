@@ -1,5 +1,6 @@
 #pragma option SCAPE_LIGHT_MODEL_V2
 
+#define SCAPE_SPECULAR_DISABLE_EXTRA_SPECULAR_BLENDING
 #include "Resources/Shaders/SpecularBump.common.glsl"
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)

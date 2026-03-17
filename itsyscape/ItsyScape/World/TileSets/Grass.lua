@@ -23,6 +23,7 @@ Grass.GLOBAL_OFFSET = Vector(174 / 257)
 Grass.SATURATION = 4
 
 Grass.DIRT_NOISE = Noise {
+	offset = Vector(1 / 7, 0, 1 / 7),
 	scale = 12,
 	octaves = 2,
 	attenuation = 0.5
@@ -37,8 +38,8 @@ Grass.OFFSET_NOISE = Noise {
 	attenuation = -2
 }
 
-Grass.MIN_SCALE = 0.5
-Grass.MAX_SCALE = 1.2
+Grass.MIN_SCALE = 1.2
+Grass.MAX_SCALE = 1.6
 Grass.SCALE_NOISE = Noise {
 	scale = 3,
 	octaves = 2,
@@ -56,7 +57,6 @@ Grass.ROTATION_NOISE = Noise {
 Grass.DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d.png"
 Grass.SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Specular.png"
 Grass.OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Grass%d@Outline.png"
-Grass.DIRT_SAMPLE_FILENAME = "Resources/Game/TileSets/Common/Dirt%d.png"
 
 Grass.NUM_SAMPLES = 3
 Grass.SAMPLE_NOISE = Noise {
@@ -75,13 +75,6 @@ Grass.COLORS = {
 	Color.fromHexString("4f7252"),
 	Color.fromHexString("49784d"),
 	Color.fromHexString("3e6d3a"),
-}
-
-Grass.NUM_DIRT_SAMPLES = 3
-Color.DIRT_COLORS = {
-	Color.fromHexString("524842"),
-	Color.fromHexString("5c4b40"),
-	Color.fromHexString("54423b"),
 }
 
 Grass.COLOR_NOISE = Noise {
@@ -171,14 +164,13 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 	end
 
 	local grass = {}
-	-- Go an extra tile to cover edges shared with other atlas pieces on top/bottom/left/right
-	for offsetI = -2, w + 2 do
-		for offsetJ = -2, h + 2 do
+	for offsetI = 0, w - 1 do
+		for offsetJ = 0, h - 1 do
+			local currentI = offsetI + i
+			local currentJ = offsetJ + j
+
 			for x = 1, self.SATURATION do
 				for y = 1, self.SATURATION do
-					local currentI = offsetI + i
-					local currentJ = offsetJ + j
-
 					if currentI >= 1 and currentJ >= 1 and currentI <= map:getWidth() and currentJ <= map:getHeight() then
 						local g = self:getCache(currentI, currentJ, map:getWidth(), map:getHeight(), x, y, self.SATURATION, self.SATURATION)
 						assert(g)
@@ -199,30 +191,104 @@ function Grass:emit(drawType, tileSet, map, i, j, w, h, tileSetTile, tileSize)
 		love.graphics.clear(1, 1, 1, 1)
 	end
 
-	for _, g in ipairs(grass) do
-		local dirt = self._dirt:uniform(g.dirt)
-		if dirt >= self.DIRT_THRESHOLD then
+	local absoluteWidth = w * tileSize
+	local absoluteHeight = h * tileSize
+
+	local sample, numSamples
+	local marginX, marginY = 0, 0
+	if drawType == "diffuse" and self._diffuseSample then
+		sample = self._diffuseSample
+		numSamples = self._diffuseSample and #self._DIFFUSE_SAMPLES
+		marginX = self._diffuseSample:getWidth() * 2
+		marginY = self._diffuseSample:getHeight() * 2
+	elseif drawType == "specular" and self._specularSample then
+		sample = self._specularSample
+		numSamples = self._specularSample and #self._SPECULAR_SAMPLES
+		marginX = self._specularSample:getWidth() * 2
+		marginY = self._specularSample:getHeight() * 2
+	elseif drawType == "outline" and self._outlineSample then
+		sample = self._outlineSample
+		numSamples = self._outlineSample and #self._OUTLINE_SAMPLES
+		marginX = self._outlineSample:getWidth() * 2
+		marginY = self._outlineSample:getHeight() * 2
+	end
+
+	if sample then
+		for _, g in ipairs(grass) do
 			local scale = self._scales:range(g.scale, self.MIN_SCALE * self.SCALE_FACTOR, self.MAX_SCALE * self.SCALE_FACTOR)
 			local rotation = self._rotations:range(g.rotation, self.MIN_ROTATION, self.MAX_ROTATION)
 			local x = g.x + self._offsets:range(g.offsetX, self.MIN_OFFSET * self.SCALE_FACTOR, self.MAX_OFFSET * self.SCALE_FACTOR)
 			local y = g.y + self._offsets:range(g.offsetY, self.MIN_OFFSET * self.SCALE_FACTOR, self.MAX_OFFSET * self.SCALE_FACTOR)
+			local index = self._samples:index(g.sample, numSamples)
+
+			local rx, ry = x - (i * tileSize), y - (j * tileSize)
 
 			if drawType == "diffuse" then
 				local color = self.COLORS[self._colors:index(g.color, #self.COLORS)]
-				if self._diffuseSample then
-					love.graphics.setColor(color:get())
-					love.graphics.drawLayer(self._diffuseSample, self._samples:index(g.sample, #self._DIFFUSE_SAMPLES), x, y, rotation, scale, scale, self._diffuseSample:getWidth() / 2, self._diffuseSample:getHeight() / 2)
-				end
-			elseif drawType == "specular" then
-				if self._specularSample then
-					love.graphics.setColor(1, 1, 1, 1)
-					love.graphics.drawLayer(self._specularSample, self._samples:index(g.sample, #self._SPECULAR_SAMPLES), x, y, rotation, scale, scale, self._specularSample:getWidth() / 2, self._specularSample:getHeight() / 2)
-				end
-			elseif drawType == "outline" then
-				if self._outlineSample then
-					love.graphics.setColor(1, 1, 1, 1)
-					love.graphics.drawLayer(self._outlineSample, self._samples:index(g.sample, #self._OUTLINE_SAMPLES), x, y, rotation, scale, scale, self._outlineSample:getWidth() / 2, self._outlineSample:getHeight() / 2)
-				end
+				love.graphics.setColor(color:get())
+			else
+				love.graphics.setColor(1, 1, 1, 1)
+			end
+
+			love.graphics.drawLayer(
+				sample,
+				index,
+				x, y,
+				rotation, scale, scale,
+				sample:getWidth() / 2, sample:getHeight() / 2)
+
+			if rx <= marginX then
+				love.graphics.drawLayer(
+					sample,
+					index,
+					x + absoluteWidth, y,
+					rotation, scale, scale,
+					sample:getWidth() / 2, sample:getHeight() / 2)
+			end
+
+			if ry <= marginY then
+				love.graphics.drawLayer(
+					sample,
+					index,
+					x, y + absoluteHeight,
+					rotation, scale, scale,
+					sample:getWidth() / 2, sample:getHeight() / 2)
+			end
+
+			if rx <= marginX and ry <= marginY then
+				love.graphics.drawLayer(
+					sample,
+					index,
+					x + absoluteWidth, y + absoluteHeight,
+					rotation, scale, scale,
+					sample:getWidth() / 2, sample:getHeight() / 2)
+			end
+
+			if rx >= absoluteWidth - marginX then
+				love.graphics.drawLayer(
+					sample,
+					index,
+					x - absoluteWidth, y,
+					rotation, scale, scale,
+					sample:getWidth() / 2, sample:getHeight() / 2)
+			end
+
+			if ry >= absoluteHeight - marginY then
+				love.graphics.drawLayer(
+					sample,
+					index,
+					x, y - absoluteHeight,
+					rotation, scale, scale,
+					sample:getWidth() / 2, sample:getHeight() / 2)
+			end
+
+			if rx >= absoluteWidth - marginX and ry >= absoluteHeight - marginY then
+				love.graphics.drawLayer(
+					sample,
+					index,
+					x - absoluteWidth, y - absoluteHeight,
+					rotation, scale, scale,
+					sample:getWidth() / 2, sample:getHeight() / 2)
 			end
 		end
 	end

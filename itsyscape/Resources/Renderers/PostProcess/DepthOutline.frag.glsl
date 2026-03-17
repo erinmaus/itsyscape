@@ -1,4 +1,5 @@
 #include "Resources/Shaders/Edge.common.glsl"
+#include "Resources/Shaders/Math.common.glsl"
 
 uniform vec2 scape_TexelSize;
 uniform float scape_DepthStep;
@@ -26,15 +27,22 @@ vec4 effect(vec4 color, Image image, vec2 textureCoordinate, vec2 screenCoordina
 	float depthEdge = getDepthEdge(image, textureCoordinate, scape_TexelSize, step(0.0, outlineThreshold));
 	float normalEdge = getNormalEdge(scape_NormalTexture, textureCoordinate, scape_TexelSize);
 
-    float normalDotView = max(dot(normalize(scape_Forward), normalSample), 0.0);
+    float normalDotView = abs(dot(normalize(scape_Forward), normalSample));
 	float depthEdgeStepComponent1 = abs(outlineThreshold) * normalDotView;
 	float depthEdgeStepComponent2 = 0.0;
 	if (outlineThreshold >= 0.0)
 	{
 		depthEdgeStepComponent2 = clamp((linearDepth - SCAPE_DEPTH_EDGE_FALL_OFF) / SCAPE_DEPTH_EDGE_FALL_OFF_RANGE, 0.0, 1.0) * SCAPE_DEPTH_EDGE_FALL_OFF_STEP;
 	}
+	else
+	{
+		outlineColor *= vec3(normalDotView);
+		float scaledOutlineThreshold = abs(outlineThreshold) / 2.0;
+		depthEdgeStepComponent1 = scaledOutlineThreshold + scaledOutlineThreshold * (1.0 - normalDotView);
+	}
 
-	float depthEdgeStep = max(scape_DepthStep + max(depthEdgeStepComponent1, depthEdgeStepComponent2), 0.0);
+	float constantDepthStep = step(0.0, outlineThreshold) * scape_DepthStep;
+	float depthEdgeStep = max(constantDepthStep + max(depthEdgeStepComponent1, depthEdgeStepComponent2), 0.0);
 	float normalEdgeStep = max(scape_NormalStep, 0.0);
 
 	float edge = max(step(normalEdgeStep, normalEdge), step(depthEdgeStep, depthEdge));

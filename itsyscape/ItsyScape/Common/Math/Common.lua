@@ -9,39 +9,120 @@
 --------------------------------------------------------------------------------
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local NTransform = require "nbunny.transform"
 
 local Common = {}
-function Common.decomposeTransform(transform)
+
+Common.EPSILON = -1e5
+
+do
+	local A, a = Vector(), Vector()
+	local B, b = Vector(), Vector()
+	local c = Vector()
+	local E, Q = Vector(), Vector()
+	local sv, tv = Vector(), Vector()
+	function Common.lineSegmentDistance(p1, p2, q1, q2)
+		A:from(p1:get())
+		p1:direction(p2, a)
+		B:from(q1:get())
+		q1:direction(q2, b)
+		B:subtract(A, c)
+
+		if math.abs(a:dot(a)) < Common.EPSILON or
+		   math.abs(b:dot(b)) < Common.EPSILON or
+		   math.abs(a:dot(b) ^ 2) < Common.EPSILON
+		then
+			return A:distance(B)
+		end
+
+		local r = (a:dot(a) * b:dot(b)) - (a:dot(b) * a:dot(b))
+		local s = -(a:dot(b) * b:dot(c)) + (a:dot(c) * b:dot(b))
+		local t = (a:dot(b) * a:dot(c)) - (b:dot(c) * a:dot(a))
+
+		r = 1 / r
+		sv:from(math.clamp(s * r, 0, p1:distance(p2)))
+		tv:from(math.clamp(t * r, 0, q1:distance(q2)))
+
+		A:add(a:product(sv, E), E)
+		B:add(b:product(tv, Q), Q)
+
+		return E:distance(Q), E, Q
+	end
+end
+
+function Common.makeInverseTransform(transform, result)
+	result = result or transform
+	NTransform.inverse(transform, result)
+	return result
+end
+
+function Common.transposeTransform(transform, result)
+	result = result or transform
+
 	local m11, m21, m31, m41,
 	      m12, m22, m32, m42,
 	      m13, m23, m33, m43,
 	      m14, m24, m34, m44 = transform:getMatrix()
+	
+	result:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return result
+end
+
+function Common.decomposeTransform(transform, translation, rotation)
+	local m11, m21, m31, m41,
+		  m12, m22, m32, m42,
+		  m13, m23, m33, m43,
+		  m14, m24, m34, m44 = transform:getMatrix("column")
+
+	translation = translation or Vector()
+	rotation = rotation or Quaternion()
 
 	local t, q
 	if m33 < 0 then
 		if m11 > m22 then
 			t = 1 + m11 - m22 - m33;
-			q = Quaternion(t, m12 + m21, m31 + m13, m23 - m32);
+			rotation.x = t
+			rotation.y = m12 + m21
+			rotation.z = m31 + m13
+			rotation.w = m23 - m32
 		else
 			t = 1 - m11 + m22 - m33;
-			q = Quaternion(m12 + m21, t, m23 + m32, m31 - m13);
+			rotation.x = m12 + m21
+			rotation.y = t
+			rotation.z = m23 + m32
+			rotation.w = m31 - m13
 		end
 	else
 		if m11 < -m22 then
 			t = 1 - m11 - m22 + m33;
-			q = Quaternion(m31 + m13, m23 + m32, t, m12 - m21);
+			rotation.x = m31 + m13
+			rotation.y = m23 + m32
+			rotation.z = t
+			rotation.w = m12 - m21
 		else
 			t = 1 + m11 + m22 + m33;
-			q = Quaternion(m23 - m32, m31 - m13, m12 - m21, t);
+			rotation.x = m23 - m32
+			rotation.y = m31 - m13
+			rotation.z = m12 - m21
+			rotation.w = t
 		end
 	end
 
-	q.x = q.x * (0.5 / math.sqrt(t))
-	q.y = q.y * (0.5 / math.sqrt(t))
-	q.z = q.z * (0.5 / math.sqrt(t))
-	q.w = q.w * (0.5 / math.sqrt(t))
+	rotation.x = rotation.x * (0.5 / math.sqrt(t))
+	rotation.y = rotation.y * (0.5 / math.sqrt(t))
+	rotation.z = rotation.z * (0.5 / math.sqrt(t))
+	rotation.w = rotation.w * (0.5 / math.sqrt(t))
 
-	return Vector(m41, m42, m43), q
+	translation.x = m41
+	translation.y = m42
+	translation.z = m43
+
+	return translation, rotation
 end
 
 function Common.projectPointOnLineSegment(a, b, p)
@@ -54,7 +135,7 @@ function Common.projectPointOnLineSegment(a, b, p)
 	local bMinusA = b - a
 	local t = math.clamp(pMinusA:dot(bMinusA) / distanceSquared)
 
-	return a + bMinusA * t
+	return a + bMinusA * t, t
 end
 
 function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
@@ -68,8 +149,24 @@ function Common.transformPointFromPlaneToAxis(point, normal, d, otherAxis)
 	return rotation:transformVector(projectedPoint)
 end
 
+function Common.leftXZ(a, result)
+	result = result or Vector()
+	return result:from(a.z, a.y, -a.x)
+end
+
+function Common.rightXZ(a, result)
+	result = result or Vector()
+	return result:from(-a.z, a.y, a.x)
+end
+
+Common.SIDE_COLLINEAR = 0
+Common.SIDE_LEFT      = -1
+Common.SIDE_RIGHT     = 1
+
 function Common.side(a, b, c, bias)
-	local result = ((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x))
+	local left = (a.z - c.z) * (b.x - c.x)
+	local right = (a.x - c.x) * (b.z - c.z)
+	local result = left - right
 
 	local sign
 	if result > 0 + (bias or 0) then
@@ -83,20 +180,136 @@ function Common.side(a, b, c, bias)
 	return sign, result
 end
 
-function Common.makeTransform(position, rotation, scale, offset)
-	position = position or Vector.ZERO
-	rotation = rotation or Quaternion.IDENTITY
-	scale = scale or Vector.ONE
-	offset = offset or Vector.ZERO
+function Common.makeTranslationTransform(translation, transform)
+	transform = transform or love.math.newTransform()
 
-	local transform = love.math.newTransform()
-	transform:translate(offset:get())
-	transform:translate(position:get())
-	transform:scale(scale:get())
-	transform:applyQuaternion(rotation:get())
-	transform:translate((-offset):get())
+	local m11, m12, m13, m14 = 1, 0, 0, translation.x
+	local m21, m22, m23, m24 = 0, 1, 0, translation.y
+	local m31, m32, m33, m34 = 0, 0, 1, translation.z
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
 
 	return transform
+end
+
+function Common.makeRotationTransform(rotation, transform)
+	transform = transform or love.math.newTransform()
+
+	local m11, m12, m13, m14 = 1, 0, 0, 0
+	local m21, m22, m23, m24 = 0, 1, 0, 0
+	local m31, m32, m33, m34 = 0, 0, 1, 0
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	local qxx = rotation.x * rotation.x
+	local qyy = rotation.y * rotation.y
+	local qzz = rotation.z * rotation.z
+	local qxz = rotation.x * rotation.z
+	local qxy = rotation.x * rotation.y
+	local qyz = rotation.y * rotation.z
+	local qwx = rotation.w * rotation.x
+	local qwy = rotation.w * rotation.y
+	local qwz = rotation.w * rotation.z
+
+	m11 = 1 - 2 * (qyy + qzz)
+	m12 = 2 * (qxy + qwz)
+	m13 = 2 * (qxz - qwy)
+
+	m21 = 2 * (qxy - qwz)
+	m22 = 1 - 2 * (qxx + qzz)
+	m23 = 2 * (qyz + qwx)
+
+	m31 = 2 * (qxz + qwy)
+	m32 = 2 * (qyz - qwx)
+	m33 = 1 - 2 * (qxx + qyy)
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return transform
+end
+
+function Common.makeScaleTransform(scale, transform)
+	transform = transform or love.math.newTransform()
+
+	local m11, m12, m13, m14 = scale.x, 0, 0, 0
+	local m21, m22, m23, m24 = 0, scale.y, 0, 0
+	local m31, m32, m33, m34 = 0, 0, scale.z, 0
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return transform
+end
+
+function Common.makeOrthoTransform(left, right, bottom, top, near, far, transform)
+	transform = transform or love.math.newTransform()
+
+	local m11, m12, m13, m14 = 2 / (right - left), 0, 0, -(right + left) / (right - left)
+	local m21, m22, m23, m24 = 0, 2 / (top - bottom), 0, -(top + bottom) / (top - bottom)
+	local m31, m32, m33, m34 = 0, 0, -2 / (far - near), -(far + near) / (far - near)
+	local m41, m42, m43, m44 = 0, 0, 0, 1
+
+	transform:setMatrix(
+		m11, m12, m13, m14,
+		m21, m22, m23, m24,
+		m31, m32, m33, m34,
+		m41, m42, m43, m44)
+
+	return transform
+end
+
+do
+	local negatedOffset = Vector()
+	local offsetTransform = love.math.newTransform()
+	local translationTransform = love.math.newTransform()
+	local rotationTransform = love.math.newTransform()
+	local scaleTransform = love.math.newTransform()
+
+	function Common.makeTransform(translation, rotation, scale, offset, result)
+		result = result or love.math.newTransform()
+		result:reset()
+
+		if offset then
+			Common.makeTranslationTransform(offset, offsetTransform)
+			result:apply(offsetTransform)
+		end
+
+		if translation then
+			Common.makeTranslationTransform(translation, translationTransform)
+			result:apply(translationTransform)
+		end
+
+		if scale then
+			Common.makeScaleTransform(scale, scaleTransform)
+			result:apply(scaleTransform)
+		end
+
+		if rotation then
+			Common.makeRotationTransform(rotation, rotationTransform)
+			Common.transposeTransform(rotationTransform)
+			result:apply(rotationTransform)
+		end
+
+		if offset then
+			offset:negate(negatedOffset)
+			Common.makeTranslationTransform(negatedOffset, offsetTransform)
+			result:apply(offsetTransform)
+		end
+
+		return result
+	end
 end
 
 return Common

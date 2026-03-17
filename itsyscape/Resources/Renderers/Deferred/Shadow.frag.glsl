@@ -1,4 +1,5 @@
 #include "Resources/Shaders/GBuffer.common.glsl"
+#include "Resources/Shaders/Blend.common.glsl"
 
 #define SCAPE_MAX_CASCADES 8
 
@@ -6,6 +7,8 @@ uniform mat4 scape_InverseViewMatrix;
 uniform mat4 scape_InverseProjectionMatrix;
 
 uniform ArrayImage scape_ShadowMap;
+uniform ArrayImage scape_ShadowColorsMap;
+uniform ArrayImage scape_ShadowColorTexture;
 uniform Image scape_DepthTexture;
 uniform Image scape_NormalTexture;
 uniform Image scape_SpecularOutlineTexture;
@@ -20,7 +23,7 @@ uniform mat4 scape_View;
 #define SCAPE_PCF_BLUR_START -2
 #define SCAPE_PCF_BLUR_END 2
 
-float calculatePCF(int cascadeIndex, vec3 position, float bias)
+float calculatePCF(int cascadeIndex, vec3 position, float bias, ArrayImage shadowMap, out float depth)
 {
 	float layer = float(cascadeIndex);
 
@@ -37,14 +40,16 @@ float calculatePCF(int cascadeIndex, vec3 position, float bias)
 			float s = position.x + x * scape_TexelSize.x;
 			float t = position.y + y * scape_TexelSize.y;
 
-			float target = Texel(scape_ShadowMap, vec3(s, t, layer)).r;
+			float target = Texel(shadowMap, vec3(s, t, layer)).r;
+			depth += target;
 
 			result += step(target, comparison);
 			numSamples += 1.0;
 		}
 	}
 
-	return result /= numSamples;
+	depth /= numSamples;
+	return result / numSamples;
 }
 
 vec4 effect(
@@ -82,6 +87,26 @@ vec4 effect(
 	}
 
 	float sceneAlpha = Texel(scape_SpecularOutlineTexture, textureCoordinate, 1.0).a;
-	float shadow = calculatePCF(cascadeIndex, projectedLightPosition, bias);
-	return vec4(vec3(0.0), scape_ShadowAlpha * shadow * sceneAlpha);
+
+	float shadowDepth = 0.0;
+	float shadow = calculatePCF(cascadeIndex, projectedLightPosition, bias, scape_ShadowMap, shadowDepth);
+
+	float otherShadowDepth = 0.0;
+	float otherShadow = calculatePCF(cascadeIndex, projectedLightPosition, bias, scape_ShadowColorsMap, otherShadowDepth);
+
+	vec4 shadowColor = vec4(vec3(0.0), shadow);
+	vec4 glassColor = Texel(scape_ShadowColorTexture, vec3(projectedLightPosition.xy, float(cascadeIndex)));
+	glassColor.a *= otherShadow * sceneAlpha;
+
+	vec4 finalColor = vec4(0.0);
+	if (projectedLightPosition.z < shadowDepth + bias)
+	{
+		finalColor = alphaBlend(shadowColor, glassColor);
+	}
+	else
+	{
+		finalColor = alphaBlend(glassColor, shadowColor);
+	}
+
+	return vec4(finalColor.rgb, scape_ShadowAlpha * finalColor.a);
 }

@@ -54,32 +54,32 @@ function BasicOcean:getPropState()
 	end
 
 	return {
-		time = ocean.time or 0,
+		time = ocean and ocean.time or 0,
 		x = love.timer.getTime(),
 
 		ships = ships,
 
 		ocean = {
 			hasOcean = ocean ~= nil,
-			y = ocean.depth,
-			offset = ocean.offset,
-			positionTimeScale = ocean.positionTimeScale,
-			textureTimeScale = ocean.textureTimeScale and {
+			y = ocean and ocean.depth,
+			offset = ocean and ocean.offset,
+			positionTimeScale = ocean and ocean.positionTimeScale,
+			textureTimeScale = ocean and ocean.textureTimeScale and {
 				ocean.textureTimeScale.x,
 				ocean.textureTimeScale.y
 			} or {},
-			windSpeedMultiplier = ocean.windSpeedMultiplier or 0.25,
-			windPatternMultiplier = { (ocean.windPatternMultiplier or Vector(2, 4, 8)):get() }
+			windSpeedMultiplier = ocean and ocean.windSpeedMultiplier or 0.25,
+			windPatternMultiplier = { (ocean and ocean.windPatternMultiplier or Vector(2, 4, 8)):get() }
 		},
 
 		whirlpool = {
 			hasWhirlpool = whirlpool ~= nil,
-			center = whirlpool.center and { whirlpool.center.x, whirlpool.center.z },
-			radius = whirlpool.radius,
-			holeRadius = whirlpool.holeRadius,
-			rings = whirlpool.rings,
-			rotationSpeed = whirlpool.rotationSpeed,
-			holeSpeed = whirlpool.holeSpeed,
+			center = whirlpool and whirlpool.center and { whirlpool.center.x, whirlpool.center.z },
+			radius = whirlpool and whirlpool.radius,
+			holeRadius = whirlpool and whirlpool.holeRadius,
+			rings = whirlpool and whirlpool.rings,
+			rotationSpeed = whirlpool and whirlpool.rotationSpeed,
+			holeSpeed = whirlpool and whirlpool.holeSpeed,
 
 		}
 	}

@@ -215,6 +215,7 @@ function TextButtonStyle:draw(widget)
 			local alpha = math.abs(math.sin(love.timer.getTime() * math.pi))
 			love.graphics.setColor(self.color.r, self.color.b, self.color.g, alpha)
 			itsyrealm.graphics.line(2, 0, 2, font:getHeight())
+			love.graphics.setColor(1, 1, 1, 1)
 		end
 	end
 end

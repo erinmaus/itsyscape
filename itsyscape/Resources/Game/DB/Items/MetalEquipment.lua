@@ -11,33 +11,28 @@
 local METALS = {
 	["Bronze"] = {
 		tier = 1,
-		weight = 12.5,
-		hammer = "Hammer"
+		weight = 12.5
 	},
 
 	["Iron"] = {
 		tier = 10,
-		weight = 31,
-		hammer = "Hammer"
+		weight = 31
 	},
 
 	["BlackenedIron"] = {
 		niceName = "Blackened iron",
 		tier = 20,
-		weight = 31,
-		hammer = "Hammer"
+		weight = 31
 	},
 
 	["Mithril"] = {
 		tier = 30,
-		weight = 1.3,
-		hammer = "Hammer"
+		weight = 1.3
 	},
 
 	["Adamant"] = {
 		tier = 40,
 		weight = 25,
-		hammer = "Hammer",
 		trim = {
 			"Gloves",
 			"Boots",
@@ -49,8 +44,7 @@ local METALS = {
 
 	["Itsy"] = {
 		tier = 50,
-		weight = 5,
-		hammer = "Hammer"
+		weight = 5
 	}
 }
 
@@ -165,7 +159,12 @@ for name, metal in spairs(METALS) do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Item(metal.hammer),
+				Resource = ItsyScape.Resource.ArtisanProperty "SturdyAnvil_Smith",
+				Count = 1
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.ArtisanProperty "BasicHammer",
 				Count = 1
 			},
 
@@ -242,7 +241,12 @@ for name, metal in spairs(METALS) do
 			},
 
 			Requirement {
-				Resource = ItsyScape.Resource.Item(metal.hammer),
+				Resource = ItsyScape.Resource.ArtisanProperty "SturdyAnvil_Smith",
+				Count = 1
+			},
+
+			Requirement {
+				Resource = ItsyScape.Resource.ArtisanProperty "BasicHammer",
 				Count = 1
 			},
 

@@ -19,6 +19,7 @@ local Probe = require "ItsyScape.Peep.Probe"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local SailingResourceBehavior = require "ItsyScape.Peep.Behaviors.SailingResourceBehavior"
 local PassableProp = require "Resources.Game.Peeps.Props.PassableProp"
+local PendingStrategyGradeBehavior = require "ItsyScape.Peep.Behaviors.PendingStrategyGradeBehavior"
 
 local BasicCannonball = Class(PassableProp)
 
@@ -30,18 +31,39 @@ function BasicCannonball:new(...)
 	self:addPoke('launch')
 end
 
-function BasicCannonball:onLaunch(peep, cannon, path, duration)
+function BasicCannonball:onLaunch(peep, target, cannon, path, duration)
 	if self.isLaunched then
 		return
 	end
 
 	self.currentPeep = peep
+	self.currentTarget = target or false
 	self.currentCannon = cannon
 	self.currentPath = path
 	self.currentDuration = duration
 	self.currentTime = 0
 	self.isLaunched = true
 	self.currentHits = {}
+end
+
+function BasicCannonball:_tryMove(delta)
+	local delta = self:getDirector():getGameInstance():getDelta()
+	self.currentTime = math.min(self.currentTime + delta, self.currentDuration)
+
+	local percent = self.currentTime / self.currentDuration
+	local currentIndex = math.floor(math.lerp(1, #self.currentPath, math.min(percent, 1)))
+	local nextIndex = math.min(currentIndex + 1, #self.currentPath)
+
+	local currentPath = self.currentPath[currentIndex]
+	local nextPath = self.currentPath[nextIndex]
+
+	local timestep = nextPath.time - currentPath.time
+	local stepDelta = (self.currentTime - currentPath.time) / timestep
+
+	local position = currentPath.position:lerp(nextPath.position, math.clamp(stepDelta))
+	Utility.Peep.setPosition(self, position)
+
+	return currentIndex, nextIndex
 end
 
 function BasicCannonball:_tryHit(currentIndex, nextIndex)
@@ -102,23 +124,57 @@ function BasicCannonball:_tryHit(currentIndex, nextIndex)
 			self.currentHits[hit] = true
 			shouldFireProjectile = true
 
-			local damageRoll = logic:rollDamage(self.currentPeep, ShipWeapon.PURPOSE_TOOL, hit)
-			local damage = damageRoll:roll()
+			hit:addBehavior(PendingStrategyGradeBehavior)
+			if logic:perform(self.currentPeep, hit) then
+				Log.info("%s blasted peep '%s' to smithereens!", self:getName(), hit:getName())
+			end
 
-			local poke = AttackPoke({
-				weaponType = "cannon",
-				damage = damage,
-				aggressor = self.currentPeep
-			})
-
-			hit:poke("receiveAttack", poke, self.currentPeep)
-			Log.info("%s dealt %d damage against peep '%s'!", self:getName(), damage, hit:getName())
+			Utility.Combat.knockback(hit, self, 8)
 		end
 	end
 
 	if shouldFireProjectile then
-		stage:fireProjectile("CannonSplosion", self, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
+		stage:fireProjectile("CannonSplosionHit", self, Utility.Peep.getAbsolutePosition(self), Utility.Peep.getLayer(self))
 	end
+end
+
+function BasicCannonball:_tryExplode()
+	local stage = self:getDirector():getGameInstance():getStage()
+	local position = Utility.Peep.getAbsolutePosition(self)
+
+	local instance = Utility.Peep.getInstance(self)
+	for _, layer in instance:iterateLayers() do
+		local instanceMap = instance:getMap(layer)
+		local meta = instanceMap and instanceMap:getMeta()
+		if not meta.skybox then
+			local mapScript = instance:getMapScriptByLayer(layer)
+			local map = Utility.Peep.getMap(mapScript)
+
+			local transform = Utility.Peep.getMapTransform(mapScript)
+			local relativePosition = position:inverseTransform(transform)
+			if relativePosition.x >= 0 and relativePosition.x <= map:getWidth() * map:getCellSize() and
+			   relativePosition.z >= 0 and relativePosition.z <= map:getHeight() * map:getCellSize()
+			then
+				local y = map:getInterpolatedHeight(relativePosition.x, relativePosition.z)
+				if relativePosition.y <= y then
+					stage:fireProjectile("CannonSplosionHit", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
+
+					Utility.Peep.poof(self)
+					return true
+				end
+			end
+		end
+	end
+
+	local waterPosition = Sailing.Ocean.getPositionRotation(self)
+	if position.y < waterPosition.y - self.MAX_WATER_DEPTH then
+		stage:fireProjectile("CannonballSplash", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
+
+		Utility.Peep.poof(self)
+		return true
+	end
+
+	return false
 end
 
 function BasicCannonball:update(director, game)
@@ -128,50 +184,15 @@ function BasicCannonball:update(director, game)
 		return
 	end
 
-	local delta = game:getDelta()
-	self.currentTime = math.min(self.currentTime + delta, self.currentDuration)
-
-	local percent = self.currentTime / self.currentDuration
-	local currentIndex = math.floor(math.lerp(1, #self.currentPath, math.min(percent, 1)))
-	local nextIndex = math.min(currentIndex + 1, #self.currentPath)
-
-	local currentPath = self.currentPath[currentIndex]
-	local nextPath = self.currentPath[nextIndex]
-
-	local timestep = nextPath.time - currentPath.time
-	local stepDelta = (self.currentTime - currentPath.time) / timestep
-
-	local position = currentPath.position:lerp(nextPath.position, math.clamp(stepDelta))
-	Utility.Peep.setPosition(self, position)
-
-	self:_tryHit(currentIndex, nextIndex)
-
-	local instance = Utility.Peep.getInstance(self)
-	for _, layer in instance:iterateLayers() do
-		local mapScript = instance:getMapScriptByLayer(layer)
-		local map = Utility.Peep.getMap(mapScript)
-
-		local transform = Utility.Peep.getMapTransform(mapScript)
-		local relativePosition = position:inverseTransform(transform)
-		if relativePosition.x >= 0 and relativePosition.x <= map:getWidth() * map:getCellSize() and
-		   relativePosition.z >= 0 and relativePosition.z <= map:getHeight() * map:getCellSize()
-		then
-			local y = map:getInterpolatedHeight(relativePosition.x, relativePosition.z)
-			if relativePosition.y <= y then
-				local stage = game:getStage()
-				stage:fireProjectile("CannonSplosion", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
-				Utility.Peep.poof(self)
-				return
-			end
-		end
+	local currentIndex, nextIndex = self:_tryMove(delta)
+	if currentIndex and nextIndex then
+		self:_tryHit(currentIndex, nextIndex)
 	end
 
-	local waterPosition = Sailing.Ocean.getPositionRotation(self)
-	if position.y < waterPosition.y - self.MAX_WATER_DEPTH then
-		local stage = game:getStage()
-		stage:fireProjectile("CannonballSplash", Vector.ZERO, Utility.Peep.getAbsolutePosition(self) + Vector(0, 2, 0), Utility.Peep.getLayer(self))
-		Utility.Peep.poof(self)
-		return
+	if self:_tryExplode() then
+		if self.currentTarget and not self.currentHits[self.currentTarget] then
+			Utility.Combat.dodgeSuccess(self.currentTarget, self.currentPeep)
+		end
 	end
 end
 

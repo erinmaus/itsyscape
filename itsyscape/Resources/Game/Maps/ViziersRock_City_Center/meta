@@ -1,18 +1,47 @@
 {
 	{
-		wallHack =
+		transform =
 		{
-			map = false,
-			enabled = true,
+			origin =
+			{
+				0,
+				0,
+				0,
+			},
+			rotation =
+			{
+				0,
+				0,
+				0,
+				1,
+			},
+			translation =
+			{
+				0,
+				0,
+				0,
+			},
+			scale =
+			{
+				1,
+				1,
+				1,
+			},
 		},
 		tileSetID = "ViziersRock2",
+		wallHack =
+		{
+			enabled = true,
+			map = false,
+		},
 	},
 	{
+		tileSetID = "ViziersRock2",
 		wallHack =
 		{
-			map = true,
 			enabled = true,
+			map = true,
+			global = true
 		},
-		tileSetID = "ViziersRock2",
 	},
 }

@@ -17,10 +17,12 @@ local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
+local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
+local NPooledBuffer = require "nbunny.pooledbuffer"
 
 -- Represents an Actor that is simulated locally.
 local LocalActor = Class(Actor)
@@ -37,6 +39,10 @@ function LocalActor:new(game, peepType, peepID)
 	self.animations = {}
 	self.body = false
 	self.resource = false
+
+	self.resourceID = false
+	self.mapObjectID = false
+	self.actions = {}
 end
 
 function LocalActor:getPeep()
@@ -78,6 +84,8 @@ function LocalActor:spawn(id, group, resource, ...)
 	self.id = id
 	self.oldID = nil
 	self.resource = resource or false
+
+	self[NPooledBuffer.ID] = self.id
 end
 
 function LocalActor:depart()
@@ -123,6 +131,10 @@ function LocalActor:getName()
 end
 
 function LocalActor:getDescription()
+	if not (self.peep and self.peep:getDirector()) then
+		return string.format("It's %s, as if you didn't know.", self:getName())
+	end
+
 	local resource = Utility.Peep.getResource(self.peep)
 	if not self.descriptionResource or resource.id.value ~= self.descriptionResource.id.value then
 		self.description = Utility.Peep.getDescription(self.peep)
@@ -173,13 +185,14 @@ function LocalActor:getDirection()
 	end
 end
 
-function LocalActor:teleport(position)
-	if position and self.peep then
+function LocalActor:teleport(position, layer)
+	if self.peep then
 		local positionBehavior = self.peep:getBehavior(PositionBehavior)
 		if positionBehavior then
-			positionBehavior.position = position
+			positionBehavior.position = position or positionBehavior.position
+			positionBehavior.layer = layer or positionBehavior.layer
 
-			self.onTeleport(self, position)
+			self.onTeleport(self, positionBehavior.position, positionBehavior.layer)
 		end
 	end
 end
@@ -220,6 +233,15 @@ function LocalActor:getScale()
 	else
 		return Vector.ONE
 	end
+end
+
+function LocalActor:getTarget()
+	if not self.peep then
+		return nil
+	end
+
+	local target = self.peep:getBehavior(CombatTargetBehavior)
+	return target and target.actor or nil
 end
 
 -- Gets the current hitpoints of the Actor.
@@ -295,32 +317,49 @@ function LocalActor:getResource()
 	return Utility.Peep.getResource(self.peep)
 end
 
+function LocalActor:getPeepResourceID()
+	local resource = self:getResource()
+	return resource and resource.name or false
+end
+
 function LocalActor:getActions(scope)
 	local status = self.peep:getBehavior(CombatStatusBehavior)
 	if status and status.dead then
 		return {}
 	end
 
-	local result = {}
-	if self:getResource() then
-		local actions = Utility.getActions(self.game, self:getResource(), scope or 'world')
-		for i = 1, #actions do
-			result[i] = actions[i]
+	local mapObject = Utility.Peep.getMapObject(self.peep)
+	local resource = Utility.Peep.getResource(self.peep)
+
+	local mapObjectID = (mapObject and mapObject.id.value or false)
+	local resourceID = (resource and resource.id.value or false)
+
+	if mapObjectID == self.mapObjectID and resourceID == self.resourceID then
+		return self.actions
+	end
+
+	self.mapObjectID = mapObjectID
+	self.resourceID = resourceID
+
+	self.actions = {}
+	if resource then
+		local actions = Utility.getActions(self.game, resource, scope or 'world')
+		for _, action in ipairs(actions) do
+			table.insert(self.actions, action)
 		end
 
 		if self.peep then
-			local mapObject = Utility.Peep.getMapObject(self.peep)
 			if mapObject then
-				local proxyActions = Utility.getActions(self.game, mapObject, scope or 'world')
+				local otherActions = Utility.getActions(self.game, mapObject, scope or 'world')
 
-				for i = 1, #proxyActions do
-					table.insert(result, proxyActions[i])
+				for _, action in ipairs(otherActions) do
+					table.insert(self.actions, action)
 				end
 			end
 		end
 	end
 
-	return result
+	return self.actions
 end
 
 function LocalActor:poke(action, scope, player)

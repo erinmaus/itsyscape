@@ -8,6 +8,7 @@ uniform vec3 scape_WallHackUp;
 // x, y == left, right, z, w == top, bottom
 uniform vec4 scape_WallHackWindow;
 uniform float scape_WallHackNear;
+uniform float scape_WallHackFar;
 
 vec3 getWallHackClampedNormal(vec3 direction)
 {
@@ -19,6 +20,15 @@ vec4 getWallHackPlane(vec3 normal, vec3 point)
 	float d = -dot(point, normal);
 	return vec4(normal, d);
 }
+
+#ifdef SCAPE_SHADOW_PASS
+
+float getWallHackAlpha(vec3 position)
+{
+	return 1.0;
+}
+
+#else
 
 float getWallHackAlpha(vec3 position)
 {
@@ -37,12 +47,12 @@ float getWallHackAlpha(vec3 position)
 	vec3 leftDirection = normalize(cross(eyeToTargetDirection, up));
 	vec3 topDirection = -up;
 #endif
-	vec4 farPlane = getWallHackPlane(eyeToTargetDirection, scape_CameraTarget);
+	vec4 farPlane = getWallHackPlane(-eyeToTargetDirection, scape_CameraTarget + eyeToTargetDirection * vec3(scape_WallHackFar));
 	vec4 leftPlane = getWallHackPlane(leftDirection, scape_CameraTarget - leftDirection * vec3(scape_WallHackWindow.x));
 	vec4 rightPlane = getWallHackPlane(-leftDirection, scape_CameraTarget + leftDirection * vec3(scape_WallHackWindow.y));
 	vec4 topPlane = getWallHackPlane(topDirection, scape_CameraTarget - topDirection * vec3(scape_WallHackWindow.z));
 	vec4 bottomPlane = getWallHackPlane(-topDirection, scape_CameraTarget + topDirection * vec3(scape_WallHackWindow.w));
-	vec4 nearPlane = getWallHackPlane(-eyeToTargetDirection, scape_CameraTarget + eyeToTargetDirection * vec3(scape_WallHackNear));
+	vec4 nearPlane = getWallHackPlane(eyeToTargetDirection, scape_CameraTarget + eyeToTargetDirection * vec3(scape_WallHackNear));
 
 	vec4 p = vec4(position, 1.0);
 	float d1 = -dot(farPlane, p);
@@ -67,3 +77,5 @@ float getWallHackAlpha(vec3 position)
 
 	return alpha;
 }
+
+#endif

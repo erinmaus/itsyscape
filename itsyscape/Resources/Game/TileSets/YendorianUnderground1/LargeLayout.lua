@@ -21,8 +21,6 @@ return {
 		OUTLINE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Moss%d@Outline.png",
 		NUM_SAMPLES = 3,
 
-		DIRT_THRESHOLD = 0.5,
-
 		COLORS = {
 			Color.fromHexString("7d8776"),
 			Color.fromHexString("5d6954"),
@@ -33,7 +31,7 @@ return {
 	},
 
 	sand = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/YendorianUnderground1/Sand%d@Specular.png",
@@ -42,10 +40,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,
@@ -54,26 +52,26 @@ return {
 		},
 
 		COLORS = {
-			Color.fromHexString("d3b794")
+			Color.fromHexString("d6aa83")
 		},
 
-		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("d3b794"),
+		DIFFUSE_BACKGROUND_COLOR = Color.fromHexString("a38265"),
 	},
 
 	mud = Block.Bind(Grass) {
-		SATURATION = 4,
+		SATURATION = 8,
 
 		DIFFUSE_SAMPLE_FILENAME = "Resources/Game/TileSets/ViziersRock2/Sand%d.png",
 		SPECULAR_SAMPLE_FILENAME = "Resources/Game/TileSets/ViziersRock2/Sand%d@Specular.png",
 		OUTLINE_SAMPLE_FILENAME = "",
 		NUM_SAMPLES = 3,
 
-		DIRT_THRESHOLD = 0.5,
+		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,
@@ -99,10 +97,10 @@ return {
 
 		DIRT_THRESHOLD = 0.5,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1,
-		MAX_SCALE = 1.2,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,
@@ -127,10 +125,10 @@ return {
 
 		DIRT_THRESHOLD = 0,
 
-		MIN_OFFSET = -8,
-		MAX_OFFSET = 8,
-		MIN_SCALE = 1.2,
-		MAX_SCALE = 1.4,
+		MIN_OFFSET = -16,
+		MAX_OFFSET = 16,
+		MIN_SCALE = 1.5,
+		MAX_SCALE = 2,
 
 		ROTATION_NOISE = Noise {
 			scale = 13,

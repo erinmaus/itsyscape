@@ -11,18 +11,35 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local ProxyXWeapon = require "ItsyScape.Game.ProxyXWeapon"
 local Utility = require "ItsyScape.Game.Utility"
+local SpecialAttackBehavior = require "ItsyScape.Peep.Behaviors.SpecialAttackBehavior"
 
 -- Less accurate shot (20% lower attack skill), but deals damage from 200% to 400%.
--- An additional 100% against undead. 
+-- An additional 100% against undead.
+-- Always hits following the foe using a special attack.
 local Decapitate = Class(ProxyXWeapon)
-Decapitate.ACCURACY_DEBUFF = 0.5
+Decapitate.ACCURACY_DEBUFF = 0.8
 Decapitate.UNDEAD_DAMAGE_MODIFIER = 1
 Decapitate.MIN_DAMAGE_MULTIPLIER  = 2
 Decapitate.MAX_DAMAGE_MULTIPLIER  = 4
 
 function Decapitate:previewAttackRoll(roll)
 	ProxyXWeapon.previewAttackRoll(self, roll)
-	roll:setAttackLevel(math.floor(roll:getAttackLevel() * Decapitate.ACCURACY_DEBUFF + 0.5))
+
+	local target = roll:getTarget()
+	if target and target:hasBehavior(SpecialAttackBehavior) then
+		roll:setAlwaysHits(true)
+	else
+		roll:setAttackLevel(math.floor(roll:getAttackLevel() * Decapitate.ACCURACY_DEBUFF + 0.5))
+	end
+end
+
+function Decapitate:onAttackHit(peep, target, ...)
+	ProxyXWeapon.onAttackHit(self, peep, target, ...)
+
+	local stage = target:getDirector():getGameInstance():getStage()
+	stage:fireProjectile("Power_Decapitate", peep, target)
+
+	Utility.Combat.tryPunish(target, peep)
 end
 
 function Decapitate:previewDamageRoll(roll)
@@ -49,6 +66,11 @@ function Decapitate:previewDamageRoll(roll)
 		Log.info("Target '%s' is undead, dealing extra damage.", roll:getTarget():getName())
 	end
 
+	local target = roll:getTarget()
+	if target and target:hasBehavior(SpecialAttackBehavior) then
+		minDamageMultiplier = maxDamageMultiplier
+	end
+
 	Log.info(
 		"Damage multiplier against target '%s' is %d%% - %d%%.",
 		roll:getTarget():getName(),
@@ -57,10 +79,6 @@ function Decapitate:previewDamageRoll(roll)
 
 	roll:setMinHit(roll:getMinHit() * minDamageMultiplier)
 	roll:setMaxHit(roll:getMaxHit() * maxDamageMultiplier)
-end
-
-function Decapitate:getProjectile()
-	return "Power_Decapitate"
 end
 
 return Decapitate

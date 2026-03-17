@@ -38,21 +38,24 @@ function MetaInstance:instantiate(brochure)
 	if not self.instance then
 		self.instance = Mapp.Record(self.definition)
 		for key, value in pairs(self.values) do
-			local v, l
+			local v, l, s
 			if Class.isType(value, Action) then
 				v = value:instantiate(brochure)
+				s = { id = { value = v.id.value } }
 				l = v.id.value
 			elseif Class.isType(value, Resource) then
 				v = value:instantiate(brochure)
+				s = { id = { value = v.id.value }, name = v.name, isSingleton = v.isSingleton }
 				l = v.id.value
 			else
 				v = value
+				s = value
 				l = value
 			end
 
 			self.instance:set(key, v)
 
-			instance[key] = v
+			instance[key] = s
 			instance.__prompt[key] = l
 		end
 
@@ -87,6 +90,12 @@ function MetaInstance:poke(t)
 		if type(key) == 'string' then
 			self.values[key] = value
 		end
+	end
+end
+
+function MetaInstance:clean()
+	if self.instance then
+		self.instance = true
 	end
 end
 

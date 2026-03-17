@@ -15,16 +15,100 @@
 	},
 
 	"controls": {
+		"openRibbon": {
+			"$type": "ui",
+			"gamepad": ["ui", "gamepadOpenRibbon"],
+			"mouse/keyboard": ["ui", "keyboardOpenRibbon"]
+		},
+
+		"openCombatRing": {
+			"$type": "ui",
+			"gamepad": ["ui", "gamepadOpenCombatRing"],
+			"mouse/keyboard": ["ui", "keyboardOpenCombatRing"]
+		},
+
 		"quickHeal": {
 			"$type": "ui",
 			"gamepad": ["ui", "gamepadQuickHeal"],
 			"mouse/keyboard": ["ui", "keyboardQuickHeal"]
 		},
 
+		"quickAttack": {
+			"$type": "ui",
+			"gamepad": ["ui", "gamepadQuickAttack"],
+			"mouse/keyboard": ["ui", "keyboardQuickAttack"]
+		},
+
 		"back": {
 			"$type": "ui",
 			"gamepad": ["ui", "gamepadBack"],
 			"mouse/keyboard": ["ui", "keyboardBack"]
+		},
+
+		"poke": {
+			"$type": "world",
+			"gamepad": ["ui", "gamepadPrimaryAction"],
+			"mouse/keyboard": ["world", "keyboardPoke"]
+		},
+
+		"toggleTargetCamera": {
+			"$type": "world",
+			"gamepad": ["world", "gamepadToggleTargetCamera"],
+			"mouse/keyboard": ["world", "keyboardToggleTargetCamera"]
+		},
+
+		"quickDodge": {
+			"$type": "world",
+			"gamepad": ["world", "gamepadQuickDodge"],
+			"mouse/keyboard": ["world", "keyboardQuickDodge"]
+		},
+
+		"cycleTarget": {
+			"$type": "world",
+			"gamepad": ["world", "gamepadCycleTarget"],
+			"mouse/keyboard": []
+		},
+
+		"probeTarget": {
+			"$type": "world",
+			"gamepad": ["world", "gamepadProbe"],
+			"mouse/keyboard": []
+		},
+
+		"pokeTarget": {
+			"$type": "world",
+			"gamepad": ["world", "gamepadAction"],
+			"mouse/keyboard": []
+		},
+
+		"debug1": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug1"]
+		},
+
+		"debug2": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug2"]
+		},
+
+		"debug3": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug3"]
+		},
+
+		"debug4": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug4"]
+		},
+
+		"debug5": {
+			"$type": "world",
+			"gamepad": [],
+			"mouse/keyboard": ["debug", "debug5"]
 		}
 	},
 
@@ -40,7 +124,6 @@
 
 			"gamepadOpenCombatRing": "rightshoulder",
 			"gamepadOpenRibbon": "start",
-			"gamepadToggleTargetCamera": "leftshoulder",
 			"gamepadNext": "rightshoulder",
 			"gamepadPrevious": "leftshoulder",
 			"gamepadPrimaryAction": "a",
@@ -48,9 +131,13 @@
 			"gamepadTertiaryAction": "x",
 			"gamepadBack": "b",
 			"gamepadQuickHeal": "dpup",
+			"gamepadQuickAttack": "dpdown",
 
 			"keyboardQuickHeal": ["h"],
-			"keyboardBack": ["escape"]
+			"keyboardBack": ["escape"],
+			"keyboardOpenRibbon": ["escape"],
+			"keyboardOpenCombatRing": ["tab"],
+			"keyboardQuickAttack": ["e"],
 		},
 
 		"world": {
@@ -64,6 +151,33 @@
 			"gamepadProbe": "y",
 			"gamepadAction": "a",
 			"gamepadCycleTarget": "x",
+
+			"minFlickIntervalMS": 50,
+			"maxFlickIntervalMS": 250,
+			"flickInputStallIntervalMS": 250,
+
+			"shimmerActiveCycleDurationMS": 2000,
+
+			"keyboardPoke": ["space"],
+
+			"gamepadToggleTargetCamera": "triggerleft",
+			"keyboardToggleTargetCamera": ["lshift", "tab"],
+
+			"keyboardQuickDodge": ["q"],
+			"gamepadQuickDodge": "triggerright",
+
+			"keyboardMoveLeft": "a",
+			"keyboardMoveRight": "d",
+			"keyboardMoveUp": "w",
+			"keyboardMoveDown": "s"
+		},
+
+		"debug": {
+			"debug1": ["lalt", "1"],
+			"debug2": ["lalt", "2"],
+			"debug3": ["lalt", "3"],
+			"debug4": ["lalt", "4"],
+			"debug5": ["lalt", "5"],
 		}
 	}
 }

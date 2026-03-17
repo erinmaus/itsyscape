@@ -44,8 +44,8 @@ function Sleep:perform(state, player, target)
 	end
 
 	if target and self:canPerform(state) and self:canTransfer(state) then
-		local i, j, k = Utility.Peep.getTileAnchor(target)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2.5, { asCloseAsPossible = true })
+		local position, layer = Utility.Peep.getTileAnchor(target, player)
+		local walk = Utility.Peep.getWalk(player, position, layer, 2.5, { asCloseAsPossible = true })
 
 		if walk then
 			local save = CallbackCommand(self.save, self, player)

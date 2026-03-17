@@ -124,6 +124,7 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
+	graphics->setColorMask(disabled_mask);
 	for (auto& scene_node: particle_scene_nodes)
 	{
 		auto shader = get_node_shader(L, *scene_node);
@@ -133,19 +134,24 @@ void nbunny::ParticleOutlineRendererPass::draw_nodes(lua_State* L, float delta)
 		}
 		renderer->set_current_shader(shader);
 
-		graphics->setColorMask(disabled_mask);
-        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());	
-		renderer->draw_node(L, *scene_node, delta);
-
-		graphics->setColorMask(enabled_mask);
-
-		auto color = scene_node->get_material().get_color();
-		graphics->setColor(love::Colorf(color.r, color.g, color.b, color.a));
-
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
 		renderer->draw_node(L, *scene_node, delta);
 	}
 
 	graphics->setColorMask(enabled_mask);
+	for (auto& scene_node: particle_scene_nodes)
+	{
+		auto shader = get_node_shader(L, *scene_node);
+		if (!shader)
+		{
+			continue;
+		}
+		renderer->set_current_shader(shader);
+
+        graphics->setDepthMode(love::graphics::COMPARE_LEQUAL, !scene_node->get_material().get_is_z_write_disabled());
+		renderer->draw_node(L, *scene_node, delta);
+	}
+
 	graphics->setColor(love::Colorf(1.0f, 1.0f, 1.0f, 1.0f));
 
 	// We want to ensure all draws have been submitted before restoring

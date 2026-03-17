@@ -30,7 +30,7 @@ EquipmentStatsPanel.DEFAULT_MAX_TITLE_ROWS = 2
 EquipmentStatsPanel.DEFAULT_PADDING = 4
 
 EquipmentStatsPanel.DEFAULT_WIDTH = 264
-EquipmentStatsPanel.DEFAULT_HEIGHT = EquipmentStatsPanel.DEFAULT_STAT_ROW_HEIGHT * EquipmentStatsPanel.DEFAULT_MAX_STAT_ROWS + EquipmentStatsPanel.DEFAULT_MAX_TITLE_ROWS * EquipmentStatsPanel.DEFAULT_TITLE_ROW_HEIGHT
+EquipmentStatsPanel.DEFAULT_HEIGHT = 244
 
 EquipmentStatsPanel.ACCURACY = {
 	{ "AccuracyStab", "Stab" },

@@ -264,8 +264,14 @@ function ProjectedOldOneGlyph.Polygon:draw(offset)
 		local c2 = y3 - y1
 		local t = (b1 * c2 - b2 * c1) / (a2 * b1 - a1 * b2)
 
-		local x = x1 + t * a1
-		local y = y1 + t * a2
+		local x, y
+		if t > -1.5 and t < 1.5 then
+			x = x1 + t * a1
+			y = y1 + t * a2
+		else
+			x = math.lerp(x1, x2, 0.5)
+			y = math.lerp(y1, y2, 0.5)
+		end
 
 		table.insert(self.offsetPoints, x)
 		table.insert(self.offsetPoints, y)

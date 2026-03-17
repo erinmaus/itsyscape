@@ -250,6 +250,7 @@ const nbunny::BaseType& nbunny::DecorationSceneNode::get_type() const
 nbunny::DecorationSceneNode::DecorationSceneNode(int reference) :
 	SceneNode(reference),
 	mesh_attribs({
+		{ "FeatureIndex", love::graphics::vertex::DATA_FLOAT, 1 },
 		{ "FeaturePosition", love::graphics::vertex::DATA_FLOAT, 3 },
 		{ "FeatureRotation", love::graphics::vertex::DATA_FLOAT, 4 },
 		{ "FeatureScale", love::graphics::vertex::DATA_FLOAT, 3 },
@@ -323,7 +324,7 @@ static bool get_attrib(
 
 void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, StaticMeshInstance& static_mesh)
 {
-	std::vector<Vertex> buffer;
+	buffer.clear();
 
 	glm::vec3 max(-INFINITY);
 	glm::vec3 min(INFINITY);
@@ -373,6 +374,7 @@ void nbunny::DecorationSceneNode::from_decoration(Decoration& decoration, Static
 			auto input_vertex = data + static_mesh_group->getVertexStride() * vertex_index;
 			auto& output_vertex = buffer.at(start_index + vertex_index);
 
+			output_vertex.feature_index = (float)feature_index;
 			output_vertex.feature_position = feature->position;
 			output_vertex.feature_rotation = feature->rotation;
 			output_vertex.feature_scale = feature->scale;
@@ -537,6 +539,50 @@ void nbunny::DecorationSceneNode::lerp(
 	result.mesh->flush();
 }
 
+void nbunny::DecorationSceneNode::update_bounds()
+{
+	if (!mesh)
+	{
+		return;
+	}
+
+	glm::vec3 max(-INFINITY);
+	glm::vec3 min(INFINITY);
+
+	for (auto& vertex: buffer)
+	{
+		min = glm::min(min, vertex.position);
+		max = glm::max(max, vertex.position);
+	}
+
+	set_min(min);
+	set_max(max);
+}
+
+void nbunny::DecorationSceneNode::update_bounds(const MapCurve& map_curve)
+{
+	if (!mesh)
+	{
+		return;
+	}
+
+	glm::vec3 max(-INFINITY);
+	glm::vec3 min(INFINITY);
+
+	glm::quat q;
+	for (auto& vertex: buffer)
+	{
+		auto position = vertex.position;
+		map_curve.transform(position, q);
+
+		min = glm::min(min, position);
+		max = glm::max(max, position);
+	}
+
+	set_min(min);
+	set_max(max);
+}
+
 void nbunny::DecorationSceneNode::draw(Renderer& renderer, float delta)
 {
 	if (!mesh)
@@ -627,6 +673,23 @@ static int nbunny_decoration_scene_node_lerp(lua_State* L)
 	return 0;
 }
 
+static int nbunny_decoration_scene_node_update_bounds(lua_State* L)
+{
+	auto self = nbunny::lua::get<nbunny::DecorationSceneNode*>(L, 1);
+
+	if (lua_isnoneornil(L, 2))
+	{
+		self->update_bounds();
+	}
+	else
+	{
+		auto map_curve = nbunny::lua::get<nbunny::MapCurve*>(L, 2);
+		self->update_bounds(*map_curve);
+	}
+
+	return 0;
+}
+
 extern "C"
 NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_decorationscenenode(lua_State* L)
 {
@@ -635,6 +698,7 @@ NBUNNY_EXPORT int luaopen_nbunny_optimaus_scenenode_decorationscenenode(lua_Stat
 		{ "fromGroup", &nbunny_decoration_scene_node_from_group },
 		{ "fromLerp", &nbunny_decoration_scene_node_from_lerp },
 		{ "canLerp", &nbunny_decoration_scene_node_can_lerp },
+		{ "updateBounds", &nbunny_decoration_scene_node_update_bounds },
 		{ "lerp", &nbunny_decoration_scene_node_lerp },
 		{ nullptr, nullptr }
 	};

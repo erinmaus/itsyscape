@@ -88,4 +88,10 @@ function Action:instantiate(brochure)
 	return self.instance
 end
 
+function Action:clean()
+	if self.instance then
+		self.instance = true
+	end
+end
+
 return Action

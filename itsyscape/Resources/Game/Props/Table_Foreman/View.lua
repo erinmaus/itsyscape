@@ -29,6 +29,7 @@ Table.DESCRIPTION = {
 				scape_TriplanarScale = { "float", -0.5 },
 				scape_TriplanarExponent = { "float", 0 },
 				scape_TriplanarOffset = { "float", 0 },
+				scape_SpecularWeight = { "float", 1 }
 			}
 		}
 	},

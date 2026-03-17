@@ -21,7 +21,12 @@ ProxyXWeapon.PATCH = {
 	"onAttackHit",
 	"onAttackMiss",
 	"getDelay",
-	"dealtDamage"
+	"dealtDamage",
+	"pokeRollAttack",
+	"pokeRollDamage",
+	"pokeHeal",
+	"pokeReceiveAttack",
+	"pokeInitiateAttack",
 }
 
 function ProxyXWeapon:new(id, manager, logic)
@@ -106,6 +111,62 @@ function ProxyXWeapon:perform(peep, target)
 	end
 end
 
+function ProxyXWeapon:applyDodgeCooldown(...)
+	if self.logic then
+		return self.logic:applyDodgeCooldown(...)
+	else
+		return Weapon.applyDodgeCooldown(self, ...)
+	end
+end
+
+function ProxyXWeapon:getDodgeRange(...)
+	if self.logic then
+		return self.logic:getDodgeRange(...)
+	else
+		return Weapon.getDodgeRange(self, ...)
+	end
+end
+
+function ProxyXWeapon:getDodgeCooldown(...)
+	if self.logic then
+		return self.logic:getDodgeCooldown(...)
+	else
+		return Weapon.getDodgeCooldown(self, ...)
+	end
+end
+
+function ProxyXWeapon:adjustDodgeDirection(...)
+	if self.logic then
+		return self.logic:adjustDodgeDirection(...)
+	else
+		return Weapon.adjustDodgeDirection(self, ...)
+	end
+end
+
+function ProxyXWeapon:getDodgeBehavior(...)
+	if self.logic then
+		return self.logic:getDodgeBehavior(...)
+	else
+		return Weapon.getDodgeBehavior(self, ...)
+	end
+end
+
+function ProxyXWeapon:performDodge(...)
+	if self.logic then
+		return self.logic:performDodge(...)
+	else
+		return Weapon.performDodge(self, ...)
+	end
+end
+
+function ProxyXWeapon:dodge(...)
+	if self.logic then
+		return self.logic:dodge(...)
+	else
+		return Weapon.dodge(self, ...)
+	end
+end
+
 function ProxyXWeapon:onAttackHit(...)
 	if self.patches.onAttackHit then
 		return self.patches.onAttackHit(self.logic, ...)
@@ -183,6 +244,46 @@ function ProxyXWeapon:dealtDamage(...)
 		return self.patches.dealtDamage(self.logic, ...)
 	else
 		return Weapon.dealtDamage(self, ...)
+	end
+end
+
+function ProxyXWeapon:pokeRollAttack(...)
+	if self.patches.pokeRollAttack then
+		return self.patches.pokeRollAttack(self.logic, ...)
+	else
+		return Weapon.pokeRollAttack(self, ...)
+	end
+end
+
+function ProxyXWeapon:pokeRollDamage(...)
+	if self.patches.pokeRollDamage then
+		return self.patches.pokeRollDamage(self.logic, ...)
+	else
+		return Weapon.pokeRollDamage(self, ...)
+	end
+end
+
+function ProxyXWeapon:pokeHeal(...)
+	if self.patches.pokeHeal then
+		return self.patches.pokeHeal(self.logic, ...)
+	else
+		return Weapon.pokeHeal(self, ...)
+	end
+end
+
+function ProxyXWeapon:pokeReceiveAttack(...)
+	if self.patches.pokeReceiveAttack then
+		return self.patches.pokeReceiveAttack(self.logic, ...)
+	else
+		return Weapon.pokeReceiveAttack(self, ...)
+	end
+end
+
+function ProxyXWeapon:pokeInitiateAttack(...)
+	if self.patches.pokeInitiateAttack then
+		return self.patches.pokeInitiateAttack(self.logic, ...)
+	else
+		return Weapon.pokeInitiateAttack(self, ...)
 	end
 end
 

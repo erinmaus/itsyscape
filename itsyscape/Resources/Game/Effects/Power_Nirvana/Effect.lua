@@ -9,15 +9,18 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Curve = require "ItsyScape.Game.Curve"
+local ZealPoke = require "ItsyScape.Game.ZealPoke"
 local InfiniteInventoryStateProvider = require "ItsyScape.Game.InfiniteInventoryStateProvider"
 local Effect = require "ItsyScape.Peep.Effect"
+local ZealEffect = require "ItsyScape.Peep.Effects.ZealEffect"
 
 -- Provides infinite runes.
-local Nirvana = Class(Effect)
+local Nirvana = Class(ZealEffect)
 Nirvana.DURATION = 30
+Nirvana.EXTRA_ZEAL = 0.25
 
 function Nirvana:new(activator)
-	Effect.new(self)
+	ZealEffect.new(self)
 
 	local level = activator:getState():count(
 		"Skill",
@@ -25,8 +28,17 @@ function Nirvana:new(activator)
 		{ ['skill-as-level'] = true })
 end
 
+function Nirvana:modifyZealEvent(zealPoke, peep)
+	if zealPoke:getType() == ZealPoke.TYPE_CAST_SPELL then
+		print("yooooo----")
+		zealPoke:forcePositive()
+		zealPoke:addMultiplier(self.EXTRA_ZEAL)
+		print("what----", zealPoke:getEffectiveZeal())
+	end
+end
+
 function Nirvana:enchant(peep)
-	Effect.enchant(self, peep)
+	ZealEffect.enchant(self, peep)
 
 	self.runes = InfiniteInventoryStateProvider(peep)
 	self.runes:add("AirRune")
@@ -40,7 +52,7 @@ end
 function Nirvana:sizzle()
 	self:getPeep():getState():removeProvider("Item", self.runes)
 
-	Effect.sizzle(self)
+	ZealEffect.sizzle(self)
 end
 
 function Nirvana:getBuffType()

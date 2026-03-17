@@ -23,8 +23,8 @@ function Teleport:perform(state, player, target)
 		return false
 	end
 
-	local i, j, k = Utility.Peep.getTileAnchor(target)
-	local walk = Utility.Peep.getWalk(player, i, j, k, 1.5, { asCloseAsPossible = false })
+	local position, layer = Utility.Peep.getTileAnchor(target, player)
+	local walk = Utility.Peep.getWalk(player, position, layer, 1.5, { asCloseAsPossible = false })
 	if walk then
 		self:transfer(state, player)
 		local face = CallbackCommand(Utility.Peep.face, player, target)

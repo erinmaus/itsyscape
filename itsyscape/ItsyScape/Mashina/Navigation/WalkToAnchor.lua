@@ -24,6 +24,11 @@ function WalkToPeep:update(mashina, state, executor)
 	end
 
 	if not self.walkID then
+		if not Utility.Map.hasAnchor(mashina:getDirector():getGameInstance(), Utility.Peep.getMapResource(mashina), anchor) then
+			Log.info("Anchor '%s' doesn't exist; peep '%s' cannot walk to it.", anchor, mashina:getName())
+			return B.Status.Failure
+		end
+
 		local x, _, z = Utility.Map.getAnchorPosition(
 			mashina:getDirector():getGameInstance(),
 			Utility.Peep.getMapResource(mashina),
@@ -38,6 +43,7 @@ function WalkToPeep:update(mashina, state, executor)
 		})
 
 		self.walkID = id
+		self.walkStatus = nil
 		callback:register(function(status)
 			self.walkStatus = status
 		end)

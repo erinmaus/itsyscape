@@ -11,6 +11,7 @@ local Class = require "ItsyScape.Common.Class"
 local Vector = require "ItsyScape.Common.Math.Vector"
 local Curve = require "ItsyScape.Game.Curve"
 local CacheRef = require "ItsyScape.Game.CacheRef"
+local Palette = require "ItsyScape.Game.Palette"
 local Utility = require "ItsyScape.Game.Utility"
 local Mapp = require "ItsyScape.GameDB.Mapp"
 local AttackCommand = require "ItsyScape.Game.AttackCommand"
@@ -26,6 +27,7 @@ local AttackPoke = require "ItsyScape.Peep.AttackPoke"
 local ActorReferenceBehavior = require "ItsyScape.Peep.Behaviors.ActorReferenceBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local EquipmentBehavior = require "ItsyScape.Peep.Behaviors.EquipmentBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local LootDropperBehavior = require "ItsyScape.Peep.Behaviors.LootDropperBehavior"
@@ -40,8 +42,7 @@ local StanceBehavior = require "ItsyScape.Peep.Behaviors.StanceBehavior"
 local StatsBehavior = require "ItsyScape.Peep.Behaviors.StatsBehavior"
 
 local Player = Class(Peep)
-
-Player.Palette = Utility.Peep.Human.Palette
+Player.Palette = Palette
 
 function Player:new(resource, ...)
 	Peep.new(self, ...)
@@ -51,6 +52,7 @@ function Player:new(resource, ...)
 	self:addBehavior(PositionBehavior)
 	self:addBehavior(SizeBehavior)
 	self:addBehavior(LootDropperBehavior)
+	self:addBehavior(DynamicBehavior)
 
 	local size = self:getBehavior(SizeBehavior)
 	size.size = Vector(1.5, 2, 1.5)

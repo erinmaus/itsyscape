@@ -61,10 +61,6 @@ function Noise.UniformSampler:_add(x, y, z, w, value)
 end
 
 function Noise.UniformSampler:uniform(value)
-	if true and self.min and self.max then
-		return (value - self.min) / (self.max - self.min)
-	end
-
 	if self.isDirty then
 		table.sort(self.samples)
 		self.isDirty = false
@@ -106,7 +102,7 @@ function Noise.UniformSampler:range(value, a, b)
 	local min = not b and 1 or a
 
 	local result = self:uniform(value)
-	return result * (max - min) + min
+	return math.clamp(result * (max - min + 1) + min, min, max)
 end
 
 function Noise.UniformSampler:index(value, a, b)

@@ -225,9 +225,9 @@ void nbunny::Renderer::draw(lua_State* L, SceneNode& node, float delta, int widt
 	for (auto& renderer_pass: renderer_passes)
 	{
 		current_renderer_pass_id = renderer_pass->get_renderer_pass_id();
-		lua::push_sub(std::string("nbunny::Renderer::draw@renderer_pass_id=") + std::to_string(current_renderer_pass_id));
+		lua::push_sub(L, std::string("nbunny::Renderer::draw@renderer_pass_id=") + std::to_string(current_renderer_pass_id));
 		renderer_pass->draw(L, node, delta);
-		lua::pop_sub();
+		lua::pop_sub(L);
 	}
 
 	current_renderer_pass_id = RENDERER_PASS_NONE;
@@ -295,11 +295,20 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 			}
 		}
 
+		auto camera_forward = camera->get_forward();
+		shader_cache.update_uniform(shader, "scape_CameraForward", glm::value_ptr(camera_forward), sizeof(glm::vec3));
+
 		auto camera_target = camera->get_target_position();
-		shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec4));
+		shader_cache.update_uniform(shader, "scape_CameraTarget", glm::value_ptr(camera_target), sizeof(glm::vec3));
 
 		auto camera_eye = camera->get_eye_position();
-		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec4));
+
+		auto f = glm::normalize(camera_eye - camera_target);
+		if (camera_eye == camera_target)
+		{
+			camera_eye -= camera_forward;
+		}
+		shader_cache.update_uniform(shader, "scape_CameraEye", glm::value_ptr(camera_eye), sizeof(glm::vec3));
 
 		auto camera_near = camera->get_near();
 		shader_cache.update_uniform(shader, "scape_CameraNear", &camera_near, sizeof(float));
@@ -342,28 +351,31 @@ void nbunny::Renderer::draw_node(lua_State* L, SceneNode& node, float delta)
 	}
 	else
 	{
-		if (node.get_reference(L))
+		if (node.get_will_render())
 		{
-			lua_getfield(L, -1, "willRender");
-			if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
+			if (node.get_reference(L))
 			{
-				get_weak_reference(L, reference);
-				if (!lua_isnil(L, -1))
+				lua_getfield(L, -1, "willRender");
+				if (!lua_isnil(L, -1) && lua_toboolean(L, -1))
 				{
-					lua_pushnumber(L, delta);
-					lua_call(L, 2, 0);
+					get_weak_reference(L, reference);
+					if (!lua_isnil(L, -1))
+					{
+						lua_pushnumber(L, delta);
+						lua_call(L, 2, 0);
+					}
+					else
+					{
+						lua_pop(L, 1);
+					}
 				}
 				else
 				{
 					lua_pop(L, 1);
 				}
 			}
-			else
-			{
-				lua_pop(L, 1);
-			}
+			lua_pop(L, 1);
 		}
-		lua_pop(L, 1);
 
 		if (!node.is_base_type())
 		{

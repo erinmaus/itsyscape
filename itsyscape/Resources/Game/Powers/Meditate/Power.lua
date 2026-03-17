@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local Effect = require "ItsyScape.Peep.Effect"
 local MovementEffect = require "ItsyScape.Peep.Effects.MovementEffect"
 local AttackCooldownBehavior = require "ItsyScape.Peep.Behaviors.AttackCooldownBehavior"
+local DodgeCooldownBehavior = require "ItsyScape.Peep.Behaviors.DodgeCooldownBehavior"
 
 local Meditate = Class(CombatPower)
 
@@ -33,6 +34,7 @@ function Meditate:activate(activator, target)
 	end
 
 	activator:removeBehavior(AttackCooldownBehavior)
+	activator:removeBehavior(DodgeCooldownBehavior)
 
 	Log.info("Removed %d movement debuffs on '%s'.", #movementEffects, activator:getName())
 end

@@ -25,15 +25,15 @@ function PropView:new(prop, gameView)
 	self.greeble = {}
 end
 
-function PropView:updateGreebles(greebles, t)
+function PropView:updateGreebles(greebles, t, parentRoot)
 	for _, greeble in ipairs(greebles or self.greeble) do
-		greeble:regreebilize(t)
+		greeble:regreebilize(t, parentRoot)
 	end
 end
 
-function PropView:addGreeble(GreebleType, t, transform, ...)
+function PropView:addGreeble(GreebleType, t, transform, parentRoot, ...)
 	local greeble = GreebleType(self.prop, self.gameView)
-	greeble:greebilize(self, t, ...)
+	greeble:greebilize(self, t, parentRoot, ...)
 	greeble:attach()
 
 	if self.didLoad then
@@ -60,7 +60,7 @@ function PropView:addGreeble(GreebleType, t, transform, ...)
 		end
 
 		if transform.scale then
-			greeble:getRoot():getTransform():setLocalOffset(transform.scale)
+			greeble:getRoot():getTransform():setLocalScale(transform.scale)
 		end
 	end
 
@@ -151,7 +151,7 @@ function PropView:updateTransform()
 	local scale = self.prop:getScale()
 
 	local curves = self.gameView:getMapCurves(layer)
-	if curves then
+	if curves and (self.PROP_VIEW_BEND or self.PROP_VIEW_BEND == nil) then
 		position, rotation = MapCurve.transformAll(position, rotation, curves)
 	end
 

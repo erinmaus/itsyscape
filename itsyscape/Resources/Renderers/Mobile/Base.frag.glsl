@@ -21,13 +21,14 @@ precision highp float;
 
 #include "Resources/Shaders/RendererPass.common.glsl"
 
-#define SCAPE_MAX_LIGHTS 16
+#define SCAPE_MAX_LIGHTS 32
 #define SCAPE_MAX_FOG    4
 #define SCAPE_ALPHA_DISCARD_THRESHOLD 1.0 / 128.0
 
 varying vec3 frag_Position;
 varying vec3 frag_Normal;
 varying vec2 frag_Texture;
+varying vec3 frag_LightFalloff;
 
 uniform int scape_NumLights;
 uniform int scape_NumFogs;
@@ -57,12 +58,17 @@ vec3 scapeApplyLight(
 	vec3 position,
 	vec3 normal,
 	vec3 color,
-	float specular)
+	float specular,
+	vec3 falloff)
 {
 	vec3 surfaceToCamera = normalize(scape_CameraEye - position);
 
 	vec3 direction;
 	float attenuation = 0.0;
+
+	float directionalLightFalloff = falloff.x;
+	float ambientLightFalloff = falloff.y;
+	float pointLightFalloff = falloff.z;
 	if (light.position.w == 1.0)
 	{
 		direction = normalize(light.position.xyz);
@@ -82,10 +88,10 @@ vec3 scapeApplyLight(
 		}
 	}
 
-	vec3 ambientLight = light.ambientCoefficient * color * light.color;
-	vec3 pointLight = attenuation * attenuation * light.color * color;
 	float diffuseCoefficient = max(0.0, dot(normal, direction)) * light.position.w;
-	vec3 diffuseLight = diffuseCoefficient * color * light.color;
+	vec3 ambientLight = light.ambientCoefficient * light.color;
+	vec3 pointLight = attenuation * attenuation * light.color;
+	vec3 diffuseLight = diffuseCoefficient * light.color;
 
 	vec3 specularLight = vec3(0.0);
 	if (light.position.w == 1.0)
@@ -97,8 +103,8 @@ vec3 scapeApplyLight(
 			cameraToTarget /= vec3(cameraToTargetLength);
 
 			float exponent = pow(abs(dot(normal, cameraToTarget)), 3.0);
-			float specularCoefficient = (pow(5.0, exponent * pow(specular, 2.5)) - 1.0) / 4.0;
-			specularLight = specularCoefficient * vec3(pow(length(light.color), 1.5)) / vec3(4.0);
+			float specularCoefficient = (pow(2.0, exponent * pow(specular, 2.2)) - 1.0) / 2.0;
+			specularLight = vec3(max(specularCoefficient, 0.0)) * vec3(length(light.color));
 		}
 	}
 
@@ -115,7 +121,11 @@ vec3 scapeApplyLight(
 	vec3 rimLight = vec3(0.0);
 #endif
 
-	return pointLight + diffuseLight + specularLight + ambientLight + rimLight;
+	return pointLight * vec3(pointLightFalloff) +
+	       diffuseLight * vec3(directionalLightFalloff) +
+	       //specularLight +
+	       ambientLight * vec3(ambientLightFalloff) +
+	       rimLight;
 }
 
 vec3 scapeApplyFog(
@@ -164,6 +174,8 @@ vec4 effect(
 	vec4 diffuse = performEffect(color, frag_Texture);
 #endif
 
+	diffuse.a *= getGlobalWallHackAlpha(frag_Position, 0.0);
+
 	float alpha = diffuse.a * color.a;
 	if (alpha < SCAPE_ALPHA_DISCARD_THRESHOLD)
 	{
@@ -171,15 +183,25 @@ vec4 effect(
 	}
 
 	vec3 result = vec3(0.0);
-	for (int i = 0; i < scape_NumLights; ++i)
+	if (scape_NumLights == 1 && scape_Lights[0].ambientCoefficient == 1.0)
 	{
-		result += scapeApplyLight(
-			scape_Lights[i],
-			position,
-			normal,
-			diffuse.rgb,
-			specular);
+		result = vec3(1.0);
 	}
+	else
+	{
+		for (int i = 0; i < scape_NumLights; ++i)
+		{
+			result += scapeApplyLight(
+				scape_Lights[i],
+				position,
+				normal,
+				diffuse.rgb,
+				specular,
+				frag_LightFalloff);
+		}
+	}
+
+	result *= diffuse.rgb;
 
 	for (int i = 0; i < scape_NumFogs; ++i)
 	{

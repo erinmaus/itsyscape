@@ -15,6 +15,7 @@ local OnEvent = B.Node("OnEvent")
 OnEvent.TARGET = B.Reference()
 OnEvent.EVENT = B.Reference()
 OnEvent.CALLBACK = B.Reference()
+OnEvent.PEEP = B.Reference()
 OnEvent.RESULT = B.Reference()
 OnEvent.RESULTS = B.Reference()
 
@@ -38,10 +39,12 @@ function OnEvent:update(mashina, state, executor)
 	if self.didFire then
 		state[self.RESULT] = self.result
 		state[self.RESULTS] = self.results
+		state[self.PEEP] = self.peep
 
 		self.didFire = false
 		self.result = nil
 		self.results = {}
+		self.peep = nil
 
 		local status = self.status
 		self.status = nil
@@ -62,6 +65,7 @@ function OnEvent:onFire(mashina, state, executor, peep, event, ...)
 		status = B.Status.Success
 	end
 
+	self.peep = peep
 	self.status = status
 	self.result = result
 	self.results = self.results or {}

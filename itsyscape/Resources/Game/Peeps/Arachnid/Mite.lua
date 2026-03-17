@@ -20,10 +20,11 @@ local RotationBehavior = require "ItsyScape.Peep.Behaviors.RotationBehavior"
 local ScaleBehavior = require "ItsyScape.Peep.Behaviors.ScaleBehavior"
 local SizeBehavior = require "ItsyScape.Peep.Behaviors.SizeBehavior"
 local TargetTileBehavior = require "ItsyScape.Peep.Behaviors.TargetTileBehavior"
+local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionBehavior"
 
 local Mite = Class(Creep)
 Mite.DEFAULT_SPEED = 6
-Mite.DEFAULT_RADIUS = 1.5
+Mite.DEFAULT_RADIUS = 1
 
 function Mite:new(resource, name, ...)
 	Creep.new(self, resource, name or 'Mite_Base', ...)
@@ -90,7 +91,8 @@ function Mite:runAround()
 
 	local offset
 	do
-		local tileCenter = map:getTileCenter(map:toTile(self.center.x, self.center.z))
+		local i, j = map:toTile(self.center.x, self.center.z)
+		local tileCenter = map:getTileCenter(i, j)
 		offset = math.atan2(self.center.z - tileCenter.z, self.center.x - tileCenter.x)
 	end
 
@@ -106,7 +108,7 @@ function Mite:runAround()
 	position.y = map:getInterpolatedHeight(position.x, position.z)
 
 	Utility.Peep.lookAt(self, position)
-	Utility.Peep.setPosition(self, position, true)
+	Utility.Peep.setPosition(self, position)
 end
 
 function Mite:update(director, game)
@@ -114,7 +116,7 @@ function Mite:update(director, game)
 
 	local isInCombat = self:hasBehavior(CombatTargetBehavior)
 	local isAlive = Utility.Peep.canAttack(self)
-	local isMoving = self:hasBehavior(TargetTileBehavior)
+	local isMoving = self:hasBehavior(TargetTileBehavior) or self:hasBehavior(TargetPositionBehavior)
 	if not isMoving and not isInCombat and isAlive then
 		self:runAround()
 	else

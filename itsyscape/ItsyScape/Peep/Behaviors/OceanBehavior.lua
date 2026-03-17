@@ -23,7 +23,7 @@ function OceanBehavior:new()
 	self.depth = 3.25
 
 	-- Visual properties.
-	self.offset = 1.5
+	self.offset = 2.5
 	self.positionTimeScale = 4
 	self.textureTimeScale = Vector(math.pi / 4, 1 / 2, 0)
 	self.windSpeedMultiplier = 1

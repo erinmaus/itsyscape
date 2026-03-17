@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Tween = require "ItsyScape.Common.Math.Tween"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -17,12 +18,75 @@ local ModelResource = require "ItsyScape.Graphics.ModelResource"
 local ShaderResource = require "ItsyScape.Graphics.ShaderResource"
 local SkeletonResource = require "ItsyScape.Graphics.SkeletonResource"
 local SkeletonAnimationResource = require "ItsyScape.Graphics.SkeletonAnimationResource"
+local ParticleSceneNode = require "ItsyScape.Graphics.ParticleSceneNode"
 local TextureResource = require "ItsyScape.Graphics.TextureResource"
 local ModelSceneNode = require "ItsyScape.Graphics.ModelSceneNode"
 
 local TreeView = Class(PropView)
 
 TreeView.FELLED_SPAWN_TIME_SECONDS = 0.75
+
+TreeView.CHOP_TIME_SECONDS = 0.5
+
+TreeView.CHOPPED_SPEED_MULTIPLIER    = 0.5
+TreeView.CHOPPED_DISTANCE_MULTIPLIER = 0
+
+TreeView.CHOP_MIN_ANGLE = -math.pi / 64
+TreeView.CHOP_MAX_ANGLE = math.pi / 64
+
+TreeView.LEAF_RADIUS = 4
+TreeView.LEAF_OFFSET = Vector(0, 4, 0)
+TreeView.MIN_LEAF_PARTICLES = 10
+TreeView.MAX_LEAF_PARTICLES = 20
+
+TreeView.PARTICLE_SYSTEM = function(textureFilename, radius)
+	return {
+		numParticles = 50,
+		texture = textureFilename,
+		columns = 1,
+
+		emitters = {
+			{
+				type = "RadialEmitter",
+				radius = { 0, radius },
+				yRange = { 0, 0 }
+			},
+			{
+				type = "DirectionalEmitter",
+				direction = { 0, -1, 0 },
+				speed = { 3, 4 },
+			},
+			{
+				type = "RandomColorEmitter",
+				colors = {
+					{ 0.5, 0.5, 0.5, 0 }
+				}
+			},
+			{
+				type = "RandomLifetimeEmitter",
+				lifetime = { 0.4, 0.8 }
+			},
+			{
+				type = "RandomScaleEmitter",
+				scale = { 0.5, 0.6 }
+			},
+			{
+				type = "RandomRotationEmitter",
+				rotation = { 0, 360 },
+				velocity = { -90, 90 }
+			}
+		},
+
+		paths = {
+			{
+				type = "FadeInOutPath",
+				fadeInPercent = { 0.4 },
+				fadeOutPercent = { 0.6 },
+				tween = { 'sineEaseOut' }
+			}
+		}
+	}
+end
 
 function TreeView:new(prop, gameView)
 	PropView.new(self, prop, gameView)
@@ -33,6 +97,16 @@ function TreeView:new(prop, gameView)
 	self.time = 0
 	self._transform = love.math.newTransform()
 	self._color = Color(1, 1, 1, 1)
+
+	self.totalChopTime = 0
+	self.lastChopTime = 0
+	self.chopCount = 0
+	self.startChopping = false
+	self.stopChopping = false
+
+	self.chopFromRotation = Quaternion()
+	self.chopToRotation = Quaternion()
+	self.chopCurrentRotation = Quaternion()
 end
 
 function TreeView:getBaseModelFilename()
@@ -183,6 +257,26 @@ function TreeView:load()
 		function(shader)
 			self.leavesShader = shader
 		end)
+	resources:queueEvent(
+		function()
+			self.particles = ParticleSceneNode()
+			self.particles:setParent(root)
+
+			local textureFilename = self:getResourcePath(TextureResource, "Leaves.png")
+			local system = self.PARTICLE_SYSTEM(
+				textureFilename,
+				self.LEAF_RADIUS)
+			self.particles:initParticleSystemFromDef(system, resources)
+
+			local transform = self.particles:getTransform()
+			transform:setLocalTranslation(self.LEAF_OFFSET)
+
+			local material = self.particles:getMaterial()
+			material:setIsFullLit(false)
+			material:setIsZWriteDisabled(false)
+			material:setIsShadowCaster(true)
+			material:setGlassThickness(0.5)
+		end)
 end
 
 function TreeView:remove()
@@ -221,7 +315,31 @@ function TreeView:tick()
 				self:getProp())
 		end
 
+		if r.chops ~= self.chopCount then
+			self.chopCount = r.chops
+			self.lastChopTime = 0
+			self.startChopping = true
+			self.stopChopping = false
+
+			self:startShake()
+		end
+
 		if r.depleted ~= self.isDepleted then
+			if r.depleted then
+				local globalTransform = self:getRoot():getTransform():getGlobalDeltaTransform(_APP:getPreviousFrameDelta())
+				local _, globalRotation = MathCommon.decomposeTransform(globalTransform)
+				local inverseGlobalRotation = -globalRotation
+
+				if r.felledPosition then
+					local xzSelfPosition = self:getProp():getPosition() * Vector.PLANE_XZ
+					local xzFelledPosition = Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ
+					self.targetRotation = (inverseGlobalRotation * Quaternion.lookAt(xzFelledPosition, xzSelfPosition, Vector.UNIT_Z)):getNormal()
+				else
+					self.targetRotation = Quaternion.Y_180
+				end
+
+			end
+
 			self.wasDepleted = self.isDepleted
 			self.isDepleted = r.depleted
 			self.time = 0
@@ -229,17 +347,45 @@ function TreeView:tick()
 	end
 end
 
+do
+	local xRotation = Quaternion()
+	local zRotation = Quaternion()
+	function TreeView:startShake()
+		self.chopFromRotation:from(self.chopCurrentRotation:get())
+
+		Quaternion.fromAxisAngle(Vector.UNIT_X, math.lerp(self.CHOP_MIN_ANGLE, self.CHOP_MAX_ANGLE, love.math.random()), xRotation)
+		Quaternion.fromAxisAngle(Vector.UNIT_Z, math.lerp(self.CHOP_MIN_ANGLE, self.CHOP_MAX_ANGLE, love.math.random()), zRotation)
+		zRotation:product(xRotation, self.chopToRotation)
+		self.chopToRotation:normalize(self.chopToRotation)
+
+		self.particles:emit(love.math.random(self.MIN_LEAF_PARTICLES, self.MAX_LEAF_PARTICLES))
+	end
+end
+
+function TreeView:stopShake()
+	self.chopFromRotation:from(self.chopCurrentRotation:get())
+	self.chopToRotation:from(Quaternion.IDENTITY:get())
+end
+
+function TreeView:shake()
+	local delta = math.clamp(self.lastChopTime / self.CHOP_TIME_SECONDS)
+	delta = Tween.sineEaseOut(delta)
+
+	self.chopFromRotation:slerp(self.chopToRotation, delta, self.chopCurrentRotation)
+	self.chopCurrentRotation:normalize(self.chopCurrentRotation)
+end
+
 function TreeView:update(delta)
 	PropView.update(self, delta)
 
 	if self.spawned then
 		self.time = math.min(self.time + delta, self.FELLED_SPAWN_TIME_SECONDS)
-		local delta = self.time / self.FELLED_SPAWN_TIME_SECONDS
+		local mu = self.time / self.FELLED_SPAWN_TIME_SECONDS
 
 		if self.isDepleted then
-			self._color.a = Tween.sineEaseOut(1 - delta)
+			self._color.a = Tween.sineEaseOut(1 - mu)
 		else
-			self._color.a = Tween.sineEaseOut(delta)
+			self._color.a = Tween.sineEaseOut(mu)
 		end
 
 		self.treeNode:getMaterial():setColor(self._color)
@@ -249,51 +395,49 @@ function TreeView:update(delta)
 
 		self.poseAnimation:getResource():computeFilteredTransforms(0, self.transforms)
 
-		local globalRotation
-		do
-			local currentRotation = Quaternion.IDENTITY
-			local previousRotation = Quaternion.IDENTITY
-
-			local currentNode = self:getRoot()
-			while currentNode do
-				currentRotation = currentRotation * currentNode:getTransform():getLocalRotation()
-
-				local _, r = currentNode:getTransform():getPreviousTransform()
-				previousRotation = previousRotation * r
-
-				currentNode = currentNode:getParent()
-			end
-
-			globalRotation = previousRotation:slerp(currentRotation, _APP and _APP:getFrameDelta() or 1)
-		end
-
 		local r = self:getProp():getState().resource
 		if self.isDepleted and r and r.felledPosition then
-			local targetRotation = Quaternion.lookAt(Vector(unpack(r.felledPosition)) * Vector.PLANE_XZ, self:getProp():getPosition() * Vector.PLANE_XZ, Vector.UNIT_Y)
-			local currentRotation = globalRotation:slerp(targetRotation, Tween.sineEaseOut(delta))
-
-			local transform = self._transform
-			transform:reset()
-
-			transform:applyQuaternion(currentRotation:get())
+			local currentRotation = Quaternion.IDENTITY:slerp(self.targetRotation, Tween.powerEaseOut(mu, 1.1)):getNormal()
+			MathCommon.makeRotationTransform(currentRotation, self._transform)
 
 			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
-				transform)
-		else
-			local transform = self._transform
-			transform:reset()
-
-			local scale = Tween.sineEaseOut(delta)
-			transform:scale(scale, scale, scale)
+				self._transform)
+		elseif mu < 1 then
+			local scale = Tween.sineEaseOut(mu)
+			MathCommon.makeScaleTransform(Vector(scale), self._transform)
 
 			self.transforms:applyTransform(
 				self.skeleton:getResource():getBoneIndex("tree"),
-				transform)
+				self._transform)
+		elseif self.startChopping or self.stopChopping then
+			self:shake()
+
+			MathCommon.makeRotationTransform(self.chopCurrentRotation, self._transform)
+			self.transforms:applyTransform(
+				self.skeleton:getResource():getBoneIndex("tree"),
+				self._transform)
 		end
 
 		self.skeleton:getResource():applyTransforms(self.transforms)
 		self.skeleton:getResource():applyBindPose(self.transforms)
+
+		if self.stopChopping or self.startChopping then
+			self.totalChopTime = self.totalChopTime + delta
+			self.lastChopTime = self.lastChopTime + delta
+
+			if self.stopChopping and self.lastChopTime > self.CHOP_TIME_SECONDS then
+				self.lastChopTime = 0
+				self.totalChopTime = 0
+				self.stopChopping = false
+			elseif self.startChopping and self.lastChopTime > self.CHOP_TIME_SECONDS then
+				self.totalChopTime = 0
+				self.lastChopTime = 0
+				self.startChopping = false
+				self.stopChopping = true
+				self:stopShake()
+			end
+		end
 	end
 end
 

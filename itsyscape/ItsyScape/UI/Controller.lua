@@ -8,6 +8,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local PlayerBehavior = require "ItsyScape.Peep.Behaviors.PlayerBehavior"
 
 local Controller = Class()
@@ -20,6 +21,13 @@ function Controller:new(peep, director)
 	self.peep:listen('poof', function()
 		self:getGame():getUI():closeInstance(self)
 	end)
+end
+
+function Controller:T(key, values)
+	return Utility.Text.get(self:getPeep(), key, values) or
+	       Utility.Text.get(itsyrealm.language.getLocale(), key, values) or
+	       Utility.Text.get("en-US", key, values) or
+	       key
 end
 
 -- Gets the peep this controller belongs to.

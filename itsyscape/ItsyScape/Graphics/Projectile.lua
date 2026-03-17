@@ -91,7 +91,31 @@ function Projectile:playAnimation(target, animation, slot, priority)
 	end
 end
 
-function Projectile:getTargetPosition(target, offset)
+function Projectile:stopAnimation(target, slot)
+	target = target or self.gameView:getGame():getPlayer():getActor()
+
+	if Class.isCompatibleType(target, Actor) then
+		target:onAnimationStopped(slot or "x-projectile-fx")
+	end
+end
+
+function Projectile:getTargetSize(target, pointSize)
+	if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
+		local min, max
+
+		if self.gameView:getView(target) then
+			if target:isCompatibleType(Prop) or target:isCompatibleType(Actor) then
+				min, max = target:getBounds()
+			end
+		end
+
+		return max - min
+	end
+
+	return pointSize or 0
+end
+
+function Projectile:getTargetPosition(target, offset, isLocal)
 	offset = offset or Vector.ZERO
 
 	if target then
@@ -107,7 +131,13 @@ function Projectile:getTargetPosition(target, offset)
 			end
 
 			if positionable then
-				local transform = positionable:getTransform():getGlobalDeltaTransform(0)
+				local transform
+				if isLocal then
+					transform = positionable:getTransform():getLocalDeltaTransform(_APP:getFrameDelta())
+				else
+					transform = positionable:getTransform():getGlobalDeltaTransform(_APP:getFrameDelta())
+				end
+
 				local position = Vector(transform:transformPoint(offset:get()))
 
 				local y
@@ -121,7 +151,7 @@ function Projectile:getTargetPosition(target, offset)
 				return position + Vector(0, y, 0)
 			end
 		elseif target:isCompatibleType(Vector) then
-			return target
+			return Vector(target:get())
 		end
 	end
 

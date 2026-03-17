@@ -8,11 +8,12 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local Utility = require "ItsyScape.Game.Utility"
 local Command = require "ItsyScape.Peep.Command"
 
 local TransferItemCommand = Class(Command)
 
-function TransferItemCommand:new(broker, item, destination, count, purpose, merge)
+function TransferItemCommand:new(broker, item, destination, count, purpose, merge, error)
 	Command.new(self)
 
 	self.broker = broker
@@ -21,6 +22,7 @@ function TransferItemCommand:new(broker, item, destination, count, purpose, merg
 	self.count = count
 	self.purpose = purpose
 	self.merge = merge
+	self.error = error or "ui.notifications.inventory.inventoryFull"
 end
 
 function TransferItemCommand:getIsFinished()
@@ -39,6 +41,9 @@ function TransferItemCommand:onBegin(peep)
 		self.purpose,
 		self.merge)
 	local s, r = transaction:commit()
+	if not s then
+		Utility.Peep.notify(peep, self.error)
+	end
 end
 
 return TransferItemCommand

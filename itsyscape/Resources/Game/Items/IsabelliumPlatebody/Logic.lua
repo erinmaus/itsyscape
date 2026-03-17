@@ -30,11 +30,11 @@ function IsabelliumPlatebody:getCalculatedBonuses(peep, item)
 
 	local WEIGHT = 42 / 100 * 0.8
 
-	isabellium:setBonusMultiplier("DefenseSlash", WEIGHT, Utility.styleBonusForItem, -5)
-	isabellium:setBonusMultiplier("DefenseStab", WEIGHT, Utility.styleBonusForItem, -4)
-	isabellium:setBonusMultiplier("DefenseCrush", WEIGHT, Utility.styleBonusForItem, -4)
-	isabellium:setBonusMultiplier("DefenseMagic", WEIGHT, Utility.styleBonusForItem, -20)
-	isabellium:setBonusMultiplier("DefenseRanged", WEIGHT, Utility.styleBonusForItem, -10)
+	isabellium:setBonusMultiplier("DefenseSlash", WEIGHT, Utility.styleBonusForItem, -1)
+	isabellium:setBonusMultiplier("DefenseStab", WEIGHT, Utility.styleBonusForItem, 1)
+	isabellium:setBonusMultiplier("DefenseCrush", WEIGHT, Utility.styleBonusForItem, 0)
+	isabellium:setBonusMultiplier("DefenseMagic", WEIGHT, Utility.styleBonusForItem, -3)
+	isabellium:setBonusMultiplier("DefenseRanged", WEIGHT, Utility.styleBonusForItem, -2)
 
 	return isabellium:getStats(peep), isabellium
 end

@@ -39,6 +39,16 @@ function BaseRay:project(distance)
 	return self.origin + self.direction * distance
 end
 
+function BaseRay:distance(point)
+	local v = point - self.origin
+	local dot = v:dot(self.direction)
+	if dot < 0 then
+		return 0, true
+	end
+
+	return dot, false
+end
+
 function BaseRay:closest(point)
 	self:compatible(point)
 
@@ -139,6 +149,29 @@ function BaseRay:hitTriangle(v1, v2, v3)
 	end
 
 	return false
+end
+
+function BaseRay:transform(transform)
+	local MathCommon = require "ItsyScape.Common.Math.Common"
+
+	local _, rotation = MathCommon.decomposeTransform(transform)
+
+	local p = self.origin:transform(transform)
+	local d = rotation:transformVector(self.direction):getNormal()
+
+	return Ray(p, d)
+end
+
+function BaseRay:inverseTransform(transform)
+	local MathCommon = require "ItsyScape.Common.Math.Common"
+
+	local _, rotation = MathCommon.decomposeTransform(transform)
+	rotation = rotation:inverse()
+
+	local p = self.origin:inverseTransform(transform)
+	local d = rotation:transformVector(self.direction):getNormal()
+
+	return Ray(p, d)
 end
 
 -- Checks if the ray intersects the AABB (min, max).

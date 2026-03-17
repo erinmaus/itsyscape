@@ -22,6 +22,7 @@ StaticMesh.DEFAULT_FORMAT = {
 function StaticMesh:new(d, handle)
 	self.groups = {}
 	self._handle = handle or NStaticMeshResourceInstance()
+	self.bounds = {}
 
 	if type(d) == 'string' then
 		self:loadFromFile(d)
@@ -96,6 +97,10 @@ function StaticMesh:getVertices(group)
 end
 
 function StaticMesh:computeBounds(group)
+	if self.bounds[group] then
+		return unpack(self.bounds[group])
+	end
+
 	local vertices = self:getVertices(group)
 
 	local min, max = Vector(math.huge), Vector(-math.huge)
@@ -105,6 +110,7 @@ function StaticMesh:computeBounds(group)
 		max = max:max(v)
 	end
 
+	self.bounds[group] = { min, max }
 	return min, max
 end
 

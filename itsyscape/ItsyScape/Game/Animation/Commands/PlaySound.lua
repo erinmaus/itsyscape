@@ -26,6 +26,9 @@ function PlaySound:new(filename)
 	self.attenuation = false
 	self.minPitch = 0.5
 	self.maxPitch = 1.5
+	self.repeatSound = false
+	self.minDuration = 0
+	self.maxDuration = 1
 end
 
 -- Sets some properties. See type description above. 
@@ -35,6 +38,9 @@ function Metatable:__call(t)
 	self:setAttenuation(t.attenuation)
 	self:setMinPitch(t.minPitch)
 	self:setMaxPitch(t.maxPitch)
+	self:setRepeatSound(t.repeatSound)
+	self:setMinDuration(t.minDuration)
+	self:setMaxDuration(t.maxDuration)
 
 	return self
 end
@@ -68,11 +74,39 @@ function PlaySound:getAttenuation()
 	return self.attenuation or nil
 end
 
+function PlaySound:setRepeatSound(value)
+	self.repeatSound = value
+end
+
+function PlaySound:getRepeatSound()
+	return self.repeatSound or nil
+end
+
+function PlaySound:setMinDuration(value)
+	self.minDuration = value or self.minDuration
+end
+
+function PlaySound:getMinDuration()
+	return self.minDuration
+end
+
+function PlaySound:setMaxDuration(value)
+	self.maxDuration = value or self.maxDuration
+end
+
+function PlaySound:getMaxDuration()
+	return self.maxDuration
+end
+
 function PlaySound:instantiate()
 	return PlaySoundInstance(self)
 end
 
 function PlaySound:getDuration(windingDown)
+	if self.repeatAnimation and not windingDown then
+		return math.huge
+	end
+
 	return 0
 end
 

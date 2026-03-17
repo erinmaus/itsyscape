@@ -8,6 +8,8 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
+local MathCommon = require "ItsyScape.Common.Math.Common"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
 local RendererPass = require "ItsyScape.Graphics.RendererPass"
 local NGBuffer = require "nbunny.optimaus.gbuffer"
@@ -21,16 +23,17 @@ function SSRPostProcessPass:load(resources)
 	self.mapTextureCoordinatesShader = self:loadPostProcessShader("MapTextureCoordinatesSSR")
 	self.buildColorShader = self:loadPostProcessShader("BuildColorSSR")
 	self.combineShader = self:loadPostProcessShader("CombineSSR")
+	self.cleanShader = self:loadPostProcessShader("CleanSSR")
 	self.blurShader = self:loadPostProcessShader("Blur")
 
-	self.textureCoordinatesBuffer = NGBuffer("rgba16f")
+	self.textureCoordinatesBuffer = NGBuffer("rgba16f", "rgba16f")
 	self.colorBuffer = NGBuffer("rgba8", "rgba8", "rgba8")
 
-	self.minSecondPassSteps = 20
-	self.maxSecondPassSteps = 60
-	self.maxFirstPassSteps = 90
+	self.minSecondPassSteps = 40
+	self.maxSecondPassSteps = 120
+	self.maxFirstPassSteps = 180
 	self.resolution = 0.5
-	self.maxDistanceViewSpace = 14
+	self.maxDistanceViewSpace = 4
 end
 
 function SSRPostProcessPass:setMinMaxSecondPassSteps(min, max)
@@ -82,21 +85,26 @@ function SSRPostProcessPass:draw(width, height)
 
 	love.graphics.clear(0, 0, 0, 0)
 
-	local projection, view = self:getRenderer():getCamera():getTransforms()
-	local inverseProjection, inverseView = projection:inverse(), view:inverse()
-	local cameraDirecion = (self:getRenderer():getCamera():getEye() - self:getRenderer():getCamera():getPosition()):getNormal()
+	self._projection, self._view = self:getRenderer():getCamera():getTransforms(self._projection, self._view)
+	self._inverseProjection = MathCommon.makeInverseTransform(self._projection, self._inverseProjection or love.math.newTransform())
+	self._inverseView = MathCommon.makeInverseTransform(self._view, self._inverseView or love.math.newTransform())
+	self._normal = MathCommon.transposeTransform(self._inverseView, self._normal or love.math.newTransform());
+
+	self._gbufferTexelSize = self._gbufferTexelSize or {}
+	self._gbufferTexelSize[1], self._gbufferTexelSize[2] = 1 / width, 1 / height
+
 	self:bindShader(self.mapTextureCoordinatesShader,
-		"scape_ProjectionMatrix", projection,
-		"scape_ViewMatrix", view,
-		"scape_InverseProjectionMatrix", inverseProjection,
-		"scape_InverseViewMatrix", inverseView,
-		"scape_CameraDirection", { cameraDirecion:get() },
+		"scape_ProjectionMatrix", self._projection,
+		"scape_ViewMatrix", self._view,
+		"scape_InverseProjectionMatrix", self._inverseProjection,
+		"scape_InverseViewMatrix", self._inverseView,
+		"scape_NormalMatrix", self._normal,
 		"scape_MaxDistanceViewSpace", self.maxDistanceViewSpace,
 		"scape_MinSecondPassSteps", self.minSecondPassSteps,
 		"scape_MaxSecondPassSteps", self.maxSecondPassSteps,
 		"scape_MaxFirstPassSteps", self.maxFirstPassSteps,
 		"scape_Resolution", self.resolution,
-		"scape_TexelSize", { 1 / width, 1 / height },
+		"scape_TexelSize", self._gbufferTexelSize,
 		"scape_NormalTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.NORMAL_INDEX),
 		"scape_DepthTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.DEPTH_INDEX),
 		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
@@ -104,49 +112,61 @@ function SSRPostProcessPass:draw(width, height)
 	
 	self.colorBuffer:resize(width, height)
 
+	love.graphics.setCanvas(self.textureCoordinatesBuffer:getCanvas(2))
+	love.graphics.clear(0, 0, 0, 0)
+	self:bindShader(self.cleanShader,
+		"scape_TexelSize", self._gbufferTexelSize)
+	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
+
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(1))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(self.buildColorShader,
 		"scape_ColorTexture", self:getRenderer():getOutputBuffer():getColor(),
-		"scape_TexelSize", { 1 / width, 1 / height })
-	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(1))
+		"scape_TexelSize", self._gbufferTexelSize)
+	love.graphics.draw(self.textureCoordinatesBuffer:getCanvas(2))
 	
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(2))
+	love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.clear(0, 0, 0, 0)
+	
+	self._directionY = self._directionY or { 0, 1 }
+	self._directionX = self._directionX or { 1, 0 }
+
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 0, 1 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionY)
 		love.graphics.draw(self.colorBuffer:getCanvas(1))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(3))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 1, 0 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionX)
 	love.graphics.draw(self.colorBuffer:getCanvas(2))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(2))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 0, 1 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionY)
 	love.graphics.draw(self.colorBuffer:getCanvas(3))
 		
 	love.graphics.setCanvas(self.colorBuffer:getCanvas(3))
 	love.graphics.clear(0, 0, 0, 0)
 	self:bindShader(
 		self.blurShader,
-		"scape_TexelSize", { 1 / width, 1 / height },
-		"scape_Direction", { 1, 0 })
+		"scape_TexelSize", self._gbufferTexelSize,
+		"scape_Direction", self._directionX)
 	love.graphics.draw(self.colorBuffer:getCanvas(2))
 
 	love.graphics.setCanvas(self:getRenderer():getOutputBuffer():getColor())
 	self:bindShader(self.combineShader,
 		"scape_ClearColorTexture", self.colorBuffer:getCanvas(1),
 		"scape_BlurColorTexture", self.colorBuffer:getCanvas(2),
+		"scape_SSRTextureCoordinatesTexture", self.textureCoordinatesBuffer:getCanvas(2),
 		"scape_ReflectionPropertiesTexture", reflectionRendererPass:getRBuffer():getCanvas(reflectionRendererPass.REFLECTION_PROPERTIES_INDEX))
 	love.graphics.setBlendMode("alpha", "premultiplied")
 	love.graphics.draw(self.colorBuffer:getCanvas(1))

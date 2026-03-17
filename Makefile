@@ -1,6 +1,10 @@
 DIALOG_INPUTS = $(shell find ./itsyscape/Resources/Game/Dialog -type f -name 'Dialog.ink')
 DIALOG_OUTPUTS = $(patsubst ./itsyscape/Resources/Game/Dialog/%/Dialog.ink, ./itsyscape/Resources/Game/Dialog/%/Dialog.json, $(DIALOG_INPUTS))
-DIALOG_DEPS = $(patsubst ./itsyscape/Resources/Game/Dialog/%/Dialog.ink, ./build/%.ink.dep, $(DIALOG_INPUTS))
+DIALOG_DEPS = $(patsubst ./itsyscape/Resources/Game/Dialog/%/Dialog.ink, ./build/%.dialog.ink.dep, $(DIALOG_INPUTS))
+
+BOOK_INPUTS = $(shell find ./itsyscape/Resources/Game/Books -type f -name 'Book.ink')
+BOOK_OUTPUTS = $(patsubst ./itsyscape/Resources/Game/Books/%/Book.ink, ./itsyscape/Resources/Game/Books/%/Book.json, $(BOOK_INPUTS))
+BOOK_DEPS = $(patsubst ./itsyscape/Resources/Game/Books/%/Book.ink, ./build/%.book.ink.dep, $(BOOK_INPUTS))
 
 INKLECATE_VERSION := v.1.2.0
 LUAJIT := luajit
@@ -30,14 +34,20 @@ endif
 	cd build && unzip -o ${INKLECATE_ARCHIVE}
 	touch ./build/${INKLECATE_BIN}
 
-$(DIALOG_DEPS): ./build/%.ink.dep: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink ./cicd/common/make_ink_deps.lua | ./build
+$(DIALOG_DEPS): ./build/%.dialog.ink.dep: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink ./cicd/common/make_ink_deps.lua | ./build
 	$(LUAJIT) ./cicd/common/make_ink_deps.lua "$<" "$@"
 
-./itsyscape/Resources/Game/Dialog/%/Dialog.json: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink ./build/%.ink.dep ./build/${INKLECATE_BIN}
+$(BOOK_DEPS): ./build/%.book.ink.dep: ./itsyscape/Resources/Game/Books/%/Book.ink ./cicd/common/make_ink_deps.lua | ./build
+	$(LUAJIT) ./cicd/common/make_ink_deps.lua "$<" "$@"
+
+./itsyscape/Resources/Game/Dialog/%/Dialog.json: ./itsyscape/Resources/Game/Dialog/%/Dialog.ink ./build/%.dialog.ink.dep ./build/${INKLECATE_BIN}
+	./build/${INKLECATE_BIN} -o "$@" "$<"
+
+./itsyscape/Resources/Game/Books/%/Book.json: ./itsyscape/Resources/Game/Books/%/Book.ink ./build/%.book.ink.dep ./build/${INKLECATE_BIN}
 	./build/${INKLECATE_BIN} -o "$@" "$<"
 
 .PHONY: all clean
-all: $(DIALOG_OUTPUTS)
+all: $(DIALOG_OUTPUTS) $(BOOK_OUTPUTS)
 
 clean:
 	rm $(DIALOG_OUTPUTS)

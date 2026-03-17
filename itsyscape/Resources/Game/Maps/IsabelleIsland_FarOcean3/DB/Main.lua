@@ -140,11 +140,11 @@ do
 		MapObject = M["Cthulhu"]
 	}
 
-	ItsyScape.Meta.PeepMashinaState {
-		State = "attack",
-		Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
-		Resource = M["Cthulhu"]
-	}
+	-- ItsyScape.Meta.PeepMashinaState {
+	-- 	State = "attack",
+	-- 	Tree = "Resources/Game/Maps/IsabelleIsland_FarOcean2/Scripts/Cthulhu.lua",
+	-- 	Resource = M["Cthulhu"]
+	-- }
 
 	M["Cthulhu"] {
 		ItsyScape.Action.InvisibleAttack()
@@ -154,9 +154,21 @@ end
 M["Island1"] = ItsyScape.Resource.MapObject.Unique()
 do
 	ItsyScape.Meta.MapObjectLocation {
-		PositionX = 16,
+		PositionX = -32,
 		PositionY = 0,
-		PositionZ = -96,
+		PositionZ = -128,
+		Map = M._MAP,
+		Name = "Island1",
+		Resource = M["Island1"]
+	}
+end
+
+M["Island1"] = ItsyScape.Resource.MapObject.Unique()
+do
+	ItsyScape.Meta.MapObjectLocation {
+		PositionX = -32,
+		PositionY = 0,
+		PositionZ = -128,
 		Map = M._MAP,
 		Name = "Island1",
 		Resource = M["Island1"]

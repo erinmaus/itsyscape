@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local sort = require "batteries.sort"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local CombatPower = require "ItsyScape.Game.CombatPower"
 local CombatSpell = require "ItsyScape.Game.CombatSpell"
 local Config = require "ItsyScape.Game.Config"
@@ -60,11 +61,22 @@ BaseCombatHUDController.COMBAT_SKILLS = {
 	"Faith"
 }
 
+BaseCombatHUDController.STYLE_TO_STORAGE = {
+	[Weapon.STYLE_MAGIC] = "Magic",
+	[Weapon.STYLE_ARCHERY] = "Archery",
+	[Weapon.STYLE_MELEE] = "Melee",
+}
+
 local CONFIG = Variables.load("Resources/Game/Variables/Combat.json")
 local BASE_COST_PATH = Variables.Path("zealCost", Variables.PathParameter("tier"), "baseCost")
 
 function BaseCombatHUDController:new(peep, director)
 	Controller.new(self, peep, director)
+
+	self._onPeepEquipGear = Function(self.onPeepEquipGear, self)
+	self._onPeepDequipGear = Function(self.onPeepDequipGear, self)
+	peep:listen("equipItem", self._onPeepEquipGear)
+	peep:listen("dequipItem", self._onPeepDequipGear)
 
 	self:bindToPlayer(peep)
 	self.isDirty = true
@@ -85,6 +97,7 @@ function BaseCombatHUDController:new(peep, director)
 		food = false,
 		enabled = false
 	}
+	self.equipment = {}
 
 	self.powers = {}
 	self:_pullPowers()
@@ -92,6 +105,43 @@ function BaseCombatHUDController:new(peep, director)
 	self.currentOpenedThingies = {}
 
 	self.updateDebugStats = UpdateDebugStats()
+
+	local weapon = Utility.Peep.getEquippedWeapon(peep)
+	self.previousLoadoutStyle = weapon and weapon:getStyle() or false
+	self.currentLoadoutStyle = weapon and weapon:getStyle() or false
+	self.isSwappingGear = false
+
+	self:initActiveSpell()
+end
+
+function BaseCombatHUDController:initActiveSpell()
+	local activeSpellID = self:getStorage("Config"):getSection("state"):get("activeSpellID")
+
+	if not activeSpellID then
+		self:getPeep():removeBehavior(ActiveSpellBehavior)
+
+		local _, stance = self:getPeep():addBehavior(StanceBehavior)
+		stance.useSpell = false
+
+		return
+	end
+
+	local TypeName = string.format("Resources.Game.Spells.%s.Spell", activeSpellID)
+	local Type = require(TypeName)
+	local spell = Type(activeSpellID, self:getGame())
+
+	local _, activeSpell = self:getPeep():addBehavior(ActiveSpellBehavior)
+	activeSpell.spell = spell
+
+	self:useSpell()
+end
+
+function BaseCombatHUDController:close()
+	Controller.close(self)
+
+	local peep = self:getPeep()
+	peep:silence("equipItem", self._onPeepEquipGear)
+	peep:silence("dequipItem", self._onPeepDequipGear)
 end
 
 function BaseCombatHUDController:bindToPlayer(peep)
@@ -154,6 +204,8 @@ function BaseCombatHUDController:poke(actionID, actionIndex, e)
 		self:activateQuickHeal(e)
 	elseif actionID == "setQuickHealFood" then
 		self:setQuickHealFood(e)
+	elseif actionID == "activateQuickAttack" then
+		self:activateQuickAttack(e)
 	elseif actionID == "changeStance" then
 		self:changeStance(e)
 	elseif actionID == "show"then
@@ -297,6 +349,59 @@ function BaseCombatHUDController:setQuickHealFood(e)
 	quickHealStorage:set("quickHealItemID", e.id)
 end
 
+function BaseCombatHUDController:activateQuickAttack(e)
+	local peep = self:getPeep()
+
+	local attackers = self:getDirector():probe(
+		self:getPeep():getLayerName(),
+		self:isAttacking(),
+		function(p)
+			local target = p:getBehavior(CombatTargetBehavior)
+			target = target and target.actor and target.actor:getPeep()
+
+			if target == peep then
+				return true
+			end
+		end)
+
+	table.sort(attackers, function(a, b)
+		local aLineOfSightClear = Utility.Combat.canSeeTarget(peep, a)
+		local bLineOfSightClear = Utility.Combat.canSeeTarget(peep, b)
+
+		if aLineOfSightClear ~= bLineOfSightClear then
+			if aLineOfSightClear then
+				return true
+			elseif bLineOfSightClear then
+				return false
+			end
+		end
+
+		local aCombatLevel = Utility.Combat.getCombatLevel(a)
+		local bCombatLevel = Utility.Combat.getCombatLevel(b)
+
+		if aCombatLevel ~= bCombatLevel then
+			return aCombatLevel > bCombatLevel
+		end
+
+		local distanceA = Utility.Peep.getAbsoluteDistance(peep, a)
+		local distanceB = Utility.Peep.getAbsoluteDistance(peep, b)
+
+		if distanceA ~= distanceB then
+			return distanceA < distanceB
+		end
+
+		return a:getID() < b:getID()
+	end)
+
+	local attacker = attackers[1]
+	if attacker then
+		Log.info("Player '%s' is quick-attacking '%s'!", peep:getName(), attacker:getName())
+		Utility.Peep.attack(peep, attacker)
+	else
+		Log.info("Player '%s' isn't being attacked...", peep:getName(), attacker:getName())
+	end
+end
+
 function BaseCombatHUDController:deleteEquipment(e)
 	local equipmentStorage = self:getStorage("Equipment")
 	equipmentStorage:getSection(e.index):removeSection(e.slot)
@@ -389,33 +494,22 @@ function BaseCombatHUDController:deleteEquipmentSlot(e)
 end
 
 function BaseCombatHUDController:equip(e)
-	local equipmentStorage = self:getStorage("Equipment")
-	local slotStorage = equipmentStorage:getSection(e.index):getSection(e.slot):getSection("items")
+	assert(type(e.key) == "number", "item key must be number")
 
-	local peep = self:getPeep()
-	local gameDB = self:getDirector():getGameDB()
-
-	for _, item in slotStorage:iterateSections() do
-		local itemID = item:get("id")
-		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
-		local itemResource = gameDB:getResource(itemID, "Item")
-
-		if itemInstance and itemResource then
-			local actions = Utility.getActions(
-				self:getDirector():getGameInstance(),
-				itemResource,
-				'inventory')
-			for i = 1, #actions do
-				local actionInstance = actions[i].instance
-				if actionInstance:is("equip") then
-					actionInstance:perform(
-						peep:getState(),
-						peep,
-						itemInstance)
-					break
-				end
-			end
+	local equipment
+	for _, otherEquipment in ipairs(self.equipment) do
+		if otherEquipment.key == e.key then
+			equipment = otherEquipment
+			break
 		end
+	end
+
+	if not equipment then
+		return
+	end
+
+	if not Utility.Item.equipMany(self:getPeep(), { equipment.instance }) then
+		Utility.Peep.notify(peep, "ui.notification.inventory.equipItemInventoryFull")
 	end
 end
 
@@ -423,8 +517,6 @@ function BaseCombatHUDController:getConfig()
 	local config = self:getStorage("Config"):get().config or {}
 
 	local disabled = config.disabled or {}
-	disabled["equipment"] = true
-	disabled["spells"] = true
 	disabled["prayers"] = true
 	config.disabled = disabled
 
@@ -586,7 +678,7 @@ function BaseCombatHUDController:pullStateForPeep(peep)
 			},
 
 			weapon = {
-				id = item and Utility.Item.getInstanceName(item) or weapon:getWeaponType(),
+				id = item and Utility.Item.getInstanceName(item) or weapon:getDebugInfo().filename,
 			},
 
 			bonuses = Utility.Peep.getEquipmentBonuses(peep),
@@ -696,6 +788,7 @@ function BaseCombatHUDController:updateActiveSpell()
 	end
 
 	self.activeSpellID = activeSpellID
+	self:getStorage("Config"):getSection("state"):set("activeSpellID", activeSpellID or false)
 end
 
 function BaseCombatHUDController:updateSpells()
@@ -993,44 +1086,6 @@ function BaseCombatHUDController:getCurrentEquipment(e)
 	return result
 end
 
-function BaseCombatHUDController:getEquipment()
-	local equipment = self:getStorage("Equipment")
-	if equipment:length() <= 1 and not equipment:getSection(1):hasValue("name") then
-		equipment:getSection(1):set("name", "Gear")
-	end
-
-	local result = self:getStorage("Equipment"):get()
-	for _, section in ipairs(result) do
-		for i, slot in ipairs(section) do
-			local newSlot = {
-				icon = slot.icon,
-				stats = slot.stats,
-				items = {}
-			}
-
-			local items = slot.items
-			for _, item in ipairs(items or {}) do
-				local key = item.slot
-				if key == Equipment.PLAYER_SLOT_TWO_HANDED then
-					key = Equipment.PLAYER_SLOT_RIGHT_HAND
-				end
-
-				newSlot.items[key] = {
-					id = item.id,
-					count = 1,
-					slot = key
-				}
-			end
-
-			section[i] = newSlot
-		end
-	end
-
-	result.current = { self:getCurrentEquipment() }
-
-	return result
-end
-
 function BaseCombatHUDController:_getTurnOrder(peep, time)
 	local actorReference = peep:getBehavior(ActorReferenceBehavior)
 	local actorID = actorReference and actorReference.actor and actorReference.actor:getID()
@@ -1306,6 +1361,142 @@ function BaseCombatHUDController:getAvailablePowers()
 	return offensivePowers, defensivePowers
 end
 
+function BaseCombatHUDController:onPeepEquipGear(_, e)
+	if e.slot == Equipment.PLAYER_SLOT_TWO_HANDED or e.slot == Equipment.PLAYER_SLOT_RIGHT_HAND then
+		local logic = e.logic
+		if logic and Class.isCompatibleType(logic, Weapon) then
+			self.previousLoadoutStyle = self.currentLoadoutStyle
+			self.currentLoadoutStyle = logic:getStyle()
+			return
+		end
+	end
+
+	if e.item and e.slot then
+		self:updateGear(e.item, e.slot, "equip")
+	end
+end
+
+function BaseCombatHUDController:onPeepDequipGear(_, e)
+	if e.slot == Equipment.PLAYER_SLOT_TWO_HANDED or e.slot == Equipment.PLAYER_SLOT_RIGHT_HAND then
+		return
+	end
+
+	if e.item and e.slot then
+		self:updateGear(e.item, e.slot, "dequip")
+	end
+end
+
+function BaseCombatHUDController:updateGear(item, slot, mode)
+	if self.isSwappingGear then
+		return
+	end
+
+	if not self.currentLoadoutStyle then
+		return
+	end
+
+	local loadoutSectionKey = self.STYLE_TO_STORAGE[self.currentLoadoutStyle]
+	if not loadoutSectionKey then
+		return
+	end
+
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotStorage = equipmentStorage:getSection(loadoutSectionKey)
+	local itemsStorage = slotStorage:getSection("items")
+
+	local peep = self:getPeep()
+	local equipment = peep:getBehavior(EquipmentBehavior)
+	equipment = equipment and equipment.equipment
+
+	if not equipment then
+		return
+	end
+
+	local broker = equipment:getBroker()
+	if not broker then
+		return
+	end
+
+	local hasSlot = false
+	for i = 1, itemsStorage:length() do
+		local itemStorage = itemsStorage:getSection(i)
+		if itemStorage:get("slot") == slot then
+			hasSlot = true
+
+			if mode == "equip" then
+				itemStorage:set("id", item:getID())
+			elseif mode == "dequip" and itemStorage:get("id") == item:getID() then
+				itemsStorage:removeSection(i)
+			end
+
+			break
+		end
+	end
+
+	if not hasSlot and mode == "equip" then
+		itemsStorage:set(itemsStorage:length() + 1, {
+			id = item:getID(),
+			slot = slot
+		})
+	end
+end
+
+function BaseCombatHUDController:equipGear()
+	if not self.currentLoadoutStyle then
+		return
+	end
+
+	local loadoutSectionKey = self.STYLE_TO_STORAGE[self.currentLoadoutStyle]
+	if not loadoutSectionKey then
+		return
+	end
+
+	local equipmentStorage = self:getStorage("Equipment")
+	local slotStorage = equipmentStorage:getSection(loadoutSectionKey)
+	local itemsStorage = slotStorage:getSection("items")
+
+	local peep = self:getPeep()
+	local gameDB = self:getDirector():getGameDB()
+
+	local equipItems = {}
+	local dequipSlots = {}
+	local canEquipAllItems = true
+	for _, item in itemsStorage:iterateSections() do
+		local itemID = item:get("id")
+		local slot = item:get("slot")
+
+		local itemInstance = Utility.Item.getItemInPeepInventory(peep, itemID)
+		local itemResource = gameDB:getResource(itemID, "Item")
+
+		if itemInstance and itemResource then
+			local actions = Utility.getActions(
+				self:getDirector():getGameInstance(),
+				itemResource,
+				'inventory')
+
+			for i = 1, #actions do
+				local actionInstance = actions[i].instance
+				if actionInstance:is("equip") then
+					if actionInstance:canPerform(peep:getState()) then
+						table.insert(equipItems, itemInstance)
+					else
+						table.insert(dequipItems, Utility.Peep.getEquippedItem(slot))
+						canEquipAllItems = false
+					end
+
+					break
+				end
+			end
+		end
+	end
+
+	if not Utility.Item.equipMany(peep, equipItems, dequipItems) then
+		Utility.Peep.notify(peep, "ui.notification.combat.switchClassLoadoutInventoryFull")
+	elseif not canEquipAllItems then
+		Utility.Peep.notify(peep, "ui.notification.combat.switchClassLoadoutEquipActionFailed")
+	end
+end
+
 function BaseCombatHUDController:updateStyle()
 	local peep = self:getPeep()
 
@@ -1342,6 +1533,17 @@ function BaseCombatHUDController:updateStyle()
 
 	local stance = peep:getBehavior(StanceBehavior)
 	self.stance = stance and stance.stance or Weapon.STANCE_NONE
+
+	if self.previousLoadoutStyle ~= self.currentLoadoutStyle then
+		self.isSwappingGear = true
+		local s, e = xpcall(self.equipGear, debug.traceback, self)
+		if not s then
+			Log.info("Couldn't swap gear: %s", e)
+		end
+
+		self.previousLoadoutStyle = self.currentLoadoutStyle
+		self.isSwappingGear = false
+	end
 end
 
 function BaseCombatHUDController:_updatePowersRecharge(powers)
@@ -1465,6 +1667,81 @@ function BaseCombatHUDController:updateFood()
 	self:updateQuickHeal()
 end
 
+
+
+function BaseCombatHUDController:tryPullEquipment(key, item)
+	if item:isNoted() then
+		return nil
+	end
+
+	local gameDB = self:getDirector():getGameDB()
+	local itemResource = gameDB:getResource(item:getID(), "Item")
+	if not itemResource then
+		return nil
+	end
+
+	local equipmentRecord = gameDB:getRecord("Equipment", { Resource = itemResource })
+	if not equipmentRecord then
+		return nil
+	end
+
+	local slot = equipmentRecord:get("EquipSlot")
+	if not (slot == Equipment.PLAYER_SLOT_TWO_HANDED or slot == Equipment.PLAYER_SLOT_RIGHT_HAND or slot == Equipment.PLAYER_SLOT_QUIVER) then
+		return nil
+	end
+
+	local actions = Utility.getActions(self:getDirector():getGameInstance(), itemResource, 'inventory', false)
+	local equipAction
+	for _, action in ipairs(actions) do
+		if action.instance:is("Equip") then
+			equipAction = action.instance
+			break
+		end
+	end
+
+	if not equipAction then
+		return nil
+	end
+
+	local result = {}
+	result.key = key
+	result.action = equipAction
+	result.id = item:getID()
+	result.count = item:getCount()
+	result.name = Utility.Item.getInstanceName(item)
+	result.description = Utility.Item.getInstanceDescription(item)
+	result.instance = item
+
+	return result
+end
+
+function BaseCombatHUDController:updateEquipment()
+	local oldEquipment = self.equipment
+	self.equipment = {}
+
+	local inventory = self:getPeep():getBehavior(InventoryBehavior)
+	inventory = inventory and inventory.inventory
+	if not inventory then
+		return
+	end
+
+	local broker = inventory:getBroker()
+	if not broker then
+		return
+	end
+
+	for key in broker:keys(inventory) do
+		for item in broker:iterateItemsByKey(inventory, key) do
+			local equipment = self:tryPullEquipment(key, item)
+			if equipment then
+				table.insert(self.equipment, equipment)
+			end
+		end
+	end
+
+	self.isDirty = self.isDirty or #oldEquipment ~= #self.equipment
+end
+
 function BaseCombatHUDController:updateQuickHeal()
 	local combatStatus = self:getPeep():getBehavior(CombatStatusBehavior)
 	if not combatStatus then
@@ -1547,6 +1824,24 @@ function BaseCombatHUDController:getFood()
 	return foodState
 end
 
+function BaseCombatHUDController:getEquipment()
+	local equipmentState = {}
+
+	for _, equipment in ipairs(self.equipment) do
+		local result = {
+			id = equipment.id,
+			key = equipment.key,
+			count = equipment.count,
+			name = equipment.name,
+			description = equipment.description
+		}
+
+		table.insert(equipmentState, result)
+	end
+
+	return equipmentState
+end
+
 function BaseCombatHUDController:getQuickHeal()
 	local enabled = self.quickHeal.enabled
 	local food = self.quickHeal.food
@@ -1566,7 +1861,7 @@ function BaseCombatHUDController:getQuickHeal()
 end
 
 function BaseCombatHUDController:sendRefresh()
-	self:send("refresh")
+	self:send("refreshState")
 end
 
 function BaseCombatHUDController:close()
@@ -1587,6 +1882,7 @@ function BaseCombatHUDController:update(delta)
 	self.updateDebugStats:measure("updateActiveSpell", self)
 	self.updateDebugStats:measure("updateTurnOrder", self)
 	self.updateDebugStats:measure("updateFood", self)
+	self.updateDebugStats:measure("updateEquipment", self)
 
 	local wasDirty = self.isDirty
 

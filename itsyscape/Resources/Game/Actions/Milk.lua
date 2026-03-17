@@ -30,8 +30,8 @@ function Milk:perform(state, player, target)
 		return false
 	end
 
-	local i, j, k = Utility.Peep.getTileAnchor(target)
-	local walk = Utility.Peep.getWalk(player, i, j, k, 2.5)
+	local position, layer = Utility.Peep.getTileAnchor(target, player)
+	local walk = Utility.Peep.getWalk(player, position, layer, 2.5)
 	if not walk then
 		return self:failWithMessage(player, "ActionFail_Walk")
 	end

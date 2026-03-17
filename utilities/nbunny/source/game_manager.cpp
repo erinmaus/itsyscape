@@ -49,13 +49,13 @@ NBUNNY_EXPORT int luaopen_nbunny_gamemanager(lua_State* L)
 
 nbunny::GameManagerBuffer::GameManagerBuffer()
 {
-	buffer.reserve(4096);
+	buffer.reserve(1024 * 1024);
 }
 
 nbunny::GameManagerBuffer::GameManagerBuffer(const std::vector<std::uint8_t>& buffer)
 	: buffer(buffer)
 {
-	this->buffer.reserve(4096);
+	this->buffer.reserve(1024 * 1024);
 }
 
 void nbunny::GameManagerBuffer::read(std::uint8_t* data, std::size_t size)
@@ -83,10 +83,7 @@ void nbunny::GameManagerBuffer::append(const std::uint8_t* data, std::size_t siz
 
 void nbunny::GameManagerBuffer::seek(std::size_t offset)
 {
-	if (offset < length())
-	{
-		current_offset = offset;
-	}
+	current_offset = std::min(offset, length());
 }
 
 std::size_t nbunny::GameManagerBuffer::tell() const

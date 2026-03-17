@@ -28,7 +28,7 @@ function MapMotion:getReferenceY(e)
 	if tile and i and j and map then
 		local min = Vector(map:getCellSize() * (i - 1), -10000, map:getCellSize() * (j - 1))
 		local max = Vector(map:getCellSize() * i, 10000, map:getCellSize() * j)
-		min, max = Vector.transformBounds(min, max, e.transform)
+		--min, max = Vector.transformBounds(min, max, e.transform)
 
 		local hit, point = e.ray:hitBounds(min, max)
 		if hit and point then
@@ -63,11 +63,11 @@ function MapMotion:onMousePressed(e)
 	local function compareZ(a, b)
 		local distance1, distance2
 		if e.camera then
-			distance1 = e.camera:project(a[Map.RAY_TEST_RESULT_POSITION]).z
-			distance2 = e.camera:project(b[Map.RAY_TEST_RESULT_POSITION]).z
+			distance1 = e.camera:project(a[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform)).z
+			distance2 = e.camera:project(b[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform)).z
 		else
-			distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION] - e.eye)
-			distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION] - e.eye)
+			distance1 = Vector.getLength(a[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform) - e.eye)
+			distance2 = Vector.getLength(b[Map.RAY_TEST_RESULT_POSITION]:transform(e.transform) - e.eye)
 		end
 
 		return distance1 < distance2
@@ -166,12 +166,13 @@ function MapMotion:onMouseMoved(e)
 		local y = self:getReferenceY(e)
 		local center = self.map:getTileCenter(self.tileI, self.tileJ)
 		local distance = y - center.y
+		local step = e.step or 1
 
-		if math.abs(distance) >= 1 then
+		if math.abs(distance) >= step then
 			local d = math.abs(distance)
-			while d >= 1 do
-				self:perform(e, math.sign(distance))
-				d = d - 1
+			while d >= e.step  do
+				self:perform(e, math.sign(distance) * e.step)
+				d = d - e.step
 			end
 
 			return true
@@ -192,7 +193,7 @@ function MapMotion:perform(e, distance)
 
 	for i = 1, #self.corners do
 		local corner = cornerOffset[self.corners[i]]
-		self.tile:setCorner(corner.s, corner.t, self.tile:getCorner(corner.s, corner.t) + distance)
+		self.tile:setCorner(corner.s, corner.t, self.tile:getCorner(corner.s, corner.t) + distance, math.abs(distance) == 1)
 		--self.tile[self.corners[i]] = self.tile[self.corners[i]] + distance
 	end
 end

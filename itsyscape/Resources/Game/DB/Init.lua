@@ -106,6 +106,7 @@ Game "ItsyScape"
 	}
 
 	ActionType "None"
+	ActionType "Interact"
 
 	ActionType "Bank"
 	ActionType "Collect"
@@ -139,7 +140,9 @@ Game "ItsyScape"
 	}
 
 	Meta "MakeOffset" {
-		OffsetY = Meta.TYPE_NUMBER,
+		OffsetX = Meta.TYPE_REAL,
+		OffsetY = Meta.TYPE_REAL,
+		OffsetZ = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -191,6 +194,13 @@ Game "ItsyScape"
 		PanZ = Meta.TYPE_REAL,
 		ZoomZ = Meta.TYPE_REAL,
 		SingleTile = Meta.TYPE_INTEGER,
+		MapObject = Meta.TYPE_RESOURCE
+	}
+
+	Meta "MapObjectAnchor" {
+		PositionI = Meta.TYPE_REAL,
+		PositionJ = Meta.TYPE_REAL,
+		Layer = Meta.TYPE_INTEGER,
 		MapObject = Meta.TYPE_RESOURCE
 	}
 
@@ -271,9 +281,26 @@ Game "ItsyScape"
 		Map = Meta.TYPE_RESOURCE
 	}
 
+	ActionType "Climb"
+
+	Meta "ClimbDestination" {
+		Cutscene = Meta.TYPE_RESOURCE,
+		FromLayer = Meta.TYPE_INTEGER,
+		ToLayer = Meta.TYPE_INTEGER,
+		Action = Meta.TYPE_ACTION
+	}
+
 	Meta "GatherableProp" {
 		Health = Meta.TYPE_REAL,
 		SpawnTime = Meta.TYPE_REAL,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
+	ResourceType "ArtisanProperty"
+
+	Meta "ArtisanProperty" {
+		Count = Meta.TYPE_REAL,
+		Property = Meta.TYPE_RESOURCE,
 		Resource = Meta.TYPE_RESOURCE
 	}
 
@@ -305,6 +332,13 @@ Game "ItsyScape"
 		LootCategory = Meta.TYPE_RESOURCE
 	}
 
+	ResourceType "ActionCommand"
+
+	Meta "ActionCommandMap" {
+		Map = Meta.TYPE_RESOURCE,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	ResourceType "Character"
 	ResourceType "Team"
 
@@ -316,6 +350,20 @@ Game "ItsyScape"
 	Meta "CharacterTeam" {
 		Character = Meta.TYPE_RESOURCE,
 		Team = Meta.TYPE_RESOURCE
+	}
+
+	Meta "PlinthExhibit" {
+		ExhibitResource = Meta.TYPE_RESOURCE,
+		ExhibitName = Meta.TYPE_TEXT,
+		ExhibitDescription = Meta.TYPE_TEXT,
+
+		Zoom = Meta.TYPE_REAL,
+		OffsetX = Meta.TYPE_REAL,
+		OffsetY = Meta.TYPE_REAL,
+		OffsetZ = Meta.TYPE_REAL,
+		
+		Language = Meta.TYPE_TEXT,
+		Action = Meta.TYPE_ACTION
 	}
 
 	ActionType "Talk"
@@ -359,8 +407,16 @@ Game "ItsyScape"
 
 	Meta "CombatSpell" {
 		Strength = Meta.TYPE_INTEGER,
+		ZealCost = Meta.TYPE_REAL,
 		Resource = Meta.TYPE_RESOURCE
 	}
+
+	Meta "XWeaponBoost" {
+		AccuracyBonus = Meta.TYPE_INTEGER,
+		StrengthBonus = Meta.TYPE_INTEGER,
+		AlwaysHits = Meta.TYPE_INTEGER,
+		Resource = Meta.TYPE_RESOURCE
+	} 
 
 	Meta "Equipment" {
 		Name = Meta.TYPE_TEXT,
@@ -500,6 +556,11 @@ Game "ItsyScape"
 		Resource = Meta.TYPE_RESOURCE
 	}
 
+	Meta "OldOneDescription" {
+		Value = Meta.TYPE_TEXT,
+		Resource = Meta.TYPE_RESOURCE
+	}
+
 	Meta "ActionDifficulty" {
 		Value = Meta.TYPE_INTEGER,
 		Action = Meta.TYPE_ACTION
@@ -544,6 +605,15 @@ Game "ItsyScape"
 		Language = "en-US",
 		Type = "Dresser_Search"
 	}
+
+	ActionType "Read_Plinth"
+		ItsyScape.Meta.ActionTypeVerb {
+			Value = "Read",
+			XProgressive = "Reading",
+			Language = "en-US",
+			Type = "Read_Plinth"
+
+		}
 
 	ActionType "Loot"
 	ActionType "Reward"
@@ -1457,6 +1527,7 @@ include "Resources/Game/DB/Items/Isabellium.lua"
 include "Resources/Game/DB/Items/TreeSecondaries.lua"
 include "Resources/Game/DB/Items/EquipmentPlaceholders.lua"
 include "Resources/Game/DB/Items/Fossils.lua"
+include "Resources/Game/DB/Items/Ectoplasm.lua"
 
 -- Equipment
 include "Resources/Game/DB/Items/Amulets.lua"
@@ -1529,6 +1600,10 @@ include "Resources/Game/DB/Creeps/CrateMimic.lua"
 include "Resources/Game/DB/Creeps/Mantok.lua"
 include "Resources/Game/DB/Creeps/Dummy.lua"
 include "Resources/Game/DB/Creeps/Yenderhounds.lua"
+include "Resources/Game/DB/Creeps/GildedDragon.lua"
+include "Resources/Game/DB/Creeps/ExtraterrestrialYenderling.lua"
+include "Resources/Game/DB/Creeps/GoredDragon.lua"
+include "Resources/Game/DB/Creeps/WarfMite.lua"
 
 -- Peeps
 include "Resources/Game/DB/Peeps/Banker.lua"
@@ -1546,6 +1621,7 @@ include "Resources/Game/DB/Peeps/BlackTentacle.lua"
 include "Resources/Game/DB/Peeps/Humans.lua"
 include "Resources/Game/DB/Peeps/Disemboweled.lua"
 include "Resources/Game/DB/Peeps/ExperimentX.lua"
+include "Resources/Game/DB/Peeps/GlyphboundYendorian.lua"
 
 -- Characters
 include "Resources/Game/DB/Characters/Teams.lua"
@@ -1555,6 +1631,7 @@ include "Resources/Game/DB/Characters/VizierRockKnight.lua"
 include "Resources/Game/DB/Characters/Dummy.lua"
 include "Resources/Game/DB/Characters/BlackTentacles.lua"
 include "Resources/Game/DB/Characters/Rosalind.lua"
+include "Resources/Game/DB/Characters/Isabelle.lua"
 
 -- Gods
 include "Resources/Game/DB/Gods/Yendor.lua"
@@ -1587,6 +1664,11 @@ include "Resources/Game/DB/Powers/Defense.lua"
 include "Resources/Game/DB/Effects/Immunities.lua"
 include "Resources/Game/DB/Effects/Misc.lua"
 include "Resources/Game/DB/Effects/Tutorial.lua"
+
+-- Action commands
+include "Resources/Game/DB/ActionCommands/Fishing.lua"
+include "Resources/Game/DB/ActionCommands/Mining.lua"
+include "Resources/Game/DB/ActionCommands/Woodcutting.lua"
 
 -- Props
 do
@@ -1639,6 +1721,18 @@ include "Resources/Game/DB/Props/FurnitureSets.lua"
 include "Resources/Game/DB/Props/CraftedItem.lua"
 include "Resources/Game/DB/Props/Bars.lua"
 include "Resources/Game/DB/Props/SlackTub.lua"
+include "Resources/Game/DB/Props/Glyphstone.lua"
+include "Resources/Game/DB/Props/ProjectedGlyph.lua"
+include "Resources/Game/DB/Props/Drakkenson.lua"
+include "Resources/Game/DB/Props/ColorfulFire.lua"
+include "Resources/Game/DB/Props/DragonFireball.lua"
+include "Resources/Game/DB/Props/Dodge.lua"
+include "Resources/Game/DB/Props/OldGinsville.lua"
+include "Resources/Game/DB/Props/Schism.lua"
+
+-- Clutter.
+include "Resources/Game/DB/Clutter/Religious.lua"
+include "Resources/Game/DB/Clutter/Cooking.lua"
 
 -- Cooking
 include "Resources/Game/DB/Cooking/Ingredients.lua"
@@ -1698,6 +1792,11 @@ include "Resources/Game/DB/Art/Rage/Rage.lua"
 do
 	ActionType "Debug_Ascend"
 	ActionType "Debug_Teleport"
+	ActionType "Debug_Navigate"
+	ActionType "Debug_Manipulate"
+	ActionType "Debug_Bank"
+	ActionType "Debug_Customization"
+	ActionType "Debug_Summon"
 	ActionType "Debug_Save"
 	ActionType "Debug_AntilogikaTeleport"
 	ActionType "Debug_AntilogikaWarp"
@@ -1712,6 +1811,11 @@ do
 
 	local ascendAction = ItsyScape.Action.Debug_Ascend()
 	local teleportAction = ItsyScape.Action.Debug_Teleport()
+	local navigateAction = ItsyScape.Action.Debug_Navigate()
+	local manipulateAction = ItsyScape.Action.Debug_Manipulate()
+	local bankAction = ItsyScape.Action.Debug_Bank()
+	local customizeAction = ItsyScape.Action.Debug_Customization()
+	local summonAction = ItsyScape.Action.Debug_Summon()
 	local saveAction = ItsyScape.Action.Debug_Save()
 	local antilogikaTeleportAction = ItsyScape.Action.Debug_AntilogikaTeleport()
 	local antilogikaWarpAction = ItsyScape.Action.Debug_AntilogikaWarp()
@@ -1729,6 +1833,41 @@ do
 		Language = "en-US",
 		XProgressive = "Teleporting-through-dimensions",
 		Action = teleportAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Navigate",
+		Language = "en-US",
+		XProgressive = "Navigating",
+		Action = navigateAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Warp-Reality",
+		Language = "en-US",
+		XProgressive = "Warping-Reality",
+		Action = manipulateAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Shapeshift",
+		Language = "en-US",
+		XProgressive = "Shapeshifting",
+		Action = customizeAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Tele-Bank",
+		Language = "en-US",
+		XProgressive = "Tele-Banking",
+		Action = bankAction
+	}
+
+	ItsyScape.Meta.ActionVerb {
+		Value = "Manifest",
+		Language = "en-US",
+		XProgressive = "Manifesting",
+		Action = summonAction
 	}
 
 	ItsyScape.Meta.ActionVerb {
@@ -1764,8 +1903,13 @@ do
 		ItsyScape.Action.Dequip(),
 		ascendAction,
 		teleportAction,
-		antilogikaTeleportAction,
-		antilogikaWarpAction,
+		navigateAction,
+		manipulateAction,
+		bankAction,
+		customizeAction,
+		summonAction,
+		-- antilogikaTeleportAction,
+		-- antilogikaWarpAction,
 		antilogikaNoiseAction,
 		saveAction
 	}

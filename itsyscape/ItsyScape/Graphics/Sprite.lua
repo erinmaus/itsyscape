@@ -18,6 +18,24 @@ function Sprite:new(spriteManager, node, offset)
 	self.offset = offset:keep()
 end
 
+function Sprite:initParticleSystem(particleSystem, particleSystemProperties)
+	for attribute, value in pairs(particleSystemProperties) do
+		local setAttributeFunc = particleSystem['set' .. attribute]
+
+		if setAttributeFunc then
+			setAttributeFunc(particleSystem, unpack(value))
+		else
+			Log.error("Attribute '%s' is not a particle attribute.", attribute)
+		end
+	end
+
+	if particleSystemProperties.Offset then
+		particleSystem:setOffset(unpack(particleSystemProperties.Offset))
+	end
+
+	return particleSystem
+end
+
 function Sprite:getSpriteManager()
 	return self.spriteManager
 end

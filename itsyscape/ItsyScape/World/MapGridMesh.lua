@@ -48,11 +48,11 @@ function MapGridMesh:buildMesh(left, right, top, bottom)
 			local color
 
 			if tile:hasFlag('impassable') then
-				color = Color(1, 0, 0, 1.0)
+				color = Color(1, 0, 0, 1)
 			elseif tile:hasFlag('door') then
-				color = Color(0, 0, 1, 1.0)
+				color = Color(0, 0, 1, 1)
 			else
-				color = Color(1, 1, 1, 0.5)
+				color = Color(1, 1, 1, 1)
 			end
 
 			self:addVertex(Vector(l, tile.topLeft, t), color)
@@ -74,7 +74,7 @@ function MapGridMesh:buildMesh(left, right, top, bottom)
 		local b = t + self.map:getCellSize()
 		local w = r - l
 		local h = b - t
-		local color = Color(1, 1, 1, 1)
+		local color = Color(1, 0, 1, 1)
 
 		local corners = {}
 		local count

@@ -25,8 +25,44 @@ function OldOneGlyphInstance:new(glyph, glyphManager)
 	self.rotation = Quaternion.IDENTITY
 	self.theta = 0
 	self.phi = 0
+	self.currentPhi = 0
 	self.parent = false
 	self.children = {}
+end
+
+function OldOneGlyphInstance:serialize()
+	local result = {
+		glyph = self.glyphManager:index(self.glyph),
+		rotation = self.rotation,
+		theta = self.theta,
+		phi = self.phi,
+		children = {}
+	}
+
+	for _, child in ipairs(self.children) do
+		table.insert(result.children, child:serialize())
+	end
+
+	return result
+end
+
+function OldOneGlyphInstance.deserialize(t, glyphManager)
+	local glyph = glyphManager and glyphManager:get(t.glyph)
+	if not glyph then
+		return nil
+	end
+
+	local instance = OldOneGlyphInstance(glyph, glyphManager)
+	instance:setRotation(t.rotation)
+	instance:setTheta(t.theta)
+	instance:setPhi(t.phi)
+
+	for _, child in ipairs(t.children) do
+		local childInstance = OldOneGlyphInstance.deserialize(child, glyphManager)
+		childInstance:setParent(instance)
+	end
+
+	return instance
 end
 
 function OldOneGlyphInstance:getGlyph()
@@ -55,6 +91,7 @@ end
 
 function OldOneGlyphInstance:setPhi(value)
 	self.phi = value
+	self.currentPhi = value
 end
 
 function OldOneGlyphInstance:layout()
@@ -71,9 +108,9 @@ function OldOneGlyphInstance:getPosition()
 	local radius = self.parent and self.parent:getRadius() or 0
 
 	return Vector(
-		radius * math.cos(self.phi) * math.cos(self.theta),
-		radius * math.cos(self.phi) * math.sin(self.theta),
-		radius * math.sin(self.phi))
+		radius * math.cos(self.currentPhi) * math.cos(self.theta),
+		radius * math.cos(self.currentPhi) * math.sin(self.theta),
+		radius * math.sin(self.currentPhi))
 end
 
 function OldOneGlyphInstance:getParent()
@@ -121,7 +158,7 @@ function OldOneGlyphInstance:getTransform()
 end
 
 function OldOneGlyphInstance:getRadius()
-	local radius = self.glyphManager:getRadius()
+	radius = self.glyphManager:getRadius()
 
 	local maxChildRadius = 0
 	for _, child in self:iterate() do
@@ -147,21 +184,29 @@ function OldOneGlyphInstance:getDepth()
 	return n
 end
 
+function OldOneGlyphInstance:getIsLeaf()
+	return #self.children == 0
+end
+
 function OldOneGlyphInstance:getProjection()
 	return self.projection
 end
 
-function OldOneGlyphInstance:update(delta)
+function OldOneGlyphInstance:update(time)
 	if self.parent then
-		self.phi = self.phi + delta * self.glyphManager:getRotationSpeed() * math.sqrt(self:getDepth())
+		self.currentPhi = self.phi + time * self.glyphManager:getRotationSpeed() * math.sqrt(self:getDepth())
 	end
 
 	for _, child in self:iterate() do
-		child:update(delta)
+		child:update(time)
 	end
 end
 
 function OldOneGlyphInstance:project(normal, d, axis)
+	if _DEBUG then
+		assert(self.projection, "cannot project glyph without projection")
+	end
+
 	return self.glyph:project(self.projection, normal, d, self:getTransform(), axis)
 end
 

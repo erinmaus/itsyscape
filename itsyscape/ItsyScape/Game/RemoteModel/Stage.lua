@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Class = require "ItsyScape.Common.Class"
 local Stage = require "ItsyScape.Game.Model.Stage"
+local RPCState = require "ItsyScape.Game.RPC.State"
 
 local RemoteStage = Class(Stage)
 
@@ -31,12 +32,12 @@ function RemoteStage:getItem(ref)
 end
 
 function RemoteStage:spyOnDropItem(ref, item, tile, position)
-	self.itemSpies[ref] = {
+	self.itemSpies[ref] = RPCState.merge({
 		ref = ref,
 		item = item,
 		tile = tile,
 		position = position
-	}
+	})
 end
 
 function RemoteStage:spyOnTakeItem(ref, item)

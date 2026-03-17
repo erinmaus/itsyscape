@@ -26,12 +26,8 @@ function BlockingProp:new(...)
 	static.type = StaticBehavior.BLOCKING
 end
 
-function BlockingProp:spawnOrPoofTile(tile, i, j, mode)
-	if mode == 'spawn' then
-		tile:pushFlag('blocking')
-	elseif mode == 'poof' then
-		tile:popFlag('blocking')
-	end
+function BlockingProp:spawnOrPoof()
+	-- Nothing.
 end
 
 return BlockingProp

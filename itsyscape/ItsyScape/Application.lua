@@ -32,6 +32,8 @@ local ToolTip = require "ItsyScape.UI.ToolTip"
 local NLuaRuntime = require "nbunny.luaruntime"
 
 local function inspectGameDB(gameDB)
+	if true then return end
+	
 	local VISIBLE_RESOURCES = {
 		"Item",
 		"Peep",
@@ -172,7 +174,7 @@ function Application:new(multiThreaded)
 		self.camera = ThirdPersonCamera()
 		do
 			self.camera:setDistance(30)
-			self.camera:setUp(Vector(0, -1, 0))
+			self.camera:setUp(Vector(0, 1, 0))
 			self.camera:setHorizontalRotation(-math.pi / 8)
 			self.camera:setVerticalRotation(-math.pi / 2)
 		end
@@ -325,21 +327,13 @@ function Application:measure(name, func, ...)
 		return
 	end
 
-	local beforeMemory = 0
-	if _DEBUG == 'plus' then
-		collectgarbage("stop")
-		beforeMemory = collectgarbage("count")
-	end
+	local beforeMemory = collectgarbage("count")
 
 	local before = love.timer.getTime()
 	DebugStats.GLOBAL:measure(name, func, ...)
 	local after = love.timer.getTime()
 
-	local afterMemory = 0
-	if _DEBUG == 'plus' then
-		afterMemory = collectgarbage("count")
-		collectgarbage("restart")
-	end
+	local afterMemory = collectgarbage("count")
 
 	local memory = afterMemory - beforeMemory
 
@@ -517,6 +511,20 @@ function Application:processAdminEvents()
 	until not event
 end
 
+function Application:_collect()
+	if _PROFILING then
+		return
+	end
+
+	local step = (_CONF.clientGCStepMS or 1) / 1000
+
+	local startTime = love.timer.getTime()
+	local collected = false
+	while love.timer.getTime() < startTime + step and not collected do
+		collected = collected or collectgarbage("step", 0)
+	end
+end
+
 function Application:update(delta)
 	Resource.update()
 
@@ -556,12 +564,7 @@ function Application:update(delta)
 	self:updateMemoryUsage()
 
 	if _DEBUG ~= "plus" then
-		local step = (_CONF.clientGCStepMS or 1) / 1000
-
-		local startTime = love.timer.getTime()
-		while love.timer.getTime() < startTime + step do
-			collectgarbage("step", 50)
-		end
+		self:measure("gc", self._collect, self)
 	end
 end
 
@@ -737,6 +740,10 @@ function Application:disconnect()
 		self.inputAdminChannel:push({
 			type = 'conf',
 			ticks = self.SINGLE_PLAYER_TICKS_PER_SECOND
+		})
+
+		self.inputAdminChannel:push({
+			type = 'tick'
 		})
 	end
 end
@@ -1209,7 +1216,7 @@ function Application:_draw()
 
 	local delta = self:getFrameDelta()
 	do
-		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE) and not love.keyboard.isDown("i") then
+		if self.show3D and (not self.uiView:getIsFullscreen() or _MOBILE or not self.showUI) then
 			self:measure("3d renderer", self.gameView.draw, self.gameView, delta)
 		end
 
@@ -1237,14 +1244,14 @@ function Application:_draw()
 		local mu = Tween.powerEaseInOut(
 			self.clickActionTime / Application.CLICK_DURATION,
 			3)
-		local oldColor = { love.graphics.getColor() }
+		love.graphics.push("all")
 		love.graphics.setBlendMode("add")
 		love.graphics.setColor(color:get())
 		love.graphics.circle(
 			'fill',
 			self.clickX, self.clickY,
 			mu * Application.CLICK_RADIUS)
-		love.graphics.setColor(unpack(oldColor))
+		love.graphics.pop()
 	end
 
 	self.previousFrameDelta = self:getFrameDelta()

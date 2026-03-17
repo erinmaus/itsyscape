@@ -132,15 +132,6 @@
 			}
 		},
 		{
-			name = "wall.exterior.wedge",
-
-			features = {
-				{ id = "wall.exterior.wedge.brick", material = "brick" },
-				{ id = "wall.exterior.wedge.wallpaper", material = "wallpaper" },
-				{ id = "wall.exterior.wedge.wood", material = "wood" }
-			}
-		},
-		{
 			name = "wall.interior.corner",
 
 			features = {
@@ -169,7 +160,7 @@
 			}
 		},
 		{
-			name = "wall.interior.x",
+			name = "wall.interior.x-edge",
 
 			features = {
 				{ id = "wall.interior.x1.wallpaper", material = "wallpaper" },

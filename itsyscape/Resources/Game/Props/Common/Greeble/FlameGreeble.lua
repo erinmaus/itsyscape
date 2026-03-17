@@ -16,13 +16,23 @@ local Greeble = require "Resources.Game.Props.Common.Greeble"
 
 local FlameGreeble = Class(Greeble)
 
+FlameGreeble.ATTACH_TO_ROOT = false
+
 FlameGreeble.FLAME_SCALE = Vector(1):keep()
 FlameGreeble.FLAME_OFFSET = Vector(0):keep()
+
+FlameGreeble.PARTICLE_SCALE = 1
+
+FlameGreeble.INNER_RADIUS = 0.1
+FlameGreeble.OUTER_RADIUS = 0.15
 
 FlameGreeble.INNER_FLAME_SPEED = 0.45
 FlameGreeble.OUTER_FLAME_SPEED = 0.5
 
 FlameGreeble.FLAME_HEIGHT = 1
+FlameGreeble.FLAME_WIND_RESISTANCE = 2
+
+FlameGreeble.SOFT = false
 
 FlameGreeble.INNER_FLAME_COLORS = {
 	Color.fromHexString("ffd52a"),
@@ -38,45 +48,58 @@ FlameGreeble.OUTER_FLAME_COLORS = {
 	Color(0.9, 0.5, 0.0),
 }
 
-function FlameGreeble:_updateDirection(direction, speed)
-	local position, layer = self.prop:getPosition()
-	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+FlameGreeble.LOCAL_DIRECTION = Vector(0, 1, 0)
 
-	local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
-	windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
-	local windMu = (windDelta + 1) / 2
-
-	local fireDirection = Vector(windDelta * windDirection.x, 1, windDelta * windDirection.z):getNormal()
-
+do
+	local fireDirection = Vector()
+	local targetWindRotation = Quaternion()
 	local currentWindRotation = Quaternion()
-	local targetWindRotation = Quaternion.lookAt(Vector(0), fireDirection, Vector.UNIT_Y)
-	local normal = currentWindRotation:slerp(targetWindRotation, windMu):transformVector(Vector.UNIT_Y)
+	local normal = Vector()
 
-	direction.speed[1] = windSpeed / 3 * speed
-	direction.speed[2] = windSpeed / 3 * speed
-	direction.direction[1] = normal.x
-	direction.direction[2] = normal.y
-	direction.direction[3] = normal.z
+	function FlameGreeble:_updateDirection(direction, speed)
+		local position, layer = self:getProp():getPosition()
+		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
+		local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
+		windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
+		local windMu = (windDelta + 1) / 2
+
+		fireDirection:from(
+			windDelta * windDirection.x,
+			self.FLAME_WIND_RESISTANCE,
+			windDelta * windDirection.z):normalize(fireDirection)
+
+		Quaternion.fromVectors(Vector.UNIT_Y, fireDirection, targetWindRotation)
+		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
+		normal:normalize(normal)
+
+		direction.speed[1] = windSpeed / 12 * speed
+		direction.speed[2] = windSpeed / 12 * speed
+		direction.direction[1] = normal.x
+		direction.direction[2] = normal.y
+		direction.direction[3] = normal.z
+	end
 end
 
 function FlameGreeble:_getInnerParticleDefinition()
 	self._innerParticleDefinition = self._innerParticleDefinition or {
-		numParticles = 50,
+		numParticles = 200,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
+		soft = self.SOFT,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.125 },
-				position = { 0, 0.1, 0 },
+				radius = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE },
+				position = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 1.25, 0.15 }
+				lifetime = { 2.75, 0.05 }
 			},
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.75, 1 },
+				speed = { 0.1, 0.1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -84,7 +107,7 @@ function FlameGreeble:_getInnerParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 }
+				scale = { 0.1 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -107,8 +130,8 @@ function FlameGreeble:_getInnerParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
-			delay = { 1 / 10 }
+			count = { 2, 5 },
+			delay = { 1 / 30 }
 		}
 	}
 
@@ -119,22 +142,23 @@ end
 
 function FlameGreeble:_getOuterParticleDefinition()
 	self._outerParticleDefinition = self._outerParticleDefinition or {
-		numParticles = 50,
+		numParticles = 200,
 		texture = "Resources/Game/Props/Common/Particle_Flame.png",
 		columns = 4,
+		soft = self.SOFT,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.25 },
-				position = { 0, 0, 0 },
+				radius = { 0, self.OUTER_RADIUS * self.PARTICLE_SCALE },
+				position = { 0, self.INNER_RADIUS * self.PARTICLE_SCALE, 0 },
 				yRange = { 0, 0 },
-				lifetime = { 1.5, 0.4 }
+				lifetime = { 2.5, 0.05 }
 			},
 			{
 				type = "DirectionalEmitter",
 				direction = { 0, 1, 0 },
-				speed = { 0.75, 1 },
+				speed = { 0.1, 0.1 },
 			},
 			{
 				type = "RandomColorEmitter",
@@ -142,7 +166,7 @@ function FlameGreeble:_getOuterParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.25 }
+				scale = { 0.25 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -165,8 +189,8 @@ function FlameGreeble:_getOuterParticleDefinition()
 
 		emissionStrategy = {
 			type = "RandomDelayEmissionStrategy",
-			count = { 5, 10 },
-			delay = { 1 / 10 }
+			count = { 2, 5 },
+			delay = { 1 / 30 }
 		}
 	}
 
@@ -197,7 +221,13 @@ function FlameGreeble:load()
 	Greeble.load(self)
 
 	local resources = self:getResources()
-	local root = self:getRoot()
+
+	local root
+	if self.ATTACH_TO_ROOT then
+		root = self:getGameView():getScene()
+	else
+		root = self:getRoot()
+	end
 
 	resources:queueEvent(function()
 		self.outerFlames = ParticleSceneNode()
@@ -205,6 +235,7 @@ function FlameGreeble:load()
 		self.outerFlames:setParent(root)
 		self.outerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
 		self.outerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
+		self.outerFlames:getMaterial():setZBias(-10)
 
 		self.innerFlames = ParticleSceneNode()
 		self.innerFlames:initParticleSystemFromDef(self:_getInnerParticleDefinition(), resources)
@@ -212,6 +243,18 @@ function FlameGreeble:load()
 		self.innerFlames:getTransform():setLocalScale(self.FLAME_SCALE)
 		self.innerFlames:getTransform():setLocalTranslation(self.FLAME_OFFSET)
 	end)
+end
+
+function FlameGreeble:remove()
+	Greeble.remove(self)
+
+	if self.outerFlames then
+		self.outerFlames:setParent()
+	end
+
+	if self.innerFlames then
+		self.innerFlames:setParent()
+	end
 end
 
 function FlameGreeble:regreebilize(t, ...)
@@ -240,6 +283,42 @@ function FlameGreeble:_updateParticles()
 
 	if self.innerFlames then
 		self.innerFlames:initEmittersFromDef(self:_getInnerParticleDefinition().emitters)
+	end
+end
+
+function FlameGreeble:updateLocalPosition(position)
+	if not self.outerFlames then
+		self:getResources():queueEvent(function()
+			self.outerFlames:updateLocalPosition(position)
+		end)
+	else
+		self.outerFlames:updateLocalPosition(position)
+	end
+
+	if not self.innerFlames then
+		self:getResources():queueEvent(function()
+			self.innerFlames:updateLocalPosition(position)
+		end)
+	else
+		self.innerFlames:updateLocalPosition(position)
+	end
+end
+
+function FlameGreeble:updateLocalDirection(direction)
+	if not self.outerFlames then
+		self:getResources():queueEvent(function()
+			self.outerFlames:updateLocalDirection(direction)
+		end)
+	else
+		self.outerFlames:updateLocalDirection(direction)
+	end
+
+	if not self.innerFlames then
+		self:getResources():queueEvent(function()
+			self.innerFlames:updateLocalDirection(direction)
+		end)
+	else
+		self.innerFlames:updateLocalDirection(direction)
 	end
 end
 

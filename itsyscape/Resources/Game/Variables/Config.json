@@ -5,11 +5,15 @@
 	},
 
 	"engine": {
-		"walkQueueTimeMS": 50
+		"walkQueueTimeMS": 25
 	},
 
 	"colors": {
 		"ui.text": "ffffff",
+		"ui.gamepadCircleCursor.active": "f26722",
+		"ui.gamepadCircleCursor.inactive": "6b4da0",
+		"ui.gamepadZap.from": "ffcc00",
+		"ui.gamepadZap.to": "6b4da0",
 		"ui.combat.bar.text": "ffffff",
 		"ui.combat.bar.textShadow": "000000",
 		"ui.combat.health.damage": "8c2726",
@@ -21,6 +25,8 @@
 		"ui.combat.zeal.tier4Fire": "6b4da0",
 		"ui.combat.zeal.remainder": "1f5173",
 		"ui.combat.zeal.background": "000000",
+		"ui.combat.zeal.lose": "f26722",
+		"ui.combat.zeal.gain": "6b4da0",
 		"ui.combat.nextPlayerAttack": "589c2b",
 		"ui.combat.nextTargetAttack": "8c2726",
 		"ui.combat.animatedDecoration": "ffcc00",
@@ -39,8 +45,20 @@
 		"ui.poke.actor": "fedd56",
 		"ui.poke.item": "6dc389",
 		"ui.poke.misc": "999999",
+		"world.resource.hit": "00ff00",
+		"world.resource.warm": "ffcc00",
+		"world.resource.ready": "ff0000",
+		"world.resource.disabled": "999999",
 		"world.shimmer.attackable": "c93736",
 		"world.shimmer.unselected": "999999",
-		"world.shimmer.interactive": "ffcc00"
+		"world.shimmer.interactive": "ffcc00",
+		"world.dodgeAura.archery.inner": "339d80",
+		"world.dodgeAura.archery.outer": "9d7033",
+		"world.dodgeAura.melee.inner": "a02c4b",
+		"world.dodgeAura.melee.outer": "a0602c",
+		"world.dodgeAura.magic.inner": "463779",
+		"world.dodgeAura.magic.outer": "d1a019",
+		"world.dodgeAura.knockback.inner": "999999",
+		"world.dodgeAura.knockback.outer": "ffffff",
 	}
 }

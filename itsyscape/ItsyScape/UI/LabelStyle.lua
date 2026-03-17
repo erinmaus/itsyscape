@@ -25,12 +25,11 @@ function LabelStyle:new(t, resources)
 
 	if t.font then
 		self.font = resources:load(love.graphics.newFont, t.font, t.fontSize or 12)
-		if t.lineHeight then
-			self.font:setLineHeight(t.lineHeight)
-		end
 	else
 		self.font = false
 	end
+
+	self.lineHeight = t.lineHeight or 1
 
 	if t.width then
 		self.width = t.width
@@ -43,6 +42,8 @@ function LabelStyle:new(t, resources)
 	self.align = t.align or "left"
 	self.shrink = t.shrink or false
 	self.center = t.center or false
+	self.scroll = t.scroll or false
+	self.padding = t.padding or 0
 end
 
 function LabelStyle:draw(widget, state)
@@ -61,11 +62,27 @@ function LabelStyle:draw(widget, state)
 		end
 
 		local width, height = widget:getSize()
-		if width == 0 and height == 0 then
+		if width == 0 or height == 0 then
 			local p = widget:getParent()
+			local x, y = widget:getPosition()
 			if p then
-				width, height = p:getSize()
+				local parentWidth, parentHeight = p:getSize()
+				if width == 0 then
+					width = parentWidth - x
+				end
+
+				if height == 0 then
+					height = parentHeight - y
+				end
 			end
+		end
+
+		if width > 0 then
+			width = math.max(width - self.padding * 2, 0)
+		end
+
+		if height > 0 then
+			height = math.max(height - self.padding * 2, 0)
 		end
 
 		if type(text) == "table" then
@@ -86,7 +103,7 @@ function LabelStyle:draw(widget, state)
 			text = result
 		end
 
-		local x, y = 0, 0
+		local x, y = self.padding, self.padding
 		if width == 0 then
 			local r
 			if type(text) == "table" then
@@ -98,7 +115,7 @@ function LabelStyle:draw(widget, state)
 			width = font:getWidth(r or text)
 
 			if self.align == "center" then
-				x = -width / 2
+				x = x + -width / 2
 			end
 		end
 
@@ -109,6 +126,7 @@ function LabelStyle:draw(widget, state)
 
 		local maxWidth = self.width or width
 		local oldLineHeight = font:getLineHeight()
+		font:setLineHeight(self.lineHeight)
 		local newLines = {}
 		if self.spaceLines then
 			local prespacedText = text
@@ -122,7 +140,7 @@ function LabelStyle:draw(widget, state)
 				for _, code in utf8.codes(transformedSequence) do
 					local c = utf8.char(code)
 					if c:match("\n") then
-						table.insert(newLines, #transformedText)
+						table.insert(newLines, #transformedText + 2)
 					end
 
 					table.insert(transformedText, prespacedText[i])
@@ -130,23 +148,18 @@ function LabelStyle:draw(widget, state)
 				end
 			end
 
+
 			local wrappedWidth, wrappedText = font:getWrap(transformedText, maxWidth)
 			local currentIndex = 0
 
 			local commonAlign = #wrappedText == 1 and self.align or "justify"
 			local finalAlign = self.align
 
-			local newLineHeight
-			if #wrappedText == 1 then
-				newLineHeight = font:getHeight()
-			else
-				newLineHeight = math.min(height / #wrappedText, font:getHeight() * 1.5)
-			end
-
-			local yOffset = (newLineHeight - font:getHeight()) / 2
+			local newLineHeight = height / #wrappedText
+			local offsetY = (newLineHeight - (font:getHeight() * font:getLineHeight())) / 2
 
 			local wordX = 0
-			local wordY = height / 2 - (newLineHeight * #wrappedText) / 2
+			local wordY = math.max(offsetY, 0)
 			local words = {}
 			local currentIndex = 0
 			for index, line in ipairs(wrappedText) do
@@ -172,19 +185,23 @@ function LabelStyle:draw(widget, state)
 					spaceLength = (maxWidth - lineLength) / (#words - 1)
 				end
 
-				for _, w in ipairs(words) do
+				for k, w in ipairs(words) do
 					local word = {}
 					for i in utf8.codes(w) do
-						for i = #newLines, 1, -1 do
-							if (currentIndex + i) * 2 > newLines[i] then
-								table.remove(newLines, i)
+						local absoluteIndex = (currentIndex + i) * 2
+
+						for j = #newLines, 1, -1 do
+							if absoluteIndex >= newLines[j] then
+								table.remove(newLines, j)
 								currentIndex = currentIndex + 1
 							end
 						end
 
-						table.insert(word, transformedText[(currentIndex + i) * 2 - 1])
-						table.insert(word, transformedText[(currentIndex + i) * 2])
+						local newAbsoluteIndex = (currentIndex + i) * 2
+						table.insert(word, transformedText[newAbsoluteIndex - 1])
+						table.insert(word, transformedText[newAbsoluteIndex])
 					end
+
 					currentIndex = currentIndex + utf8.len(w) + 1
 
 					if self.textShadow then
@@ -252,7 +269,7 @@ function LabelStyle:draw(widget, state)
 
 		love.graphics.setFont(previousFont)
 
-		oldLineHeight = font:setLineHeight(oldLineHeight)
+		font:setLineHeight(oldLineHeight)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)

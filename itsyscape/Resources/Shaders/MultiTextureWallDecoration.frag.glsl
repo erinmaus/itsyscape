@@ -1,6 +1,10 @@
+#define SCAPE_WALL_HACK_DO_NOT_CLAMP_TO_XZ
+
 uniform ArrayImage scape_DiffuseTexture;
 
 #include "Resources/Shaders/WallHack.common.glsl"
+
+varying float frag_Layer;
 
 vec4 performEffect(vec4 color, vec2 textureCoordinate)
 {

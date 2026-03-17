@@ -49,4 +49,6 @@ function Metatable:__call(...)
 	return self.func(unpack(self.args, 1, self.n + n))
 end
 
+Function.EMPTY = Function(function() end)
+
 return Function

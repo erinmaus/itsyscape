@@ -26,8 +26,8 @@ CraftedItem.MAX_DUST_PARTICLES     = 10
 
 CraftedItem.MAX_ITEMS_PER_ROW = 4
 
-CraftedItem.ITEM_RADIUS = 1.25
-CraftedItem.ITEM_SCALE  = Vector(0.5):keep()
+CraftedItem.ITEM_RADIUS = 0.5
+CraftedItem.ITEM_SCALE  = Vector(1):keep()
 
 local STATE_NONE    = "none"
 local STATE_INPUTS  = "input"
@@ -42,6 +42,7 @@ function CraftedItem:_loadItemGreebles(items, offset)
 			numParticles = 100,
 			columns = 2,
 			rows = 2,
+			soft = true,
 
 			emitters = {
 				{
@@ -111,7 +112,7 @@ function CraftedItem:_loadItemGreebles(items, offset)
 		local angle = (offsetWithinRow - 1) / numItemsInRow * math.pi * 2
 
 		local x = math.cos(angle) * radius
-		local y = (currentRow - 1) * 2
+		local y = (currentRow - 1)
 		local z = math.sin(angle) * radius
 
 		local itemGreeble = self:addGreeble(ItemGreeble, {

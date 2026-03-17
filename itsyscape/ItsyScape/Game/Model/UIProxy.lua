@@ -37,6 +37,9 @@ UIProxy.sendPoke:link("onPoke",
 	Event.Argument("actionIndex"),
 	Event.Argument("e"))
 
+UIProxy.refresh = Event.ServerToClientRPC(Event.Argument("interfaceID", true), Event.Argument("index", true))
+UIProxy.refresh:link("onRefresh", Event.Argument("interfaceID"), Event.Argument("index"))
+
 UIProxy.INTERFACE = "interface"
 UIProxy.push = Event.Set(
 	UIProxy.INTERFACE,

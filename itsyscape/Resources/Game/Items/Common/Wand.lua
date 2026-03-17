@@ -18,7 +18,7 @@ function Wand:getFarAttackRange(peep)
 end
 
 function Wand:getNearAttackRange(peep)
-	return 1
+	return 4
 end
 
 function Wand:getBonusForStance(peep)

@@ -13,11 +13,16 @@ local Utility = require "ItsyScape.Game.Utility"
 local Prop = require "ItsyScape.Peep.Peeps.Prop"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
 local SkyBehavior = require "ItsyScape.Peep.Behaviors.SkyBehavior"
+local StaticBehavior = require "ItsyScape.Peep.Behaviors.StaticBehavior"
 
 local TimedSkyProp = Class(Prop)
 
 function TimedSkyProp:new(...)
 	Prop.new(self, ...)
+
+	local static = self:getBehavior(StaticBehavior)
+	static.static = false
+	static.type = StaticBehavior.PASSABLE
 end
 
 function TimedSkyProp:spawnOrPoofTile()
@@ -25,11 +30,21 @@ function TimedSkyProp:spawnOrPoofTile()
 end
 
 function TimedSkyProp:getPropState()
-	local mapScript = Utility.Peep.getMapScript(self)
+	local mapScript
+
+	local instance = Utility.Peep.getInstance(self)
+	for _, layer in instance:iterateLayers() do
+		local m = instance:getMapScriptByLayer(layer)
+		if m and m:hasBehavior(SkyBehavior) then
+			mapScript = m
+			break
+		end
+	end
+
 	local sky = mapScript and mapScript:getBehavior(SkyBehavior)
 
 	return {
-		offset = sky and sky.currentOffsetSeconds or 0
+		offset = sky and sky.currentSeconds or 0
 	}
 end
 

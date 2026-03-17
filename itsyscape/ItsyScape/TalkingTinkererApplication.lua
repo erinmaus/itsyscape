@@ -109,6 +109,7 @@ function TalkingTinkererApplication:initTinkerer()
 	end
 
 	stage:placeProp("resource://Brazier_Isabelle", 1, "0@dummy")
+	stage:placeProp("resource://GroundFog", 1, "0@dummy")
 
 	local success, actor = stage:spawnActor("resource://" .. resource, 1, "0@dummy")
 
@@ -212,6 +213,10 @@ function TalkingTinkererApplication:getCurrentFrame(currentTime)
 end
 
 function TalkingTinkererApplication:playAnimation(nextFrame, channel, priority)
+	if not self.targetView then
+		return
+	end
+
 	local animation = nextFrame.animation or "<BAD>"
 
 	local skinFilename = string.format("Resources/Game/Skins/%s/%s_%s.lua", self.target, self.target, animation)
@@ -329,7 +334,7 @@ function TalkingTinkererApplication:renderTick()
 	outlinePostProcessPass:load(self:getGameView():getResourceManager())
 	outlinePostProcessPass:setMinOutlineThickness(6)
 	outlinePostProcessPass:setMaxOutlineThickness(6)
-	outlinePostProcessPass:setMinOutlineDepthAlpha(1)3
+	outlinePostProcessPass:setMinOutlineDepthAlpha(1)
 
 	local gameCamera = self:getCamera()
 	gameCamera:setWidth(width)

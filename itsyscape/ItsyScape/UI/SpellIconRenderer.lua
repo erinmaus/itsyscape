@@ -67,8 +67,10 @@ end
 function SpellIconRenderer:draw(widget, state)
 	self:visit(widget)
 
+	local r, g, b, a = widget:getColor():get()
+
 	if widget:get("spellActive", state) then
-		love.graphics.setColor(0, 0, 0, 0.5)
+		love.graphics.setColor(0, 0, 0, a * 0.5)
 		for i = -1, 1 do
 			for j = -1, 1 do
 				self:drawIcon(widget, state, i, j)
@@ -77,14 +79,14 @@ function SpellIconRenderer:draw(widget, state)
 	end
 
 	if widget:get("spellEnabled", state) then
-		love.graphics.setColor(1.0, 1.0, 1.0, 1)
+		love.graphics.setColor(r, g, b, a)
 	else
-		love.graphics.setColor(0.5, 0.5, 0.5, 1)
+		love.graphics.setColor(r * 0.5, g * 0.5, b * 0.5, a)
 	end
 
 	self:drawIcon(widget, state)
 
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.setColor(r, g, b, a)
 	if widget:get("spellActive", state) then
 		love.graphics.setBlendMode('add')
 

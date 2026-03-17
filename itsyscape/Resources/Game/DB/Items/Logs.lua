@@ -91,8 +91,9 @@ local LOGS = {
 	["Yew"] = {
 		tier = 40,
 		weight = 6,
-		health = 100,
+		health = 175,
 		tinderbox = "Tinderbox",
+		variants = { "Default1" },
 		secondaries = {
 			"Leaf",
 			"Branch"
@@ -103,7 +104,7 @@ local LOGS = {
 		niceName = "Petrified spider",
 		tier = 50,
 		weight = 2,
-		health = 50,
+		health = 250,
 		peepID = "Resources.Game.Peeps.Arachnid.PetrifiedSpiderTree",
 		tinderbox = "Tinderbox",
 		secondaries = {
@@ -172,21 +173,6 @@ for name, log in spairs(LOGS) do
 		Value = string.format("%s logs", log.niceName or name),
 		Language = "en-US",
 		Resource = Log
-	}
-
-	local CraftAction = ItsyScape.Action.OpenInventoryCraftWindow()
-
-	ItsyScape.Meta.ActionVerb {
-		Value = "Craft",
-		XProgressive = "Crafting",
-		Language = "en-US",
-		Action = CraftAction
-	}
-
-	ItsyScape.Meta.DelegatedActionTarget {
-		CategoryKey = "Wood",
-		CategoryValue = name,
-		Action = CraftAction
 	}
 
 	local FletchAction = ItsyScape.Action.Fletch() {
@@ -334,6 +320,12 @@ for name, log in spairs(LOGS) do
 				Language = "en-US",
 				Resource = Variant
 			}
+
+			ItsyScape.Meta.GatherableProp {
+				Health = log.health,
+				SpawnTime = log.tier + 10,
+				Resource = Variant
+			}
 		end
 	end
 
@@ -359,6 +351,12 @@ for name, log in spairs(LOGS) do
 			Resource = Fire
 		}
 
+		ItsyScape.Meta.ArtisanProperty {
+			Count = 1,
+			Property = ItsyScape.Resource.ArtisanProperty "CommonFire_Cook",
+			Resource = Fire
+		}
+
 		local CookAction = ItsyScape.Action.OpenCraftWindow()
 		ItsyScape.Meta.DelegatedActionTarget {
 			CategoryKey = "CookingMethodFire",
@@ -381,7 +379,7 @@ for name, log in spairs(LOGS) do
 
 		LightAction {
 			Requirement {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForLevel(math.max(log.tier, 0))
 			},
 
@@ -391,7 +389,7 @@ for name, log in spairs(LOGS) do
 			},
 
 			Output {
-				Resource = ItsyScape.Resource.Skill "Firemaking",
+				Resource = ItsyScape.Resource.Skill "Alchemy",
 				Count = ItsyScape.Utility.xpForResource(math.max(log.tier + 1, 1))
 			},
 
@@ -428,7 +426,6 @@ for name, log in spairs(LOGS) do
 	end
 
 	Log {
-		CraftAction,
 		FletchAction,
 		LightAction
 	}
@@ -491,7 +488,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "CommonBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
 
@@ -506,7 +503,7 @@ ItsyScape.Resource.Item "CommonBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(1)
 		}
 	}
@@ -557,7 +554,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "WillowBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(10)
 		},
 
@@ -572,7 +569,7 @@ ItsyScape.Resource.Item "WillowBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(10)
 		}
 	}
@@ -623,7 +620,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "OakBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(20)
 		},
 
@@ -638,7 +635,7 @@ ItsyScape.Resource.Item "OakBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(20)
 		}
 	}
@@ -707,7 +704,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "YewBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(40)
 		},
 
@@ -722,7 +719,7 @@ ItsyScape.Resource.Item "YewBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(40)
 		}
 	}
@@ -755,7 +752,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "PetrifiedSpiderBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(50)
 		},
 
@@ -770,7 +767,7 @@ ItsyScape.Resource.Item "PetrifiedSpiderBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(50)
 		}
 	}
@@ -911,7 +908,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "FoxFirBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(35)
 		},
 
@@ -926,7 +923,7 @@ ItsyScape.Resource.Item "FoxFirBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(39.5)
 		}
 	}
@@ -989,7 +986,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Item "FossilizedOakBranch" {
 	ItsyScape.Action.Burn() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(25)
 		},
 
@@ -1004,7 +1001,7 @@ ItsyScape.Resource.Item "FossilizedOakBranch" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(25)
 		}
 	}
@@ -1061,7 +1058,7 @@ ItsyScape.Meta.ResourceDescription {
 ItsyScape.Resource.Prop "Charcoal" {
 	ItsyScape.Action.Pick() {
 		Requirement {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForLevel(1)
 		},
 
@@ -1071,7 +1068,7 @@ ItsyScape.Resource.Prop "Charcoal" {
 		},
 
 		Output {
-			Resource = ItsyScape.Resource.Skill "Firemaking",
+			Resource = ItsyScape.Resource.Skill "Alchemy",
 			Count = ItsyScape.Utility.xpForResource(1)
 		}
 	}

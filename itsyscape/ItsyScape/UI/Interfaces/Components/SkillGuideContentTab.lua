@@ -15,115 +15,77 @@ local Utility = require "ItsyScape.Game.Utility"
 local Color = require "ItsyScape.Graphics.Color"
 local Button = require "ItsyScape.UI.Button"
 local ButtonStyle = require "ItsyScape.UI.ButtonStyle"
+local FullscreenPanel = require "ItsyScape.UI.FullscreenPanel"
 local Icon = require "ItsyScape.UI.Icon"
 local GamepadGridLayout = require "ItsyScape.UI.GamepadGridLayout"
 local GamepadToolTip = require "ItsyScape.UI.GamepadToolTip"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
-local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local ScrollablePanel = require "ItsyScape.UI.ScrollablePanel"
 local ToolTip = require "ItsyScape.UI.ToolTip"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 local GamepadContentTab = require "ItsyScape.UI.Interfaces.Components.GamepadContentTab"
+local PropertiesPrompt = require "ItsyScape.UI.Interfaces.Components.PropertiesPrompt"
 
 local SkillGuideContentTab = Class(GamepadContentTab)
-SkillGuideContentTab.PADDING = 8
-SkillGuideContentTab.ICON_SIZE = 24
-SkillGuideContentTab.BUTTON_PADDING = 4
-SkillGuideContentTab.SKILL_VALUE_SIZE = 112
 
-SkillGuideContentTab.INACTIVE_BUTTON_STYLE = {
-	pressed = "Resources/Game/UI/Buttons/Button-Pressed.png",
-	hover = "Resources/Game/UI/Buttons/Button-Hover.png",
-	inactive = "Resources/Game/UI/Buttons/Button-Default.png"
-}
-
-SkillGuideContentTab.ACTIVE_BUTTON_STYLE = {
-	pressed = "Resources/Game/UI/Buttons/ButtonActive-Pressed.png",
-	hover = "Resources/Game/UI/Buttons/ButtonActive-Hover.png",
-	inactive = "Resources/Game/UI/Buttons/ButtonActive-Default.png"
-}
-
-SkillGuideContentTab.SKILL_NAME_LABEL_STYLE = {
-	color = { 1, 1, 1, 1 },
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/Regular.ttf",
-	fontSize = 20,
-	lineHeight = 2,
-	textShadow = true
-}
-
-SkillGuideContentTab.SKILL_VALUE_LABEL_STYLE = {
-	color = { 1, 1, 1, 1 },
-	font = "Resources/Renderers/Widget/Common/DefaultSansSerif/SemiBold.ttf",
-	fontSize = 18,
-	lineHeight = 2,
-	textShadow = true,
-	align = "center"
-}
+SkillGuideContentTab.OVERRIDE_BUTTON_LABEL_STYLE = Theme.override(
+	Theme.BUTTON_LABEL_STYLE,
+	{ padding = Theme.DEFAULT_INNER_PADDING })
 
 function SkillGuideContentTab:new(interface)
 	GamepadContentTab.new(self, interface)
 
+	self.onSelectAction = Callback()
+
 	self.scrollableLayout = ScrollablePanel(GamepadGridLayout)
-	self.scrollableLayout:setSize(self:getSize())
+	self.scrollableLayout:setSize(
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH),
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.HEIGHT))
+	self.scrollableLayout:setPosition(Theme.DEFAULT_OUTER_PADDING, Theme.DEFAULT_OUTER_PADDING)
+
 	self.layout = self.scrollableLayout:getInnerPanel()
 	self.layout:setWrapContents(true)
-	self.layout:setSize(self:getSize() - ScrollablePanel.DEFAULT_SCROLL_SIZE, 0)
-	self.layout:setPadding(self.PADDING, self.PADDING)
+	self.layout:setSize(self.scrollableLayout:getSize(), 0)
+	self.layout:setPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
 	self.layout:setUniformSize(
 		true,
-		self:getSize() - self.PADDING * 2 - ScrollablePanel.DEFAULT_SCROLL_SIZE,
-		self.ICON_SIZE + self.BUTTON_PADDING * 2)
-	self.layout.onBlurChild:register(self._onBlurLayoutChild, self)
+		self.scrollableLayout:getSize(),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
 	self.layout.onFocusChild:register(self._onFocusLayoutChild, self)
 	self.layout.onWrapFocus:register(self._onLayoutWrapFocus, self)
 	self:addChild(self.scrollableLayout)
 
 	self.layout:setID("PlayerSkillGuide")
 
-	self.toolTip = GamepadToolTip()
-	self.toolTip:setKeybind("gamepadPrimaryAction")
-	self.toolTip:setText("Open skill guide")
 	self:getInterface().onClose:register(self._onClose, self)
 
-	self.currentSkillIndex = 1
-	self.showToolTip = false
+	self.currentSkillGuideEntryIndex = 1
+	self.currentHoveredSkillGuideEntryIndex = false
 end
 
-function SkillGuideContentTab:getCurrentSkillIndex()
-	return self.currentSkillIndex
-end
+function SkillGuideContentTab:selectEntry(index)
+	local state = self:getState()
+	local actions = state and state.actions
+	local action = actions and actions[index]
 
-function SkillGuideContentTab:_updateToolTip()
-	local root = self:getUIView():getRoot()
-
-	if self.showToolTip then
-		if self.toolTip:getParent() ~= root then
-			root:addChild(self.toolTip)
-		end
-
-		local toolTipWidth = self.toolTip:getSize()
-
-		local child = self.layout:getChildAt(self.currentSkillIndex)
-		local absoluteChildX, absoluteChildY = child:getAbsolutePosition()
-		local childWidth, childHeight = child:getSize()
-		local positionX, positionY = absoluteChildX + childWidth - self.PADDING, absoluteChildY + childHeight + self.PADDING
-
-		local selfAbsoluteX1 = self.layout:getAbsolutePosition()
-		local selfWidth = self.layout:getSize()
-
-		self.toolTip:setPosition(math.min(positionX, selfAbsoluteX1 + selfWidth - toolTipWidth), positionY)
-	else
-		if self.toolTip:getParent() == root then
-			root:removeChild(self.toolTip)
-		end
+	if not action then
+		return false
 	end
+
+	local button = self.layout:getChildAt(index)
+	if not button then
+		return false
+	end
+
+	self.currentSkillGuideEntryIndex = index
+	self:onSelectAction(action, button)
 end
 
-function SkillGuideContentTab:_onBlurLayoutChild(layout, child)
-	self.showToolTip = false
-	self:_updateToolTip()
+function SkillGuideContentTab:getCurrentEntryIndex()
+	return self.currentSkillGuideEntryIndex
 end
 
 function SkillGuideContentTab:_onFocusLayoutChild(layout, child)
@@ -131,10 +93,7 @@ function SkillGuideContentTab:_onFocusLayoutChild(layout, child)
 		return
 	end
 
-	self.currentSkillIndex = child:getData("index") or 1
-
-	self.showToolTip = true
-	self:_updateToolTip()
+	self.currentSkillGuideEntryIndex = child:getData("index") or 1
 end
 
 function SkillGuideContentTab:_onLayoutWrapFocus(_, child, directionX, directionY)
@@ -142,10 +101,7 @@ function SkillGuideContentTab:_onLayoutWrapFocus(_, child, directionX, direction
 end
 
 function SkillGuideContentTab:_onClose()
-	local toolTipParent = self.toolTip:getParent()
-	if toolTipParent then
-		toolTipParent:removeChild(self.toolTip)
-	end
+	self:dismissSummonPrompt()
 end
 
 function SkillGuideContentTab:getIsFocusable()
@@ -157,50 +113,20 @@ function SkillGuideContentTab:focus(reason)
 
 	local inputProvider = self:getInputProvider()
 	if inputProvider then
-		local child = self.layout:getChildAt(self.currentSkillIndex)
+		local child = self.layout:getChildAt(self.currentSkillGuideEntryIndex)
 		inputProvider:setFocusedWidget(child or self.layout, reason)
 	end
 end
 
-function SkillGuideContentTab:openSkillGuide(skill)
-	self:getInterface():sendPoke("selectSkillGuide", nil, { skill = skill })
-end
-
-function SkillGuideContentTab:_addSkillButton()
+function SkillGuideContentTab:_addSkillGuideEntryButton(action)
 	local index = self.layout:getNumChildren() + 1
 
 	local button = Button()
 	button:setData("index", index)
-	button:setStyle(self.INACTIVE_BUTTON_STYLE, ButtonStyle)
+	button:setStyle(Theme.INACTIVE_BUTTON_STYLE, ButtonStyle)
 	button.onClick:register(self.activate, self, index)
 
-	local skillIcon = Icon()
-	skillIcon:setSize(self.ICON_SIZE, self.ICON_SIZE)
-	skillIcon:setPosition(self.BUTTON_PADDING, self.BUTTON_PADDING)
-	button:addChild(skillIcon)
-	button:setData("icon", skillIcon)
-
-	local width = self:getSize()
-
-	local skillNameLabel = Label()
-	skillNameLabel:setStyle(self.SKILL_NAME_LABEL_STYLE, LabelStyle)
-	skillNameLabel:setPosition(self.ICON_SIZE + self.BUTTON_PADDING * 2, (self.ICON_SIZE - self.SKILL_NAME_LABEL_STYLE.fontSize) / 2)
-	skillNameLabel:setSize(
-		width - self.ICON_SIZE - self.SKILL_VALUE_SIZE - self.BUTTON_PADDING * 4,
-		self.BUTTON_PADDING * 2 + self.ICON_SIZE)
-	button:addChild(skillNameLabel)
-	button:setData("name", skillNameLabel)
-
-	local skillValueLabel = Label()
-	skillValueLabel:setStyle(self.SKILL_VALUE_LABEL_STYLE, LabelStyle)
-	skillValueLabel:setPosition(self.ICON_SIZE + skillNameLabel:getSize() + self.BUTTON_PADDING * 3, (self.ICON_SIZE - self.SKILL_VALUE_LABEL_STYLE.fontSize) / 2)
-	skillValueLabel:setSize(
-		self.SKILL_VALUE_SIZE,
-		self.BUTTON_PADDING * 2 + self.ICON_SIZE)
-	button:addChild(skillValueLabel)
-	button:setData("value", skillValueLabel)
-
-	self.scrollableLayout:addChild(button)
+	self.layout:addChild(button)
 end
 
 function SkillGuideContentTab:populate(count)
@@ -209,65 +135,159 @@ function SkillGuideContentTab:populate(count)
 	end
 
 	while self.layout:getNumChildren() < count do
-		self:_addSkillButton()
+		self:_addSkillGuideEntryButton()
 	end
 
-	self.layout:performLayout()
-	self.scrollableLayout:setScrollSize(self.layout:getSize())
+	Theme.layoutScrollablePanelWithGridLayout(
+		self.scrollableLayout,
+		Theme.calculateInnerSize(Theme.DEFAULT_OUTER_PADDING, GamepadContentTab.WIDTH),
+		Theme.calculateSizeWithPadding(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_BUTTON_SIZE))
 end
 
 function SkillGuideContentTab:refresh(state)
 	GamepadContentTab.refresh(self, state)
 
-	self:populate(#state.skills)
+	self.currentSkillGuideEntryIndex = 1
+	self:populate(#state.actions)
 
-	for index, skill in ipairs(state.skills) do
+	for index, action in ipairs(state.actions) do
 		local button = self.layout:getChildAt(index)
 
-		local icon = button:getData("icon")
-		icon:setIcon(string.format("Resources/Game/UI/Icons/Skills/%s.png", skill.id))
+		if button:getData("actionID") ~= action.id then
+			button:clearChildren()
 
-		local name = button:getData("name")
-		name:setText(skill.name)
+			local icon, label, description = Theme.getIconLabelForAction(action.id, self:getGameDB())
+			button:setData("name", label:getText())
+			button:setData("description", description)
 
-		local value = button:getData("value")
+			icon:setPosition(Theme.DEFAULT_INNER_PADDING, Theme.DEFAULT_INNER_PADDING)
+			button:addChild(icon)
 
-		local color
-		if skill.workingLevel > skill.baseLevel then
-			color = "ui.stat.better"
-		elseif skill.workingLevel < skill.baseLevel then
-			color = "ui.stat.worse"
-		else
-			color = "ui.stat.neutral"
+			-- We don't bake in padding because `OVERRIDE_BUTTON_LABEL_STYLE`
+			-- includes the padding in the style.
+			label:setPosition(Theme.DEFAULT_ICON_SIZE, 0)
+			label:setSize(0, Theme.DEFAULT_BUTTON_SIZE)
+			label:setStyle(self.OVERRIDE_BUTTON_LABEL_STYLE, LabelStyle)
+			button:addChild(label)
 		end
+	end
+end
 
-		value:setText({
-			color,
-			tostring(skill.workingLevel),
-			"ui.stat.zero",
-			"/",
-			"ui.text",
-			tostring(skill.baseLevel)
+function SkillGuideContentTab:dismissSummonPrompt()
+	if self.summonPrompt and self.summonPrompt:getParent() then
+		self.summonPrompt:getParent():removeChild(self.summonPrompt)
+	end
+
+	self.summonPrompt = nil
+end
+
+function SkillGuideContentTab:summon(action, count)
+	self:getInterface():sendPoke("steal", nil, { id = action.id, count = count or 1 })
+end
+
+function SkillGuideContentTab:_onSummonSubmitted(action, _, _, form)
+	self:summon(action, math.max(form.Count, 1))
+	self:dismissSummonPrompt()
+end
+
+function SkillGuideContentTab:_onSummonCancelled()
+	self:dismissSummonPrompt()
+end
+
+function SkillGuideContentTab:summonX(action)
+	if self.summonPrompt then
+		self:dismissSummonPrompt()
+	end
+
+	local summonPrompt = PropertiesPrompt()
+	summonPrompt.onSubmit:register(self._onSummonSubmitted, self, action)
+	summonPrompt.onCancel:register(self._onSummonCancelled, self, action)
+	summonPrompt:setText(string.format("Summon %s %s Constraints", action.verb, action.name))
+	summonPrompt:setProperties({
+		PropertiesPrompt.Property("count", "Count", "number", 1)
+	})
+
+	local rootParent = self:getRootParent()
+	if rootParent then
+		local panel = FullscreenPanel()
+		panel:setStyle({
+			color = { 0, 0, 0, 0.5 },
+			radius = 0
+		}, PanelStyle)
+		panel:addChild(summonPrompt)
+
+		rootParent:addChild(panel)
+		panel:performLayout()
+
+		summonPrompt:focus()
+
+		self.summonPrompt = panel
+	end
+end
+
+function SkillGuideContentTab:examine(action, widget)
+	self:getUIView():examine(widget:getData("name"), widget:getData("description"), widget)
+end
+
+function SkillGuideContentTab:probe(index, button)
+	local state = self:getState()
+	local hasAmuletOfYendor = state.hasAmuletOfYendor
+	local actions = state and state.actions
+	local action = actions[index]
+
+	local actions = {}
+	table.insert(actions, {
+		id = #actions + 1,
+		type = "examine",
+		verb = "Examine",
+		object = action.name,
+		objectType = action.resourceType:lower(),
+		callback = Function(self.examine, self, action, button)
+	})
+
+	if action and hasAmuletOfYendor then
+		table.insert(actions, {
+			id = #actions + 1,
+			type = "x-debug-summon",
+			verb = "Summon",
+			object = action.name,
+			objectType = action.resourceType:lower(),
+			callback = Function(self.summon, self, action, 1)
+		})
+
+		table.insert(actions, {
+			id = #actions + 1,
+			type = "x-debug-summon",
+			verb = "Summon-X",
+			object = action.name,
+			objectType = action.resourceType:lower(),
+			callback = Function(self.summonX, self, action)
 		})
 	end
 
-	self:_updateToolTip()
+	local buttonX, buttonY = button:getAbsoluteCenter()
+	self:getUIView():probe(actions, buttonX, buttonY, true, false)
 end
 
 function SkillGuideContentTab:activate(index, button, buttonIndex)
+	if buttonIndex == 2 then
+		self:probe(index, button)
+		return
+	end
+
 	if buttonIndex ~= 1 then
 		return
 	end
 
 	local state = self:getState()
-	local skills = state and state.skills
-	local skill = skills[index]
+	local actions = state and state.actions
+	local action = actions[index]
 
-	if not skill then
+	if not action then
 		return
 	end
 
-	self:openSkillGuide(skill.id)
+	self:onSelectAction(action, button)
 end
 
 return SkillGuideContentTab

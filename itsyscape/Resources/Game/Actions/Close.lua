@@ -32,8 +32,8 @@ function Close:perform(state, player, prop, channel)
 			end
 		end
 
-		local i, j, k = Utility.Peep.getTileAnchor(prop, 0, 0)
-		local walk = Utility.Peep.getWalk(player, i, j, k, 2, { asCloseAsPossible = false })
+		local position, layer = Utility.Peep.getTileAnchor(prop, player, 0, 0)
+		local walk = Utility.Peep.getWalk(player, position, layer, 2, { asCloseAsPossible = false })
 
 		if walk then
 			local close = CallbackCommand(function()

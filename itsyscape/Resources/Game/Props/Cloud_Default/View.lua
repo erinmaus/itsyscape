@@ -23,14 +23,16 @@ do
 	Cloud.SHADER:loadFromFile("Resources/Shaders/Cloud")
 end
 
-Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
+local QUEUE = {}
+
+Cloud.PARTICLES = function(position, radius, wind, inColor, outColor, definition)
 	radius = math.max(radius or 1, 1)
 	wind = wind or Vector.ZERO
 
 	local minCount = math.ceil((1 + math.sqrt(radius)) * Cloud.MIN_PARTICLE_COUNT)
 	local maxCount = math.ceil((1 + math.sqrt(radius)) * Cloud.MAX_PARTICLE_COUNT)
 
-	return {
+	definition = definition or {
 		texture = "Resources/Game/Props/Cloud_Default/Particle.png",
 		numParticles = 25,
 		columns = 4,
@@ -38,15 +40,15 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 		emitters = {
 			{
 				type = "RadialEmitter",
-				position = { position:get() },
-				radius = { 0, radius / 2 },
-				speed = { radius / 32, radius / 16 },
+				position = { 0, 0, 0 },
+				radius = { 0, 0 },
+				speed = { 0, 0 },
 				normal = { true }
 			},
 			{
 				type = "RandomColorEmitter",
 				colors = {
-					{ inColor:get() }
+					{ 0, 0, 0, 1 }
 				}
 			},
 			{
@@ -68,9 +70,9 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 			{
 				type = "ColorPath",
 				fadeInPercent = { 0.3 },
-				fadeInColor = { inColor:get() },
+				fadeInColor = { 0, 0, 0, 0 },
 				fadeOutPercent = { 0.6 },
-				fadeOutColor = { outColor:get() },
+				fadeOutColor = { 0, 0, 0, 0 },
 			},
 			{
 				type = "FadeInOutPath",
@@ -91,6 +93,15 @@ Cloud.PARTICLES = function(position, radius, wind, inColor, outColor)
 			duration = { math.huge }
 		}
 	}
+
+	definition.emitters[1].position[1], definition.emitters[1].position[2], definition.emitters[1].position[3] = position:get()
+	definition.emitters[1].radius[1], definition.emitters[1].radius[2] = 0, radius / 2
+	definition.emitters[1].speed[1], definition.emitters[1].speed[2] = radius / 32, radius / 16
+	definition.emitters[2].colors[1][1], definition.emitters[2].colors[1][2], definition.emitters[2].colors[1][3], definition.emitters[2].colors[1][4] = inColor:get()
+	definition.paths[1].fadeInColor[1], definition.paths[1].fadeInColor[2], definition.paths[1].fadeInColor[3], definition.paths[1].fadeInColor[4] = inColor:get()
+	definition.paths[1].fadeOutColor[1], definition.paths[1].fadeOutColor[2], definition.paths[1].fadeOutColor[3], definition.paths[1].fadeOutColor[4] = outColor:get()
+
+	return definition
 end
 
 function Cloud:new(prop, gameView)
@@ -101,101 +112,110 @@ function Cloud:new(prop, gameView)
 	self.currentSunPosition = Vector():keep()
 end
 
-function Cloud:_getWind()
-	return Vector(unpack(self:getProp():getState().wind or {}))
+function Cloud:_getWind(result)
+	return result:from(unpack(self:getProp():getState().wind or {}))
 end
 
-function Cloud:_getInColor()
+function Cloud:_getInColor(result)
 	local state = self:getProp():getState()
-	return Color(unpack(state.color or {}))
+	return result:from(unpack(state.color))
 end
 
-function Cloud:_getOutColor()
+function Cloud:_getOutColor(result)
 	local state = self:getProp():getState()
-	return Color(unpack(state.color or {}))
+	return result:from(unpack(state.color or {}))
 end
 
-function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
-	local cloud = self.clouds[cloudInfo.id] or Class.Table { node = ParticleSceneNode(), ready = false }
-	self.clouds[cloudInfo.id] = cloud
+do
+	local position = Vector()
+	function Cloud:updateParticle(cloudInfo, wind, inColor, outColor, alpha)
+		local cloud = self.clouds[cloudInfo.id] or table.remove(QUEUE) or { node = ParticleSceneNode(), ready = false }
+		self.clouds[cloudInfo.id] = cloud
 
-	local position = cloudInfo.position and Vector(unpack(cloudInfo.position)) or cloud.position
-	local radius = cloudInfo.radius or cloud.radius
+		local position = cloudInfo.position and position:from(unpack(cloudInfo.position)) or cloud.position
+		local radius = cloudInfo.radius or cloud.radius
 
-	if not cloud.ready or (
-		position ~= cloud.position or
-		radius ~= cloud.radius or
-		wind ~= cloud.wind or
-		inColor ~= cloud.inColor or
-		outColor ~= cloud.outColor
-	) then
-		local cloudParticleSystemDef = Cloud.PARTICLES(
-			position,
-			radius,
-			wind,
-			inColor,
-			outColor)
+		if not cloud.ready or (
+			position ~= cloud.position or
+			radius ~= cloud.radius or
+			wind ~= cloud.wind or
+			inColor ~= cloud.inColor or
+			outColor ~= cloud.outColor
+		) then
+			cloud.particleSystemDef = Cloud.PARTICLES(
+				position,
+				radius,
+				wind,
+				inColor,
+				outColor,
+				cloud.particleSystemDef)
 
-		cloud.position = position:keep()
-		cloud.radius = radius
-		cloud.wind = wind:keep()
-		cloud.inColor = inColor
-		cloud.outColor = outColor
+			cloud.position = (cloud.position or Vector()):from(position:get())
+			cloud.radius = radius
+			cloud.wind = (cloud.wind or Vector()):from(wind:get())
+			cloud.wind = wind:keep()
+			cloud.inColor = (cloud.inColor or Color()):from(inColor:get())
+			cloud.outColor = (cloud.outColor or Color()):from(outColor:get())
 
-		cloud.node:initParticleSystemFromDef(cloudParticleSystemDef, self:getResources())
+			cloud.node:initParticleSystemFromDef(cloud.particleSystemDef, self:getResources())
 
-		if not cloud.ready then
-			cloud.node:onWillRender(function(renderer, delta)
-				local shader = renderer:getCurrentShader()
-				if shader:hasUniform("scape_SunPosition") then
-					shader:send("scape_SunPosition", { self.previousSunPosition:lerp(self.currentSunPosition, delta):get() })
-				end
-			end)
+			if not cloud.ready then
+				cloud.node:getMaterial():setShader(Cloud.SHADER)
+				cloud.node:getMaterial():setIsFullLit(false)
+				cloud.node:getMaterial():setIsZWriteDisabled(false)
+			end
 
-			cloud.node:getMaterial():setShader(Cloud.SHADER)
-			cloud.node:getMaterial():setIsFullLit(false)
-			cloud.node:getMaterial():setIsZWriteDisabled(false)
+			cloud.ready = true
 		end
 
-		cloud.ready = true
+		if not cloud.node:getParent() then
+			cloud.node:setParent(self:getRoot())
+		end
+
+		local adjustedAlpha = math.clamp(math.sin(alpha * math.pi) * 2.5)
+		cloud.node:getMaterial():getHandle():setColor(1, 1, 1, adjustedAlpha)
+
+		cloud.visited = true
 	end
-
-	if not cloud.node:getParent() then
-		cloud.node:setParent(self:getRoot())
-	end
-
-	local adjustedAlpha = math.clamp(math.sin(alpha * math.pi) * 2.5)
-	cloud.node:getMaterial():getHandle():setColor(1, 1, 1, adjustedAlpha)
-
-	cloud.visited = true
 end
 
 function Cloud:getIsStatic()
 	return false
 end
 
-function Cloud:tick()
-	PropView.tick(self)
+do
+	local wind = Vector()
+	local inColor = Color()
+	local outColor = Color()
+	local currentSunPosition = Vector()
+	local empty = {}
 
-	local state = self:getProp():getState()
+	function Cloud:tick()
+		PropView.tick(self)
 
-	self.currentSunPosition:copy(self.previousSunPosition)
+		local state = self:getProp():getState()
 
-	local currentSunPosition = state.sun and Vector(unpack(state.sun)) or Vector()
-	currentSunPosition:copy(self.currentSunPosition)
+		self.currentSunPosition:copy(self.previousSunPosition)
 
-	for _, cloudInfo in pairs(self.clouds) do
-		cloudInfo.visited = false
-	end
+		currentSunPosition:from(unpack(state.sun or empty))
+		currentSunPosition:copy(self.currentSunPosition)
 
-	for _, cloudInfo in ipairs(state.clouds or {}) do
-		self:updateParticle(cloudInfo, self:_getWind(), self:_getInColor(), self:_getOutColor(), state.alpha or 0.5)
-	end
+		for _, cloudInfo in pairs(self.clouds) do
+			cloudInfo.visited = false
+		end
 
-	for id, cloudInfo in pairs(self.clouds) do
-		if not cloudInfo.visited then
-			self.clouds[id].node:setParent(nil)
-			self.clouds[id] = nil
+		for _, cloudInfo in ipairs(state.clouds or empty) do
+			self:updateParticle(cloudInfo, self:_getWind(wind), self:_getInColor(inColor), self:_getOutColor(outColor), state.alpha or 0.5)
+		end
+
+		for id, cloudInfo in pairs(self.clouds) do
+			if not cloudInfo.visited then
+				cloudInfo.ready = false
+				table.insert(QUEUE, cloudInfo)
+
+				self.clouds[id].node:setParent(nil)
+				self.clouds[id] = nil
+			end
 		end
 	end
 end

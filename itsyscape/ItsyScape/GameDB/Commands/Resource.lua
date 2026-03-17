@@ -59,4 +59,10 @@ function Resource:instantiate(brochure)
 	return self.instance
 end
 
+function Resource:clean()
+	if self.instance then
+		self.instance = true
+	end
+end
+
 return Resource

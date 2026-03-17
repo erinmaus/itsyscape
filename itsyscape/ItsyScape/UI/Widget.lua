@@ -34,6 +34,7 @@ function Widget:new()
 	self.onGamepadRelease = Callback()
 	self.onGamepadAxis = Callback()
 	self.onGamepadDirection = Callback()
+	self.onGamepadScroll = Callback()
 	self.onControlDown = Callback()
 	self.onControlUp = Callback()
 	self.onZDepthChange = Callback()
@@ -64,6 +65,12 @@ function Widget:new()
 	self.isVisible = true
 end
 
+function Widget:inputSchemeChanged(current, previous)
+	for _, child in self:iterate() do
+		child:inputSchemeChanged(current, previous)
+	end
+end
+
 function Widget:getRootParent()
 	local current = self
 	while current:getParent() do
@@ -79,7 +86,7 @@ function Widget:getInputProvider()
 
 	local root = self:getRootParent()
 	if not root then
-		return
+		return nil
 	end
 
 
@@ -94,7 +101,7 @@ end
 function Widget:getResourceManager()
 	local root = self:getRootParent()
 	if not root then
-		return
+		return nil
 	end
 
 	local resources = root:getData(WidgetResourceManager)
@@ -103,6 +110,23 @@ function Widget:getResourceManager()
 	end
 
 	return resources
+end
+
+function Widget:getUIView()
+	-- Cyclic dependency #2. RIP.
+	local UIView = require "ItsyScape.UI.UIView"
+
+	local root = self:getRootParent()
+	if not root then
+		return nil
+	end
+
+	local uiView = root:getData(UIView)
+	if not Class.isCompatibleType(uiView, UIView) then
+		return nil
+	end
+
+	return uiView
 end
 
 function Widget:getID()
@@ -691,6 +715,13 @@ function Widget:gamepadDirection(...)
 	self:onGamepadDirection(...)
 	if self:getParent() then
 		self:getParent():gamepadDirection(...)
+	end
+end
+
+function Widget:gamepadScroll(...)
+	self:onGamepadScroll(...)
+	if self:getParent() then
+		self:getParent():gamepadScroll(...)
 	end
 end
 

@@ -7,9 +7,13 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 --------------------------------------------------------------------------------
+local buffer = require "string.buffer"
 local Class = require "ItsyScape.Common.Class"
+local Vector = require "ItsyScape.Common.Math.Vector"
 local Quaternion = require "ItsyScape.Common.Math.Quaternion"
 local Vector = require "ItsyScape.Common.Math.Vector"
+local GlyphManagerCommon = require "ItsyScape.Graphics.GlyphManagerCommon"
+local GlyphManagerProxy = require "ItsyScape.Graphics.GlyphManagerProxy"
 local OldOneGlyph = require "ItsyScape.Graphics.OldOneGlyph"
 local OldOneGlyphInstance = require "ItsyScape.Graphics.OldOneGlyphInstance"
 local PostProcessPass = require "ItsyScape.Graphics.PostProcessPass"
@@ -18,19 +22,62 @@ local GlyphManager = Class()
 
 function GlyphManager:new(t, gameView)
 	self.t = t or OldOneGlyph.DEFAULT_CONFIG
-	self.projectionRadiusScale = 0.5
-	self.maxDepth = 2
+	self.projectionRadiusScale = 1
+	self.minDepth = 1
+	self.maxDepth = 3
 	self.rotationSpeed = math.pi / 32
 
-	self.radius = math.max(self:getDimensions())
+	self.radius = math.max(self:getDimensions()) * 0.75
 	self.transform = love.math.newTransform()
 
 	self.glyphs = {}
+	self.indices = {}
 
 	self.gameView = gameView
 	self.shaderCache = PostProcessPass(gameView:getRenderer(), 0)
 	self.shaderCache:load(gameView:getResourceManager())
 	self.shakyShader = self.shaderCache:loadPostProcessShader("ShakyVertex")
+
+	self.channels = setmetatable({}, { __mode = "k" })
+end
+
+function GlyphManager:_newChannel(p)
+	local thread = love.thread.newThread("ItsyScape/Graphics/Threads/GlyphManager.lua")
+	local inputChannel, outputChannel = love.thread.newChannel(), love.thread.newChannel()
+	thread:start(inputChannel, outputChannel)
+
+	local proxy = newproxy(true)
+	getmetatable(proxy).__gc = function()
+		inputChannel:push({ type = "quit" })
+	end
+
+	local channel = {
+		proxy = proxy,
+		thread = thread,
+		input = inputChannel,
+		output = outputChannel,
+		buffer = GlyphManagerCommon.newBuffer()
+	}
+
+	self.channels[p] = channel
+	return channel
+end
+
+function GlyphManager:_getChannel(p)
+	local channel = self.channels[p]
+	if not channel then
+		channel = self:_newChannel(p)
+	end
+
+	return channel
+end
+
+function GlyphManager:getConfig()
+	return self.t
+end
+
+function GlyphManager:getDepth()
+	return self.minDepth, self.maxDepth
 end
 
 function GlyphManager:getRadius()
@@ -51,6 +98,10 @@ function GlyphManager:getDimensions()
 		self.t.maxDepth or OldOneGlyph.DEFAULT_CONFIG.maxDepth
 end
 
+function GlyphManager:iterate()
+	return pairs(self.glyphs)
+end
+
 function GlyphManager:get(character)
 	assert(type(character) == "number", "expected 'code point' as number - did you pass in a string?")
 
@@ -63,9 +114,14 @@ function GlyphManager:get(character)
 		end
 
 		self.glyphs[character] = glyph
+		self.indices[glyph] = character
 	end
 
 	return glyph
+end
+
+function GlyphManager:index(glyph)
+	return self.indices[glyph] or -1
 end
 
 function GlyphManager:tokenize(message)
@@ -82,6 +138,7 @@ function GlyphManager:tokenize(message)
 	local tokens = table.concat(sentences, "")
 	local instances = {}
 
+	local maxDepth = math.clamp(#sentences, self.minDepth, self.maxDepth)
 	for glyph, theta, parent in tokens:gmatch("(.)(.)(.)") do
 		local glyphIndex = glyph:byte() + 1
 
@@ -91,13 +148,13 @@ function GlyphManager:tokenize(message)
 		if #instances > 0 then
 			for i = 1, #instances + 1 do
 				parentIndex = (parent:byte() + i - 1) % #instances + 1
-				if instances[parentIndex]:getDepth() <= self.maxDepth then
+				if instances[parentIndex]:getDepth() <= maxDepth then
 					break
 				end
 			end
 		end
 
-		local thetaRadians = glyph:byte() / 256 * math.pi / 16
+		local thetaRadians = ((glyph:byte() / 256) - 0.5) * 2 * math.pi / 16
 
 		local instance = OldOneGlyphInstance(self:get(glyphIndex), self)
 		instance:setTheta(thetaRadians)
@@ -125,8 +182,65 @@ function GlyphManager:_projectAll(root, normal, d, axis, r)
 	return r
 end
 
-function GlyphManager:projectAll(root, normal, d, axis)
+function GlyphManager:projectAll(root, normal, d, time, axis)
+	if time then
+		root:update(time)
+	end
+
 	return self:_projectAll(root, normal, d, axis, {})
+end
+
+function GlyphManager:_assignAll(root, projections, i)
+	i = i or 0
+	i = i + 1
+
+	assert(projections[i][1] == false)
+	projections[i][1] = root
+
+	for _, child in root:iterate() do
+		i = self:_assignAll(child, projections, i)
+	end
+
+	return i
+end
+
+function GlyphManager:asyncProjectAll(p, root, normal, d, time, axis)
+	local channel = self:_getChannel(p)
+
+	local event = channel.output:pop()
+	if event and type(event) == "table" then
+		if event.type == "result" then
+			local current = channel.buffer:set(event.value):decode()
+			channel.current = current
+
+			self:_assignAll(root, channel.current)
+		end
+	end
+
+	if channel.glyph ~= root then
+		channel.glyph = root
+		channel.current = nil
+	end
+
+	if event or not channel.current then
+		local event = {
+			type = "project",
+			planeNormal = { normal:get() },
+			planeD = d,
+			axis = axis and { axis:get() },
+			glyphManager = channel.buffer:reset():encode(GlyphManagerProxy(self)):tostring(),
+			root = channel.buffer:reset():encode(root:serialize()):tostring(),
+			time = time
+		}
+
+		channel.input:push(event)
+	end
+
+	if not channel.current then
+		channel.current = self:projectAll(root, normal, d, time, axis)
+	end
+
+	return channel.current
 end
 
 local _stencilProjections, _stencilGlyphManager
@@ -140,10 +254,10 @@ local function _stencil()
 end
 
 function GlyphManager:getStandardPlane(time)
-	local planeD = -(math.sin(time / math.pi / 8) * 2 - 1)
+	local planeD = math.sin(time / math.pi / 8) * 0.5
 	local planeAxis = Vector(
 		math.cos(time / math.pi / 8),
-		1,
+		4,
 		math.sin(time / math.pi / 8)):getNormal()
 	local planeRotation = Quaternion.fromAxisAngle(planeAxis, math.sin(time / math.pi / 8) * math.pi / 8)
 	local planeNormal = planeRotation:getNormal():transformVector(Vector.UNIT_Y)
@@ -155,7 +269,7 @@ function GlyphManager:measure(root, projections, w, h, size, offset)
 	local maxSize = math.max(w, h)
 	local baseScale = maxSize / size
 	local extraScale = size / (root:getRadius() * baseScale)
-	local lineWidth = 1 / 2 + offset
+	local lineWidth = math.min((maxSize / size / 2) + offset, 1 + offset)
 
 	self.transform:setTransformation(w / 2, h / 2, 0, baseScale * extraScale, -baseScale * extraScale)
 
@@ -193,7 +307,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 	self.transform:setTransformation(x + w / 2, y + h / 2, 0, baseScale * extraScale, -baseScale * extraScale)
 	love.graphics.applyTransform(self.transform)
 
-	local lineWidth = 1 / 2 + offset
+	local lineWidth = math.min((maxSize / size / 2) + offset, 1 + offset)
 	love.graphics.setLineWidth(lineWidth)
 
 	local minX, minY = math.huge, math.huge
@@ -208,17 +322,24 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 		local glyph, projection = unpack(p)
 
 		if glyph == root then
-			local scale = glyph:getRadius() / self.radius
-			projection:polygonize(1 / scale * 2)
+			local scale
+			if glyph:getIsLeaf() then
+				scale = 1 / 8
+			else
+				scale = glyph:getRadius() / self.radius
+				scale = 1 / scale * 2
+			end
+
+			projection:polygonize(scale)
 		else
-			projection:polygonize()
+			projection:polygonize(0.5)
 		end
 	end
 
 	self.shaderCache:bindShader(
 		self.shakyShader,
 		"scape_Time", self.gameView:getRenderer():getTime(),
-		"scape_Scale", 5,
+		"scape_Scale", lineWidth + 1,
 		"scape_Interval", 1 / 8)
 
 	_stencilProjections = projections
@@ -226,7 +347,7 @@ function GlyphManager:draw(root, projections, x, y, w, h, size, offset)
 
 	love.graphics.push("all")
 	love.graphics.setDepthMode("always", false)
-	love.graphics.stencil(_stencil, "replace", 1, false)
+	love.graphics.stencil(_stencil, "replace", 1, true)
 	love.graphics.pop()
 
 	love.graphics.setStencilTest("notequal", 1)

@@ -63,7 +63,7 @@ function FireCannon:update(mashina, state, executor)
 			local nodeNext = cannonballPath[i + 1].position
 
 			local ray = Ray(nodeCurrent, nodeCurrent:direction(nodeNext))
-			local s, _, t = ray:hitBounds(min, max, nil, 0.5)
+			local s, _, t = ray:hitBounds(min, max)
 			if s and t <= nodeNext:distance(nodeCurrent) then
 				isHit = true
 				break
@@ -117,6 +117,7 @@ function FireCannon:update(mashina, state, executor)
 		cannonPosition,
 		cannonPosition + cannonForward,
 		targetPosition)
+	yDirection = -yDirection
 
 	if yDirection ~= 0 then
 		if yDirection < 0 and self.currentY <= 0 then

@@ -73,7 +73,7 @@ function RiteCircle.Widget:draw()
 	local time = math.lerp(self.previousTime, self.currentTime, _APP:getFrameDelta())
 	local planeNormal, planeD = self.glyphManager:getStandardPlane(time)
 
-	local projections = self.glyphManager:projectAll(self.rootGlyph, planeNormal, planeD)
+	local projections = self.glyphManager:asyncProjectAll(self, self.rootGlyph, planeNormal, planeD, time)
 
 	itsyrealm.graphics.pushCallback(
 		RiteCircle.Widget._drawRite,

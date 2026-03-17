@@ -46,6 +46,52 @@ bool nbunny::ray_hit_bounds(const glm::vec3& origin, const glm::vec3& direction,
     }
 }
 
+bool nbunny::ray_hit_triangle(const glm::vec3& origin, const glm::vec3& direction, const glm::vec3& v1, const glm::vec3& v2, const glm::vec3& v3, glm::vec3& point)
+{   
+    auto e1 = v2 - v1;
+    auto e2 = v3 - v1;
+
+    auto h = glm::cross(direction, e2);
+    auto a = glm::dot(e1, h);
+
+    if (a == 0.0f)
+    {
+        return false;
+    }
+
+    auto f = 1.0f / a;
+    auto s = origin - v1;
+    auto u = f * glm::dot(s, h);
+
+    if (u < 0.0f || u > 1.0f)
+    {
+        return false;
+    }
+
+    auto q = glm::cross(s, e1);
+    auto v = f * glm::dot(direction, q);
+
+    if (v < 0.0f || u + v > 1.0f)
+    {
+        return false;
+    }
+
+    auto t = f * glm::dot(e2, q);
+    if (t > 0.0f)
+    {
+        point = origin + direction * t;
+        return true;
+    }
+
+    return false;
+}
+
+bool nbunny::is_point_in_bounds(const glm::vec3& point, const glm::vec3& min, const glm::vec3& max)
+{
+    return point.x >= min.x && point.y >= min.y && point.z >= min.z &&
+           point.x <= max.x && point.y <= max.y && point.z <= max.z;
+}
+
 
 glm::vec3 nbunny::project_point_on_line_segment(const glm::vec3& a, const glm::vec3& b, const glm::vec3& p)
 {

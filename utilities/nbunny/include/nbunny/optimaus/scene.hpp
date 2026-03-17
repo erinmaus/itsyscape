@@ -126,6 +126,13 @@ namespace nbunny
 		bool is_shimmer_enabled = false;
 		glm::vec4 shimmer_color = glm::vec4(1.0f);
 
+		bool is_global_wall_hack_enabled = false;
+		glm::vec4 global_wall_hack_window = glm::vec4(0.0);
+
+		float glass_thickness = -1.0f;
+
+		bool get_current_global_wall_hack_window(glm::vec4& window) const;
+
 	public:
 		SceneNodeMaterial(SceneNode& scene_node);
 		~SceneNodeMaterial() = default;
@@ -196,6 +203,16 @@ namespace nbunny
 		const glm::vec4& get_outline_color() const;
 		void set_outline_color(const glm::vec4& value);
 
+		void set_is_global_wall_hack_enabled(bool value);
+		bool get_is_global_wall_hack_enabled() const;
+
+		const glm::vec4& get_global_wall_hack_window() const;
+		void set_global_wall_hack_window(const glm::vec4& value);
+
+		void set_glass_thickness(float value);
+		float get_glass_thickness() const;
+		bool get_is_glass() const;
+
 		void set_shader(const std::shared_ptr<ResourceInstance>& value);
 		const std::shared_ptr<ResourceInstance>& get_shader() const;
 
@@ -226,6 +243,8 @@ namespace nbunny
 		std::shared_ptr<SceneNodeMaterial> material;
 
 		std::vector<SceneNode*> pending_scene_nodes;
+
+		bool will_render = false;
 
 	public:
 		static const Type<SceneNode> type_pointer;
@@ -273,6 +292,9 @@ namespace nbunny
 		virtual void before_draw(Renderer& renderer, float delta);
 		virtual void draw(Renderer& renderer, float delta);
 		virtual void after_draw(Renderer& renderer, float delta);
+
+		void set_will_render(bool value);
+		bool get_will_render() const;
 
 		static void collect(
 			SceneNode& node,
@@ -322,6 +344,8 @@ namespace nbunny
 
 		glm::vec3 eye_position = glm::vec3(0.0f);
 		glm::vec3 target_position = glm::vec3(0.0f);
+
+		glm::vec3 forward = glm::vec3(0.0f);
 
 		glm::vec3 bounding_sphere_position = glm::vec3(0.0f);
 		float bounding_sphere_radius = std::numeric_limits<float>::infinity();
@@ -375,6 +399,8 @@ namespace nbunny
 		const glm::vec3& get_eye_position() const;
 		const glm::vec3& get_target_position() const;
 
+		const glm::vec3& get_forward() const;
+
 		const glm::quat& get_rotation() const;
 
 		void update(
@@ -384,6 +410,8 @@ namespace nbunny
 		void move(
 			const glm::vec3& eye_position,
 			const glm::vec3& target_position);
+
+		void direction(const glm::vec3& forward);
 		
 		void set_bounding_sphere_position(const glm::vec3& value);
 		const glm::vec3& get_bounding_sphere_position() const;

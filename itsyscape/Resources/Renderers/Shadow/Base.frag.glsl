@@ -35,4 +35,6 @@ void effect()
 	{
 		discard;
 	}
+
+	love_Canvases[0] = diffuse;
 }

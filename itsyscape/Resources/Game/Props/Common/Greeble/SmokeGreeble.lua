@@ -16,12 +16,17 @@ local Greeble = require "Resources.Game.Props.Common.Greeble"
 
 local SmokeGreeble = Class(Greeble)
 
+SmokeGreeble.ATTACH_TO_ROOT = false
+
 SmokeGreeble.SMOKE_SCALE  = Vector(1):keep()
 SmokeGreeble.SMOKE_OFFSET = Vector(0):keep()
+
+SmokeGreeble.PARTICLE_SCALE = 1
 
 SmokeGreeble.SMOKE_SPEED = 0.2
 
 SmokeGreeble.SMOKE_HEIGHT = 1
+SmokeGreeble.SMOKE_WIND_RESISTANCE = 2
 
 SmokeGreeble.SMOKE_COLORS = {
 	Color(0.2, 0.2, 0.2),
@@ -31,25 +36,38 @@ SmokeGreeble.SMOKE_COLORS = {
 	Color(0.1, 0.1, 0.1),
 }
 
-function SmokeGreeble:_updateDirection(direction, speed)
-	local position, layer = self.prop:getPosition()
-	local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+SmokeGreeble.SOFT = false
 
-	local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
-	windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
-	local windMu = (windDelta + 1) / 2
-
-	local fireDirection = Vector(windDelta * windDirection.x, 1, windDelta * windDirection.z):getNormal()
-
+do
+	local fireDirection = Vector()
+	local targetWindRotation = Quaternion()
 	local currentWindRotation = Quaternion()
-	local targetWindRotation = Quaternion.lookAt(Vector(0), fireDirection, Vector.UNIT_Y)
-	local normal = currentWindRotation:slerp(targetWindRotation, windMu):transformVector(Vector.UNIT_Y)
+	local normal = Vector()
 
-	direction.speed[1] = windSpeed / 3 * speed
-	direction.speed[2] = windSpeed / 3 * speed
-	direction.direction[1] = normal.x
-	direction.direction[2] = normal.y
-	direction.direction[3] = normal.z
+	function SmokeGreeble:_updateDirection(direction, speed)
+		local position, layer = self:getProp():getPosition()
+		local windDirection, windSpeed, windPattern = self:getGameView():getWind(layer)
+
+		local windDelta = self:getGameView():getRenderer():getTime() * windSpeed + position:getLength() * windSpeed
+		windDelta = math.sin(windDelta / windPattern.x) * math.sin(windDelta / windPattern.y) * math.sin(windDelta / windPattern.z)
+		local windMu = (windDelta + 1) / 2
+
+		local min, max = self:getProp():getBounds()
+		fireDirection:from(
+			windDelta * windDirection.x,
+			self.SMOKE_WIND_RESISTANCE,
+			windDelta * windDirection.z):normalize(fireDirection)
+
+		Quaternion.fromVectors(Vector.UNIT_Y, fireDirection, targetWindRotation)
+		Quaternion.IDENTITY:slerp(targetWindRotation, windMu, currentWindRotation):transformVector(Vector.UNIT_Y, normal)
+		normal:normalize(normal)
+
+		direction.speed[1] = windSpeed / 3 * speed
+		direction.speed[2] = windSpeed / 3 * speed
+		direction.direction[1] = normal.x
+		direction.direction[2] = normal.y
+		direction.direction[3] = normal.z
+	end
 end
 
 function SmokeGreeble:_getSmokeParticleDefinition()
@@ -57,11 +75,12 @@ function SmokeGreeble:_getSmokeParticleDefinition()
 		numParticles = 25,
 		texture = "Resources/Game/Props/Common/Particle_Smoke.png",
 		columns = 4,
+		soft = self.SOFT,
 
 		emitters = {
 			{
 				type = "RadialEmitter",
-				radius = { 0, 0.125 },
+				radius = { 0, 0.125 * self.PARTICLE_SCALE },
 				position = { 0, 2, 0 },
 				yRange = { 0, 0 },
 				lifetime = { 0.5, 3 },
@@ -78,7 +97,7 @@ function SmokeGreeble:_getSmokeParticleDefinition()
 			},
 			{
 				type = "RandomScaleEmitter",
-				scale = { 0.4, 0.5 }
+				scale = { 0.4 * self.PARTICLE_SCALE, 0.5 * self.PARTICLE_SCALE }
 			},
 			{
 				type = "RandomRotationEmitter",
@@ -128,7 +147,13 @@ function SmokeGreeble:load()
 	Greeble.load(self)
 
 	local resources = self:getResources()
-	local root = self:getRoot()
+
+	local root
+	if self.ATTACH_TO_ROOT then
+		root = self:getGameView():getScene()
+	else
+		root = self:getRoot()
+	end
 
 	resources:queueEvent(function()
 		self.smoke = ParticleSceneNode()
@@ -153,9 +178,37 @@ function SmokeGreeble:regreebilize(t, ...)
 	end
 end
 
+function SmokeGreeble:remove()
+	Greeble.remove(self)
+
+	if self.smoke then
+		self.smoke:setParent()
+	end
+end
+
 function SmokeGreeble:_updateParticles()
 	if self.smoke then
 		self.smoke:initEmittersFromDef(self:_getSmokeParticleDefinition().emitters)
+	end
+end
+
+function SmokeGreeble:updateLocalPosition(position)
+	if not self.smoke then
+		self:getResources():queueEvent(function()
+			self.smoke:updateLocalPosition(position)
+		end)
+	else
+		self.smoke:updateLocalPosition(position)
+	end
+end
+
+function SmokeGreeble:updateLocalDirection(direction)
+	if not self.smoke then
+		self:getResources():queueEvent(function()
+			self.smoke:updateLocalDirection(direction)
+		end)
+	else
+		self.smoke:updateLocalDirection(direction)
 	end
 end
 

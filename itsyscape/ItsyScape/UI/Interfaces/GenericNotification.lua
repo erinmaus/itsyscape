@@ -10,94 +10,92 @@
 local Class = require "ItsyScape.Common.Class"
 local Interface = require "ItsyScape.UI.Interface"
 local Icon = require "ItsyScape.UI.Icon"
+local InputScheme = require "ItsyScape.UI.InputScheme"
 local Panel = require "ItsyScape.UI.Panel"
 local PanelStyle = require "ItsyScape.UI.PanelStyle"
 local Label = require "ItsyScape.UI.Label"
 local LabelStyle = require "ItsyScape.UI.LabelStyle"
 local Widget = require "ItsyScape.UI.Widget"
+local Theme = require "ItsyScape.UI.Interfaces.Theme"
 
 local GenericNotification = Class(Interface)
 GenericNotification.WIDTH = 420
-GenericNotification.PADDING = 8
 
 function GenericNotification:new(id, index, ui)
 	Interface.new(self, id, index, ui)
-
-	local w, h = love.graphics.getScaledMode()
-	local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 	self:setIsSelfClickThrough(true)
 	self:setAreChildrenClickThrough(true)
 
 	self.panel = Panel()
-	self.panel:setStyle(PanelStyle({
-		image = "Resources/Renderers/Widget/Panel/GenericNotification.9.png"
-	}, self:getView():getResources()))
+	self.panel:setStyle(Theme.ERROR_NOTIFICATION_PANEL_STYLE, PanelStyle)
 	self.panel:setSize(self:getSize())
 	self:addChild(self.panel)
 
-	local state = self:getState()
-
 	self.text = Label()
-	self.text:setStyle(LabelStyle({
-		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 22,
-		textShadow = true,
-		width = self.WIDTH - self.PADDING * 2,
-		align = 'left'
-	}, self:getView():getResources()))
-	self.text:setPosition(self.PADDING, self.PADDING)
-	self.text:setText(state.message)
+	self.text:setStyle(Theme.ERROR_NOTIFICATION_LABEL_STYLE, LabelStyle)
 	self.text:setIsSelfClickThrough(true)
 	self:addChild(self.text)
 
+	local state = self:getState()
+	self.text:setText(state.message)
 	self.message = state.message
+	self.generation = state.generation
+
+	self:setZDepth(500)
+end
+
+function GenericNotification:attach()
+	Interface.attach(self)
+
+	self:performLayout()
+end
+
+function GenericNotification:performLayout()
+	local w, h = itsyrealm.graphics.getScaledMode()
+	local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
 
 	local textStyle = self.text:getStyle()
-	local _, lines = textStyle.font:getWrap(self.text:getText(), self.WIDTH - self.PADDING * 2)
+	local _, lines = textStyle.font:getWrap(self.text:getText(), self.WIDTH - Theme.DEFAULT_OUTER_PADDING * 2)
 	local wrappedHeight = #lines * textStyle.font:getHeight() * textStyle.font:getLineHeight()
 
 	self:setSize(
 		self.WIDTH,
-		wrappedHeight + self.PADDING * 2)
+		wrappedHeight + Theme.DEFAULT_OUTER_PADDING * 2)
+	self.panel:setSize(self:getSize())
 
-	local inputProvider = self:getView():getInputProvider()
-	if inputProvider and inputProvider:getCurrentJoystick() then
-		local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
+	local inputScheme = self:getView():getCurrentInputScheme()
+	if inputScheme == InputScheme.INPUT_SCHEME_GAMEPAD then
 		self:setPosition(
-			(screenWidth - self.WIDTH) / 2,
-			screenHeight / 2 + (screenHeight / 2 + wrappedHeight) / 2)
+			(w - self.WIDTH) / 2,
+			h / 2 + (h / 2 + wrappedHeight) / 2)
 	else
-		self:setPosition(x + self.PADDING, y - wrappedHeight - self.PADDING)
+		self:setPosition(x + Theme.DEFAULT_OUTER_PADDING, y - wrappedHeight - Theme.DEFAULT_OUTER_PADDING)
 	end
 
-	self.panel:setSize(self:getSize())
 	self:push()
-
-	self:setZDepth(500)
-	self:setIsSelfClickThrough(true)
 end
 
 function GenericNotification:push()
 	local x, y  = self:getPosition()
 	local width, height = self:getSize()
 
-	local screenWidth, screenHeight = love.graphics.getScaledMode()
+	local screenWidth, screenHeight = itsyrealm.graphics.getScaledMode()
 
-	if x < self.PADDING then
-		x = self.PADDING
+	if x < Theme.DEFAULT_OUTER_PADDING then
+		x = Theme.DEFAULT_OUTER_PADDING
 	end
 
-	if y < self.PADDING then
-		y = self.PADDING
+	if y < Theme.DEFAULT_OUTER_PADDING then
+		y = Theme.DEFAULT_OUTER_PADDING
 	end
 
 	if x + width > screenWidth then
-		x = screenWidth - width - self.PADDING
+		x = screenWidth - width - Theme.DEFAULT_OUTER_PADDING
 	end
 
 	if y + height > screenHeight then
-		y = screenHeight - height - self.PADDING
+		y = screenHeight - height - Theme.DEFAULT_OUTER_PADDING
 	end
 
 	self:setPosition(x, y)
@@ -107,23 +105,12 @@ function GenericNotification:update(...)
 	Interface.update(self, ...)
 
 	local state = self:getState()
-	if state.message ~= self.message then
+	if state.message ~= self.message or state.generation ~= self.generation then
 		self.text:setText(state.message)
-
-		local textStyle = self.text:getStyle()
-		local _, lines = textStyle.font:getWrap(self.text:getText(), self.WIDTH - self.PADDING * 2)
-		local wrappedHeight = #lines * textStyle.font:getHeight() * textStyle.font:getLineHeight()
-
-		local x, y = itsyrealm.graphics.getScaledPoint(itsyrealm.mouse.getPosition())
-		self:setSize(
-			self.WIDTH,
-			wrappedHeight + self.PADDING * 2)
-		self:setPosition(x + self.PADDING, y - wrappedHeight - self.PADDING)
-		self.panel:setSize(self:getSize())
-
-		self:push()
+		self:performLayout()
 
 		self.message = state.message
+		self.generation = state.generation
 	end
 end
 

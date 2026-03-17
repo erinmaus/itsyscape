@@ -24,6 +24,10 @@ function Player:new()
 	self.onReady = Callback(false)
 end
 
+function Player:getInstanceID()
+	return Class.ABSTRACT()
+end
+
 -- Gets the Actor this Player is represented by.
 function Player:getActor()
 	return Class.ABSTRACT()
@@ -45,6 +49,22 @@ function Player:getTarget()
 end
 
 function Player:getOffensiveRange()
+	return Class.ABSTRACT()
+end
+
+function Player:move(x, z)
+	Class.ABSTRACT()
+end
+
+function Player:startDodge()
+	Class.ABSTRACT()
+end
+
+function Player:stopDodge()
+	Class.ABSTRACT()
+end
+
+function Player:getIsDodging()
 	return Class.ABSTRACT()
 end
 

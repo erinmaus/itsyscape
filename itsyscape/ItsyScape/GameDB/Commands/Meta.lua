@@ -118,4 +118,8 @@ function Meta:poke(t)
 	end
 end
 
+function Meta:clean()
+	-- Nothing.
+end
+
 return Meta

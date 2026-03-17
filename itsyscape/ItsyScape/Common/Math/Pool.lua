@@ -233,17 +233,17 @@ function Pool.wrap(Type)
 	local C = getmetatable(WrappedType)
 	local constructor = C.__call
 	function C.__call(self, a, b, ...)
-		if Class.isCompatibleType(a, Pool.TypePool) then
-			return constructor(self, a, b, ...)
-		end
+		-- if Class.isCompatibleType(a, Pool.TypePool) then
+		-- 	return constructor(self, a, b, ...)
+		-- end
 
-		local current = Pool.getCurrent()
-		if not current then
+		-- local current = Pool.getCurrent()
+		-- if not current then
 			return constructor(self, nil, nil, a, b, ...)
-		end
+		-- end
 
-		pool = Pool.getCurrent():getPool(WrappedType)
-		return pool:get(a, b, ...)
+		-- pool = Pool.getCurrent():getPool(WrappedType)
+		-- return pool:get(a, b, ...)
 	end
 
 	return WrappedType

@@ -162,7 +162,7 @@ function MapCurve.Rotation:new(...)
 end
 
 function MapCurve.Rotation:distance(nextValue)
-	return self:getValue():distance(nextValue:getValue())
+	return 1
 end
 
 function MapCurve.Rotation:evaluate(currentValue, nextValue, t)
@@ -554,6 +554,15 @@ end
 
 function MapCurve:render(depth, result)
 	return self.positionCurve:render(depth, result)
+end
+
+function MapCurve:evaluate(t)
+	local curvePosition = self:evaluatePosition(t)
+	local curveRotation = self:evaluateRotation(t):getNormal()
+	local curveNormal = self:evaluateNormal(t):getNormal()
+	local curveScale = self:evaluateScale(t)
+
+	return curvePosition, curveRotation, curveNormal, curveScale
 end
 
 function MapCurve:transform(point, rotation)

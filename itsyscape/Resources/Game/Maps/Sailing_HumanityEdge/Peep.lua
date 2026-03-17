@@ -24,6 +24,7 @@ local FollowerBehavior = require "ItsyScape.Peep.Behaviors.FollowerBehavior"
 local ImmortalBehavior = require "ItsyScape.Peep.Behaviors.ImmortalBehavior"
 local OceanBehavior = require "ItsyScape.Peep.Behaviors.OceanBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
+local PropResourceHealthBehavior = require "ItsyScape.Peep.Behaviors.PropResourceHealthBehavior"
 local TeamBehavior = require "ItsyScape.Peep.Behaviors.TeamBehavior"
 local TeamsBehavior = require "ItsyScape.Peep.Behaviors.TeamsBehavior"
 local ShipMovementBehavior = require "ItsyScape.Peep.Behaviors.ShipMovementBehavior"
@@ -170,7 +171,7 @@ function Island:talkToPeep(playerPeep, otherPeepName, callback, entryPoint, enab
 
 	if otherPeep then
 		Utility.Peep.setMashinaState(otherPeep, false)
-		Utility.Combat.disengage(otherPeep)
+		Utility.Peep.interrupt(otherPeep)
 		otherPeep:getCommandQueue():interrupt()
 
 		local i, j, k = Utility.Peep.getTile(playerPeep)
@@ -235,7 +236,7 @@ end
 
 function Island:onPlayFoundPiratesCutscene(playerPeep)
 	Utility.Peep.disable(playerPeep)
-	Utility.Combat.disengage(playerPeep)
+	Utility.Peep.interrupt(playerPeep)
 
 	self:talkToPeep(playerPeep, "Orlando", function(playerPeep, orlando)
 		Utility.UI.closeAll(playerPeep)
@@ -702,6 +703,7 @@ function Island:prepareTutorial(playerPeep, arguments)
 		playerPeep:listen("gotKeyItem", _gotKeyItem)
 	end
 
+	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Meteor")
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Team")
 	Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_TeamKnights")
 	Utility.spawnInstancedMapGroup(playerPeep, "Cutscene")
@@ -930,10 +932,6 @@ function Island:updateTutorialEquipItemsStep(playerPeep)
 end
 
 function Island:updateTutorialMeetSerCommanderStep(playerPeep)
-	if _ITSYREALM_CONF then
-		self:updateBarrier(playerPeep, "Orlando", "Passage_KnightCommander_OutOfBounds", "Anchor_Spawn_Conf", "quest_tutorial_main_out_of_bounds")
-	end
-
 	if Utility.Peep.isInPassage(playerPeep, "Passage_KnightCommander") and
 	   Utility.Text.getDialogVariable(playerPeep, "VizierRockKnight", "quest_tutorial_main_knight_commander_tagged_along") ~= true and
 	   Utility.Peep.isEnabled(playerPeep)
@@ -1086,8 +1084,8 @@ function Island:updateTutorialFindPeakStep(playerPeep)
 
 		Utility.Peep.setMashinaState(orlando, "tutorial-disengage-follow-player")
 		Utility.Peep.setMashinaState(knightCommander, "tutorial-disengage-follow-player")
-		Utility.Combat.disengage(orlando)
-		Utility.Combat.disengage(knightCommander)
+		Utility.Peep.interrupt(orlando)
+		Utility.Peep.interrupt(knightCommander)
 
 		self:talkToPeep(playerPeep, "Orlando", function()
 			Utility.Peep.setMashinaState(self:getCompanion(playerPeep, "Orlando"), "tutorial-follow-player")
@@ -1119,19 +1117,19 @@ function Island:updateTutorialFindYendoriansStep(playerPeep)
 
 		Utility.Peep.setMashinaState(orlando, "tutorial-disengage-follow-player")
 		Utility.Peep.setMashinaState(knightCommander, "tutorial-disengage-follow-player")
-		Utility.Combat.disengage(orlando)
-		Utility.Combat.disengage(knightCommander)
+		Utility.Peep.interrupt(orlando)
+		Utility.Peep.interrupt(knightCommander)
 
 		local peakYendorian1 = self:getCompanion(playerPeep, "PeakYendorian1")
 		if peakYendorian1 then
 			Utility.Peep.setMashinaState(peakYendorian1, false)
-			Utility.Combat.disengage(peakYendorian1)
+			Utility.Peep.interrupt(peakYendorian1)
 		end
 
 		local peakYendorian2 = self:getCompanion(playerPeep, "PeakYendorian2")
 		if peakYendorian2 then
 			Utility.Peep.setMashinaState(peakYendorian2, false)
-			Utility.Combat.disengage(peakYendorian2)
+			Utility.Peep.interrupt(peakYendorian2)
 		end
 
 		self:poke("playFoundPiratesCutscene", playerPeep)
@@ -1165,6 +1163,10 @@ end
 function Island:updateTutorialPlayer(playerPeep)
 	local stage = self:getDirector():getGameInstance():getStage()
 
+	if _ITSYREALM_CONF then
+		self:updateBarrier(playerPeep, "Orlando", "Passage_KnightCommander_OutOfBounds", "Anchor_Spawn_Conf", "quest_tutorial_main_out_of_bounds")
+	end
+
 	if Utility.Quest.isNextStep("Tutorial", "Tutorial_GatheredItems", playerPeep) then
 		self:updateTutorialGatherItemsStep(playerPeep)
 	elseif Utility.Quest.isNextStep("Tutorial", "Tutorial_EquippedItems", playerPeep) then
@@ -1196,6 +1198,52 @@ function Island:updateTutorialPlayers()
 	for playerPeep in pairs(self.playersInTutorial) do
 		self:updateTutorialPlayer(playerPeep)
 	end
+end
+
+function Island:prepareTutorialMeteor(playerPeep)
+	local knight1 = self:getCompanion(playerPeep, "MiningKnight1")
+	Utility.Peep.interrupt(knight1)
+	Utility.Peep.setMashinaState(knight1, "idle")
+	local knight2 = self:getCompanion(playerPeep, "MiningKnight2")
+	Utility.Peep.interrupt(knight2)
+	Utility.Peep.setMashinaState(knight2, "idle")
+
+	local meteor = self:getCompanion(playerPeep, "AzatiteMeteor")
+	local health = meteor:getBehavior(PropResourceHealthBehavior)
+	health.currentProgress = 0
+	health.maxProgress = 200
+
+	local function onYenderlingAttack(yenderling)
+		yenderling:silence("hit", onYenderlingAttack)
+		yenderling:silence("miss", onYenderlingAttack)
+
+		Utility.Peep.disable(playerPeep)
+		self:talkToPeep(playerPeep, "Orlando", function(_, orlando)
+			Utility.Peep.enable(playerPeep)
+			Utility.Peep.attack(yenderling, playerPeep)
+			Utility.Peep.attack(orlando, yenderling)
+		end, "quest_tutorial_surprised_by_yenderling")
+	end
+
+	local function onSpawnYenderling()
+		if health.currentProgress >= 100 then
+			Utility.Peep.interrupt(playerPeep)
+
+			local peeps = Utility.spawnInstancedMapGroup(playerPeep, "Tutorial_Yenderling")
+			local yenderling = peeps[1]
+
+			yenderling:listen("ready", function()
+				Utility.Peep.lookAt(yenderling, playerPeep)
+				Utility.Peep.face3D(yenderling)
+			end)
+
+			yenderling:listen("hit", onYenderlingAttack)
+			yenderling:listen("miss", onYenderlingAttack)
+			meteor:silence("postResourceHit", onSpawnYenderling)
+		end
+	end
+
+	meteor:listen("postResourceHit", onSpawnYenderling)
 end
 
 function Island:update(director, game)

@@ -33,6 +33,7 @@ local TerrainToolPanel = require "ItsyScape.Editor.Map.TerrainToolPanel"
 local TileSetPalette = require "ItsyScape.Editor.Map.TileSetPalette"
 local Decoration = require "ItsyScape.Graphics.Decoration"
 local GameView = require "ItsyScape.Graphics.GameView"
+local ResourceManager = require "ItsyScape.Graphics.ResourceManager"
 local MapGridMeshSceneNode = require "ItsyScape.Graphics.MapGridMeshSceneNode"
 local PointLightSceneNode = require "ItsyScape.Graphics.PointLightSceneNode"
 local Color = require "ItsyScape.Graphics.Color"
@@ -51,6 +52,14 @@ local OriginBehavior = require "ItsyScape.Peep.Behaviors.OriginBehavior"
 local MapOffsetBehavior = require "ItsyScape.Peep.Behaviors.MapOffsetBehavior"
 local MapPeep = require "ItsyScape.Peep.Peeps.Map"
 local ShipMapScript = require "Resources.Game.Peeps.Maps.ShipMapPeep2"
+
+-- # CONTROLS
+-- Tools:
+-- * f1: terrain tool
+-- * shift + f1: brush tool
+-- Brush tool:
+-- * left-click: clamp brush motion
+-- * ctrl + left-click: regular brush motion
 
 local MapEditorApplication = Class(EditorApplication)
 MapEditorApplication.TOOL_NONE = 0
@@ -127,6 +136,7 @@ function MapEditorApplication:new()
 	self.mapScriptPeeps = {}
 	self.mapScriptLayers = {}
 	self.mapScriptCurves = {}
+	self.previousMaps = {}
 
 	self.propNames = {}
 
@@ -134,7 +144,54 @@ function MapEditorApplication:new()
 
 	self:getGameView():getRenderer():setClearColor(self:getGameView():getRenderer():getClearColor() * 0.7)
 
-	self:getGameView():getResourceManager():setFrameDuration(1)
+	local resourceManager = self:getGameView():getResourceManager()
+	resourceManager:setFrameDuration(1)
+	resourceManager.MAX_TIME_FOR_SYNC_RESOURCE_RUNTIME = 1
+	resourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING = 1
+end
+
+function MapEditorApplication:makeCurveCircle(layer)
+	local map = self:getGame():getStage():getMap(layer)
+
+	local center = Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)
+	local transform = self:getGameView():getMapSceneNode(layer):getTransform():getGlobalDeltaTransform(0)
+	center = center:transform(transform)
+
+	local radius = (map:getHeight() * map:getCellSize()) / (2 * math.pi)
+
+	local config = {
+		linear = true,
+		min = { 0, 0, 0 },
+		max = { map:getWidth() * map:getCellSize(), 0, map:getHeight() * map:getCellSize() },
+		axis = { 0, 0, 1 },
+		positions = {},
+		normals = { { 0, 1, 0 }, { 0, 1, 0 } },
+		scales = { { 1, 1, 1 }, { 1, 1, 1 } },
+		rotations = {
+			-- These commented out orientations are for without the (math.pi + math.pi / 2) offset
+			-- applied in the position loop.
+			-- { Quaternion.IDENTITY:get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi / 2):get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi):get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi + math.pi / 2):get() },
+			-- { Quaternion.fromAxisAngle(-Vector.UNIT_Y, math.pi * 2):get() }
+			{ Quaternion.fromEulerXYZ(0, math.rad(90), 0):get() },
+			{ Quaternion.fromEulerXYZ(0, math.rad(-45), 0):get() },
+			{ Quaternion.fromEulerXYZ(0, math.rad(-45), 0):get() },
+			{ Quaternion.fromEulerXYZ(math.rad(180), math.rad(0), math.rad(180)):get() },
+			{ Quaternion.fromEulerXYZ(0, math.rad(90), 0):get() },
+		}
+	}
+
+	local positionCount = math.max(map:getHeight() * 2, 4)
+	for i = 1, positionCount do
+		local angle = (i - 1) / (positionCount - 1) * math.pi * 2 + math.pi + math.pi / 2
+		local position = center + Vector(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+
+		table.insert(config.positions, { position:get() })
+	end
+
+	self:beginEditCurve(map, config, layer)
 end
 
 function MapEditorApplication:beginEditCurve(map, curve, layer)
@@ -154,6 +211,101 @@ end
 
 function MapEditorApplication:endEditCurve()
 	self.isEditingCurve = false
+end
+
+function MapEditorApplication:updatePolygonMask(layer)
+	local meta = self.meta and self.meta[layer]
+	if not meta then
+		return
+	end
+
+	self:getGame():getStage():updateMapMeta(layer, meta)
+	self:getGame():getStage():updateMap(layer, self:getGame():getStage():getMap(layer))
+end
+
+function MapEditorApplication:getGroundDecorationsEnabled()
+	return self.isEditingPolygon
+end
+
+function MapEditorApplication:tryBeginEditPolygon(layer, point, worldPoint)
+	self.isEditingPolygon = false
+
+	local bestDistance = math.huge
+	local bestPoint, bestPointIndex, bestPolygonIndex = nil, nil
+
+	local map = self:getGame():getStage():getMap(layer)
+	if not map then
+		return false
+	end
+
+	local meta = self.meta and self.meta[layer]
+	if not (meta and meta.polygonMask) then
+		return false
+	end
+
+	for polygonIndex, polygon in ipairs(meta.polygonMask) do
+		for i in ipairs(polygon) do
+			local j = math.wrapIndex(i, 1, #polygon)
+
+			local a = Vector(polygon[i][1], 0, polygon[i][2])
+			a.y = map:getInterpolatedHeight(a.x, a.z)
+
+			local b = Vector(polygon[j][1], 0, polygon[j][2])
+			b.y = map:getInterpolatedHeight(b.x, b.z)
+
+			local mapNode = self:getGameView():getMapSceneNode(layer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
+				a = a:transform(transform)
+				b = b:transform(transform)
+			end
+
+			a = self:getCamera():project(a) * Vector(1, 1, 0)
+			b = self:getCamera():project(b) * Vector(1, 1, 0)
+
+			local abDistance = a:distance(b)
+			local distanceFromPoint = a:distance(point)
+
+			if distanceFromPoint < 16 and distanceFromPoint < bestDistance then
+				self.isEditingPolygon = true
+				self.currentPolygonIndex = polygonIndex
+				self.currentPointIndex = i
+				self.currentPolygonLayer = layer
+
+				bestPolygonIndex = nil
+				bestPointIndex = nil
+				bestPoint = nil
+
+				bestDistance = 0
+			else
+				local ray = Ray(a, a:direction(b))
+				local distance = ray:distance(point)
+				local isForward, pointOnRay = ray:closest(point)
+
+				local pointOnRayDistanceFromPoint = pointOnRay:distance(point)
+				if isForward and distance < abDistance and pointOnRayDistanceFromPoint < 8 and pointOnRayDistanceFromPoint < bestDistance then
+					self.isEditingPolygon = true
+					self.currentPolygonIndex = polygonIndex
+					self.currentPointIndex = j
+					self.currentPolygonLayer = layer
+
+					bestPolygonIndex = polygonIndex
+					bestPoint = worldPoint
+					bestPointIndex = j
+				end
+			end
+		end
+	end
+
+	if bestPolygonIndex and bestPointIndex and bestPoint then
+		table.insert(meta.polygonMask[bestPolygonIndex], bestPointIndex, { bestPoint.x, bestPoint.z })
+	end
+
+	return self.isEditingPolygon
+end
+
+function MapEditorApplication:endEditPolygon()
+	self.isEditingPolygon = false
 end
 
 function MapEditorApplication:createCurveValueGizmo(Type, index)
@@ -247,10 +399,22 @@ function MapEditorApplication:setTool(tool)
 		self.currentPalette:close()
 	end
 
+	for layer, meta in pairs(self.meta) do
+		if meta.curve then
+			self:getGameView():bendMap(layer, meta.curve)
+		end
+	end
+
 	if tool == MapEditorApplication.TOOL_TERRAIN then
 		self.currentTool = MapEditorApplication.TOOL_TERRAIN
 		self.terrainToolPanel:open()
 		self.terrainToolPanel:setToolSize(0)
+
+		if love.keyboard.isDown("lalt", "ralt") then
+			for layer in pairs(self.meta) do
+				self:getGameView():bendMap(layer)
+			end			
+		end
 	elseif tool == MapEditorApplication.TOOL_PAINT then
 		self.currentTool = MapEditorApplication.TOOL_PAINT
 		self.tileSetPalette:open()
@@ -261,6 +425,10 @@ function MapEditorApplication:setTool(tool)
 		self.currentTool = MapEditorApplication.TOOL_DECORATE
 		self.decorationList:open()
 		self.decorationPalette:open()
+
+		for layer in pairs(self.meta) do
+			self:getGameView():bendMap(layer)
+		end
 	elseif tool == MapEditorApplication.TOOL_PROP then
 		self.currentTool = MapEditorApplication.TOOL_PROP
 		self.propPalette:open()
@@ -297,17 +465,51 @@ function MapEditorApplication:initialize()
 
 	local newMapInterface = NewMapInterface(self)
 	self:getUIView():getRoot():addChild(newMapInterface)
-	newMapInterface.onSubmit:register(function()
+	newMapInterface.onSubmit:register(function(_, layer)
 		self:setTool(MapEditorApplication.TOOL_PAINT)
+		self.meta = self.meta or {}
+		self.meta[layer] = self.meta[layer] or {}
 	end)
 end
 
 function MapEditorApplication:decorationFeatureToSceneNode(feature)
+	local _, decoration = self.decorationList:getCurrentDecoration()
+	local parentSceneNode = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration))
+
 	local sceneNode = SceneNode()
+	sceneNode:setParent(parentSceneNode)
+
 	local transform = sceneNode:getTransform()
 	transform:setLocalTranslation(feature:getPosition())
 	transform:setLocalScale(feature:getScale())
 	transform:setLocalRotation(feature:getRotation())
+
+	return sceneNode
+end
+
+function MapEditorApplication:decorationToSceneNode(decoration)
+	local center = Vector.ZERO
+	local features = self:getLastDecorationFeature() or {}
+	if Class.isCompatibleType(features, Decoration.Feature) then
+		center = features:getPosition()
+	else
+		for _, feature in ipairs(features) do
+			center = center + feature:getPosition()
+		end
+
+		center = center / #features
+	end
+
+	local _, decoration = self.decorationList:getCurrentDecoration()
+	local parentSceneNode = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration))
+
+	local sceneNode = SceneNode()
+	sceneNode:setParent(parentSceneNode)
+
+	local transform = sceneNode:getTransform()
+	transform:setLocalTranslation(center)
+	transform:setLocalScale(Vector.ONE)
+	transform:setLocalRotation(Quaternion.IDENTITY)
 
 	return sceneNode
 end
@@ -319,14 +521,14 @@ function MapEditorApplication:curveToSceneNode(target)
 	if Class.isCompatibleType(target, MapCurve.Position) then
 		local translation = target:getValue()
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 
 		sceneNode:getTransform():setLocalTranslation(translation)
 	elseif Class.isCompatibleType(target, MapCurve.Normal) then
 		local translation = self.curve:getPositions():get(target:getIndex() or 1):getValue()
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 		sceneNode:getTransform():setLocalTranslation(translation)
 
@@ -337,7 +539,7 @@ function MapEditorApplication:curveToSceneNode(target)
 		local t = ((target:getIndex() or 1) - 1) / (self.curve:getRotations():length() - 1)
 		local translation = self.curve:evaluatePosition(t) + self.curve:evaluateNormal(t) * 4
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 		sceneNode:getTransform():setLocalTranslation(translation)
 
@@ -345,7 +547,7 @@ function MapEditorApplication:curveToSceneNode(target)
 	elseif Class.isCompatibleType(target, MapCurve.Scale) then
 		local translation = self.curve:getPositions():get(target:getIndex() or 1):getValue()
 		if mapSceneNode then
-			translation = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(translation:get()))
+			translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(translation:get()))
 		end
 		sceneNode:getTransform():setLocalTranslation(translation)
 
@@ -428,6 +630,9 @@ end
 function MapEditorApplication:onSelectDecorationGroup(_, _, decoration)
 	self.currentDecorationTileSet = decoration:getTileSetID()
 	self.decorationPalette:loadDecorations()
+
+	self:unsetGizmo()
+	self.currentFeatureIndex = false
 end
 
 function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)
@@ -437,6 +642,18 @@ function MapEditorApplication:updateTileSet(stage, map, layer, tileSetID, masks)
 	self.tileSet, self.tileSetTexture = TileSet.loadFromFile(tileSetFilename, true)
 
 	self.tileSetPalette:refresh(self.tileSet, self.tileSetTexture, masks)
+
+	if not self.meta then
+		self.meta = {}
+	end
+
+	local meta = self.meta[layer]
+	if not meta then
+		meta = {}
+		self.meta[layer] = meta
+	end
+
+	meta.tileSetID = tileSetID
 end
 
 function MapEditorApplication:recursiveSetFlag(map, i, j, flag, elevation, e)
@@ -627,7 +844,19 @@ function MapEditorApplication:paint()
 	end
 end
 
-function MapEditorApplication:makeMotionEvent(x, y, button, layer)
+function MapEditorApplication:getMotionEventE(e)
+	e = e or {}
+
+	if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
+		return {
+			step = e.step or self.terrainToolPanel.toolDistance
+		}
+	end
+
+	return {}
+end
+
+function MapEditorApplication:makeMotionEvent(x, y, button, layer, e)
 	layer = layer or self.motionLayer or self.currentLayer
 
 	local ray = self:shoot(x, y)
@@ -640,7 +869,7 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		ray = Ray(origin1, direction)
 	end
 
-	return {
+	local result = {
 		x = x or 0,
 		y = y or 0,
 		button = button or 1,
@@ -650,8 +879,14 @@ function MapEditorApplication:makeMotionEvent(x, y, button, layer)
 		zoom = self:getCamera():getDistance(),
 		eye = self:getCamera():getEye(),
 		camera = self:getCamera(),
-		transform = mapSceneNode:getTransform():getGlobalTransform()
+		transform = mapSceneNode:getTransform():getGlobalDeltaTransform(0)
 	}
+
+	for k, v in pairs(self:getMotionEventE(e)) do
+		result[k] = v
+	end
+
+	return result
 end
 
 function MapEditorApplication:makeMotion(x, y, button)
@@ -690,6 +925,8 @@ function MapEditorApplication:mousePress(x, y, button)
 					end
 				elseif Class.isCompatibleType(target, Decoration.Feature) then
 					sceneNode = self:decorationFeatureToSceneNode(target)
+				elseif Class.isCompatibleType(target, Decoration) then
+					sceneNode = self:decorationToSceneNode(target)
 				elseif Class.isCompatibleType(target, MapCurve.Value) then
 					sceneNode = self:curveToSceneNode(target)
 				elseif Class.isCompatibleType(target, MapPeep) then
@@ -702,6 +939,12 @@ function MapEditorApplication:mousePress(x, y, button)
 						self.gizmoGrabX = x
 						self.gizmoGrabY = y
 					end
+				end
+
+				if Class.isCompatibleType(target, Decoration.Feature) or
+				   Class.isCompatibleType(target, Decoration)
+				then
+					sceneNode:setParent()
 				end
 			end
 
@@ -722,7 +965,7 @@ function MapEditorApplication:mousePress(x, y, button)
 						self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.motionLayer))
 						self.currentToolNode:fromMap(
 							self:getGame():getStage():getMap(self.motionLayer),
-							motion,
+							self.motion,
 							i, i, j, j)
 					end
 				end)
@@ -734,11 +977,11 @@ function MapEditorApplication:mousePress(x, y, button)
 			elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
 				self:paint()
 				self.isDragging = true
-			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE and not (self.gizmo and self.gizmo:getIsActive()) then
+			elseif self.currentTool == MapEditorApplication.TOOL_DECORATE and not (self.gizmo and self.gizmo:getIsActive()) and not self.isDecorationCursorActive then
 				local group, decoration = self.decorationList:getCurrentDecoration()
 				if group and decoration then
 					local hit
-					if not (love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift")) then
+					if not (love.keyboard.isDown("lctrl") or love.keyboard.isDown("rctrl")) then
 						local tileSetFilename = string.format(
 							"Resources/Game/TileSets/%s/Layout.lstatic",
 							decoration:getTileSetID())
@@ -747,7 +990,10 @@ function MapEditorApplication:mousePress(x, y, button)
 							tileSetFilename)
 
 						do
-							local hits = decoration:testRay(self:shoot(x, y), staticMesh:getResource())
+							local transform = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration)):getTransform():getGlobalDeltaTransform(0)
+							local ray = self:shoot(x, y):inverseTransform(transform)
+
+							local hits = decoration:testRay(ray, staticMesh:getResource())
 							table.sort(hits, function(a, b)
 								local i = self:getCamera():project(a[Decoration.RAY_TEST_RESULT_POSITION])
 								local j = self:getCamera():project(b[Decoration.RAY_TEST_RESULT_POSITION])
@@ -809,7 +1055,7 @@ function MapEditorApplication:mousePress(x, y, button)
 											rotation,
 											scale,
 											self.currentDecorationColor,
-											self.decorationPalette:getCurrentTexture(),
+											groupFeature:getTexture() or self.decorationPalette:getCurrentTexture(),
 											groupFeature:getMaterial())
 										table.insert(features, decoration:getNumFeatures())
 									end
@@ -945,7 +1191,7 @@ function MapEditorApplication:mousePress(x, y, button)
 				for i = 1, positionCurve:length() do
 					local curvePoint = positionCurve:get(i):getValue()
 					if mapSceneNode then
-						curvePoint = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(curvePoint:get()))
+						curvePoint = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(curvePoint:get()))
 					end
 
 					local screenPoint = self:getCamera():project(curvePoint)
@@ -973,7 +1219,7 @@ function MapEditorApplication:mousePress(x, y, button)
 					local t = (i - 1) / (rotationCurve:length() - 1)
 					local curvePoint = positionCurve:evaluate(t) + Vector(0, 4, 0)
 					if mapSceneNode then
-						curvePoint = Vector(mapSceneNode:getTransform():getGlobalTransform():transformPoint(curvePoint:get()))
+						curvePoint = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):transformPoint(curvePoint:get()))
 					end
 
 					local screenPoint = self:getCamera():project(curvePoint)
@@ -989,38 +1235,70 @@ function MapEditorApplication:mousePress(x, y, button)
 					self:createRotationGizmo(rotationCurve:get(clickedCurveIndex))
 				end
 			elseif self.currentTool == MapEditorApplication.TOOL_CURVE then
-				if not self.isGizmoGrabbed then
-					self:probe(x, y, false, function(probe)
-						local _, _, layer = probe:getTile()
+				self:probe(x, y, false, function(probe)
+					local _, _, layer = probe:getTile()
 
-						local mapScriptPeep = self.mapScriptPeeps[layer]
-						if mapScriptPeep then
-							self:createBoundsGizmo(mapScriptPeep)
+					local results = probe:getResults()
+					local result = results and results[1]
+					local point = result and result[Map.RAY_TEST_RESULT_POSITION]
+
+					if not (point and self:tryBeginEditPolygon(layer, Vector(x, y, 0), point)) then
+						if not self.isGizmoGrabbed then
+							local mapScriptPeep = self.mapScriptPeeps[layer]
+							if mapScriptPeep then
+								self:createBoundsGizmo(mapScriptPeep)
+							end
 						end
-					end)
-				end
+					else
+						self:updatePolygonMask(layer)
+					end
+				end)
 			end
 		elseif button == 2 then
 			if self.currentTool == MapEditorApplication.TOOL_CURVE then
 				self:probe(x, y, false, function(probe)
-					local _, _, layer = probe:getTile()
+					local actions = {}
 
-					if not layer then
-						return
-					end
+					table.insert(actions, {
+						id = #actions + 1,
+						verb = "New",
+						object = "Map",
+						callback = function()
+							local newMapInterface = NewMapInterface(self, false)
+							self:getUIView():getRoot():addChild(newMapInterface)
+						end
+					})
 
-					local actions = {
-						{
-							id = 1,
-							verb = "New",
-							object = "Map",
+					for _, result in ipairs(probe:getResults()) do
+						local layer = result.layer
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Select",
+							object = string.format("Layer %d", layer),
 							callback = function()
-								local newMapInterface = NewMapInterface(self, false)
-								self:getUIView():getRoot():addChild(newMapInterface)
+								local mapScriptPeep = self.mapScriptPeeps[layer]
+								if mapScriptPeep then
+									self:createBoundsGizmo(mapScriptPeep)
+								end
 							end
-						},
-						{
-							id = 2,
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = self.lockedMapLayer == layer and "Unlock" or "Lock",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								if self.lockedMapLayer == layer then
+									self.lockedMapLayer = false
+								else
+									self.lockedMapLayer = layer
+								end
+							end
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
 							verb = "Delete",
 							object = string.format("Layer %d", layer),
 							callback = function()
@@ -1030,26 +1308,103 @@ function MapEditorApplication:mousePress(x, y, button)
 								end)
 								confirm:open("Are you sure you want to delete this layer?")
 							end
-						},
-						{
-							id = 3,
-							verb = "Load",
-							object = "Other Map",
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Duplicate",
+							object = string.format("Layer %d", layer),
 							callback = function()
-								local prompt = PromptWindow(self)
-								prompt.onSubmit:register(function(_, filename)
-									if not self:isResourceNameValid(filename) then
-										local alert = AlertWindow(self)
-										alert:open(string.format("Map name '%s' invalid.", filename))
-									else
-										local layer = self:getGame():getStage():newLayer(self:getGame():getStage():getInstanceByLayer(1))
-										self:load(filename, true, layer)
-									end
-								end)
-								prompt:open("What is the additional map name?", "Load")
+								self:duplicateLayer(layer)
 							end
-						}
-					}
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Create-Square-Polygon",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								local map = self:getGame():getStage():getMap(layer)
+
+								local meta = self.meta and self.meta[layer]
+								if not meta then
+									return
+								end
+
+								meta.polygonMask = meta.polygonMask or {}
+								table.insert(meta.polygonMask, {
+									{ 0, 0 },
+									{ map:getWidth() * map:getCellSize(), 0 },
+									{ map:getWidth() * map:getCellSize(), map:getHeight() * map:getCellSize() },
+									{ 0, map:getHeight() * map:getCellSize() },
+								})
+
+								self:updatePolygonMask(layer)
+							end
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Create-Circle-Polygon",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								local map = self:getGame():getStage():getMap(layer)
+
+								local meta = self.meta and self.meta[layer]
+								if not meta then
+									return
+								end
+
+								local radius = math.min(map:getWidth(), map:getHeight()) * map:getCellSize() / 2
+								local center = Vector(
+									map:getWidth() * map:getCellSize() / 2,
+									0,
+									map:getHeight() * map:getCellSize() / 2)
+
+
+								meta.polygonMask = meta.polygonMask or {}
+								local polygon = {}
+								local steps = math.max(radius * 2, 4)
+								for i = 1, steps do
+									local angle = (i - 1) / steps * math.pi * 2
+									local position = center + Vector(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+
+									table.insert(polygon, { position.x, position.z })
+								end
+
+								table.insert(meta.polygonMask, polygon)
+								self:updatePolygonMask(layer)
+							end
+						})
+
+						table.insert(actions, {
+							id = #actions + 1,
+							verb = "Curve-Circle",
+							object = string.format("Layer %d", layer),
+							callback = function()
+								self:makeCurveCircle(layer)
+							end
+						})
+					end
+
+					table.insert(actions, {
+						id = #actions + 1,
+						verb = "Load",
+						object = "Other Map",
+						callback = function()
+							local prompt = PromptWindow(self)
+							prompt.onSubmit:register(function(_, filename)
+								if not self:isResourceNameValid(filename) then
+									local alert = AlertWindow(self)
+									alert:open(string.format("Map name '%s' invalid.", filename))
+								else
+									local layer = self:getGame():getStage():newLayer(self:getGame():getStage():getInstanceByLayer(1))
+									self:load(filename, true, layer)
+								end
+							end)
+							prompt:open("What is the additional map name?", "Load")
+						end
+					})
 
 					self:getUIView():probe(actions)
 				end)
@@ -1068,9 +1423,24 @@ end
 function MapEditorApplication:mouseMove(x, y, dx, dy)
 	if not EditorApplication.mouseMove(self, x, y, dx, dy) then
 		if self.motion then
+			local mapBeforeChanges = Map.loadFromTable(self:getGame():getStage():getMap(self.motionLayer):serialize())
+
 			local r = self.motion:onMouseMoved(self:makeMotionEvent(x, y))
 
 			if r then
+				local previousMaps = self.previousMaps[self.motionLayer]
+				if not previousMaps then
+					previousMaps = { previous = {}, next = {} }
+					self.previousMaps[self.motionLayer] = previousMaps
+				end
+
+				table.insert(previousMaps.previous, mapBeforeChanges)
+				while #previousMaps.previous > 100 do
+					table.remove(previousMaps.previous, 1)
+				end
+
+				table.clear(previousMaps.next)
+
 				local i, j, w, h = self.motion:getRegion()
 				self:getGame():getStage():updateMap(self.motionLayer, nil, i, j, w, h)
 			end
@@ -1079,19 +1449,30 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		do
 			self:probe(x, y, false, function(probe)
 				local motion, layer
+				local i, j
 				if self.motion then
 					motion = self.motion
 					layer = self.motionLayer
-				elseif probe:getTile() then
-					local _, _, k = probe:getTile()
-					layer = k
 
-					motion = MapMotion(self:getGame():getStage():getMap(layer))
-					motion:onMousePressed(self:makeMotionEvent(x, y, 1, layer))
+					local _
+					_, i, j = motion:getTile()
+				elseif probe:getTile() then
+					if self.lockedMapLayer then
+						for _, result in ipairs(probe:getResults()) do
+							if result.layer == self.lockedMapLayer then
+								i, j = result[Map.RAY_TEST_RESULT_I], result[Map.RAY_TEST_RESULT_J]
+								layer = result.layer
+								break
+							end
+						end
+					end
+
+					if not (i and j and layer) then
+						i, j, layer = probe:getTile()
+					end
 				end
 
-				if motion and layer then
-					local _, i, j = motion:getTile()
+				if i and j and layer then
 					self.previousI = self.currentI
 					self.previousJ = self.currentJ
 					self.previousLayer = self.currentLayer
@@ -1103,52 +1484,40 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 		end
 
 		if self.currentTool == MapEditorApplication.TOOL_TERRAIN then
-			self:probe(x, y, false, function(probe)
-				if not probe:getTile() then
-					return
-				end
+			local i, j = self.currentI, self.currentJ
+			if not self.currentToolNode then
+				self:makeCurrentToolNode()
+			end
 
-				local motion, layer
-				if self.motion then
-					motion = self.motion
-					layer = self.motionLayer
-				else
-					local _, _, k = probe:getTile()
-					layer = k
+			local motion = self.motion
+			if not motion then
+				motion = MapMotion(self:getGame():getStage():getMap(self.currentLayer))
+				motion:onMousePressed(self:makeMotionEvent(x, y, 1))
+			end
 
-					motion = MapMotion(self:getGame():getStage():getMap(layer))
-					motion:onMousePressed(self:makeMotionEvent(x, y, nil, layer))
-				end
+			local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
+			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
+			self.currentToolNode:fromMap(
+				self:getGame():getStage():getMap(self.currentLayer),
+				motion,
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 
-				local _, i, j = motion:getTile()
-				if not self.currentToolNode then
-					self:makeCurrentToolNode()
-				end
+			local isShiftDown = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
 
-				local size = math.max(self.terrainToolPanel.toolSize - 1, 0)
-				self.currentToolNode:setParent(self:getGameView():getMapSceneNode(layer))
-				self.currentToolNode:fromMap(
-					self:getGame():getStage():getMap(layer),
-					motion,
-					i - size,
-					i + size,
-					j - size,
-					j + size)
-
-				local isShiftDown = love.keyboard.isDown('lshift') or love.keyboard.isDown('rshift')
-
-				if love.keyboard.isDown('i') and isShiftDown then
-					local map = self:getGame():getStage():getMap(layer)
-					local tile = map:getTile(self.currentI, self.currentJ)
-					tile:setFlag('impassable')
-				elseif love.keyboard.isDown('b') and isShiftDown then
-					local map = self:getGame():getStage():getMap(layer)
-					local tile = map:getTile(self.currentI, self.currentJ)
-					tile:setFlag('building')
-				end
-			end)
+			if love.keyboard.isDown('i') and isShiftDown then
+				local map = self:getGame():getStage():getMap(layer)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				tile:setFlag('impassable')
+			elseif love.keyboard.isDown('b') and isShiftDown then
+				local map = self:getGame():getStage():getMap(layer)
+				local tile = map:getTile(self.currentI, self.currentJ)
+				tile:setFlag('building')
+			end
 		elseif self.currentTool == MapEditorApplication.TOOL_BRUSH then
-			local layer = self.motionLayer or 1
+			local layer = self.motionLayer or self.currentLayer
 			local motion = MapMotion(self:getGame():getStage():getMap(layer))
 			motion:onMousePressed(self:makeMotionEvent(x, y, 1))
 
@@ -1167,34 +1536,49 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				j - size,
 				j + size)
 		elseif self.currentTool == MapEditorApplication.TOOL_PAINT then
-			self:probe(x, y, false, function(probe)
-				if not self.currentToolNode then
-					self:makeCurrentToolNode()
-				end
+			local i, j = self.currentI, self.currentJ
+			local size = math.max(self.landscapeToolPanel:getToolSize(), 0)
 
-				if not probe:getTile() then
-					return
-				end
+			if not self.currentToolNode then
+				self:makeCurrentToolNode()
+			end
 
-				local i, j = probe:getTile()
-				local size = math.max(self.landscapeToolPanel:getToolSize(), 0)
-				self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
-				self.currentToolNode:fromMap(
-					self:getGame():getStage():getMap(self.currentLayer),
-					false,
-					i - size,
-					i + size,
-					j - size,
-					j + size)
+			self.currentToolNode:setParent(self:getGameView():getMapSceneNode(self.currentLayer))
+			self.currentToolNode:fromMap(
+				self:getGame():getStage():getMap(self.currentLayer),
+				false,
+				i - size,
+				i + size,
+				j - size,
+				j + size)
 
-				if self.isDragging then
-					self.previousPaintI = self.currentPaintI or i
-					self.previousPaintJ = self.currentPaintJ or j
-					self.currentPaintI = i
-					self.currentPaintJ = j
-					self:paint()
-				end
-			end)
+			if self.isDragging then
+				self.previousPaintI = self.currentPaintI or i
+				self.previousPaintJ = self.currentPaintJ or j
+				self.currentPaintI = i
+				self.currentPaintJ = j
+				self:paint()
+			end
+		elseif self.currentTool == MapEditorApplication.TOOL_CURVE then
+			if self.isEditingPolygon then
+				self:probe(x, y, false, function(probe)
+					for _, result in ipairs(probe:getResults()) do
+						if result.layer == self.currentPolygonLayer then
+							local meta = self.meta and self.meta[self.currentPolygonLayer]
+							if meta and meta.polygonMask then
+								local polygon = meta.polygonMask[self.currentPolygonIndex]
+								if polygon then
+									polygon[self.currentPointIndex] = { result[Map.RAY_TEST_RESULT_POSITION].x, result[Map.RAY_TEST_RESULT_POSITION].z }
+
+									self:updatePolygonMask(self.currentPolygonLayer)
+								end
+							end
+
+							break
+						end
+					end
+				end)
+			end
 		elseif self.currentToolNode then
 			self.currentToolNode:setParent(nil)
 			self.currentToolNode = false
@@ -1213,6 +1597,8 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
 			sceneNode = self:decorationFeatureToSceneNode(target)
+		elseif Class.isCompatibleType(target, Decoration) then
+			sceneNode = self:decorationToSceneNode(target)
 		elseif Class.isCompatibleType(target, MapCurve.Value) then
 			sceneNode = self:curveToSceneNode(target)
 		elseif Class.isCompatibleType(target, MapPeep) then
@@ -1221,6 +1607,11 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 
 		if sceneNode then
 			local needsUpdate = false
+			local transform = sceneNode:getTransform()
+
+			local previousTranslation = Vector(transform:getLocalTranslation():get())
+			local previousRotation = Quaternion(transform:getLocalRotation():get())
+			local previousScale = Vector(transform:getLocalScale():get())
 
 			if not self.isGizmoGrabbed then
 				self.gizmo:hover(x, y, self:getCamera(), sceneNode)
@@ -1253,10 +1644,31 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 				if group and decoration then
 					self:getGameView():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 				end
+
+				sceneNode:setParent()
+			elseif Class.isCompatibleType(target, Decoration) then
+				local features = self:getLastDecorationFeature()
+				if Class.isCompatibleType(features, Decoration.Feature) then
+					features = { features }
+				end
+
+				local translation = translation - previousTranslation
+				for _, feature in ipairs(features) do
+					feature:setPosition(feature:getPosition() + translation)
+					feature:setRotation(feature:getRotation() * rotation)
+					feature:setScale(feature:getScale() + (scale - Vector.ONE))
+				end
+
+				local group = self.decorationList:getCurrentDecoration()
+				if group and target and self:getGameView():getDecorationLayer(target) then
+					self:getGameView():decorate(group, target, self:getGameView():getDecorationLayer(target), self:getGameView():getDecorationMaterials(decoration))
+				end
+
+				sceneNode:setParent()
 			elseif Class.isCompatibleType(target, MapCurve.Value) and target:getIndex() then
 				local mapSceneNode = self:getGameView():getMapSceneNode(self.curveLayer)
 				if mapSceneNode then
-					translation = Vector(mapSceneNode:getTransform():getGlobalTransform():inverseTransformPoint(translation:get()))
+					translation = Vector(mapSceneNode:getTransform():getGlobalDeltaTransform(0):inverseTransformPoint(translation:get()))
 				end
 
 				if Class.isCompatibleType(target, MapCurve.Position) then
@@ -1266,7 +1678,7 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self.curve:getNormals():set(target:getIndex(), MapCurve.Normal(rotation:transformVector(Vector.UNIT_Y):getNormal():get()))
 					self.gizmo:setTarget(self.curve:getNormals():get(target:getIndex()))
 				elseif Class.isCompatibleType(target, MapCurve.Rotation) then
-					self.curve:getRotations():set(target:getIndex(), MapCurve.Rotation(rotation:get()))
+					self.curve:getRotations():set(target:getIndex(), MapCurve.Rotation(rotation:getNormal():get()))
 					self.gizmo:setTarget(self.curve:getRotations():get(target:getIndex()))
 				elseif Class.isCompatibleType(target, MapCurve.Scale) then
 					self.curve:getScales():set(target:getIndex(), MapCurve.Scale(scale:get()))
@@ -1277,12 +1689,19 @@ function MapEditorApplication:mouseMove(x, y, dx, dy)
 					self:updateCurve()
 				end
 			elseif Class.isCompatibleType(target, MapPeep) then
-				local offset = target:getBehavior(MapOffsetBehavior)
-				if offset then
-					offset.position = translation
-					offset.rotation = rotation
-					offset.scale = scale
-				end
+				local _, offset = target:addBehavior(MapOffsetBehavior)
+				offset.offset = translation
+				offset.rotation = rotation
+				offset.scale = scale
+
+				self:getGame():getStage():onMapMoved(
+					target:getLayer(),
+					offset.offset,
+					offset.rotation,
+					offset.scale,
+					offset.origin,
+					false,
+					offset.parentLayer or false)
 			end
 		end
 	end
@@ -1348,11 +1767,55 @@ function MapEditorApplication:mouseRelease(x, y, button)
 			self.previousPaintJ = nil
 			self.currentPaintI = nil
 			self.currentPaintJ = nil
+
+			if self.isDecorationCursorActive then
+				local x1, y1 = math.min(self.decorationCursorSelectX, x), math.min(self.decorationCursorSelectY, y)
+				local x2, y2 = math.max(self.decorationCursorSelectX, x), math.max(self.decorationCursorSelectY, y)
+
+				local group, decoration = self.decorationList:getCurrentDecoration()
+				if group and decoration then
+					local tileSetFilename = string.format(
+						"Resources/Game/TileSets/%s/Layout.lstatic",
+						decoration:getTileSetID())
+					local staticMesh = self:getGameView():getResourceManager():load(
+						StaticMeshResource,
+						tileSetFilename)
+
+					local transform = self:getGameView():getMapSceneNode(self:getGameView():getDecorationLayer(decoration)):getTransform():getGlobalDeltaTransform(0)
+
+					local featuresByIndex = {}
+					decoration:map(function(v1, v2, v3, _, feature, index)
+						if featuresByIndex[index] then
+							return
+						end
+
+						local center = (v1 + v2 + v3) / Vector(3)
+						local sx, sy = self:getCamera():project(center:transform(transform)):get()
+						if sx >= x1 and sx <= x2 and sy >= y1 and sy <= y2 then
+							featuresByIndex[index] = true
+						end
+					end, staticMesh:getResource())
+
+					local features = {}
+					for index in pairs(featuresByIndex) do
+						table.insert(features, index)
+					end
+
+					table.sort(features)
+
+					self.currentFeatureIndex = features
+
+					self:createBoundsGizmo(decoration)
+				end
+
+				self.isDecorationCursorActive = false
+			end
 		end
 		self.isDragging = false
 	end
 
 	self.isGizmoGrabbed = false
+	self.isEditingPolygon = false
 end
 
 function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
@@ -1400,7 +1863,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 					local left = self.currentI - (self.terrainToolPanel.toolSize - 1)
 					local right = self.currentI + (self.terrainToolPanel.toolSize - 1)
 
-				 	top = math.max(top, 1)
+					top = math.max(top, 1)
 					bottom = math.min(map:getHeight(), bottom)
 					left = math.max(left, 1)
 					right = math.min(map:getWidth(), right)
@@ -1414,6 +1877,42 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								tile:setFlag('building')
 							end
 						end
+					end
+				elseif key == "u" then
+					local layer = self.motionLayer or self.currentLayer
+					local previousMaps = self.previousMaps[layer]
+					if previousMaps then
+						local mapBeforeUndo = Map.loadFromTable(self:getGame():getStage():getMap(layer):serialize())
+						table.insert(previousMaps.next, mapBeforeUndo)
+
+						local previousMap = table.remove(previousMaps.previous, #previousMaps.previous)
+						self:getGame():getStage():updateMap(layer, previousMap)
+					end
+				elseif key == "r" then
+					local layer = self.motionLayer or self.currentLayer
+					local previousMaps = self.previousMaps[layer]
+					if previousMaps and #previousMaps.next >= 1 then
+						local mapBeforeRedo = Map.loadFromTable(self:getGame():getStage():getMap(layer):serialize())
+						table.insert(previousMaps.previous, mapBeforeRedo)
+
+						local nextMap = table.remove(previousMaps.next, #previousMaps.next)
+						self:getGame():getStage():updateMap(layer, nextMap)
+					end
+				elseif key == "c" then
+					local map = self:getGame():getStage():getMap(self.currentLayer)
+					local tile = map:getTile(self.currentI, self.currentJ)
+					self.currentTileCopy = Tile(tile:serialize())
+				elseif key == "v" then
+					if self.currentTileCopy then
+						local map = self:getGame():getStage():getMap(self.currentLayer)
+						local tile = map:getTile(self.currentI, self.currentJ)
+
+						tile.topLeft = self.currentTileCopy.topLeft
+						tile.topRight = self.currentTileCopy.topRight
+						tile.bottomLeft = self.currentTileCopy.bottomLeft
+						tile.bottomRight = self.currentTileCopy.bottomRight
+
+						self:getGame():getStage():updateMap(self.currentLayer, nil, i, j, w, h)self:getGame():getStage():updateMap(self.currentLayer, nil, self.currentI, self.currentJ, 1, 1)
 					end
 				end
 			end
@@ -1519,6 +2018,13 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							self.currentFeatureIndex = decoration:getNumFeatures()
 						end
 					end
+				elseif key == "b" then
+					if self.isDecorationCursorActive then
+						self.isDecorationCursorActive = false
+					else
+						self.decorationCursorSelectX, self.decorationCursorSelectY = love.mouse.getPosition()
+						self.isDecorationCursorActive = true
+					end
 				end
 
 				if self:getLastDecorationFeature() then
@@ -1567,17 +2073,22 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							end
 						end
 					elseif type(feature) == "table" and #feature > 0 then
+						local group, decoration = self.decorationList:getCurrentDecoration()
 						if key == "r" then
+							self:createRotationGizmo(decoration)
+						elseif key == "g" then
+							self:createTranslationGizmo(decoration)
+						elseif key == "s" then
+							self:createScaleGizmo(decoration)
+						elseif key == "r" then
 							for _, f in ipairs(feature) do
 								f:setRotation((f:getRotation() * Quaternion.Y_90):getNormal())
 							end
 
-							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
 								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 							end
 						elseif key == "d" then
-							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
 								local result = {}
 
@@ -1612,7 +2123,7 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 							local t = r:transformVector(v)
 
 							local n
-							if math.abs(v.y) > 0 then
+							if math.abs(v.y) > 0 and key == "y" then
 								n = Vector(0, v.y, 0)
 							elseif math.abs(t.x) > math.abs(t.z) then
 								n = Vector(math.sign(t.x), 0, 0)
@@ -1626,7 +2137,6 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 								f:setPosition(f:getPosition() + n)
 							end
 
-							local group, decoration = self.decorationList:getCurrentDecoration()
 							if group and decoration then
 								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
 							end
@@ -1675,17 +2185,22 @@ function MapEditorApplication:keyDown(key, scan, isRepeat, ...)
 						end
 					elseif key == "delete" or key == "backspace" then
 						if self.gizmo then
-							local feature = self.gizmo:getTarget()
-							self:unsetGizmo()
-
-							local group, decoration = self.decorationList:getCurrentDecoration()
-							if decoration then
-								decoration:remove(feature)
+							local features = self:getLastDecorationFeature()
+							if Class.isCompatibleType(features, Decoration.Feature) then
+								features = { features }
 							end
 
-							self.currentFeatureIndex = nil
+							local group, decoration = self.decorationList:getCurrentDecoration()
+							if group and decoration then
+								for _, feature in ipairs(features) do
+									decoration:remove(feature)
+								end
 
-							self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+								self.currentFeatureIndex = nil
+								self:getGame():getStage():decorate(group, decoration, self:getGameView():getDecorationLayer(decoration) or 1, self:getGameView():getDecorationMaterials(decoration))
+							end
+
+							self:unsetGizmo()
 						end
 					end
 				end
@@ -1912,6 +2427,31 @@ function MapEditorApplication:_getPhysicalLayer(layer)
 	return nil
 end
 
+function MapEditorApplication:buildMeta(meta, map, mapScriptPeep, curve)
+	local offset = mapScriptPeep and mapScriptPeep:getBehavior(MapOffsetBehavior)
+	local translation = offset and offset.offset
+	local rotation = offset and offset.rotation
+	local scale = offset and offset.scale
+	local origin = offset and offset.origin
+
+	return {
+		tileSetID = meta and meta.tileSetID or "GrassyPlain",
+		links = meta and meta.links and { unpack(meta.links) } or nil,
+		maskID = meta and meta.maskID,
+		input = meta and meta.input,
+		autoMask = meta and meta.autoMask,
+		transform = offset and {
+			translation = { translation:get() },
+			rotation = { rotation:get() },
+			scale = { scale:get() },
+			origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
+		},
+		wallHack = meta and meta.wallHack,
+		polygonMask = meta and meta.polygonMask,
+		curve = curve or (meta and meta.curve)
+	}
+end
+
 function MapEditorApplication:save(filename)
 	if self:makeOutputDirectory("Maps", filename) then
 		if not self:makeOutputSubdirectory("Maps", filename, "Decorations") then
@@ -1977,25 +2517,12 @@ function MapEditorApplication:save(filename)
 
 				local map = self:getGame():getStage():getMap(layers[i])
 				local mapScriptPeep = self.mapScriptPeeps[layers[i]]
-				local offset = mapScriptPeep:getBehavior(MapOffsetBehavior)
-				local translation = offset and offset.offset
-				local rotation = offset and offset.rotation
-				local scale = offset and offset.scale
-				local origin = offset and offset.origin
 
-				meta[layers[i]] = {
-					tileSetID = tileSetID,
-					maskID = self.meta and self.meta[layers[i]] and self.meta and self.meta[layers[i]].maskID,
-					autoMask = self.meta and self.meta[layers[i]] and self.meta[layers[i]].autoMask,
-					transform = offset and {
-						translation = { translation:get() },
-						rotation = { rotation:get() },
-						scale = { scale:get() },
-						origin = { (origin or Vector(map:getWidth() * map:getCellSize() / 2, 0, map:getHeight() * map:getCellSize() / 2)):get() }
-					},
-					wallHack = self.meta and self.meta[layers[i]] and self.meta[layers[i]].wallHack or nil,
-					curve = self.mapScriptCurves[layers[i]]
-				}
+				meta[layers[i]] = self:buildMeta(
+					self.meta and self.meta[layers[i]],
+					map,
+					mapScriptPeep,
+					self.mapScriptCurves[layers[i]])
 			end
 
 			local filename = self:getOutputFilename("Maps", filename, "meta")
@@ -2166,12 +2693,24 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 		meta = setfenv(chunk, {})() or {}
 	end
 
-	local parentLayer
+	local mapFilenames = {}
 	for _, item in ipairs(love.filesystem.getDirectoryItems(path)) do
-		local layer = item:match(".*(-?%d)%.lmap$")
+		local layer = tonumber(item:match("^(%d+)%.lmap$"))
+		if layer then
+			table.insert(mapFilenames, { layer = layer, filename = item })
+		end
+	end
+
+	table.sort(mapFilenames, function(a, b)
+		return a.layer < b.layer
+	end)
+
+	local parentLayer
+	for _, item in ipairs(mapFilenames) do
+		layer = item.layer
 		if layer then
 			layer = tonumber(layer)
-			local map = Map.loadFromFile(path .. item)
+			local map = Map.loadFromFile(path .. item.filename)
 
 			local tileSetID
 			if meta[layer] then
@@ -2258,6 +2797,11 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 		local layer = item:match(".*@(%d+)%.[^%.@]*$")
 		if decoration then
 			local d = Decoration(path .. "Decorations/" .. item)
+			local c = d:clean()
+			if c > 0 then
+				Log.info("Removed %d duplicate features in decoration '%s'.", c, item)
+			end
+
 			self:getGame():getStage():decorate(decoration, d, tonumber(layer) or 1)
 		elseif spline then
 			local s = Spline(path .. "Decorations/" .. item)
@@ -2329,6 +2873,82 @@ function MapEditorApplication:load(filename, preferExisting, baseLayer)
 	return true
 end
 
+function MapEditorApplication:_newLayer()
+	local layers = {}
+	for i = 1, #self.mapScriptLayers do
+		table.insert(layers, self.mapScriptLayers[i])
+	end
+	table.sort(layers)
+
+	for i = 1, #layers - 1 do
+		local nextLayer = layers[i + 1]
+		local currentLayer = layers[i]
+		if nextLayer > currentLayer + 1 then
+			layer = currentLayer + 1
+			break
+		end 
+	end
+
+	layer = (layers[#layers] or 0) + 1
+
+	return layer
+end
+
+function MapEditorApplication:duplicateLayer(layer)
+	local newLayer = self:_newLayer()
+
+	local stage = self:getGame():getStage()
+
+	local newMap = Map.loadFromTable(self:getGame():getDirector():getMap(layer):serialize())
+	local newMeta = self:buildMeta(self.meta and self.meta[layer], newMap, self.mapScriptPeeps[layer], self.mapScriptCurves[layer])
+	if self.meta then
+		self.meta[newLayer] = newMeta
+	end
+
+	self:getGame():getDirector():setMap(newLayer, newMap)
+
+	local instance = self:getGame():getStage():getPeepInstance()
+	instance:removeLayer(newLayer)
+	instance:addLayer(newLayer, self.mapGroup)
+
+	stage:onLoadMap(newMap, newLayer, newMeta.tileSetID, newMeta.maskID, newMeta)
+	stage:updateMap(newLayer, newMap)
+
+	if newMeta.curve then
+		self.mapScriptCurves[newLayer] = newMeta.curve
+		self:getGameView():bendMap(newLayer, layerMeta.curve)
+	end
+
+	local newMapPeep = self:getGame():getDirector():addPeep("::orphan", MapPeep, resource)
+	newMapPeep:poke("load", self.filename, {}, newLayer)
+
+	local oldMapPeep = self.mapScriptPeeps[layer]
+	local oldOffset = oldMapPeep and oldMapPeep:getBehavior(MapOffsetBehavior)
+	if oldOffset then
+		local _, newOffset = newMapPeep:addBehavior(MapOffsetBehavior)
+
+		newOffset.offset = oldOffset.offset
+		newOffset.rotation = oldOffset.rotation
+		newOffset.scale = oldOffset.scale
+		newOffset.origin = oldOffset.origin
+		newOffset.parentLayer = oldOffset.parentLayer or false
+
+		stage:onMapMoved(newLayer, newOffset.offset, newOffset.rotation, newOffset.scale, newOffset.origin, false, newOffset.parentLayer)
+	end
+
+	local decorations = self:getGameView():getDecorations()
+	for group, decoration in pairs(decorations) do
+		local decorationLayer = self:getGameView():getDecorationLayer(decoration)
+		if decorationLayer == layer then
+			local d = Decoration(decoration:serialize())
+			self:getGame():getStage():decorate(group, d, newLayer)
+		end
+	end
+
+	table.insert(self.mapScriptLayers, newLayer)
+	self:createBoundsGizmo(newMapPeep)
+end
+
 function MapEditorApplication:unloadLayer(layer)
 	local decorations = self:getGameView():getDecorations()
 	for group, decoration in pairs(decorations) do
@@ -2361,6 +2981,8 @@ function MapEditorApplication:unloadLayer(layer)
 			break
 		end
 	end
+
+	self:unsetGizmo()
 end
 
 function MapEditorApplication:unload()
@@ -2394,7 +3016,7 @@ function MapEditorApplication:drawFlags()
 	local w, h = love.window.getMode()
 
 	local map = self:getGame():getStage():getMap(self.currentLayer)
-	local transform = self:getGameView():getMapSceneNode(self.currentLayer):getTransform():getGlobalTransform()
+	local transform = self:getGameView():getMapSceneNode(self.currentLayer):getTransform():getGlobalDeltaTransform(0)
 	for j = 1, map:getHeight() do
 		for i = 1, map:getWidth() do
 			local x = (i - 1) * map:getCellSize()
@@ -2430,7 +3052,7 @@ function MapEditorApplication:drawCurve()
 		for index, worldPoint in ipairs(worldPoints) do
 			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				worldPoints[index] = Vector(transform:transformPoint(worldPoint:get()))
 			end
 		end
@@ -2449,7 +3071,7 @@ function MapEditorApplication:drawCurve()
 		for index, normalPoint in ipairs(normalPoints) do
 			local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 			if mapNode then
-				local transform = mapNode:getTransform():getGlobalTransform()
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 				normalPoints[index] = Vector(transform:transformPoint(normalPoint:get()))
 			end
 		end
@@ -2535,7 +3157,7 @@ function MapEditorApplication:drawCurve()
 
 		local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 		if mapNode then
-			local transform = mapNode:getTransform():getGlobalTransform()
+			local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 			curvePoint = Vector(transform:transformPoint(curvePoint:get()))
 		end
 
@@ -2550,12 +3172,74 @@ function MapEditorApplication:drawCurve()
 
 		local mapNode = self:getGameView():getMapSceneNode(self.curveLayer)
 		if mapNode then
-			local transform = mapNode:getTransform():getGlobalTransform()
+			local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
 			curvePoint = Vector(transform:transformPoint(curvePoint:get()))
 		end
 
 		local screenPoint = self:getCamera():project(curvePoint)
 		love.graphics.circle("fill", screenPoint.x, screenPoint.y, 8)
+	end
+
+	love.graphics.pop()
+end
+
+function MapEditorApplication:drawPolygonMask()
+	local layer = self.currentLayer
+	local meta = self.meta and self.meta[layer]
+
+	if not (meta and meta.polygonMask) then
+		return
+	end
+
+	local map = self:getGame():getStage():getMap(self.currentLayer)
+	if not map then
+		return
+	end
+
+	love.graphics.push("all")
+	love.graphics.setLineWidth(4)
+	love.graphics.setLineJoin("none")
+
+	love.graphics.setColor(0, 0, 1, 0.5)
+	for _, polygon in ipairs(meta.polygonMask) do
+		for i in ipairs(polygon) do
+			local j = math.wrapIndex(i, 1, #polygon)
+
+			local a = Vector(polygon[i][1], 0, polygon[i][2])
+			a.y = map:getInterpolatedHeight(a.x, a.z)
+
+			local b = Vector(polygon[j][1], 0, polygon[j][2])
+			b.y = map:getInterpolatedHeight(b.x, b.z)
+
+			local mapNode = self:getGameView():getMapSceneNode(self.currentLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
+				a = a:transform(transform)
+				b = b:transform(transform)
+			end
+
+			a = self:getCamera():project(a)
+			b = self:getCamera():project(b)
+
+			love.graphics.line(a.x, a.y, b.x, b.y)
+		end
+	end
+
+	love.graphics.setColor(1, 1, 1, 1)
+	for _, polygon in ipairs(meta.polygonMask) do
+		for _, point in ipairs(polygon) do
+			local a = Vector(point[1], 0, point[2])
+			a.y = map:getInterpolatedHeight(a.x, a.z)
+
+			local mapNode = self:getGameView():getMapSceneNode(self.currentLayer)
+			if mapNode then
+				local transform = mapNode:getTransform():getGlobalDeltaTransform(0)
+				a = a:transform(transform)
+			end
+			a = self:getCamera():project(a)
+
+			love.graphics.circle("fill", a.x, a.y, 8)
+		end
 	end
 
 	love.graphics.pop()
@@ -2601,7 +3285,7 @@ function MapEditorApplication:brush(delta)
 
 				local isClamped = not (love.keyboard.isDown("lctrl") or love.keyboard.isDown("lctrl"))
 				local isHigher = currentTile.topLeft > tileElevation and currentTile.topRight > tileElevation and
-				                 currentTile.bottomLeft > tileElevation and currentTile.bottomRight > tileElevation
+								 currentTile.bottomLeft > tileElevation and currentTile.bottomRight > tileElevation
 				if isClamped then
 					if offset < 0 and currentElevation > tileElevation then
 						currentElevation = math.max(currentElevation + offset, tileElevation)
@@ -2641,6 +3325,7 @@ function MapEditorApplication:update(delta)
 	end
 end
 
+local font = love.graphics.newFont(8 * 8)
 function MapEditorApplication:draw(...)
 	EditorApplication.draw(self, ...)
 
@@ -2650,6 +3335,10 @@ function MapEditorApplication:draw(...)
 
 	if self.isEditingCurve then
 		self:drawCurve()
+	end
+
+	if self.currentTool == MapEditorApplication.TOOL_CURVE then
+		self:drawPolygonMask()
 	end
 
 	if self.gizmo then
@@ -2666,9 +3355,46 @@ function MapEditorApplication:draw(...)
 				self.gizmo:draw(self:getCamera(), sceneNode)
 			end
 		elseif Class.isCompatibleType(target, Decoration.Feature) then
-			local sceneNode = self:decorationFeatureToSceneNode(target)
-			self.gizmo:update(sceneNode, Vector.ONE)
+			local _, decoration = self.decorationList:getCurrentDecoration()
+			if not decoration then
+				self:unsetGizmo()
+			else
+				local tileSetFilename = string.format(
+					"Resources/Game/TileSets/%s/Layout.lstatic",
+					decoration:getTileSetID())
+				local staticMesh = self:getGameView():getResourceManager():load(
+					StaticMeshResource,
+					tileSetFilename)
+
+				local sceneNode = self:decorationFeatureToSceneNode(target)
+				local min, max = staticMesh:getResource():computeBounds(target:getID())
+				local size = (max - min):max(Vector.ONE)
+
+				self.gizmo:update(sceneNode, size)
+				self.gizmo:draw(self:getCamera(), sceneNode)
+
+				sceneNode:setParent()
+			end
+		elseif Class.isCompatibleType(target, Decoration) then
+			local features = self:getLastDecorationFeature() or {}
+			if Class.isCompatibleType(features, Decoration.Feature) then
+				features = { features }
+			end
+
+			local min, max = Vector(math.huge), Vector(-math.huge)
+			for _, feature in ipairs(features) do
+				min = min:min(feature:getPosition())
+				max = max:max(feature:getPosition())
+			end
+
+			size = (max - min):max(Vector.ONE)
+
+			local sceneNode = self:decorationToSceneNode(target)
+
+			self.gizmo:update(sceneNode, size)
 			self.gizmo:draw(self:getCamera(), sceneNode)
+
+			sceneNode:setParent()
 		elseif Class.isCompatibleType(target, MapCurve.Value) then
 			local sceneNode = self:curveToSceneNode(target)
 
@@ -2681,6 +3407,20 @@ function MapEditorApplication:draw(...)
 			self.gizmo:update(sceneNode, max - min)
 			self.gizmo:draw(self:getCamera(), sceneNode)
 		end
+	end
+
+	if self.isDecorationCursorActive then
+		local x, y = love.mouse.getPosition()
+		local x1, y1 = math.min(self.decorationCursorSelectX, x), math.min(self.decorationCursorSelectY, y)
+		local x2, y2 = math.max(self.decorationCursorSelectX, x), math.max(self.decorationCursorSelectY, y)
+
+		love.graphics.push("all")
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.setLineWidth(2)
+
+		love.graphics.rectangle("line", x1, y1, x2 - x1, y2 - y1)
+
+		love.graphics.pop()
 	end
 
 	do

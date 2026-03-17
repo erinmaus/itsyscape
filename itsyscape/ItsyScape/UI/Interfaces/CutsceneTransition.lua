@@ -19,7 +19,7 @@ local Interface = require "ItsyScape.UI.Interface"
 local Drawable = require "ItsyScape.UI.Drawable"
 
 local CutsceneTransition = Class(Interface)
-CutsceneTransition.FADE_DURATION_SECONDS = 0.5
+CutsceneTransition.FADE_DURATION_SECONDS = 2
 CutsceneTransition.DELAY_AFTER_MOVE_SECONDS = 1
 CutsceneTransition.PADDING = 16
 
@@ -51,15 +51,15 @@ function CutsceneTransition:new(id, index, ui)
 
 	local w, h, _, _, paddingX, paddingY = love.graphics.getScaledMode()
 
-	local panel = Panel()
-	local panelStyle = PanelStyle({
+	self.panel = Panel()
+	self.panelStyle = PanelStyle({
 		color = { 0, 0, 0, 0 },
 		radius = 0
 	}, ui:getResources())
-	panel:setSize(w + paddingX * 2, h + paddingY * 2)
-	panel:setPosition(-paddingX, -paddingY)
-	panel:setStyle(panelStyle)
-	self:addChild(panel)
+	self.panel:setSize(w + paddingX * 2, h + paddingY * 2)
+	self.panel:setPosition(-paddingX, -paddingY)
+	self.panel:setStyle(self.panelStyle)
+	self:addChild(self.panel)
 
 	local icon = ui:getResources():load(love.graphics.newImage, "Resources/Game/UI/CutsceneSpinner.png")
 	self.spinningIcon = CutsceneTransition.Spinner(icon)
@@ -69,15 +69,10 @@ function CutsceneTransition:new(id, index, ui)
 		h - icon:getHeight() / 2 - CutsceneTransition.PADDING)
 	self:addChild(self.spinningIcon)
 
-	self.panelStyle = panelStyle
-
 	self:setZDepth(5000)
 
 	local game = self:getView():getGame()
 	local player = game:getPlayer()
-
-	self._onPlayerMove = function() self:onPlayerMove() end
-	player.onMove:register(self._onPlayerMove, self)
 
 	self.onClose:register(function()
 		player.onMove:unregister(self._onPlayerMove)
@@ -93,15 +88,21 @@ function CutsceneTransition:new(id, index, ui)
 		end
 	end)
 
-	self:getView():getGameView():getResourceManager():setFrameDuration(ResourceManager.LOADING_FRAME_DURATION)
-	self:getView():getGameView():getResourceManager():setMaxTimeForSyncResource(ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING)
+	local resourceManager = self:getView():getGameView():getResourceManager()
+	resourceManager:setFrameDuration(ResourceManager.LOADING_FRAME_DURATION)
+	resourceManager:setMaxTimeForSyncResource(ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING)
 
 	self.didPlayerMove = false
+	self.isReady = false
 	self.isCheckingQueue = false
 	self.wasQueueEmpty = false
 	self.isFadingOut = false
 	self.time = 0
 	self.totalTime = 0
+end
+
+function CutsceneTransition:getIsFullscreen()
+	return not self.isFadingOut
 end
 
 function CutsceneTransition:getOverflow()
@@ -113,16 +114,28 @@ function CutsceneTransition:onPlayerMove()
 	self.time = 0
 end
 
+function CutsceneTransition:onReady()
+	self.isReady = true
+	self.time = 0
+end
+
 function CutsceneTransition:update(delta)
 	Interface.update(self, delta)
 
-	local minDuration = self:getState().minDuration or 0
+	local state = self:getState()
+	local minDuration = state.minDuration or 0
+
+	local isReady = state.isReady
+	if isReady and isReady ~= self.isReady then
+		self.isReady = true
+		self.time = 0
+	end
 
 	self.time = self.time + delta
 	self.totalTime = self.totalTime + delta
 	local delta = math.min(self.time / CutsceneTransition.FADE_DURATION_SECONDS, 1)
 
-	if self.didPlayerMove then
+	if self.didPlayerMove and self.isReady then
 		if self.isFadingOut then
 			if self.time > CutsceneTransition.FADE_DURATION_SECONDS then
 				delta = 0
@@ -180,6 +193,7 @@ function CutsceneTransition:update(delta)
 	end
 
 	self.panelStyle.color[4] = delta
+	self.panel:setIsSelfClickThrough(delta < 1)
 	self.spinningIcon:setAlpha(delta)
 end
 

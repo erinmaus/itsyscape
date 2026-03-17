@@ -14,9 +14,7 @@ local CombatSpell = require "ItsyScape.Game.CombatSpell"
 
 local Infest = Class(CombatSpell)
 
-function Infest:cast(peep, target)
-	CombatSpell.cast(self, peep, target)
-
+function Infest:show(peep, target, visualOnly)
 	local stat = peep:getState():count("Skill", "Wisdom", {
 		['skill-as-level'] = true
 	})
@@ -31,12 +29,22 @@ function Infest:cast(peep, target)
 		local mite = Utility.spawnActorAtPosition(peep, "ShadowMite", x + position.x, position.y, z + position.z, 0)
 		if mite then
 			mite:getPeep():listen('finalize', function(p)
+				if visualOnly then
+					Utility.Peep.applyEffect(p, "Tutorial_NoDamage", true)
+				end
+
 				Utility.Peep.attack(p, target)
 			end)
 		end
 	end
 
 	Log.info("Spawned %d mites.", numMites)
+end
+
+function Infest:cast(peep, target)
+	CombatSpell.cast(self, peep, target)
+
+	self:show(peep, target)
 end
 
 return Infest
