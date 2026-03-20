@@ -353,7 +353,9 @@ function GraphicsOptions:setOneClick(value)
 end
 
 function GraphicsOptions:getOutlineAnimationIntervalText()
-	if self.conf.outlineJitterInterval > 1 then
+	if self.conf.outlineJitterInterval > 30 then
+		return "Outline Animation: Smooth"
+	elseif self.conf.outlineJitterInterval > 1 then
 		return "Outline Animation: Fast"
 	elseif self.conf.outlineJitterInterval > 0 then
 		return "Outline Animation: Slow"
@@ -364,6 +366,15 @@ end
 
 function GraphicsOptions:getOutlineAnimationIntervalOptions()
 	return {
+		{
+				id = 1,
+				type = "Choose",
+				verb = "Choose",
+				object = "Smooth",
+				objectID = 1,
+				objectType = "option",
+				callback = Function(self.setOutlineAnimationInterval, self, 60)
+		},
 		{
 				id = 1,
 				type = "Choose",
