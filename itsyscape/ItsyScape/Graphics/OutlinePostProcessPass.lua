@@ -135,7 +135,6 @@ function OutlinePostProcessPass:setOutlineFadeDepth(value)
 end
 
 function OutlinePostProcessPass:getOutlineFadeDepth()
-functicomposeDilatelinePostProcessPass:getOutlineFadeDepth()
 	return self.outlineFadeDepth
 end
 
@@ -236,7 +235,9 @@ do
 			"scape_NormalStep", self.normalStep,
 			"scape_Forward", self._forward)
 
-		love.graphics.draw(deferredRendererPass:getDepthBuffer())
+		if deferredRendererPass:getDepthBuffer() then
+			love.graphics.draw(deferredRendererPass:getDepthBuffer())
+		end
 	end
 end
 
@@ -252,7 +253,9 @@ function OutlinePostProcessPass:_drawCustomOutlines(width, height)
 		"scape_Far", camera:getFar(),
 		"scape_DepthTexture", outlineRendererPass:getOBuffer():getCanvas(outlineRendererPass.DEPTH_INDEX))
 
-	love.graphics.draw(outlineRendererPass:getOBuffer():getCanvas(outlineRendererPass.OUTLINE_INDEX))
+	if outlineRendererPass:getOBuffer():getCanvas(outlineRendererPass.OUTLINE_INDEX) then
+		love.graphics.draw(outlineRendererPass:getOBuffer():getCanvas(outlineRendererPass.OUTLINE_INDEX))
+	end
 end
 
 function OutlinePostProcessPass:_drawAlphaOutlines(width, height)
@@ -268,7 +271,9 @@ function OutlinePostProcessPass:_drawAlphaOutlines(width, height)
 		"scape_TexelSize", self._gbufferTexelSize,
 		"scape_OutlineTexture", alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.OUTLINE_INDEX))
 
-	love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_Z_INDEX))
+	if alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_Z_INDEX) then
+		love.graphics.draw(alphaMaskRendererPass:getABuffer():getCanvas(alphaMaskRendererPass.ALPHA_Z_INDEX))
+	end
 end
 
 function OutlinePostProcessPass:_drawParticleOutlines(width, height)
@@ -284,7 +289,9 @@ function OutlinePostProcessPass:_drawParticleOutlines(width, height)
 		"scape_TexelSize", self._gbufferTexelSize,
 		"scape_OutlineTexture", particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_INDEX))
 
-	love.graphics.draw(particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_INDEX))
+	if particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_INDEX) then
+		love.graphics.draw(particleOutlineRendererPass:getOBuffer():getCanvas(particleOutlineRendererPass.OUTLINE_INDEX))
+	end
 end
 
 function OutlinePostProcessPass:_generateOutlines(width, height)
