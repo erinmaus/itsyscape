@@ -27,6 +27,10 @@ function GamepadContentTab:new(interface)
 	self:setSize(self.WIDTH, self.HEIGHT)
 end
 
+function GamepadContentTab:T(...)
+	return self.interface:T(...)
+end
+
 function GamepadContentTab:getState()
 	return self.currentState
 end

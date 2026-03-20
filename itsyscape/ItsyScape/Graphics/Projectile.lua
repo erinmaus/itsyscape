@@ -109,7 +109,9 @@ function Projectile:getTargetSize(target, pointSize)
 			end
 		end
 
-		return max - min
+		if min and max then
+			return max - min
+		end
 	end
 
 	return pointSize or 0

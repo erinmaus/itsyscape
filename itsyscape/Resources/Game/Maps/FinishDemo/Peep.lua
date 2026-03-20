@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Resources/Game/Maps/NewGame/Peep.lua
+-- Resources/Game/Maps/FinishDemo/Peep.lua
 --
 -- This file is a part of ItsyScape.
 --
@@ -12,37 +12,20 @@ local Utility = require "ItsyScape.Game.Utility"
 local MapScript = require "ItsyScape.Peep.Peeps.Map"
 local DramaticTextController = require "ItsyScape.UI.Interfaces.DramaticTextController"
 
-local NewGame = Class(MapScript)
+local FinishDemo = Class(MapScript)
 
-function NewGame:onLoad(...)
+function FinishDemo:onLoad(...)
 	MapScript.onLoad(self, ...)
 
 	self:addBehavior(DisabledBehavior)
 	self:silence("playerEnter", MapScript.showPlayerMapInfo)
 end
 
-function NewGame:onPlayerEnter(player)
+function FinishDemo:onPlayerEnter(player)
 	local playerPeep = player:getActor():getPeep()
 	Utility.Peep.disable(playerPeep)
 
-	Utility.UI.openInterface(playerPeep, "CutsceneTransition", false, math.huge)
-	Utility.UI.openInterface(playerPeep, "DramaticText", false, { {
-		color = { 1, 1, 1, 1 },
-		font = "Resources/Renderers/Widget/Common/Serif/Bold.ttf",
-		fontSize = 96,
-		textShadow = true,
-		align = 'center',
-		width = DramaticTextController.CANVAS_WIDTH - 64,
-		x = 32,
-		y = DramaticTextController.CANVAS_HEIGHT / 2 - 64,
-		text = "Thanks for playing!"
-	} }, 5)
-
-	self:pushPoke(6, "endGameForPlayer", player)
+	Utility.UI.openInterface(playerPeep, "DemoFinish", false)
 end
 
-function NewGame:onEndGameForPlayer(player)
-	player:onLeave()
-end
-
-return NewGame
+return FinishDemo

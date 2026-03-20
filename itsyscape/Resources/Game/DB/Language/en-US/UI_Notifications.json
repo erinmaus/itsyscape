@@ -8,5 +8,4 @@
 	"ui.notification.inventory.dequipItemInventoryFull": "Couldn't dequip gear because your inventory is full.",
 	"ui.notification.inventory.equipItemInventoryFull": "Couldn't equip gear because current gear needs to be dequipped and your inventory is full.",
 	"ui.notification.inventory.pickUpItemInventoryFull": "Couldn't pick up item because your inventory is full.",
-
 }

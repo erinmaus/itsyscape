@@ -2079,7 +2079,7 @@ function DemoApplication:updatePositionProbe()
 		local circleRadius = 6
 		probe:circlecast(position, circleRadius)
 	else
-		local coneLength = 10
+		local coneLength = 6
 		local coneRadius = 6
 		probe:conecast(Ray(position - direction * 1.5, direction), coneLength, coneRadius)
 	end
