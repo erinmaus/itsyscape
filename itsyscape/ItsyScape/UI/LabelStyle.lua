@@ -127,7 +127,6 @@ function LabelStyle:draw(widget, state)
 		local maxWidth = self.width or width
 		local oldLineHeight = font:getLineHeight()
 		font:setLineHeight(self.lineHeight)
-		local newLines = {}
 		if self.spaceLines then
 			local prespacedText = text
 			if type(text) == "string" then
@@ -139,9 +138,6 @@ function LabelStyle:draw(widget, state)
 				local transformedSequence = prespacedText[i + 1]:gsub("([ ]+)", " ")
 				for _, code in utf8.codes(transformedSequence) do
 					local c = utf8.char(code)
-					if c:match("\n") then
-						table.insert(newLines, #transformedText + 2)
-					end
 
 					table.insert(transformedText, prespacedText[i])
 					table.insert(transformedText, utf8.char(code))
@@ -189,17 +185,8 @@ function LabelStyle:draw(widget, state)
 					local word = {}
 					for i in utf8.codes(w) do
 						local absoluteIndex = (currentIndex + i) * 2
-
-						for j = #newLines, 1, -1 do
-							if absoluteIndex >= newLines[j] then
-								table.remove(newLines, j)
-								currentIndex = currentIndex + 1
-							end
-						end
-
-						local newAbsoluteIndex = (currentIndex + i) * 2
-						table.insert(word, transformedText[newAbsoluteIndex - 1])
-						table.insert(word, transformedText[newAbsoluteIndex])
+						table.insert(word, transformedText[absoluteIndex - 1])
+						table.insert(word, transformedText[absoluteIndex])
 					end
 
 					currentIndex = currentIndex + utf8.len(w) + 1
