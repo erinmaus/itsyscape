@@ -107,8 +107,12 @@ function Mite:runAround()
 	local position = self.center + Vector(x, 0, z)
 	position.y = map:getInterpolatedHeight(position.x, position.z)
 
-	Utility.Peep.lookAt(self, position)
-	Utility.Peep.setPosition(self, position)
+	if Utility.Map.isPassable(self, position) then
+		Utility.Peep.lookAt(self, position)
+		Utility.Peep.setPosition(self, position)
+	else
+		self.center = false
+	end
 end
 
 function Mite:update(director, game)

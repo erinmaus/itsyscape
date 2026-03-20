@@ -194,7 +194,7 @@ bool nbunny::circle_hit_bounds(const glm::vec3& circle_position, float circle_ra
 {
     auto size = max - min;
     auto center = min + size / glm::vec3(2.0f);
-    auto bound_radius = glm::max(glm::max(size.x, size.y), size.z) * std::sqrt(2.0f);
+    auto bound_radius = glm::max(size.x, size.z) * std::sqrt(2.0f);
 
     if (is_point_in_circle(circle_position, bound_radius + circle_radius, center))
     {

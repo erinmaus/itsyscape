@@ -1398,6 +1398,10 @@ function UIView:setCurrentInputScheme(value)
 
 		if previousInputScheme ~= self.currentInputScheme then
 			self.root:inputSchemeChanged(self.currentInputScheme, previousInputScheme)
+
+			if self.currentInputScheme == UIView.INPUT_SCHEME_GAMEPAD then
+				self.hasPendingInterfaceFocus = true
+			end
 		end
 	end
 end

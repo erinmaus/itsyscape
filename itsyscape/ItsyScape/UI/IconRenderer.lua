@@ -57,14 +57,32 @@ function IconRenderer:draw(widget, state)
 		self.unvisitedIcons[icon] = nil
 
 		local icon = self.icons[icon]
-		local scaleX, scaleY
+		local width, height = widget:getSize()
+		local scaleX = width / icon:getWidth()
+		local scaleY = height / icon:getHeight()
+
+		local scale
 		do
-			local width, height = widget:getSize()
-			scaleX = width / icon:getWidth()
-			scaleY = height / icon:getHeight()
+			local w1 = width * scaleX
+			local h1 = height * scaleX
+
+			local w2 = width * scaleY
+			local h2 = height * scaleY
+
+			if h1 < h2 then
+				scale = scaleY
+			elseif w2 < w1 then
+				scale = scaleX
+			end
 		end
 
-		itsyrealm.graphics.draw(icon, 0, 0, 0, scaleX, scaleY)
+		local scale = math.min(scaleX, scaleY)
+		itsyrealm.graphics.draw(
+			icon,
+			width / 2, height / 2,
+			0,
+			scale, scale,
+			icon:getWidth() / 2, icon:getHeight() / 2)
 	end
 
 	love.graphics.setColor(1, 1, 1, 1)

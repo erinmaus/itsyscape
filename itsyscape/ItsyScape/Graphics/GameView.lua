@@ -225,7 +225,7 @@ function GameView:initRenderer(conf)
 	self.ssrPostProcessPass:setMaxFirstPassSteps(_CONF.ssrMaxFirstPassSteps)
 	self.ssrPostProcessPass:setMaxDistanceViewSpace(_CONF.ssrMaxDistanceViewSpace)
 
-	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.renderer)
+	self.skyboxOutlinePostProcessPass = OutlinePostProcessPass(self.skyboxRenderer)
 	self.skyboxOutlinePostProcessPass:load(self.resourceManager)
 	self.skyboxOutlinePostProcessPass:setMinOutlineThickness(1)
 	self.skyboxOutlinePostProcessPass:setMaxOutlineThickness(1)
