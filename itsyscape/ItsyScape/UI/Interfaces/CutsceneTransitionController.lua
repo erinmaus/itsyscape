@@ -47,6 +47,10 @@ function CutsceneTransitionController:move()
 	self:getPeep():silence("move", self._travel)
 end
 
+function CutsceneTransitionController:reset()
+	self:send("reset")
+end
+
 function CutsceneTransitionController:poke(actionID, actionIndex, e)
 	if actionID == "close" then
 		if self.isClosing then

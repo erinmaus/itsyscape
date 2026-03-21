@@ -510,7 +510,7 @@ function itsyrealm.graphics.disable()
 end
 
 function itsyrealm.graphics.start()
-	graphicsState.time = graphicsState.time + love.timer.getDelta()
+	graphicsState.time = graphicsState.time + math.min(love.timer.getDelta(), 1 / 30)
 
 	graphicsState.transform:reset()
 end
