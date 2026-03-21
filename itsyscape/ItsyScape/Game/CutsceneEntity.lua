@@ -216,7 +216,7 @@ function CutsceneEntity:walkTo(anchor, distance, ghost, wait)
 
 		repeat
 			coroutine.yield()
-		until isDone
+		until isDone or wait == false
 
 		if success and (wait or wait == nil) then
 			local peepI, peepJ, peepDistance

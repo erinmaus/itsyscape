@@ -9,6 +9,7 @@
 --------------------------------------------------------------------------------
 local Callback = require "ItsyScape.Common.Callback"
 local Class = require "ItsyScape.Common.Class"
+local Function = require "ItsyScape.Common.Function"
 local MathCommon = require "ItsyScape.Common.Math.Common"
 local Ray = require "ItsyScape.Common.Math.Ray"
 local Vector = require "ItsyScape.Common.Math.Vector"
@@ -2023,6 +2024,24 @@ function Peep.getTileRotation(peep)
 	return Utility.Map.getTileRotation(map, i, j)
 end
 
+local function _stuck(peep, ...)
+	if not peep:hasBehavior(PendingWalkBehavior) then
+		local needsPush, pushPosition = Utility.Map.tryGetPushPosition(peep)
+		if needsPush then
+			if not pushPosition then
+				Log.info("Peep '%s' needs to be pushed, but no safe push position found...", peep:getName())
+			else
+				Log.info("Peep '%s' was pushed (to x = %f, z = %f).", peep:getName(), pushPosition.x, pushPosition.z)
+				Utility.Peep.setPosition(peep, pushPosition)
+			end
+		end
+
+		Log.info("Peep '%s' got stuck; re-routing...", peep:getName())
+
+		Utility.Peep.queueWalk(peep, ...)
+	end
+end
+
 function Peep.getWalk(peep, ...)
 	-- Backwards compatibility.
 	-- Marshal between getWalk with position and with tile.
@@ -2101,9 +2120,9 @@ function Peep.getWalk(peep, ...)
 		end
 
 		if t.asCloseAsPossible then
-			return ExecutePathCommand(path, 0), path
+			return ExecutePathCommand(path, 0, nil, Function(_stuck, peep, ...)), path
 		else
-			return ExecutePathCommand(path, distance), path
+			return ExecutePathCommand(path, distance, nil, Function(_stuck, peep, ...)), path
 		end
 	end
 

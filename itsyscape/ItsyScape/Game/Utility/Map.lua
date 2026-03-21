@@ -13,6 +13,7 @@ local Utility = require "ItsyScape.Game.Utility"
 local PositionBehavior = require "ItsyScape.Peep.Behaviors.PositionBehavior"
 local MovementCortex = require "ItsyScape.Peep.Cortexes.MovementCortex"
 local Map = require "ItsyScape.World.Map"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local TeleportalBehavior = require "ItsyScape.Peep.Behaviors.TeleportalBehavior"
 
 local UMap = {}
@@ -460,6 +461,43 @@ function UMap.isPassable(peep, goalPosition)
 	end
 
 	return true
+end
+
+function UMap.tryGetPushPosition(peep, peepPosition)
+	local movement = peep:getDirector():getCortex(MovementCortex)
+	local map = Utility.Peep.getMap(peep)
+	local world = movement and movement:getWorld(Utility.Peep.getLayer(peep))
+	if world and world:has(peep) then
+		peepPosition = peepPosition or Utility.Peep.getPosition(peep)
+		local dynamic = peep:getBehavior(DynamicBehavior)
+		local padding = dynamic.margin
+
+		local filter = function(...)
+			return movement:filter(...)
+		end
+
+		local collisions = world:test(peep, peepPosition.x, peepPosition.z, filter)
+
+		if #collisions == 0 then
+			return false
+		end
+
+		for _, collision in ipairs(collisions) do
+			local depth = collision.depth + padding
+			local normal = Vector(collision.normal.x, 0, collision.normal.z)
+			local newPosition = peepPosition + normal * depth
+
+			local collisions = world:project(peep, collision.touch.x, collision.touch.y, newPosition.x, newPosition.z, filter)
+			if #collisions == 0 then
+				newPosition.y = map:getInterpolatedHeight(newPosition.x, newPosition.z)
+				return true, newPosition
+			end
+		end
+
+		return true, nil
+	end
+
+	return false
 end
 
 -- Gets a random tile within the line of sight of (i, j) no more than 'distance' tiles away (Euclidean)

@@ -147,11 +147,15 @@ function MoveToPosition:update(delta)
 
 					local partialVelocitySlice = partialDelta * velocity
 					local goal = currentPosition + partialVelocitySlice
+					local currentX, currentZ = currentPosition.x, currentPosition.z
 					if world and world:has(peep) then
 						local currentGoalX, currentGoalZ = goal.x, goal.z
 						goal.x, goal.z = world:move(peep, goal.x, goal.z, self._filter)
 
-						if not (currentGoalX == goal.x and currentGoalZ == goal.z) and
+						if currentX == goal.x and currentZ == goal.z then
+							targetPositionBehavior.pathNode:onStuck(peep)
+							break
+						elseif not (currentGoalX == goal.x and currentGoalZ == goal.z) and
 						   goal.x == currentPosition.x and goal.z == currentPosition.z and
 						   goal:distance(targetPosition) <= radius
 						then

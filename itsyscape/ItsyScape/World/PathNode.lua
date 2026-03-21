@@ -25,6 +25,7 @@ function PathNode:new(i, j, layer)
 	self.onBegin = Callback()
 	self.onEnd = Callback()
 	self.onInterrupt = Callback()
+	self.onStuck = Callback()
 end
 
 -- Sets the next node, or unsets it if node is falsey.
