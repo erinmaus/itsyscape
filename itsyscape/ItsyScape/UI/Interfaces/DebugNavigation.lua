@@ -158,6 +158,11 @@ function DebugNavigation.Map:tick()
 				p.endY = (math.floor((p.endY / 2)) + 0.5) * 2
 			end
 
+			if love.keyboard.isDown("lshift") or love.keyboard.isDown("rshift") then
+				p.startX = nil
+				p.startY = nil
+			end
+
 			parent:sendPoke("path", nil, p)
 		end
 

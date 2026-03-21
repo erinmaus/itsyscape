@@ -20,12 +20,16 @@ local TargetPositionBehavior = require "ItsyScape.Peep.Behaviors.TargetPositionB
 
 local ExecutePathCommand = Class(Command)
 
-function ExecutePathCommand:new(path, distance, canceled)
+function ExecutePathCommand:new(path, distance, canceled, stuck)
 	Command.new(self)
 
 	for i = 1, path:getNumNodes() do
 		local node = path:getNodeAtIndex(i)
 		node.onInterrupt:register(ExecutePathCommand.cancel, self)
+
+		if stuck then
+			node.onStuck:register(stuck)
+		end
 	end
 
 	self.path = path

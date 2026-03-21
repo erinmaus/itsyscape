@@ -209,6 +209,24 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 	local previous, source = positions[1], positions[1]
 	local result = { previous }
+
+	do
+		local needsPush, pushPosition = Utility.Map.tryGetPushPosition(self.peep, previous)
+		if needsPush then
+			self.print("! needs push")
+			if pushPosition then
+				self.print("-", "from", previous.x, previous.z)
+				self.print("-", "to", pushPosition.x, pushPosition.z)
+
+				table.insert(result, pushPosition)
+				previous, source = pushPosition, pushPosition
+			else
+				self.print("-", "no push position!")
+			end
+		end
+	end
+
+	local updateGoalPosition
 	for i = 2, #positions do
 		local current = positions[i]
 		local next = positions[i + 1] or current
@@ -220,11 +238,40 @@ function SmartNavMeshPathFinder:find(start, goal)
 		self.print("-", "next", next.x, next.z)
 		self.print("-", "distance", previous:distance(current))
 
+		if i == #positions then
+			local needsPush, pushPosition = Utility.Map.tryGetPushPosition(self.peep, next)
+			if needsPush then
+				self.print("!", "needs push")
+				if pushPosition then
+					self.print("!", "got push", pushPosition.x, pushPosition.z)
+					updateGoalPosition = pushPosition
+					current = pushPosition
+				else
+					self.print("!", "needs push, but no push position")
+
+					if self.world and self.world:has(self.peep) then
+						local collisions = self.world:project(self.peep, previous.x, previous.z, next.x, next.z, self._filter)
+
+						if #collisions > 0 then
+							isPathClear = false
+
+							local projectedPosition = Vector(collisions[1].touch.x, 0, collisions[1].touch.y)
+							self.print("-", "stopping at", projectedPosition.x, projectedPosition.z)
+							current = projectedPosition
+							updateGoalPosition = projectedPosition
+						else
+							self.print("-", "huh, actually path to goal is clear")
+						end
+					end
+				end
+			end
+		end
+
 		if self.world and self.world:has(self.peep) then
 			local previousDirection = previous:direction(current)
 			self.print("-", "previousDirection", previousDirection.x, previousDirection.z)
 
-			for i = 1, 4 do
+			for i = 1, 8 do
 				self.print("iteration", i)
 				local direction = previous:direction(current)
 				local collisions = self.world:project(self.peep, previous.x, previous.z, current.x, current.z, self._filter)
@@ -277,6 +324,7 @@ function SmartNavMeshPathFinder:find(start, goal)
 
 				local materialized = false
 				local nextDirection
+				local distanceFromTouch = 0
 				for j = 1, #bumps do
 					local index = math.wrap(j + startIndex, 1, #bumps)
 					local bump = bumps[index]
@@ -289,13 +337,49 @@ function SmartNavMeshPathFinder:find(start, goal)
 					self.print("-", "previousDirection", previousDirection.x, previousDirection.z)
 					self.print("-", "direction1", direction1.x, direction1.z)
 					self.print("-", "dot1", dot1, "dot2", dot2)
-					self.print("-", "trying bump...", bump.x, bump.z)
+					self.print("-", "trying bump...", bump.x, bump.z, "previous", previous.x, previous.z)
 					self.print("-", "isAhead", isAhead, "isFarEnough", isFarEnough, "canCheckCollision", canCheckCollision)
 
-					local numProjectionCollisions = canCheckCollision and #self.world:project(self.peep, previous.x, previous.z, bump.x, bump.z, self._filter)
-					self.print("-", "numProjectionCollisions", numProjectionCollisions)
+					local hasCollision = not canCheckCollision
+					if canCheckCollision then
+						local collisions = self.world:project(self.peep, previous.x, previous.z, bump.x, bump.z, self._filter)
+						self.print("-", "#collisions", #collisions)
 
-					if numProjectionCollisions and numProjectionCollisions == 0 then
+						for i, collision in ipairs(collisions) do
+							self.print(">", "collision", i)
+							self.print("-", "time", collision.time, "depth", collision.depth)
+							self.print("-", "touch", collision.touch.x, collision.touch.y)
+
+							local isCollision = math.abs(1 - collision.time) > self.world.options.epsilon
+							hasCollision = hasCollision or isCollision
+						end
+					end
+
+					if hasCollision then
+						self.print("-", "has collision")
+					end
+
+					local isCloser = false
+					if not hasCollision then
+						local collisions = self.world:project(self.peep, bump.x, bump.z, next.x, next.z, self._filter)
+						if #collisions == 0 then
+							isCloser = true
+						else
+							local collision = collisions[1]
+							local touch = Vector(collision.touch.x, 0, collision.touch.y)
+							local distance = bump:distance(touch)
+
+							self.print("-", "comparison touch", touch.x, touch.z)
+							self.print("-", "distance from touch", distance, "best distance from touch", distanceFromTouch)
+
+							if distance >= distanceFromTouch then
+								isCloser = true
+								distanceFromTouch = distance
+							end
+						end
+					end
+
+					if isCloser then
 						self.print("!!!", bump.x, bump.z)
 						table.insert(result, bump)
 						materialized = true
@@ -335,7 +419,8 @@ function SmartNavMeshPathFinder:find(start, goal)
 			coroutine.yield()
 		end
 	end
-	table.insert(result, positions[#positions])
+
+	table.insert(result, updateGoalPosition or positions[#positions])
 
 	local resultPath = Path()
 	for _, current in ipairs(result) do

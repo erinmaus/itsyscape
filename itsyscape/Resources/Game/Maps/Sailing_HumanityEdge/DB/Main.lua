@@ -1717,7 +1717,7 @@ do
 	ItsyScape.Meta.MapObjectLocation {
 		PositionX = 157,
 		PositionY = 0,
-		PositionZ = 157,
+		PositionZ = 155,
 		Direction = 1,
 		Name = "MiningKnight2",
 		Map = M._MAP,

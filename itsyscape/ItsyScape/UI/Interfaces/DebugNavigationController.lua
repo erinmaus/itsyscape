@@ -131,7 +131,6 @@ end
 function DebugNavigationController:path(e)
 	assert(type(e.group) == "number", "map group must be number")
 	assert(type(e.localLayer) == "number", "local layer must be number")
-	assert(type(e.startX) == "number" and type(e.startY) == "number", "start xy must be number")
 	assert(type(e.endX) == "number" and type(e.endY) == "number", "end xy must be number")
 
 	local globalLayer
@@ -145,15 +144,17 @@ function DebugNavigationController:path(e)
 		return
 	end
 
+	local currentPosition = Utility.Peep.getPosition(self:getPeep())
+
 	local SmartNavMeshPathFinder = love.filesystem.load("ItsyScape/World/SmartNavMeshPathFinder.lua")()
 
 	local before = love.timer.getTime()
 	local pathFinder = SmartNavMeshPathFinder(self:getPeep(), { debug = true })
-	local path = pathFinder:find(Vector(e.startX, 0, e.startY), Vector(e.endX, 0, e.endY))
+	local path = pathFinder:find(Vector(e.startX or currentPosition.x, 0, e.startY or currentPosition.z), Vector(e.endX, 0, e.endY))
 	local after = love.timer.getTime()
 
 	if not path then
-		Log.info("Couldn't generate path from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX, e.startY, e.endX, e.endY, (after - before) * 1000)
+		Log.info("Couldn't generate path from (%.2f, %.2f) to (%.2f, %.2f) in %0.2f ms.", e.startX or currentPosition.x, e.startY or currentPosition.z, e.endX, e.endY, (after - before) * 1000)
 		return
 	end
 
