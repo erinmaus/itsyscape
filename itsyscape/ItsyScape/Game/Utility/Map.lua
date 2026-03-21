@@ -463,6 +463,22 @@ function UMap.isPassable(peep, goalPosition)
 	return true
 end
 
+function UMap.push(peep)
+	local movement = peep:getDirector():getCortex(MovementCortex)
+	local world = movement and movement:getWorld(Utility.Peep.getLayer(peep))
+	if not (world and world:has(peep)) then
+		return false
+	end
+
+	local position = Utility.Peep.getPosition(peep)
+	local x, z = world:push(peep, function(...) return movement:filter(...) end, position.x, position.z)
+
+	Utility.Peep.setPosition(peep, Vector(x, position.y, z))
+
+	Log.info("Pushed peep '%s' from (x = %f, z = %f) to (x = %f, z = %f).", peep:getName(), position.x, position.z, x, z)
+	return true
+end
+
 function UMap.tryGetPushPosition(peep, peepPosition)
 	local movement = peep:getDirector():getCortex(MovementCortex)
 	local map = Utility.Peep.getMap(peep)

@@ -681,7 +681,7 @@ function Peep.localTeleport(peep, position, localLayer)
 	end
 end
 
-function Peep.teleportCompanion(peep, targetPeep)
+local function _teleportCompanion(peep, targetPeep)
 	local i, j, k = Peep.getTile(targetPeep)
 	local map = Peep.getMap(targetPeep)
 
@@ -691,21 +691,30 @@ function Peep.teleportCompanion(peep, targetPeep)
 	local offsetZ = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
 	local offset = Vector(offsetX, 0, offsetZ)
 
+	local success = false
 	if map:canMove(i, j, 1, 0) and Utility.Map.isPassable(peep, map:getTileCenter(i + 1, j) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i + 1, j) + offset)
-		return true
+		success = true
 	elseif map:canMove(i, j, -1, 0) and Utility.Map.isPassable(peep, map:getTileCenter(i - 1, j) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i - 1, j) + offset)
-		return true
+		success = true
 	elseif map:canMove(i, j, 0, -1) and Utility.Map.isPassable(peep, map:getTileCenter(i, j - 1) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i, j - 1) + offset)
-		return true
+		success = true
 	elseif map:canMove(i, j, 0, 1) and Utility.Map.isPassable(peep, map:getTileCenter(i, j + 1) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i, j + 1) + offset)
-		return true
+		success = true
 	end
 
-	return false
+	if success then
+		Utility.Map.push(peep)
+	end
+
+	return success
+end
+
+function Peep.teleportCompanion(peep, targetPeep)
+	peep:pushPoke(_teleportCompanion, targetPeep)
 end
 
 function Peep.getScale(peep)
@@ -2029,7 +2038,8 @@ local function _stuck(peep, ...)
 		local needsPush, pushPosition = Utility.Map.tryGetPushPosition(peep)
 		if needsPush then
 			if not pushPosition then
-				Log.info("Peep '%s' needs to be pushed, but no safe push position found...", peep:getName())
+				Log.info("Peep '%s' needs to be pushed, but no safe push position found... Trying nuclear option.", peep:getName())
+				Utility.Peep.push(peep)
 			else
 				Log.info("Peep '%s' was pushed (to x = %f, z = %f).", peep:getName(), pushPosition.x, pushPosition.z)
 				Utility.Peep.setPosition(peep, pushPosition)

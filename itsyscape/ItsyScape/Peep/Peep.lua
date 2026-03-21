@@ -562,7 +562,7 @@ function Peep:update(director, game)
 			if type(poke.callback) == "string" then
 				self:poke(poke.callback, unpack(poke.arguments, 1, poke.arguments.n))
 			elseif Class.isCallable(poke.callback) then
-				poke.callback(peep, unpack(poke.arguments, 1, poke.arguments.n))
+				poke.callback(self, unpack(poke.arguments, 1, poke.arguments.n))
 			end
 
 			table.remove(self.pendingPokes, index)
