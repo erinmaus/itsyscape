@@ -22,6 +22,7 @@ local CutsceneTransition = Class(Interface)
 CutsceneTransition.FADE_DURATION_SECONDS = 2
 CutsceneTransition.DELAY_AFTER_MOVE_SECONDS = 1
 CutsceneTransition.PADDING = 16
+CutsceneTransition.MAX_UPDATE_TIME = 1 / 30
 
 CutsceneTransition.Spinner = Class(Drawable)
 
@@ -88,17 +89,23 @@ function CutsceneTransition:new(id, index, ui)
 		end
 	end)
 
+	self.didPlayerMove = false
+	self:reset()
+end
+
+function CutsceneTransition:reset()
 	local resourceManager = self:getView():getGameView():getResourceManager()
 	resourceManager:setFrameDuration(ResourceManager.LOADING_FRAME_DURATION)
 	resourceManager:setMaxTimeForSyncResource(ResourceManager.MAX_TIME_FOR_SYNC_RESOURCE_LOADING)
 
-	self.didPlayerMove = false
 	self.isReady = false
 	self.isCheckingQueue = false
+	self.didEventFire = false
 	self.wasQueueEmpty = false
 	self.isFadingOut = false
 	self.time = 0
 	self.totalTime = 0
+	self.generation = (self.generation or 0) + 1
 end
 
 function CutsceneTransition:getIsFullscreen()
@@ -120,6 +127,7 @@ function CutsceneTransition:onReady()
 end
 
 function CutsceneTransition:update(delta)
+	delta = math.min(delta, self.MAX_UPDATE_TIME)
 	Interface.update(self, delta)
 
 	local state = self:getState()
@@ -171,8 +179,11 @@ function CutsceneTransition:update(delta)
 			self.wasQueueEmpty = self.wasQueueEmpty or not (resources:getIsPending() or gameView:getIsHeavyResourcePending())
 
 			if self.wasQueueEmpty then
+				local generation = self.generation
 				resources:queueEvent(function()
-					self.didEventFire = true
+					if self.generation == generation then
+						self.didEventFire = true
+					end
 				end)
 
 				self.isWaitingOnEvent = true

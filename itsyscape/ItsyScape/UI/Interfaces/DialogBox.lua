@@ -69,7 +69,7 @@ end
 function DialogBox:new(id, index, ui)
 	Interface.new(self, id, index, ui)
 
-	self:setZDepth(10000)
+	self:setZDepth(4000)
 
 	self:setData(GamepadSink, GamepadSink({ isBlocking = true, isBlockingCamera = false }))
 
@@ -77,7 +77,7 @@ function DialogBox:new(id, index, ui)
 
 	self.background = Panel()
 	self.background:setSize(w, h)
-	self.background:setZDepth(9000)
+	self.background:setZDepth(3900)
 
 	self:setSize(DialogBox.WIDTH, DialogBox.HEIGHT)
 	self:setPosition(w / 2 - DialogBox.WIDTH / 2, h - DialogBox.HEIGHT - DialogBox.PADDING)

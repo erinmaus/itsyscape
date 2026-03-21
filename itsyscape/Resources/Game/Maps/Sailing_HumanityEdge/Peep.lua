@@ -775,6 +775,13 @@ function Island:prepareTutorial(playerPeep, arguments)
 	isabellesShip:pushPoke("customize", exquisitor)
 	
 	Utility.UI.openGroup(playerPeep, Utility.UI.Groups.WORLD)
+
+	local cutsceneTransition = Utility.UI.getOpenInterface(playerPeep, "CutsceneTransition")
+	if cutsceneTransition then
+		cutsceneTransition:reset()
+	else
+		Utility.UI.openInterface(playerPeep, "CutsceneTransition", false)
+	end
 end
 
 function Island:onPlayerEnter(player, arguments)
