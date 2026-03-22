@@ -30,6 +30,8 @@ function ExecutePathCommand:new(path, distance, canceled, stuck)
 		if stuck then
 			node.onStuck:register(stuck)
 		end
+
+		node.onStuck:register(ExecutePathCommand.cancel, self)
 	end
 
 	self.path = path
@@ -44,7 +46,7 @@ function ExecutePathCommand:getPath()
 end
 
 function ExecutePathCommand:getIsFinished()
-	return self.peep and not (self.peep:hasBehavior(TargetTileBehavior) or self.peep:hasBehavior(TargetPositionBehavior))
+	return self.canceled or self.peep and not (self.peep:hasBehavior(TargetTileBehavior) or self.peep:hasBehavior(TargetPositionBehavior))
 end
 
 function ExecutePathCommand:cancel()

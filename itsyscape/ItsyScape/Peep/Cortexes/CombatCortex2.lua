@@ -889,18 +889,19 @@ function CombatCortex:movePeep(peep, position)
 	end
 
 	if not (targetI == previousI and targetJ == previousJ and targetK == previousK) or
-	   (charge.currentWalkID and not Utility.Peep.isWalkPending(charge.currentWalkID))
+	   (charge.currentWalkID and not Utility.Peep.isWalkPending(charge.currentWalkID)) or
+	   (not Utility.Peep.isWalkPending(peep) and not (peep:hasBehavior(TargetPositionBehavior) or peep:hasBehavior(TargetTileBehavior)))
 	then
-		if charge.currentWalkID then
+				if charge.currentWalkID then
 			Utility.Peep.cancelWalk(charge.currentWalkID)
 		end
-
+		
 		local callback, id = Utility.Peep.queueWalk(peep, position or currentPosition, targetK, 0)
 		charge.currentWalkID = id
-
+		
 		callback:register(self._onPeepWalkCalculated, self, peep)
 		charge.i, charge.j, charge.k = targetI, targetJ, targetK
-	end
+			end
 end
 
 function CombatCortex:strafePeep(peep)

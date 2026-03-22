@@ -1567,7 +1567,7 @@ function Peep.walk(peep, ...)
 	local command, r = Peep.getWalk(peep, ...)
 	if command then
 		local queue = peep:getCommandQueue()
-		local success = queue:interrupt(command)
+		local success = queue:prepend(command)
 
 		-- In the event the peep was walking, we don't want to interrupt the animator cortexes.
 		-- Animator cortexes use velocity and/or the target tile behavior as indicators a peep
@@ -1628,6 +1628,13 @@ end
 function Peep.isWalkPending(n)
 	for i = #Peep.WALK_QUEUE.pending, 1, -1 do
 		local pending = Peep.WALK_QUEUE.pending[i]
+		if (type(n) == "number" and pending.n == n) or pending.peep == n then
+			return true
+		end
+	end
+
+	for i = #Peep.WALK_QUEUE.next, 1, -1 do
+		local pending = Peep.WALK_QUEUE.next[i]
 		if (type(n) == "number" and pending.n == n) or pending.peep == n then
 			return true
 		end
@@ -2112,7 +2119,7 @@ function Peep.getWalk(peep, ...)
 		targetPosition)
 
 	if path then
-		if peep:hasBehavior(PendingWalkBehavior) and path:getNumNodes() > 2 then
+		if peep:hasBehavior(PendingWalkBehavior) and path:getNumNodes() > 1 then
 			local bestIndex
 			for i = path:getNumNodes(), 1, -1 do
 				local node = path:getNodeAtIndex(i)
