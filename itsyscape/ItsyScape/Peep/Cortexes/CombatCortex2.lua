@@ -28,6 +28,7 @@ local CombatChargeBehavior = require "ItsyScape.Peep.Behaviors.CombatChargeBehav
 local CombatDodgeBehavior = require "ItsyScape.Peep.Behaviors.CombatDodgeBehavior"
 local CombatStatusBehavior = require "ItsyScape.Peep.Behaviors.CombatStatusBehavior"
 local CombatTargetBehavior = require "ItsyScape.Peep.Behaviors.CombatTargetBehavior"
+local DynamicBehavior = require "ItsyScape.Peep.Behaviors.DynamicBehavior"
 local FlyingBehavior = require "ItsyScape.Peep.Behaviors.FlyingBehavior"
 local HumanoidBehavior = require "ItsyScape.Peep.Behaviors.HumanoidBehavior"
 local MovementBehavior = require "ItsyScape.Peep.Behaviors.MovementBehavior"
@@ -889,15 +890,16 @@ function CombatCortex:movePeep(peep, position)
 	end
 
 	if not (targetI == previousI and targetJ == previousJ and targetK == previousK) or
-	   (charge.currentWalkID and not Utility.Peep.isWalkPending(charge.currentWalkID))
+	   (charge.currentWalkID and not Utility.Peep.isWalkPending(charge.currentWalkID)) or
+	   (not Utility.Peep.isWalkPending(peep) and not (peep:hasBehavior(TargetPositionBehavior) or peep:hasBehavior(TargetTileBehavior)))
 	then
 		if charge.currentWalkID then
 			Utility.Peep.cancelWalk(charge.currentWalkID)
 		end
-
+		
 		local callback, id = Utility.Peep.queueWalk(peep, position or currentPosition, targetK, 0)
 		charge.currentWalkID = id
-
+		
 		callback:register(self._onPeepWalkCalculated, self, peep)
 		charge.i, charge.j, charge.k = targetI, targetJ, targetK
 	end
@@ -914,37 +916,34 @@ function CombatCortex:strafePeep(peep)
 	local targetSize = Utility.Peep.getSize(target)
 	local size = math.max(peepSize.x, peepSize.z) + math.max(targetSize.x, targetSize.z)
 
-	local distance = Utility.Peep.getAbsoluteDistance(peep, target)
-	local strafeDistance = math.max(size - distance, 0)
+	local peepMargin = peep:hasBehavior(DynamicBehavior) and peep:getBehavior(DynamicBehavior).margin
+	local targetMargin = target:hasBehavior(DynamicBehavior) and target:getBehavior(DynamicBehavior).margin
 
-	if strafeDistance == 0 then
+	local distance = Utility.Peep.getAbsoluteDistance(peep, target)
+	if distance > 0 then
 		peep:removeBehavior(CombatChargeBehavior)
 		return
 	end
+	distance = math.abs(distance) + (peepMargin or 0) + (targetMargin or 0)
 
 	local selfPosition = Utility.Peep.getPosition(peep)
 	local targetPosition = Utility.Peep.getRelativePosition(peep, target)
-	local targetI, targetJ = Utility.Peep.getRelativeTile(peep, target)
 
 	local bestSelfStrafeDistance = math.huge
 	local bestTargetStrafeDistance = 0
 	local bestPosition, bestIsPassable
 
-	local map = Utility.Peep.getMap(peep)
-	local tiles = math.max(math.floor(strafeDistance / map:getCellSize()), 1)
-
 	for _, direction in ipairs(self.STRAFE_DIRECTIONS) do
 		local directionI, directionJ = unpack(direction)
-		local i = directionI * tiles + targetI
-		local j = directionJ * tiles + targetJ
+		local possiblePosition = selfPosition + distance * Vector(directionI, 0, directionJ)
 
-		local isPassable, realPosition = Utility.Map.isPassable(peep, map:getTileCenter(i, j))
+		local isPassable, realPosition = Utility.Map.isPassable(peep, possiblePosition)
 		local targetDistance = targetPosition:distance(realPosition)
 		local selfDistance = selfPosition:distance(realPosition)
 
 		if isPassable then
 			if selfDistance < bestSelfStrafeDistance then
-				bestPosition = map:getTileCenter(i, j)
+				bestPosition = possiblePosition
 				bestSelfStrafeDistance = selfDistance
 				bestIsPassable = true
 			end
@@ -964,10 +963,7 @@ function CombatCortex:strafePeep(peep)
 end
 
 function CombatCortex:cancelCharge(peep)
-	local charge = peep:getBehavior(CombatChargeBehavior)
-	if charge and charge.currentWalkID then
-		Utility.Peep.cancelWalk(charge.currentWalkID)
-	end
+	Utility.Peep.cancelWalk(peep)
 
 	peep:removeBehavior(CombatChargeBehavior)
 	peep:removeBehavior(TargetTileBehavior)

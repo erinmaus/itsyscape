@@ -27,6 +27,7 @@ local Tile = require "ItsyScape.World.Tile"
 
 local MoveToPosition = Class(Cortex)
 MoveToPosition.DISTANCE_PADDING = -0.25
+MoveToPosition.EPSILON = 0.001
 
 function MoveToPosition:new()
 	Cortex.new(self)
@@ -132,13 +133,13 @@ function MoveToPosition:update(delta)
 
 					local distance = currentPosition:distance(targetPosition)
 
-					if distance < 0.01 then
+					if distance < self.EPSILON then
 						self:step(peep)
 						break
 					end
 
 					local velocityMagnitude = velocity:getLength()
-					if velocityMagnitude < 0.01 then
+					if velocityMagnitude < self.EPSILON then
 						break
 					end
 
@@ -152,7 +153,7 @@ function MoveToPosition:update(delta)
 						local currentGoalX, currentGoalZ = goal.x, goal.z
 						goal.x, goal.z = world:move(peep, goal.x, goal.z, self._filter)
 
-						if currentX == goal.x and currentZ == goal.z then
+						if currentPosition:distance(goal) < self.EPSILON then
 							targetPositionBehavior.pathNode:onStuck(peep)
 							break
 						elseif not (currentGoalX == goal.x and currentGoalZ == goal.z) and

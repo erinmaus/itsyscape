@@ -28,7 +28,7 @@ function PositionPathNode:activate(peep)
 		local target = peep:getBehavior(TargetPositionBehavior)
 		previousPathNode = target.pathNode
 
-		if target.pathNode then
+		if target.pathNode and target.nextPathNode and self ~= target.nextPathNode then
 			target.pathNode:interrupt(peep)
 		end
 	end

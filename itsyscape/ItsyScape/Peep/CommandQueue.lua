@@ -110,6 +110,26 @@ function CommandQueue:shift(command)
 	return true
 end
 
+function CommandQueue:prepend(command)
+	if command:getIsBlocking() then
+		return false
+	end
+
+	if self:getIsPending() then
+		local current = self.queue[1]
+		if not current:getIsInterruptible() then
+			return false
+		end
+
+		if self.runningCommands[current] then
+			command:onPause(self.peep)
+		end
+	end
+
+	table.insert(self.queue, 1, command)
+	return true
+end
+
 -- Interrupts the current command with the new 'command'.
 --
 -- If the current command is un-interruptible, nothing happens and this method

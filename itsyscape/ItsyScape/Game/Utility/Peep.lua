@@ -681,7 +681,7 @@ function Peep.localTeleport(peep, position, localLayer)
 	end
 end
 
-function Peep.teleportCompanion(peep, targetPeep)
+local function _teleportCompanion(peep, targetPeep)
 	local i, j, k = Peep.getTile(targetPeep)
 	local map = Peep.getMap(targetPeep)
 
@@ -691,21 +691,30 @@ function Peep.teleportCompanion(peep, targetPeep)
 	local offsetZ = (love.math.random() - 0.5) * 2 * (map:getCellSize() / 2)
 	local offset = Vector(offsetX, 0, offsetZ)
 
+	local success = false
 	if map:canMove(i, j, 1, 0) and Utility.Map.isPassable(peep, map:getTileCenter(i + 1, j) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i + 1, j) + offset)
-		return true
+		success = true
 	elseif map:canMove(i, j, -1, 0) and Utility.Map.isPassable(peep, map:getTileCenter(i - 1, j) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i - 1, j) + offset)
-		return true
+		success = true
 	elseif map:canMove(i, j, 0, -1) and Utility.Map.isPassable(peep, map:getTileCenter(i, j - 1) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i, j - 1) + offset)
-		return true
+		success = true
 	elseif map:canMove(i, j, 0, 1) and Utility.Map.isPassable(peep, map:getTileCenter(i, j + 1) + offset) then
 		Peep.teleport(peep, map:getTileCenter(i, j + 1) + offset)
-		return true
+		success = true
 	end
 
-	return false
+	if success then
+		Utility.Map.push(peep)
+	end
+
+	return success
+end
+
+function Peep.teleportCompanion(peep, targetPeep)
+	peep:pushPoke(_teleportCompanion, targetPeep)
 end
 
 function Peep.getScale(peep)
@@ -761,6 +770,36 @@ function Peep.getAbsolutePosition(peep)
 		return Vector(tx, ty, tz)
 	else
 		return position
+	end
+end
+
+local _getOverlapDistance
+do
+	local slick = require "slick"
+	local shapeCollisionResolutionQuery = slick.collision.shapeCollisionResolutionQuery.new()
+
+	local sourceShape = slick.collision.polygon.new()
+	local targetShape = slick.collision.polygon.new()
+	local p = slick.geometry.point.new()
+	_getOverlapDistance = function(sourcePeepPolygon, targetPeepPolygon)
+		sourceShape:init(
+			sourcePeepPolygon[1].x, sourcePeepPolygon[1].z,
+			sourcePeepPolygon[2].x, sourcePeepPolygon[2].z,
+			sourcePeepPolygon[3].x, sourcePeepPolygon[3].z,
+			sourcePeepPolygon[4].x, sourcePeepPolygon[4].z)
+
+		targetShape:init(
+			targetPeepPolygon[1].x, targetPeepPolygon[1].z,
+			targetPeepPolygon[2].x, targetPeepPolygon[2].z,
+			targetPeepPolygon[3].x, targetPeepPolygon[3].z,
+			targetPeepPolygon[4].x, targetPeepPolygon[4].z)
+
+		shapeCollisionResolutionQuery:performProjection(sourceShape, targetShape, p, p, p, p)
+		if shapeCollisionResolutionQuery.collision then
+			return -math.min(shapeCollisionResolutionQuery.currentDepth, shapeCollisionResolutionQuery.otherDepth)
+		end
+
+		return 0
 	end
 end
 
@@ -847,9 +886,8 @@ function Peep.getAbsoluteDistance(sourcePeep, targetPeep)
 		end
 	end
 
-	if isSourceInsideTarget or isTargetInsideSource then
-		-- Overlapping.
-		return 0
+	if isSourceInsideTarget or isTargetInsideSource or minDistance == 0 then
+		return _getOverlapDistance(sourcePeepPolygon, targetPeepPolygon)
 	end
 
 	return minDistance
@@ -1558,7 +1596,7 @@ function Peep.walk(peep, ...)
 	local command, r = Peep.getWalk(peep, ...)
 	if command then
 		local queue = peep:getCommandQueue()
-		local success = queue:interrupt(command)
+		local success = queue:prepend(command)
 
 		-- In the event the peep was walking, we don't want to interrupt the animator cortexes.
 		-- Animator cortexes use velocity and/or the target tile behavior as indicators a peep
@@ -1619,6 +1657,13 @@ end
 function Peep.isWalkPending(n)
 	for i = #Peep.WALK_QUEUE.pending, 1, -1 do
 		local pending = Peep.WALK_QUEUE.pending[i]
+		if (type(n) == "number" and pending.n == n) or pending.peep == n then
+			return true
+		end
+	end
+
+	for i = #Peep.WALK_QUEUE.next, 1, -1 do
+		local pending = Peep.WALK_QUEUE.next[i]
 		if (type(n) == "number" and pending.n == n) or pending.peep == n then
 			return true
 		end
@@ -2029,7 +2074,8 @@ local function _stuck(peep, ...)
 		local needsPush, pushPosition = Utility.Map.tryGetPushPosition(peep)
 		if needsPush then
 			if not pushPosition then
-				Log.info("Peep '%s' needs to be pushed, but no safe push position found...", peep:getName())
+				Log.info("Peep '%s' needs to be pushed, but no safe push position found... Trying nuclear option.", peep:getName())
+				Utility.Peep.push(peep)
 			else
 				Log.info("Peep '%s' was pushed (to x = %f, z = %f).", peep:getName(), pushPosition.x, pushPosition.z)
 				Utility.Peep.setPosition(peep, pushPosition)
@@ -2102,7 +2148,7 @@ function Peep.getWalk(peep, ...)
 		targetPosition)
 
 	if path then
-		if peep:hasBehavior(PendingWalkBehavior) and path:getNumNodes() > 2 then
+		if peep:hasBehavior(PendingWalkBehavior) and path:getNumNodes() > 1 then
 			local bestIndex
 			for i = path:getNumNodes(), 1, -1 do
 				local node = path:getNodeAtIndex(i)
