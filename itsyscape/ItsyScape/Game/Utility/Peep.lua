@@ -2075,7 +2075,7 @@ local function _stuck(peep, ...)
 		if needsPush then
 			if not pushPosition then
 				Log.info("Peep '%s' needs to be pushed, but no safe push position found... Trying nuclear option.", peep:getName())
-				Utility.Peep.push(peep)
+				Utility.Map.push(peep)
 			else
 				Log.info("Peep '%s' was pushed (to x = %f, z = %f).", peep:getName(), pushPosition.x, pushPosition.z)
 				Utility.Peep.setPosition(peep, pushPosition)
