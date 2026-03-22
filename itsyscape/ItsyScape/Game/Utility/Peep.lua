@@ -773,6 +773,36 @@ function Peep.getAbsolutePosition(peep)
 	end
 end
 
+local _getOverlapDistance
+do
+	local slick = require "slick"
+	local shapeCollisionResolutionQuery = slick.collision.shapeCollisionResolutionQuery.new()
+
+	local sourceShape = slick.collision.polygon.new()
+	local targetShape = slick.collision.polygon.new()
+	local p = slick.geometry.point.new()
+	_getOverlapDistance = function(sourcePeepPolygon, targetPeepPolygon)
+		sourceShape:init(
+			sourcePeepPolygon[1].x, sourcePeepPolygon[1].z,
+			sourcePeepPolygon[2].x, sourcePeepPolygon[2].z,
+			sourcePeepPolygon[3].x, sourcePeepPolygon[3].z,
+			sourcePeepPolygon[4].x, sourcePeepPolygon[4].z)
+
+		targetShape:init(
+			targetPeepPolygon[1].x, targetPeepPolygon[1].z,
+			targetPeepPolygon[2].x, targetPeepPolygon[2].z,
+			targetPeepPolygon[3].x, targetPeepPolygon[3].z,
+			targetPeepPolygon[4].x, targetPeepPolygon[4].z)
+
+		shapeCollisionResolutionQuery:performProjection(sourceShape, targetShape, p, p, p, p)
+		if shapeCollisionResolutionQuery.collision then
+			return -math.min(shapeCollisionResolutionQuery.currentDepth, shapeCollisionResolutionQuery.otherDepth)
+		end
+
+		return 0
+	end
+end
+
 function Peep.getAbsoluteDistance(sourcePeep, targetPeep)
 	local sourcePeepTransform = Peep.getAbsoluteTransform(sourcePeep)
 	local sourcePeepSize = Peep.getSize(sourcePeep)
@@ -856,9 +886,8 @@ function Peep.getAbsoluteDistance(sourcePeep, targetPeep)
 		end
 	end
 
-	if isSourceInsideTarget or isTargetInsideSource then
-		-- Overlapping.
-		return 0
+	if isSourceInsideTarget or isTargetInsideSource or minDistance == 0 then
+		return _getOverlapDistance(sourcePeepPolygon, targetPeepPolygon)
 	end
 
 	return minDistance
